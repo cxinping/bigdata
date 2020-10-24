@@ -1,0 +1,40 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark import SparkContext
+
+sc = SparkContext()
+a_rdd = sc.textFile("/bigdata/chapter/a_seal.txt")
+b_rdd = sc.textFile("/bigdata/chapter/b_seal.txt")
+union_rdd = a_rdd.union(b_rdd)
+
+
+def f(item):
+    tmp = item.split(":")
+    return tmp[0], int(tmp[1])
+
+
+map_rdd = union_rdd.map(f)
+map_rdd.cache()
+
+
+def create_combiner(v):
+    return v, 1
+
+
+def merge_value(c, v):
+    return c[0] + v, c[1] + 1
+
+
+def merge_combiners(c1, c2):
+    return c1[0] + c2[0], c1[1] + c2[1]
+
+
+rdd = map_rdd.combineByKey(create_combiner, merge_value, merge_combiners)
+result = rdd.map(lambda x: (x[0], x[1][0] / x[1][1])).collect()
+
+
+def f(item):
+    print("当前元素是：", item)
+
+
+[f(item) for item in result]

@@ -1,0 +1,14 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize([("黑虎虾", 100), ("扇贝", 10.2), ("海参", 59.9)])
+rdd2 = sc.parallelize([("黑虎虾", 139), ("扇贝", 16.9), ("鲈鱼", 35.9), ("罗非鱼", 29.9)])
+
+result = rdd1.leftOuterJoin(rdd2).collect()
+def f(item):
+    print("当前元素是：", item)
+
+[f(item) for item in result]

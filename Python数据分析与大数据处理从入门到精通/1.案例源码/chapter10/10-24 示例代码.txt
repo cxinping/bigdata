@@ -1,0 +1,12 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+with plt.style.context(("dark_background")):
+    data = np.linspace(0, 3 * np.pi)
+    plt.plot(np.sin(data), "r-o")
+    plt.show()
+
+	

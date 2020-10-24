@@ -1,0 +1,22 @@
+
+# -*- coding: utf-8 -*-
+from scrapy_redis.spiders import RedisCrawlSpider
+
+from realestate.items import LianJiaItem
+
+class LianJiaSpider(RedisCrawlSpider):
+    name = "lianjia"
+    allowed_domains = ["bj.lianjia.com"]
+    redis_key = "lianjia:start_urls"
+
+    def parse(self, response):
+		#抓取列表
+        li_list = response.xpath("//li[@class='clear LOGCLICKDATA']")
+        for li in li_list:
+            item = LianJiaItem()
+			#提取详情url
+            item["url"] = li.xpath("./div/div/a[@href]").attrib["href"]
+            yield item
+
+			
+			

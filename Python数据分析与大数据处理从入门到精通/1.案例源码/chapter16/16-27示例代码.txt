@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+data = [{'name': 'Alice', 'age': 1}]
+df = spark.createDataFrame(data)
+print(df.printSchema)
+

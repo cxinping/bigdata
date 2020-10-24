@@ -1,0 +1,7 @@
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd = sc.textFile("/spark/files/README.md")
+
+

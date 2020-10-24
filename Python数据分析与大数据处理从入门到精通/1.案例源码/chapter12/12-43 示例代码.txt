@@ -1,0 +1,12 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+iris = sns.load_dataset("iris")
+sns.pairplot(iris)
+plt.show()
+
+

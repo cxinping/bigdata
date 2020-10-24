@@ -1,0 +1,11 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize(["黑虎虾,扇贝,黄花鱼,鲈鱼,罗非鱼,鲜贝,阿根廷红虾"])
+rdd2 = rdd1.flatMap(lambda item: item.split(",")).map(lambda item: (item, 1))
+
+print("当前key是：", rdd2.keys().collect())
+print("当前value是：", rdd2.values().collect())

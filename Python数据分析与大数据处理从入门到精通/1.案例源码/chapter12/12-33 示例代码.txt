@@ -1,0 +1,14 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from scipy import stats
+
+sns.set()
+x = np.random.gamma(6, size=200)
+sns.distplot(x, kde=False, fit=stats.gamma)
+plt.show()
+
+

@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
+
+# 指定Mysql的配置
+options = {
+    "url": "jdbc:mysql://localhost:3306/sparktest?useSSL=true",
+    "driver": "com.mysql.jdbc.Driver",
+    "dbtable": "(SELECT * from travels_detail where price!='None') t1",
+    "user": "root",
+    "password": "root"
+}
+spark = SparkSession.builder.getOrCreate()
+# 加载Mysql数据
+data = spark.read.format("jdbc").options(**options).load()
+
+# 对目的地列进行分组，调用聚合函数count获取每个组的个数
+df = data.groupby("destination").count().orderBy("count", ascending=False)
+# 筛选游记中提到的前10个目的地，并将Spark数据帧转为Pandas数据帧
+result_pdf = df.select("*").limit(10).toPandas()
+# 设置matplotlib支持中文
+plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.bar(result_pdf["destination"], result_pdf["count"], width=0.8)
+
+plt.legend()
+plt.show()
+

@@ -1,0 +1,10 @@
+
+def f1(item):
+    return item,1
+def f1(item):
+    return item(1)>1
+def f1(item1,item2):
+    return item1+item2
+rdd.map(f1).filter(f2).reduce(f3)
+
+

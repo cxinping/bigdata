@@ -1,0 +1,12 @@
+Emma,35000
+Sophia,40000
+Joyce,56000
+Lucy,72000
+Jennifer,22000
+Marian,91000
+Loren,38000
+Lorraine,42000
+Emma,22000
+Jennifer,41000
+Emma,45000
+Loren,66000

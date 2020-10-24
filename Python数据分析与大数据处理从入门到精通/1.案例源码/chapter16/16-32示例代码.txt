@@ -1,0 +1,12 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+data = [{'name': 'Alice', 'age': 1}, {'name': 'Bob', 'age': 3}, {'name': 'Li', 'age': 10}]
+df = spark.createDataFrame(data)
+data_list = df.collect()
+
+[print("当前元素是", item) for item in data_list]
+

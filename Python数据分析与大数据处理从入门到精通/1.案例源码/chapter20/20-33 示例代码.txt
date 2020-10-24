@@ -1,0 +1,26 @@
+
+import pandas as pd
+from pymongo import MongoClient
+import matplotlib.pyplot as plt
+
+if __name__ == "__main__":
+    uri = "mongodb://127.0.0.1:27017"
+    con = MongoClient(uri, connect=False)
+    db = con["house"]
+    collection = db["house_age"]
+    cursor = collection.find()
+    df = pd.DataFrame(list(cursor))
+    # 对每年份分组，获取每一年的平均单价。此时返回序列
+    max_grouped = df["unitprice"].groupby(df["years"]).mean()
+    # 给新列添加列名。此时返回数据帧
+    new_df = max_grouped.reset_index(name="maxunitprice")
+    # 将years列类型转为int，方便排序
+    new_df["years"] = new_df["years"].astype(int)
+    # 对数据重新排序
+    new_df.sort_values("years", inplace=True)
+    plt.rcParams["font.family"] = ["sans-serif"]
+    plt.rcParams["font.sans-serif"] = ["SimHei"]
+    plt.plot(new_df["years"],new_df["maxunitprice"],"r--")
+    plt.show()
+
+	

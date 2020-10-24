@@ -1,0 +1,11 @@
+
+
+def assert_test(param):
+    assert param == "hello"
+    return param + ",world"
+
+
+result = assert_test("hello1")
+print("结果是：", result)
+
+

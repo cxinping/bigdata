@@ -1,0 +1,26 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import time
+
+from pyspark import SparkContext
+from pyspark.streaming import StreamingContext
+
+if __name__ == "__main__":
+    sc = SparkContext(appName="QueueStream")
+    ssc = StreamingContext(sc, 10)
+
+    tmp_list = [j for j in range(1, 10)]
+    rdd_queue = []
+    for i in range(10):
+        rdd_queue += [ssc.sparkContext.parallelize(tmp_list)]
+
+    input_stream = ssc.queueStream(rdd_queue)
+    data = input_stream.map(lambda x: (x % 2, 1)).reduceByKey(lambda a, b: a + b)
+    data.pprint()
+
+    ssc.start()
+    ssc.awaitTermination()
+
+	
+	

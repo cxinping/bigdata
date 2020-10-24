@@ -1,0 +1,53 @@
+# -*- coding: utf-8 -*-
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructField, StringType, StructType
+
+spark = SparkSession.builder.getOrCreate()
+
+file1 = "hdfs://localhost:9000/input/business_detail.txt"
+rdd1 = spark.sparkContext.textFile(file1)
+
+
+def convert_business_data(line):
+    lines = line.split(",")
+    return lines[0], lines[1]
+
+
+# 对商户信息进行处理
+data1 = rdd1.map(lambda line: convert_business_data(line)).distinct()
+
+file2 = "hdfs://localhost:9000/input/product_detail.txt"
+rdd2 = spark.sparkContext.textFile(file2)
+
+
+def convert_product_data(line):
+    lines = line.split(",")
+    if lines[3] is None or len(lines[3]) == 0:
+        price = 0
+    else:
+        price = float(lines[3])
+
+    return lines[0], (lines[2], price)
+
+
+# 对商品信息进行处理
+data2 = rdd2.map(lambda line: convert_product_data(line)).distinct()
+
+
+def convert_data(item):
+    return item[0], item[1][0], item[1][1][0], item[1][1][1]
+
+
+# 将商家和商品信息进行连接
+data3 = data1.join(data2).map(lambda x: convert_data(x)).sortBy(lambda x: x[3], ascending=False)
+
+# 将rdd构造成dataframe，并调用show方法显示
+schemaString = "shop_id shop_name product_name price"
+
+fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
+schema = StructType(fields)
+# 输出售价最高的十个商品和商家信息
+df = spark.createDataFrame(data3, schema).limit(10)
+df.show()
+

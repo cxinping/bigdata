@@ -1,0 +1,10 @@
+import matplotlib.pyplot as plt
+import numpy as np
+
+data = {"a": np.arange(20),
+        "b": np.random.randint(0, 20, 20)}
+plt.scatter("a", "b", data=data)
+plt.xlabel("x 序列", fontproperties="SimHei")
+plt.ylabel("y 序列", fontproperties="SimHei")
+plt.show()
+

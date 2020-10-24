@@ -1,0 +1,28 @@
+# -*- coding: utf-8 -*-
+
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructField, StringType, StructType
+
+spark = SparkSession.builder.getOrCreate()
+file = "hdfs://114.116.31.24:9000/input/business_detail.txt"
+rdd = spark.sparkContext.textFile(file)
+
+
+def convert_data(line):
+    lines = line.split(",")
+    # 返回的三个数据分别是：商户名称，评分，人均消费
+    return lines[1], lines[2], float(lines[3])
+
+
+# 对数据去重然后排序
+data = rdd.map(lambda line: convert_data(line)).distinct(). \
+    sortBy(lambda x: x[2], ascending=False).collect()
+
+# 将rdd构造成dataframe，并调用show方法显示
+schemaString = "name score per_cusomer"
+
+fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
+schema = StructType(fields)
+# 输出人均消费前10位的商家
+df = spark.createDataFrame(data, schema).limit(10)
+df.show()

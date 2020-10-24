@@ -1,0 +1,13 @@
+import pandas as pd
+import numpy as np
+from sqlalchemy import create_engine
+
+engine = create_engine("mysql+pymysql://root:root@localhost:3306/test", encoding="utf8")
+
+sql = "SELECT * from mytable limit 100"
+df = pd.read_sql(sql, engine)
+df = df.groupby(["name"]).agg(np.sum)
+print(df)
+df.to_sql("mytable1", engine, index=False)
+
+

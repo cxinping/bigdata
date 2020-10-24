@@ -1,0 +1,14 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+tips = sns.load_dataset("tips")
+# sns.catplot(x="day", y="total_bill", kind="strip", data=tips)
+# sns.catplot(x="day", y="total_bill", kind="swarm", data=tips)
+# sns.catplot(x="total_bill", y="day", hue="time", kind="swarm", data=tips)
+
+sns.catplot(x="day", y="total_bill", kind="box", data=tips)
+plt.show()

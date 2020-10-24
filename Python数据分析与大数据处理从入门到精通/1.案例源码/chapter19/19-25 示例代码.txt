@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
+
+# 指定Mysql的配置
+from pyspark.sql.functions import udf
+from pyspark.sql.types import StructField, StringType, StructType, LongType
+
+options = {
+    "url": "jdbc:mysql://localhost:3306/sparktest?useSSL=true",
+    "driver": "com.mysql.jdbc.Driver",
+    "user": "root",
+    "password": "root"
+}
+spark = SparkSession.builder.getOrCreate()
+# 加载Mysql数据
+options["dbtable"] = "(SELECT id,destination,price from travels_detail)travels_detail"
+data1 = spark.read.format("jdbc").options(**options).load()
+
+options["dbtable"] = "(SELECT id,viewCount from travels)travels"
+data2 = spark.read.format("jdbc").options(**options).load()
+
+# 将viewCount类型（字符串类型）转为长整型（LongType），以方便在sql语句中排序
+data3 = data2.select("id", data2.viewCount.cast(LongType()).alias("count"))
+
+# 进行join操作，将两个数据帧连接为一个数据帧
+data4 = data1.join(data3, data1.id == data3.id)
+# 将连接后的数据注册为临时表
+data4.createOrReplaceTempView("travel")
+
+# 使用sql查询生成新的数据帧
+data5 = spark.sql(
+    "SELECT destination,count,price FROM travel where destination!='None' and count>200000  order by count desc")
+
+data5.show()
+

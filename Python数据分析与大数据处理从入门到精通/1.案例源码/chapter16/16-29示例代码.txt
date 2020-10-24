@@ -1,0 +1,10 @@
+
+@since(1.3)
+def show(self, n=20, truncate=True, vertical=False):
+	if isinstance(truncate, bool) and truncate:
+		print(self._jdf.showString(n, 20, vertical))
+	else:
+		print(self._jdf.showString(n, int(truncate), vertical))
+		
+		
+		

@@ -1,0 +1,15 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+sns.set()
+mean, cov = [0, 1], [(1, .5), (.5, 1)]
+x, y = np.random.multivariate_normal(mean, cov, 1000).T
+with sns.axes_style("white"):
+    sns.jointplot(x=x, y=y, kind="hex", color="k")
+plt.show()
+
+

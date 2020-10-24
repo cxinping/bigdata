@@ -1,0 +1,11 @@
+# -*- coding: UTF-8 -*-
+from functools import partial
+
+def fun(a, b, c, d, e):
+    return a + b + c + d + e
+
+partial_fun = partial(fun, b=2, c=3, d=4, e=5)
+result = partial_fun(10)
+print("调用偏函数：", result)
+
+

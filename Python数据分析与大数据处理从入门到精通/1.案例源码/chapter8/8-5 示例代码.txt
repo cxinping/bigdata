@@ -1,0 +1,16 @@
+# coding=utf-8
+
+import xml.etree.ElementTree as Et
+def get_nodes(element):
+    if len(element) > 0:
+        for child in element:
+            print(child.tag, "：", child.text)
+            get_nodes(child)
+
+if __name__ == "__main__":
+    tree = Et.parse("商品销量.xml")
+    root = tree.getroot()
+    get_nodes(root)
+
+	
+	

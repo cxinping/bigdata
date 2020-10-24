@@ -1,0 +1,18 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+options = {"url": "jdbc:mysql://localhost:3306/sparktest?useSSL=false", 
+		   "driver": "com.mysql.jdbc.Driver",
+           "user": "root", "password": "root"}
+
+options["dbtable"] = "tb_jd"
+jd_df = spark.read.format("jdbc").options(**options).load()
+
+options["dbtable"] = "tb_taobao"
+taobao_df = spark.read.format("jdbc").options(**options).load()
+
+all_data_df = jd_df.join(taobao_df, on="brand", how="left")
+all_data_df.show()
+

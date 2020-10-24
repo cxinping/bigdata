@@ -1,0 +1,39 @@
+from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
+
+spark = SparkSession \
+    .builder \
+    .appName("linajia") \
+    .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .getOrCreate()
+
+# 读取lianjiadetail表数据并创建数据帧
+mongodb_df = spark.read.format("com.mongodb.spark.sql.DefaultSource").load()
+
+mongodb_df.createOrReplaceTempView("temp")
+mongodb_group_df = spark.sql("SELECT roomtype,count(1) as counter  FROM temp group by roomtype ")
+
+df = mongodb_group_df.toPandas()
+df.sort_values("counter", inplace=True, ascending=False)
+df.reset_index(inplace=True)
+
+plt.rcParams["font.family"] = ["sans-serif"]
+plt.rcParams["font.sans-serif"] = ["SimHei"]
+
+fig, ax = plt.subplots(figsize=(16, 10), dpi=80)
+ax.vlines(x=df.index, ymin=0, ymax=df.counter, color="firebrick", alpha=0.7, linewidth=2)
+ax.scatter(x=df.index, y=df.counter, s=75, color="firebrick", alpha=0.7)
+
+ax.set_title("在售房源户型", fontdict={"size": 22})
+ax.set_ylabel("在售数量")
+ax.set_xticks(df.index)
+ax.set_xticklabels(df.roomtype, rotation=60,
+                   fontdict={"horizontalalignment": "right", "size": 12})
+for row in df.itertuples():
+    ax.text(row.Index, row.counter + .5, s=round(row.counter, 2),
+            horizontalalignment="center", verticalalignment="bottom",
+            fontsize=14)
+
+plt.show()
+

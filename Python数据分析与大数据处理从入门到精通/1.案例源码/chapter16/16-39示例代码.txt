@@ -1,0 +1,8 @@
+
+where = copy_func(
+	filter,
+	sinceversion=1.3,
+	doc=":func:`where` is an alias for :func:`filter`.")
+	
+	
+	

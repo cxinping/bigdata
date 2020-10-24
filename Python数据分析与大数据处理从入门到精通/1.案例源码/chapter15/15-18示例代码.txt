@@ -1,0 +1,11 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize([("a", 1), ("a", 1), ("a", 1), ("b", 1), ("b", 1), ("c", 1)])
+list1 = rdd1.groupByKey().mapValues(len).collect()
+[print("按key分组后的数据项： ", item) for item in list1]
+list2 = rdd1.groupByKey().mapValues(list).collect()
+[print("每一个key对应的数据：", item) for item in list2]

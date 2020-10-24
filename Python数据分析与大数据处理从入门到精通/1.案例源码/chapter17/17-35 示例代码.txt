@@ -1,0 +1,25 @@
+import sys
+
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import explode
+from pyspark.sql.functions import split
+from pyspark.sql.functions import window
+
+if __name__ == "__main__":
+    bootstrapServers = "localhost:9092"
+    subscribeType = "subscribe"
+    topics = "bigdata"
+    windowSize = 10
+    slideSize = 5
+    windowDuration = '{} seconds'.format(windowSize)
+    slideDuration = '{} seconds'.format(slideSize)
+
+    spark = SparkSession.builder.appName("KafkaWordCount").getOrCreate()
+
+    lines = spark.readStream.format("kafka").option("kafka.bootstrap.servers", bootstrapServers) \
+        .option(subscribeType, topics).load()
+
+    query = lines.writeStream.format("json").option("checkpointLocation", "/struct_streaming/checkpoint") \
+        .option("path", "/struct_streaming/output").start()
+
+    query.awaitTermination()

@@ -1,0 +1,14 @@
+import numpy as np
+
+dt = np.dtype(np.int32)
+print("创建整形类型:", dt)
+dt = np.dtype(np.float)
+print("创建浮点类型:", dt)
+dt = np.dtype(np.bool)
+print("创建布尔类型:", dt)
+dt = np.dtype(np.complex)
+print("创建复数类型:", dt)
+dt = np.dtype([("2018", np.str), ("GDP", np.float)])
+print("创建自定义类型:", dt)
+
+

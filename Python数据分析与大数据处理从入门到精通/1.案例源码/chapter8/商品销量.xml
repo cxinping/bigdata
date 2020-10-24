@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<product_list>
+	<product>
+		<name>MateBook</name>
+		<sales_volume>2.6</sales_volume>
+		<unit_price>5699</unit_price>
+	</product>
+	<product>
+		<name>Lenovo</name>
+		<sales_volume>1.5</sales_volume>
+		<unit_price>8599</unit_price>
+	</product>
+</product_list>

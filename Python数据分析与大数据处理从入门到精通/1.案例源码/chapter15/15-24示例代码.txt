@@ -1,0 +1,12 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize(["Spark", "hadoop", "hive"])
+rdd2 = sc.parallelize(["Spark", "kafka", "hbase"])
+rdd3 = rdd1.union(rdd2).distinct().collect()
+print("去除重复项结果： ", rdd3)
+
+

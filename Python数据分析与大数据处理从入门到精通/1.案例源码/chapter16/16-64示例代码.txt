@@ -1,0 +1,23 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+options = {"url": "jdbc:mysql://localhost:3306/sparktest?useSSL=false", 
+		   "driver": "com.mysql.jdbc.Driver",
+           "user": "root", "password": "qAz@=123!"}
+
+sql = '''
+(SELECT brand, cast(sum(performance) as signed) sumperformance  FROM (
+		SELECT brand, (sales * price) performance FROM tb_jd
+		UNION
+		SELECT brand, (sales * price) performance FROM tb_taobao
+	) alldata
+GROUP BY brand) total_performance
+'''
+options["dbtable"] = sql
+total_performance_df = spark.read.format("jdbc").options(**options).load()
+total_performance_df.orderBy(total_performance_df.sumperformance.desc()).show()
+
+
+

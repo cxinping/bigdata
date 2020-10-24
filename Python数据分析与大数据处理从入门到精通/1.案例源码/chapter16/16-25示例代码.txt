@@ -1,0 +1,19 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+from pyspark.sql.types import Row, StructType, \
+    StructField, StringType, IntegerType
+
+spark = SparkSession.builder.getOrCreate()
+
+schema = StructType([StructField("name", StringType(), True),
+                     StructField("age", IntegerType(), True)])
+
+rdd = spark.sparkContext.textFile("/bigdata/testdata/people.txt").\
+    map(lambda line: line.split(',')).map(
+    lambda item: Row(item[0], int(item[1])))
+df = spark.createDataFrame(rdd, schema)
+print("将RDD转换为DataFrame，转换后df的类型:", type(df))
+df.show()
+
+

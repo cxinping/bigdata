@@ -1,0 +1,17 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+a_rdd = sc.textFile("/bigdata/chapter/a_seal.txt")
+b_rdd = sc.textFile("/bigdata/chapter/b_seal.txt")
+union_rdd = a_rdd.union(b_rdd)
+
+def f(item):
+    tmp = item.split(":")
+    return tmp[0], int(tmp[1])
+
+map_rdd = union_rdd.map(f)
+result = map_rdd.reduceByKey(lambda x, y: x + y).collect()
+[print("当前元素是：", item) for item in result]

@@ -1,0 +1,9 @@
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd = sc.parallelize([0, 1, 2, 3, 4, 6], 5)
+print(rdd.getNumPartitions())
+print(rdd.count())
+
+

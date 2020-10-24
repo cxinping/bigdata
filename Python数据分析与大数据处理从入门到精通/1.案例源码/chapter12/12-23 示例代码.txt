@@ -1,0 +1,13 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+tips = sns.load_dataset("tips")
+sns.catplot(x="day", y="total_bill", hue="sex",
+            kind="violin", split=True, inner="stick",
+            palette="pastel", data=tips)
+plt.show()
+

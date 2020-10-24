@@ -1,0 +1,12 @@
+# -*- coding: UTF-8 -*-
+
+class WildGoose:
+    def fly(self):
+        print("WildGoose中的方法")
+
+
+wild_goose = eval("WildGoose()")
+fly = getattr(wild_goose, "fly")
+fly()
+
+

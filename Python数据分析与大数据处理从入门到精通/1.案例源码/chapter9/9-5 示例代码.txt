@@ -1,0 +1,6 @@
+import numpy as np
+
+dt = np.empty([2, 2], dtype=int)
+print(dt)
+
+

@@ -1,0 +1,11 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize([("黑虎虾", 100), ("扇贝", 10.2), ("鲈鱼", 59.9)])
+rdd2 = sc.parallelize([("黑虎虾", 139), ("扇贝", 16.9), ("鲈鱼", 35.9), ("罗非鱼", 29.9)])
+
+result = rdd1.join(rdd2).collect()
+print("join结果是：", result)

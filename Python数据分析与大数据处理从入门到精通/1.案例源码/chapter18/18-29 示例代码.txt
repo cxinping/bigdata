@@ -1,0 +1,18 @@
+
+import pandas as pd
+from sqlalchemy import create_engine
+import matplotlib.pyplot as plt
+
+engine = create_engine("mysql+pymysql://****:*****@localhost:3306/test", encoding="utf8")
+sql = "SELECT MAX(sold)sold,MAX(score)score FROM `product_info` where score!=0 GROUP BY score ORDER BY score "
+df = pd.read_sql(sql, engine)
+
+plt.rcParams["font.sans-serif"] = ["SimHei"]
+plt.plot(df["score"], df["sold"], color="r", marker="o")
+
+plt.xlabel("用户评分")
+plt.ylabel("销量")
+plt.show()
+
+
+

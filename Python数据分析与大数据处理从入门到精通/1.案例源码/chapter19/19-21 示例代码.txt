@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
+
+# 指定Mysql的配置
+from pyspark.sql.types import StructField, StringType, StructType
+
+options = {
+    "url": "jdbc:mysql://localhost:3306/sparktest?useSSL=true",
+    "driver": "com.mysql.jdbc.Driver",
+    "dbtable": "(SELECT taglist from travels_detail where taglist !='None') t1",
+    "user": "root",
+    "password": "root"
+}
+spark = SparkSession.builder.getOrCreate()
+# 加载Mysql数据
+data = spark.read.format("jdbc").options(**options).load()
+
+# 将每一行的taglist转为列表
+def convert_to_list(line):
+    tmp_list = line[0].replace("#", "").split(",")
+    datas = []
+    for i in tmp_list:
+        if len(i) > 0 and "牛" not in i:
+            datas.append((i, 1))
+    return datas
+
+
+rdd = data.rdd.flatMap(lambda line: convert_to_list(line)).reduceByKey(lambda x, y: x + y)
+schemaString = "tag count"
+fields = [StructField(field_name, StringType(), True) for field_name in schemaString.split()]
+schema = StructType(fields)
+schema_data = spark.createDataFrame(rdd, schema).orderBy("count", ascending=False)
+
+# 将数据转换为Pandas数据帧
+result_pdf = schema_data.limit(5).toPandas()
+# 设置matplotlib支持中文
+plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['font.sans-serif'] = ['SimHei']
+# colors=color, explode=explode,
+plt.pie(result_pdf["count"],  labels=result_pdf["tag"], shadow=True, autopct='%1.1f%%')
+plt.legend()
+plt.show()
+

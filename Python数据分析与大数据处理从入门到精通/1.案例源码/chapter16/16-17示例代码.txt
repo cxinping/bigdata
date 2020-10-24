@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+df = spark.read.format("json").load("/bigdata/testdata/people.json", format="json")
+print("读取json格式，df的类型:", type(df))
+df.show()
+

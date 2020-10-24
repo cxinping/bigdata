@@ -1,0 +1,16 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+from pyspark.sql.types import Row
+
+spark = SparkSession.builder.getOrCreate()
+
+def f(item):
+    people = {'name': item[0], 'age': item[1]}
+    return people
+
+df = spark.sparkContext.textFile("/bigdata/testdata/people.txt").\
+		map(lambda line: line.split(',')).map(lambda x: Row(**f(x))).toDF()
+print("将RDD转换为DataFrame，转换后df的类型:", type(df))
+df.show()
+

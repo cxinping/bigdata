@@ -1,0 +1,11 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+from operator import add
+
+sc = SparkContext()
+rdd = sc.parallelize([('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5)])
+
+result = rdd.map(lambda x: x[1]).reduce(add)
+print("当前结果：", result)

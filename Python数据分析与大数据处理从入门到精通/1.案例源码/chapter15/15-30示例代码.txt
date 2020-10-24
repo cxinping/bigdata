@@ -1,0 +1,9 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd = sc.parallelize([('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5)])
+result = rdd.sortBy(lambda x: x[1], False).take(3)
+print("当前元素是：", result)

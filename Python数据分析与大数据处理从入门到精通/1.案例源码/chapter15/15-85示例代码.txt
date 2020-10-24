@@ -1,0 +1,20 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark import SparkContext
+
+sc = SparkContext()
+a_rdd = sc.textFile("/bigdata/chapter/a_seal.txt")
+b_rdd = sc.textFile("/bigdata/chapter/b_seal.txt")
+def f1(item):
+    tmp = item.split(":")
+    return tmp[0], int(tmp[1])
+
+a_map_rdd = a_rdd.map(f1)
+b_map_rdd = b_rdd.map(f1)
+join_rdd = a_map_rdd.join(b_map_rdd)
+
+def f2(item):
+    return item[0], sum(item[1])
+
+result = join_rdd.map(f2).sortBy(lambda x: x[1], False).collect()
+[print(item) for item in result]

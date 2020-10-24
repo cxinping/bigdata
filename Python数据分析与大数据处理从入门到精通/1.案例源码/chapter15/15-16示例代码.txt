@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize([0, 1, 2, 3, 4, 6])
+rdd2 = rdd1.filter(lambda x: x > 3)
+local_data = rdd2.collect()
+[print("当前元素是：", item) for item in local_data]

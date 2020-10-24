@@ -1,0 +1,29 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+sns.set()
+plt.rcParams["font.sans-serif"] = ["SimHei"]
+file = r"成绩统计表.xlsx"
+df = pd.read_excel(file, sheet_name="成绩表")
+
+sns.relplot(x="学号", y="总分", data=df)
+plt.xticks(range(1))
+plt.show()
+
+sns.catplot(x="等级", y="平均分", kind="boxen", data=df)
+plt.show()
+
+course = df.columns.values[1:13]
+means = df.iloc[-1, 1:13]
+df = pd.DataFrame({"科目名称": course,
+                   "各科成绩": means})
+sns.catplot(x="各科成绩", y="科目名称", kind="bar",
+            data=df.sort_values("各科成绩", ascending=False))
+
+plt.title("各科平均成绩排名")
+
+

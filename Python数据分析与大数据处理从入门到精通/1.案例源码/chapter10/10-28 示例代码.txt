@@ -1,0 +1,13 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+plt.figure(1)
+plt.subplot(211)
+plt.plot(np.sin(np.arange(0, 10)), 'b-.')
+plt.subplot(212)
+plt.plot(np.sin(np.arange(0, 10)), 'r+')
+plt.show()
+

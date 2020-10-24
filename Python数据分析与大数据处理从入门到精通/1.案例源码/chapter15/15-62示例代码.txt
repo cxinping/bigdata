@@ -1,0 +1,11 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+
+pairs = sc.parallelize([("黑虎虾", 139), ("扇贝", 16.9), ("鲈鱼", 35.9), ("罗非鱼", 29.9)])
+sets = pairs.partitionBy(2).glom().collect()
+print(sets)
+

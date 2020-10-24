@@ -1,0 +1,11 @@
+# -*- coding: UTF-8 -*-
+
+file = open("a_seafood.txt", encoding='UTF-8')
+
+for line in file.readlines():
+    if "阿根廷红虾" in line or "海参" in line :
+        print(line)
+		
+		
+for line in file:
+    print(line)

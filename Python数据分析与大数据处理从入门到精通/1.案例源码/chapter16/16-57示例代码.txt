@@ -1,0 +1,17 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.enableHiveSupport().getOrCreate()
+
+data = [{'course': 'math', 'score': 80}, {'course': 'math', 'score': 98},
+        {'course': 'english', 'score': 85}, {'course': 'english', 'score': 60}]
+
+course_list = spark.createDataFrame(data).registerTempTable("course_list")
+df = spark.sql("select course,avg(score) from course_list group by course")
+df.registerTempTable("score_avg")
+spark.sql("use sparktest")
+
+spark.sql("insert into hive_score_avg select * from score_avg")
+
+

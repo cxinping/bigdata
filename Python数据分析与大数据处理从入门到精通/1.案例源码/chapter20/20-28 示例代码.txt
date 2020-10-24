@@ -1,0 +1,27 @@
+
+from pyspark.sql import SparkSession
+import matplotlib.pyplot as plt
+
+spark = SparkSession \
+    .builder \
+    .appName("linajia") \
+    .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .getOrCreate()
+
+# 读取lianjiadetail表数据并创建数据帧
+df = spark.read.format("com.mongodb.spark.sql.DefaultSource").load()
+
+df.createOrReplaceTempView("temp")
+
+some_fruit = spark.sql("SELECT zone,count(1) as count FROM temp group by zone ")
+result_pdf = some_fruit.toPandas()
+
+# 将数据转换为Pandas数据帧
+# 设置matplotlib支持中文
+plt.rcParams['font.family'] = ['sans-serif']
+plt.rcParams['font.sans-serif'] = ['SimHei']
+plt.pie(result_pdf["count"], labels=result_pdf["zone"], shadow=True, autopct='%1.1f%%')
+plt.legend()
+plt.show()
+

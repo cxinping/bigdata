@@ -1,0 +1,11 @@
+﻿#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+df = spark.read.load("/bigdata/testdata/users.parquet")
+print("df的类型:", type(df))
+df.show()
+
+

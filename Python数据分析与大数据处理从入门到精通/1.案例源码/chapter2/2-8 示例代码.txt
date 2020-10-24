@@ -1,0 +1,7 @@
+def f():
+	a="Hello World"
+	print(a)
+	
+	
+	
+

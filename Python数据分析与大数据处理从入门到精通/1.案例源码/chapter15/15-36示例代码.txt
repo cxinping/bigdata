@@ -1,0 +1,13 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd = sc.parallelize([('a', 1), ('b', 2), ('c', 3), ('d', 4), ('e', 5)], 2)
+
+def f(iterator):
+    print(list(iterator))
+
+result = rdd.foreachPartition(f)
+

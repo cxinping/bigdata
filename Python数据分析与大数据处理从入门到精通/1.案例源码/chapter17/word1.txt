@@ -1,0 +1,4 @@
+hello1 hadoop1
+hello1 spark1
+hello1 hive1 hbase1
+hello1 hadoop1 spark1

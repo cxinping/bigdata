@@ -1,0 +1,35 @@
+
+import datetime
+import math
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession \
+    .builder \
+    .appName("linajia") \
+    .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .getOrCreate()
+
+# 加载原始数据创建数据帧
+mongodb_df = spark.read.format("com.mongodb.spark.sql.DefaultSource").load()
+
+# 创建自定义函数，计算房龄
+def get_cur_time(lasttradedate):
+    days = (datetime.datetime.now() - lasttradedate).days
+    year = days / 365
+    return math.ceil(year)
+
+# 注册自定义函数
+spark.udf.register("get_cur_time", get_cur_time)
+# 创建临时表
+mongodb_df.createOrReplaceTempView("temp")
+
+mongodb_house_age_df = spark.\
+sql("select get_cur_time(lasttradedate) as years,unitprice from temp")
+# 将房龄和平米单价存入MangoDB
+mongodb_house_age_df.write.format("com.mongodb.spark.sql.DefaultSource"). \
+    mode("append").option("database", "house").option("collection", "house_age").save()
+	
+	
+	

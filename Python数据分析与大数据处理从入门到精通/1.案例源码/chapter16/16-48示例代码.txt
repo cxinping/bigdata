@@ -1,0 +1,13 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+data = [{'course': 'math', 'score': 80}, {'course': 'math', 'score': 98},
+        {'course': 'english', 'score': 85}, {'course': 'english', 'score': 60}]
+
+tmp_list = spark.createDataFrame(data).groupBy('course').avg().collect()
+[print("当前元素是:", item) for item in tmp_list]
+
+

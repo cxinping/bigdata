@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+rdd1 = sc.parallelize(["lesson1 spark", "lesson2 hadoop", "lesson3 hive"])
+rdd2 = rdd1.flatMap(lambda x: x.split(" "))
+local_data = rdd2.collect()
+[print("当前元素是：", item) for item in local_data]

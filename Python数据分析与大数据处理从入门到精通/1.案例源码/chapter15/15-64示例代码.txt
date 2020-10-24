@@ -1,0 +1,19 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+
+pairs = sc.parallelize([("高品质", "黑虎虾"), ("一般品质", "扇贝"), ("高品质", "鲈鱼"), ("一般品质", "罗非鱼")])
+
+
+def custom_partition(key):
+    if key == "高品质":
+        return 0
+    else:
+        return 1
+
+
+sets = pairs.partitionBy(2, partitionFunc=custom_partition).glom().collect()
+print(sets)

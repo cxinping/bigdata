@@ -1,0 +1,20 @@
+# -*- coding: utf-8 -*-
+
+import xlrd
+
+def read_excel():
+    workbook = xlrd.open_workbook("商品销量.xlsx")
+
+    sheet = workbook.sheet_by_index(0)  # sheet索引从0开始
+
+    print(sheet.name, sheet.nrows, sheet.ncols)
+    for i in range(0, sheet.nrows):
+        for j in range(0, sheet.ncols):
+            data = sheet.cell(i, j)
+            print(data)
+
+if __name__ == "__main__":
+    read_excel()
+
+	
+	

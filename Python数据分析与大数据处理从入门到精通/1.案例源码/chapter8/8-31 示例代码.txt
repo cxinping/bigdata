@@ -1,0 +1,42 @@
+
+path = r"baidu_music_detail_list.txt"
+file = open(file=path)
+miss_id_list = []
+miss_name_list = []
+miss_artist_list = []
+miss_publish_date_list = []
+miss_company_list = []
+
+#处理发行公司，若是没有分割后没有长度不为2则是数据缺失
+def hadndle_split(tmp_data):
+    tmp_list = tmp_data.strip().split("：")
+    if len([i for i in tmp_list if len(i.strip()) > 0]) == 2:
+        return False
+    else:
+        return True
+
+for line in file:
+    datas = line.split(",")
+    if len(datas[0].strip()) == 0:#将缺失id的数据存入列表
+        miss_id_list.append(line)
+
+    if len(datas[1].strip()) == 0:#将缺失名称的数据存入列表
+        miss_name_list.append(line)
+
+    if len(datas[2].strip()) == 0:#将缺失歌手的数据存入列表
+        miss_artist_list.append(line)
+
+    # 将缺失发行时间的数据存入列表
+    if len(datas[3].strip()) == 0 or hadndle_split(datas[3].strip()):
+        miss_publish_date_list.append(line)
+
+    # 将缺失发行公司的数据存入列表
+    if len(datas[4].strip()) == 0 or hadndle_split(datas[4].strip()):
+        miss_company_list.append(line)
+
+print("缺失歌曲ID的数据有 {0} 行，分别是：{1}".format(len(miss_id_list), miss_id_list))
+print("缺失歌曲名称的数据有 {0} 行，分别是：{1}".format(len(miss_name_list), miss_name_list))
+print("缺失歌手姓名的数据有 {0} 行，分别是：{1}".format(len(miss_artist_list), miss_artist_list))
+print("缺失发行时间的数据有 {0} 行，分别是：{1}".format(len(miss_publish_date_list), miss_publish_date_list))
+print("缺失发行公司名称的数据有 {0} 行，分别是：{1}".format(len(miss_company_list), miss_company_list))
+

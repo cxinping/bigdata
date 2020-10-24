@@ -1,0 +1,21 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext, StorageLevel
+
+sc = SparkContext()
+
+list1 = [2]
+broadcast = sc.broadcast(list1)
+
+list2 = [4, 5, 6]
+
+
+def f(item):
+    broadcast_value = broadcast.value
+    return item, broadcast_value[0]
+
+
+data = sc.parallelize(list2, 4).map(lambda x: f(x)).collect()
+
+[print("当前元素是：", item) for item in data]

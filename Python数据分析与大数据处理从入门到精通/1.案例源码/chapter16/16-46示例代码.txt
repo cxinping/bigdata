@@ -1,0 +1,14 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+spark = SparkSession.builder.getOrCreate()
+
+data1 = [{'name': 'Tom', 'height': 80}, {'name': 'Bob', 'height': 85}]
+data2 = [{'name': 'Tom', 'age': 4}, {'name': 'Bob', 'age': 5}]
+
+df1 = spark.createDataFrame(data1)
+df2 = spark.createDataFrame(data2)
+tmp_list = df1.join(df2, 'name').collect()
+
+[print("当前元素是:", item) for item in tmp_list]
+

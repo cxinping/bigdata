@@ -1,0 +1,12 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+
+data = [("高品质", "黑虎虾"), ("一般品质", "扇贝"), ("高品质", "鲈鱼"), ("一般品质", "罗非鱼")]
+sets1 = sc.parallelize(data, 4).glom().collect()
+print(sets1)
+sets2 = sc.parallelize(data, 4).coalesce(1).glom().collect()
+print(sets2)

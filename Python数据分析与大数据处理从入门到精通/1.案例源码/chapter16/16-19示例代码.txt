@@ -1,0 +1,16 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+options = {
+    "url": "jdbc:mysql://192.168.239.138:3306/sparktest?useSSL=false",
+    "driver": "com.mysql.jdbc.Driver",
+    "dbtable": "people",
+    "user": "root",
+    "password": "qAz@=123!"
+}
+df = spark.read.format("jdbc").options(**options).load()
+print("读取mysql数据，df的类型:", type(df))
+df.show()
+

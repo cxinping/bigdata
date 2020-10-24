@@ -1,0 +1,11 @@
+import numpy as np
+
+a = np.floor(10 * np.random.random((2, 20)))
+print(a)
+print("水平方向拆分：")
+data = np.hsplit(a, 2)
+for item in data:
+    print(item)
+
+	
+	

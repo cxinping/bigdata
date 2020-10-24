@@ -1,0 +1,19 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+import pandas as pd
+
+sns.set()
+mean, cov = [0, 1], [(1, .5), (.5, 1)]
+data = np.random.multivariate_normal(mean, cov, 200)
+df = pd.DataFrame(data, columns=["x", "y"])
+f, ax = plt.subplots(figsize=(6, 6))
+sns.kdeplot(df.x, df.y, ax=ax)
+sns.rugplot(df.x, color="g", ax=ax)
+sns.rugplot(df.y, vertical=True, ax=ax)
+plt.show()
+
+

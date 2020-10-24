@@ -1,0 +1,6 @@
+a = []
+b = []
+a.extend(b)
+b.extend(a)
+del a
+del b

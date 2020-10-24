@@ -1,0 +1,17 @@
+
+from pyspark.sql import SparkSession
+
+spark = SparkSession \
+    .builder \
+    .appName("linajia") \
+    .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.lianjiadetail") \
+    .getOrCreate()
+
+df = spark.read.format("com.mongodb.spark.sql.DefaultSource").load()
+
+metro_house = df.filter(df.tags.like("%地铁%")).select(df["compoundname"], 
+						df["zone"], df["total"], df["unitprice"])
+metro_house.show()
+
+

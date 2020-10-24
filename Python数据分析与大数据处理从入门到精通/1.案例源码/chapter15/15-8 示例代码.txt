@@ -1,0 +1,8 @@
+
+# Read back our properties from the conf in case we loaded some of them from
+# the classpath or an external config file
+self.master = self._conf.get("spark.master")
+self.appName = self._conf.get("spark.app.name")
+self.sparkHome = self._conf.get("spark.home", None)
+
+

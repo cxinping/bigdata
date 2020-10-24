@@ -1,0 +1,14 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+from pyspark import SparkContext
+
+sc = SparkContext()
+
+rdd=sc.textFile("/spark/bigdata/a.json")
+def f(line):
+    array=line.split(":")
+    return array[0],array[1]
+
+rdd.map(lambda line:f(line))
+

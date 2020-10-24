@@ -1,0 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.getOrCreate()
+
+data = [{'name': 'AliceAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'age': 1}, {'name': 'Bob', 'age': 3}]
+df = spark.createDataFrame(data)
+print(df.show(vertical=True))
+

@@ -1,0 +1,13 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import *
+spark = SparkSession.builder.getOrCreate()
+
+data = [{'name': 'Alice', 'age': 1}, {'name': 'Bob', 'age': 3}, {'name': 'Li', 'age': 10}]
+df = spark.createDataFrame(data)
+
+tmp_list = df.sort(df.age.desc()).collect()
+tmp_list1 = df.sort(desc("age")).collect()
+[print("当前元素是:", item) for item in tmp_list1]
+

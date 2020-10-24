@@ -1,0 +1,12 @@
+# !/usr/bin/python
+# -*- coding: UTF-8 -*-
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set()
+titanic = sns.load_dataset("titanic")
+# sns.catplot(x="sex", y="survived", hue="class", kind="bar", data=titanic)
+# sns.catplot(x="deck", kind="count", palette="ch:.25", data=titanic)
+sns.catplot(x="sex", y="survived", hue="class", kind="point", data=titanic)
+plt.show()
