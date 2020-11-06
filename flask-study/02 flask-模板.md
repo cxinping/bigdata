@@ -1,4 +1,4 @@
-**templates/base.html**  
+templates/base.html
 
 
 
@@ -16,7 +16,10 @@
 </html>
 ```
 
+
+
 templates/index.html
+
 ```
 {% extends "base.html" %}
 {% block title %}网站首页{% endblock %}
@@ -26,7 +29,10 @@ templates/index.html
 {% endblock %}
 ```
 
+
+
 templates/product.html
+
 ```
 {% extends "base.html" %}
 {% block title %}产品列表页{% endblock %}
@@ -37,7 +43,10 @@ templates/product.html
 {% endblock %}
 ```
 
+
+
 app.py
+
 ```
 from flask import Flask,render_template
 app = Flask(__name__)
