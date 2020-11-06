@@ -1,13 +1,27 @@
-安装 flask-sqlalchemy
+###安装 flask-sqlalchemy
+
 > pip install flask-sqlalchemy
 
 > pip install -i https://pypi.tuna.tsinghua.edu.cn/simple flask-sqlalchemy
 
 在Flask Web应用程序中使用原始SQL对数据库执行CRUD操作可能很乏味。相反，Python工具包 SQLAlchemy 是一个功能强大的 OR映射器 ，为应用程序开发人员提供了SQL的全部功能和灵活性。Flask- SQLAlchemy是Flask扩展，它将对SQLAlchemy的支持添加到Flask应用程序中。
 
-什么是ORM（对象关系映射）？
+### 什么是ORM（对象关系映射）？
 
 大多数编程语言平台是面向对象的。另一方面，RDBMS服务器中的数据以表格形式存储。对象关系映射是一种将对象参数映射到底层RDBMS表结构的技术。ORM API提供了执行CRUD操作的方法，而无需编写原始SQL语句。
+
+### 数据库驱动字符串
+
+config.py
+```
+#encoding:utf-8
+HOST = '127.0.0.1'
+PORT = '3306'
+USERNAME = 'root'
+PASSWORD = 'root'
+DATABASE = 'library6_11_02'
+DB_URI = 'mysql+pymysql://{username}:{password}@{host}:{port}/{db}?charset-utf8'.format(username=USERNAME, password=PASSWORD, host=HOST,  port=PORT,                      db=DATABASE)                                                            
+```
 
 ```
 from flask import Flask
