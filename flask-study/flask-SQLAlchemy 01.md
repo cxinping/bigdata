@@ -1,4 +1,4 @@
-###安装 flask-sqlalchemy
+### 安装 flask-sqlalchemy
 
 > pip install flask-sqlalchemy
 
