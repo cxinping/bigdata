@@ -63,3 +63,14 @@ wb.create_sheet(title='sheet-2')
 filePath = "excel-demo11111.xlsx"
 wb.save(filePath)
 ```
+
+### 设置激活工作表
+```
+wb.active = 2   #设置active参数，即工作表索引值
+```
+
+
+
+
+
+
