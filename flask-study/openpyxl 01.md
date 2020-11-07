@@ -10,6 +10,13 @@ http://zetcode.com/python/openpyxl/
 
 https://www.javatpoint.com/python-openpyxl
 
+### 安装 openpyxl
+
+```
+pip install openpyxl
+```
+
+
 ### 为 Excel 设置行高或者列宽
 
 openpyxl 的 Worksheet 对象拥有 row_dimensions 和 column_dimensions 属性，可分别用于控制行高和列宽。
