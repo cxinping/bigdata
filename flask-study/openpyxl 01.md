@@ -69,6 +69,11 @@ wb.save(filePath)
 wb.active = 2   #设置active参数，即工作表索引值
 ```
 
+### 获取工作表对象
+```
+ws = wb["表名"]
+```
+
 ### 设置单行和一列的长和宽
 
 ```
@@ -90,9 +95,7 @@ ws.row_dimensions[1].height = 40
 
 filePath = "excel-demo22222.xlsx"
 wb.save(filePath)
-
 ```
-
 
 ### 设置所有行和全部列的长和宽
 
