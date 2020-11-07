@@ -66,7 +66,7 @@ wb.save(filePath)
 
 ### 设置激活工作表
 ```
-wb.active = 2   #设置active参数，即工作表索引值
+wb.active = 2   #设置active参数，即工作表索引值，以0位初始值
 ```
 
 ### 获取工作表对象
