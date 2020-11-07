@@ -69,8 +69,58 @@ wb.save(filePath)
 wb.active = 2   #设置active参数，即工作表索引值
 ```
 
+### 设置单行和一列的长和宽
+
+```
+# -*- coding: utf-8 -*-
+
+import openpyxl
+# 创建workbook对象，写入模式
+wb = openpyxl.Workbook()
+# 删除默认创建的一个sheet页
+ws = wb['Sheet']
+wb.remove(ws)
+
+# 创建sheet页
+ws = wb.create_sheet(title='sheet-1')
+# 调整列宽
+ws.column_dimensions['A'].width = 20.0
+# 调整行高
+ws.row_dimensions[1].height = 40
+
+filePath = "excel-demo22222.xlsx"
+wb.save(filePath)
+
+```
 
 
+### 设置所有行和全部列的长和宽
 
+```
+# -*- coding: utf-8 -*-
+
+import openpyxl
+from openpyxl.utils import get_column_letter
+# 创建workbook对象，写入模式
+wb = openpyxl.Workbook()
+# 删除默认创建的一个sheet页
+ws = wb['Sheet']
+wb.remove(ws)
+
+# 创建sheet页
+ws = wb.create_sheet(title='sheet-1')
+
+width = 20
+height = 10
+
+print("row:", ws.max_row, "column:", ws.max_column)
+for i in range(1, ws.max_row+1):
+    ws.row_dimensions[i].height = height
+for i in range(1, ws.max_column+1):
+    ws.column_dimensions[get_column_letter(i)].width = width
+
+filePath = "excel-demo22222.xlsx"
+wb.save(filePath)
+```
 
 
