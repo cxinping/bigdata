@@ -37,3 +37,29 @@ sheet.column_dimensions['B'].width=50
 wb.save('dimensions.xlsx')
 
 ```
+
+
+### 创建excel,删除默认创建的第一个sheet页
+
+```
+# -*- coding: utf-8 -*-
+
+import openpyxl
+# 创建workbook对象，写入模式
+wb = openpyxl.Workbook()
+# 删除默认创建的一个sheet页
+ws = wb['Sheet']
+wb.remove(ws)
+
+# 1.创建sheet页
+ws = wb.create_sheet(title='sheet-1')
+# 构造 测试数据
+row = ["A11","A12","A13"]
+# 2.向工作表中 按行添加数据
+ws.append(row)
+
+wb.create_sheet(title='sheet-2')
+
+filePath = "excel-demo11111.xlsx"
+wb.save(filePath)
+```
