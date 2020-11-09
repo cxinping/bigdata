@@ -19,3 +19,19 @@ https://my.oschina.net/OHC1U9jZt/blog/3027727
 https://www.lagou.com/lgeduarticle/82443.html
 
 
+### 自定义异常类
+
+```
+class CustomError(Exception):
+    def __init__(self,ErrorInfo):
+        super().__init__(self) #初始化父类
+        self.errorinfo=ErrorInfo
+    def __str__(self):
+        return self.errorinfo
+    
+if __name__ == '__main__':
+    try:
+        raise CustomError('客户异常')
+    except CustomError as e:
+        print(e)
+```
