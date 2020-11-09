@@ -14,3 +14,8 @@ https://segmentfault.com/a/1190000018087099?utm_source=tag-newest
 
 ### Flask中实现统一异常处理
 https://my.oschina.net/OHC1U9jZt/blog/3027727
+
+### flask项目统一捕获异常并自定义异常信息
+https://www.lagou.com/lgeduarticle/82443.html
+
+
