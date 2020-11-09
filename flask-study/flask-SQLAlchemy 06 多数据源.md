@@ -6,6 +6,12 @@ class TableName(db.Model):
     __bind_key__ = 'db1' #在此处执行即可
 ```
 
+### 使用默认的数据源
+
+```
+db.drop_all(bind=None)
+db.create_all(bind=None)
+```
 
 ### 解决多数据库存在同表表名的时候存在异常信息提示
 
