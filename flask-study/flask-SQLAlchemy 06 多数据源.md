@@ -24,3 +24,20 @@ class Book(Base):
     image = Column(String(50))
     imagessss = Column(String(50))
 ```
+
+### 查询单个
+
+```
+Group_Check.query.fliter(Group_Check.id == id).first()
+```
+
+### 查询所有
+```
+Group_Check.query.fliter(Group_Check.id == id).all()
+```
+
+### 条件查询
+```
+Group_Check.query.fliter(db.and_(Group_Check.id == id, Group_Check.state==1))
+```
+
