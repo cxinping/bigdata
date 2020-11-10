@@ -140,4 +140,25 @@ filePath = "excel-demo22222.xlsx"
 wb.save(filePath)
 ```
 
+### 改变 worksheet 的背景色 
+
+```
+# -*- coding: utf-8 -*-
+
+from openpyxl import Workbook
+import openpyxl
+
+wb = openpyxl.load_workbook("example.xlsx")
+
+ws = wb['b']
+ws.sheet_properties.tabColor = "0072BA"
+ws['A1'].value = "=VLOOKUP(a!A2,a!A1:B6,2,FALSE)"
+
+wb.save("example.xlsx")
+
+
+```
+
+
+
 
