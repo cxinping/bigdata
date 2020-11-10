@@ -35,5 +35,45 @@ db.session.query(User.name).filter(User.email.like('%'+email+'%') and limit (pag
 
 ```
 
+## 删除行 
+
+```
+try:
+    num_rows_deleted = db.session.query(Model).delete()
+    db.session.commit()
+except:
+    db.session.rollback()
+```
+
+Delete All Records
+
+```
+#for all records
+db.session.query(Model).delete()
+db.session.commit()
+```
+
+Deleted Single Row
+
+```
+#for specific value
+db.session.query(Model).filter(Model.id==123).delete()
+db.session.commit()
+```
+
+Delete Single Record by Object
+
+```
+record_obj = db.session.query(Model).filter(Model.id==123).first()
+db.session.delete(record_obj)
+db.session.commit()
+```
+
+
+
+
+
+
+
 
 
