@@ -114,6 +114,14 @@ filePath = "excel-demo22222.xlsx"
 wb.save(filePath)
 ```
 
+### 设置数字格式
+
+```
+cell = sheet.cell(8, 2)
+cell.value = 1955861.11
+cell.number_format = '_(* #,##0.00_);_(* (#,##0.00);_(* "-"??_);_(@_)'
+```
+
 ### 设置所有行和全部列的长和宽
 
 ```
