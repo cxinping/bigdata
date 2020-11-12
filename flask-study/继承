@@ -1,0 +1,18 @@
+
+
+```
+import abc
+
+class Animal(metaclass=abc.ABCMeta):  # 统一所有子类的方法
+    @abc.abstractmethod     # 该装饰器限制子类必须定义有一个名为 say 的方法
+    def say(self):
+        print('动物基本的发声...', end='')
+
+class People(Animal):   # 但凡继承Animal的子类都必须遵循Animal规定的标准
+    def say(self):
+        #super().say()
+        print('汪汪汪')
+
+p = People()
+p.say()
+```
