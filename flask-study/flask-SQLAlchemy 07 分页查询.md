@@ -68,7 +68,9 @@ record_obj = db.session.query(Model).filter(Model.id==123).first()
 db.session.delete(record_obj)
 db.session.commit()
 ```
+### 条件查询
 
+https://www.jianshu.com/p/196b7892cf38
 
 
 
