@@ -78,6 +78,23 @@ wb.active = 2   #设置active参数，即工作表索引值，以0位初始值
 ws = wb["表名"]
 ```
 
+### styles样式处理
+
+https://www.jianshu.com/p/7af9a7c5b27d
+
+```
+from openpyxl.styles import Alignment
+
+align = Alignment(horizontal='left',vertical='center',wrap_text=True)
+ws.['D1'].alignment = align
+```
+
+horizontal代表水平方向，可以左对齐left，还有居中center和右对齐right，分散对齐distributed，跨列居中centerContinuous，两端对齐justify，填充fill，常规general
+
+vertical代表垂直方向，可以居中center，还可以靠上top，靠下bottom，两端对齐justify，分散对齐distributed
+
+另外还有自动换行：wrap_text，这是个布尔类型的参数，这个参数还可以写作wrapText
+
 ### 访问一个单元格
 ```
 # 访问A列4行的单元格，不存在则创建
