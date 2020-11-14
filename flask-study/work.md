@@ -54,4 +54,12 @@ def read_data():
 
     print(df3)
 
+    rowsnum = df3.shape[1]
+    colsnum = df3.shape[0]
+	
+	print('rowsnum={},colsnum={}'.format(rowsnum, colsnum)   )
+	
+	for index, row in df3.iterrows():
+        print('index={}，CBS Group={},cnt={}'.format(index, row['CBS Group'], row['cnt'])  )
+		
 ```	
