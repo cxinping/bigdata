@@ -204,7 +204,18 @@ cell.alignment = Alignment(horizontal='center', vertical='center')
 book.save('merging.xlsx')
 ```
 
+### 创建 sheet
 
-
+```
+import openpyxl
+   
+wb = openpyxl.load_workbook('d:\\g14_bak.xlsx')
+#sheetxx = wb.create_sheet('china',0)
+sheetxx = wb.create_sheet('sheet1' )
+sheetxx['A1'] = 'juankuan'
+sheetxx['E1'] = '中国'
+sheetxx['F1'] = '2020-02-27-09-51-02'
+wb.save('d:\\g14_bak.xlsx')
+```
 
 
