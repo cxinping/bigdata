@@ -9,3 +9,26 @@ def extrad_g14_master_list_data():
     df.to_excel('d:/g14_bak.xlsx')
 ```	
 	
+### pandas将多个dataframe以多个sheet的形式保存到一个excel文件中
+
+```	
+import pandas as pd
+from openpyxl import load_workbook
+
+writer = pd.ExcelWriter('d:/g14_bak.xlsx', engin='openpyxl')
+book = load_workbook(writer.path)
+writer.book = book
+
+data = {
+	'性别': ['男', '女', '女', '男', '男'],
+	'姓名': ['小明', '小红', '小芳', '大黑', '张三'],
+	'年龄': [20, 21, 25, 24, 29]}
+dataframe = pd.DataFrame(data, index=['one', 'two', 'three', 'four', 'five'],
+				  columns=['姓名', '性别', '年龄', '职业'])
+				  
+dataframe.to_excel(excel_writer=writer, sheet_name="info1" , index=False)
+writer.save()
+writer.close()
+
+```	
+	
