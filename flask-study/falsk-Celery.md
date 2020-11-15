@@ -11,7 +11,7 @@
 
 > https://flask.palletsprojects.com/en/1.0.x/patterns/celery/
 
-celery -A celery_tasks worker  -l info -P eventlet
+
 
 
 ## 安装 Celery
@@ -25,8 +25,8 @@ pip install -i https://pypi.tuna.tsinghua.edu.cn/simple eventlet
 pip install redis
 
 启动redis服务
-
 redis-server
+
 ```
 
 ## Celery
@@ -52,5 +52,44 @@ celery是一个强大的 分布式任务队列的异步处理框架，它可以�
 异步任务：将耗时操作任务提交给Celery去异步执行，比如发送短信/邮件、消息推送、音视频处理等等
 
 定时任务：定时执行某件事情，比如每天数据统计
+
+## Celery执行异步任务
+
+创建异步任务执行文件celery_task:
+
+```
+
+import celery
+import time
+
+backend='redis://127.0.0.1:6379/1'
+broker='redis://127.0.0.1:6379/2'
+cel=celery.Celery('test',backend=backend,broker=broker)
+@cel.task
+def send_email(name):
+    print("向%s发送邮件..."%name)
+    time.sleep(5)
+    print("向%s发送邮件完成"%name)
+    return "ok"　
+	
+	
+
+```
+
+> celery -A celery_tasks worker  -l info -P eventlet
+
+
+
+
+
+
+
+## 多任务结构
+
+
+
+
+
+
 
 
