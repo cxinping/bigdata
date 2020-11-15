@@ -111,7 +111,7 @@ result2.id= 94df5dab-b47f-47c6-9214-f1a8cbb90bdb
 > celery -A celery_task worker  -l info
 
 
-创建 result.py，查看任务执行结果
+创建 check_result.py，查看任务执行结果
 
 ```
 from celery.result import AsyncResult
@@ -133,7 +133,7 @@ elif async_result.status == 'STARTED':
     print('任务已经开始被执行')
 ```
 
-执行 result.py 获得以下结果
+执行 check_result.py 获得以下结果
 
 ```
 send mail ok
@@ -141,9 +141,48 @@ send mail ok
 
 ## 多任务结构
 
+创建目录 celery_tasks，在 celery_tasks 目录下新建 celery.py
+```
+
+
+```
+
+
+
+
 > celery -A celery_tasks worker  -l info -P eventlet
 
 
+
+# 参考资料
+
+https://www.cnblogs.com/miss103/p/13275550.html
+
+https://blog.csdn.net/lixingdefengzi/article/details/51769731
+
+https://www.pianshen.com/article/2176289575/
+
+https://blog.csdn.net/weixin_43162402/article/details/83314877
+
+https://www.jianshu.com/p/9e422d9f1ce2
+
+https://www.debug8.com/python/t_14161.html
+
+https://www.crifan.com/celery_task_integrated_to_flask_app/
+
+https://zhuanlan.zhihu.com/p/28829462
+
+https://zhuanlan.zhihu.com/p/22304455
+
+https://www.cnblogs.com/pyedu/p/12461819.html
+
+https://flask.palletsprojects.com/en/1.0.x/patterns/celery/
+
+https://www.jianshu.com/p/bdd9dcbf1e21
+
+http://www.pythondoc.com/flask-celery/first.html
+
+https://www.cnblogs.com/pyedu/p/12461819.html
 
 
 
