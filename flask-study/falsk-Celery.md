@@ -55,38 +55,93 @@ celery是一个强大的 分布式任务队列的异步处理框架，它可以�
 
 ## Celery执行异步任务
 
-创建异步任务执行文件celery_task:
+创建异步任务执行文件 celery_task.py
 
 ```
-
 import celery
 import time
 
-backend='redis://127.0.0.1:6379/1'
-broker='redis://127.0.0.1:6379/2'
-cel=celery.Celery('test',backend=backend,broker=broker)
+backend = 'redis://127.0.0.1:6379/1'
+broker = 'redis://127.0.0.1:6379/2'
+
+cel = celery.Celery('test',backend=backend,broker=broker)
+
+def get_current_time():
+    from datetime import datetime
+    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
 @cel.task
 def send_email(name):
-    print("向%s发送邮件..."%name)
+    print("{} 向{}发送邮件...".format(get_current_time() , name) )
     time.sleep(5)
-    print("向%s发送邮件完成"%name)
-    return "ok"　
-	
-	
+    print("{} 向{}发送邮件完成".format(get_current_time(),name))
+    return "send mail ok"
+
+@cel.task
+def send_msg(name):
+    print("{} 向{}发送短信...".format(get_current_time() , name) )
+    time.sleep(5)
+    print("{} 向{}发送短信完成".format(get_current_time(),name))
+    return "send sms ok"
 
 ```
 
-> celery -A celery_tasks worker  -l info -P eventlet
+执行任务文件 produce_task.py
+
+```
+from celery_task import send_email , send_msg
+
+result = send_email.delay("wang")
+print('result.id=',result.id)
+
+result2 = send_msg.delay("li")
+print('result2.id=', result2.id)
+
+```
+
+执行 produce_task.py 获得以下结果
+
+```
+result.id= a0670116-2936-474a-b0db-56b6a58bc1ac
+result2.id= 94df5dab-b47f-47c6-9214-f1a8cbb90bdb
+```
+
+异步任务文件命令执行
+
+> celery -A celery_task worker  -l info
 
 
+创建 result.py，查看任务执行结果
 
+```
+from celery.result import AsyncResult
+from celery_task import cel
 
+async_result=AsyncResult(id="a0670116-2936-474a-b0db-56b6a58bc1ac", app=cel)
 
+if async_result.successful():
+    result = async_result.get()
+    print(result)
+    # result.forget() # 将结果删除
+elif async_result.failed():
+    print('执行失败')
+elif async_result.status == 'PENDING':
+    print('任务等待中被执行')
+elif async_result.status == 'RETRY':
+    print('任务异常后正在重试')
+elif async_result.status == 'STARTED':
+    print('任务已经开始被执行')
+```
 
+执行 result.py 获得以下结果
+
+```
+send mail ok
+```
 
 ## 多任务结构
 
-
+> celery -A celery_tasks worker  -l info -P eventlet
 
 
 
