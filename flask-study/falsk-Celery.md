@@ -7,6 +7,8 @@
 
 > https://www.celerycn.io/ru-men/celery-chu-ci-shi-yong
 
+> https://www.cnblogs.com/cwp-bg/p/10575688.html
+
 > http://www.pythondoc.com/flask-celery/first.html
 
 > https://www.cnblogs.com/pyedu/p/12461819.html
