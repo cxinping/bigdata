@@ -5,6 +5,8 @@
 
 # 在 Flask 中使用 Celery
 
+> https://www.celerycn.io/ru-men/celery-chu-ci-shi-yong
+
 > http://www.pythondoc.com/flask-celery/first.html
 
 > https://www.cnblogs.com/pyedu/p/12461819.html
