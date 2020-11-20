@@ -114,6 +114,12 @@ result2.id= 94df5dab-b47f-47c6-9214-f1a8cbb90bdb
 
 > celery -A celery_task worker  -l info
 
+指令让Celery单独执行，需要在虚拟环境中执行
+
+```
+celery -A celery对象的路径 worker -l info
+celery -A celery_tasks.main worker -l info
+```
 
 创建 check_result.py，查看任务执行结果
 
