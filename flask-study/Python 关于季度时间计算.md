@@ -11,8 +11,14 @@ import calendar
 import datetime
 import time
  
+def get_week():
+ from datetime import datetime
+ week = datetime.strptime('20201121', '%Y%m%d').weekday()
+ print(week)
+
  
 def getBetweenMonth(begin_date, end_date=None):
+    ''' 如何判断给定的日期是周几 '''
     date_list = []
     begin_date = datetime.datetime.strptime(begin_date, "%Y%m%d")
     print(begin_date)
