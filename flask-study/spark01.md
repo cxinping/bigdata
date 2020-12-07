@@ -81,12 +81,24 @@ cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 
 ```
 
-给所有者(hadoop)权限
+此时再用 ssh localhost 命令，无需输入密码就可以直接登陆了，如下图所示
 ```
-chmod 777 authorized_keys
+ssh localhost
 
 ```
 
+
+## 安装 Hadoop 2
+
+选择将 Hadoop 安装至 /usr/local/ 
+
+```
+sudo tar -zxf ~/下载/hadoop-2.6.0.tar.gz -C /usr/local    # 解压到/usr/local中
+cd /usr/local/
+sudo mv ./hadoop-2.6.0/ ./hadoop            # 将文件夹名改为hadoop
+sudo chown -R hadoop ./hadoop       # 修改文件权限
+
+```
 
 
 
