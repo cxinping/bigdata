@@ -47,7 +47,7 @@ su hadoop
 
 ### 安装SSH、配置SSH无密码登陆
 
-集群、单节点模式都需要用到 SSH 登陆（类似于远程登陆，你可以登录某台 Linux 主机，并且在上面运行命令），Ubuntu 默认已安装了 SSH client，此外还需要安装 SSH server：
+1)集群、单节点模式都需要用到 SSH 登陆（类似于远程登陆，你可以登录某台 Linux 主机，并且在上面运行命令），Ubuntu 默认已安装了 SSH client，此外还需要安装 SSH server：
 
 ```
 sudo yum install openssh-server
@@ -67,7 +67,7 @@ cat ./id_rsa.pub >> ./authorized_keys  # 加入授权
 输入ssh-keygen -t rsa ，然后会遇到三次让输入的时候，第一次直接回车，第二次和第三次分别是：让输入密码和确认密码，我们这里是要实现无密码登录。所以以上三次输入都直接回车，不设置什么密码，也就是空密码登录。
 
 
-之后在/home/hadoop/下会产生一个.ssh的文件夹；ls查看
+2)之后在/home/hadoop/下会产生一个.ssh的文件夹；ls查看
 
 ```
 
