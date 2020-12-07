@@ -61,7 +61,7 @@ sudo yum install openssh-server
 exit                           # 退出刚才的 ssh localhost
 cd ~/.ssh/                     # 若没有该目录，请先执行一次ssh localhost
 ssh-keygen -t rsa              # 会有提示，都按回车就可以
-cat ./id_rsa.pub >> ./authorized_keys  # 加入授权
+# cat ./id_rsa.pub >> ./authorized_keys  # 加入授权
  
 ```
 输入ssh-keygen -t rsa ，然后会遇到三次让输入的时候，第一次直接回车，第二次和第三次分别是：让输入密码和确认密码，我们这里是要实现无密码登录。所以以上三次输入都直接回车，不设置什么密码，也就是空密码登录。
@@ -73,10 +73,19 @@ cat ./id_rsa.pub >> ./authorized_keys  # 加入授权
 cd /home/hadoop/.ssh
 cd ~/.ssh
 
+```
+
+3)将公钥追加到authorized_keys文件中
+```
+cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 
 ```
 
+给所有者(hadoop)权限
+```
+chmod 777 authorized_keys
 
+```
 
 
 
