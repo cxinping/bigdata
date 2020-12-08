@@ -173,9 +173,24 @@ tar -zxvf pycharm-community-2020.2.3.tar.gz -C /usr/local
 cd /usr/local 
 
 mv pycharm-community-2020.2.3/ pycharm
+
+cd /usr/local/pycharm/bin
+
+运行 pycharm
+./pycharm.sh
+
 ```
 
+把启动Pycharm的脚本放到 /etc/profile里
 
+$ vi /etc/profile
+```
+export PATH=/usr/local/pycharm/bin:.:$PATH
+```
+最后，激活 /etc/profile文件
+```
+$ source /etc/profile
+```
 
 
 
