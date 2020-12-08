@@ -192,7 +192,12 @@ export PATH=/usr/local/pycharm/bin:.:$PATH
 $ source /etc/profile
 ```
 
+### 安装虚拟环境
 
+装虚拟环境软件包：
+```
+pip3 install virtualenv
+```
 
 
 
