@@ -197,7 +197,31 @@ $ source /etc/profile
 装虚拟环境软件包：
 ```
 pip3 install virtualenv
+
+pip3 install -i https://pypi.doubanio.com/simple/ virtualenv
+
 ```
+
+在 projects 文件夹下创建一个独立的虚拟环境，用于支持该项目，以后MyPlatformPlus启动时将会从这个虚拟环境启动；创建MyPlatformPlus文件夹及创建虚拟环境的代码如下；
+```
+mkdir /root/projects  #创建项目目录
+
+cd /root/projects #进入目录                 
+
+virtualenv ENV        #创建一个虚拟环境，虚拟环境的名字为ENV
+```
+
+激活虚拟环境
+```
+source ENV/bin/activate
+```
+
+
+
+
+
+
+
 
 
 
