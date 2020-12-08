@@ -307,6 +307,8 @@ cd /usr/local/hadoop
 
 ./bin/hdfs namenode -format
 ```
+输入大写字母 "Y"
+
 
 接着开启 NameNode 和 DataNode 守护进程。
 ```
@@ -348,7 +350,13 @@ YARN_NODEMANAGER_USER=root
 
 
 ### 启动成功Hadoop
-成功启动后，可以访问 Web 界面 http://localhost:50070 查看 NameNode 和 Datanode 信息，还可以在线查看 HDFS 中的文件。
+成功启动后，可以访问 Web 界面 http://localhost:9870 查看 NameNode 和 Datanode 信息，还可以在线查看 HDFS 中的文件。
+
+http://localhost:9870
+
+
+
+
 
 
 
