@@ -161,6 +161,23 @@ export PATH=/usr/local/python/bin:.:$PATH
 $ source /etc/profile
 ```
 
+## Linux下pycharm的安装
+```
+mkdir /usr/local/pycharm
+
+tar -zxvf pycharm-community-2020.2.3.tar.gz -C /usr/local/pycharm
+```
+
+进入你所解压的目录中找到解压文件，即/usr/local/pycharm 
+```
+cd /usr/local/pycharm 
+```
+
+
+
+
+
+
 
 
 
