@@ -210,6 +210,33 @@ source ENV/bin/activate
 
 ## 安装 Hadoop 2
 
+
+### 设置JDK
+
+```
+tar -zxvf jdk-8u271-linux-x64.tar.gz -C /usr/local
+
+cd /usr/local
+
+mv jdk1.8.0_271/ jdk8
+```
+
+设置环境变量
+
+vi /etc/profile
+```
+export JAVA_HOME=/usr/local/jdk8
+export CLASSPATH=$CLASSPATH:$JAVA_HOME/lib:.:
+export HADOOP_HOME=/usr/local/hadoop
+export PATH=$PATH:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+
+```
+
+激活配置
+```
+source /etc/profile
+```
+
 ### Hadoop伪分布式配置
 选择将 Hadoop 安装至 /usr/local/ 
 
@@ -222,13 +249,102 @@ sudo mv hadoop-3.1.4/ hadoop           # 将文件夹名改为hadoop
 
 ```
 
+Hadoop 可以在单节点上以伪分布式的方式运行，Hadoop 进程以分离的 Java 进程来运行，节点既作为 NameNode 也作为 DataNode，同时，读取的是 HDFS 中的文件。
+
+Hadoop 的配置文件位于 /usr/local/hadoop/etc/hadoop/ 中，伪分布式需要修改2个配置文件 core-site.xml 和 hdfs-site.xml 。Hadoop的配置文件是 xml 格式，每个配置以声明 property 的 name 和 value 的方式来实现。
+
+修改配置文件 core-site.xml (通过 gedit 编辑会比较方便: gedit ./etc/hadoop/core-site.xml)，将当中的
+
+```
+<configuration>
+</configuration>
+```
+
+修改为下面配置
+```
+<configuration>
+	<property>
+		<name>hadoop.tmp.dir</name>
+		<value>file:/usr/local/hadoop/tmp</value>
+		<description>Abase for other temporary directories.</description>
+	</property>
+	<property>
+		<name>fs.defaultFS</name>
+		<value>hdfs://localhost:9000</value>
+	</property>
+</configuration>
+```
+	
+同样的，修改配置文件 hdfs-site.xml
+
+```
+<configuration>
+	<property>
+		<name>dfs.replication</name>
+		<value>1</value>
+	</property>
+	<property>
+		<name>dfs.namenode.name.dir</name>
+		<value>file:/usr/local/hadoop/tmp/dfs/name</value>
+	</property>
+	<property>
+		<name>dfs.datanode.data.dir</name>
+		<value>file:/usr/local/hadoop/tmp/dfs/data</value>
+	</property>
+</configuration>
+```
+
+Hadoop配置文件说明
+
+Hadoop 的运行方式是由配置文件决定的（运行 Hadoop 时会读取配置文件），因此如果需要从伪分布式模式切换回非分布式模式，需要删除 core-site.xml 中的配置项。
+
+此外，伪分布式虽然只需要配置 fs.defaultFS 和 dfs.replication 就可以运行（官方教程如此），不过若没有配置 hadoop.tmp.dir 参数，则默认使用的临时目录为 /tmp/hadoo-hadoop，而这个目录在重启时有可能被系统清理掉，导致必须重新执行 format 才行。所以我们进行了设置，同时也指定 dfs.namenode.name.dir 和 dfs.datanode.data.dir，否则在接下来的步骤中可能会出错。
 
 
+配置完成后，执行 NameNode 的格式化
+```
+cd /usr/local/hadoop
 
+./bin/hdfs namenode -format
+```
 
+接着开启 NameNode 和 DataNode 守护进程。
+```
+cd /usr/local/hadoop
+./sbin/start-dfs.sh  #start-dfs.sh是个完整的可执行文件，中间没有空格
+```
 
+出现以下错误，问题1：
+```
+[root@localhost sbin]# start-dfs.sh
+Starting namenodes on [localhost]
+ERROR: Attempting to operate on hdfs namenode as root
+ERROR: but there is no HDFS_NAMENODE_USER defined. Aborting operation.
+```
 
+在/hadoop/sbin路径下：
+将start-dfs.sh，stop-dfs.sh两个文件顶部添加以下参数
 
+```
+#!/usr/bin/env bash
+HDFS_DATANODE_USER=root
+HADOOP_SECURE_DN_USER=hdfs
+HDFS_NAMENODE_USER=root
+HDFS_SECONDARYNAMENODE_USER=root
+```
+
+start-yarn.sh，stop-yarn.sh顶部也需添加以下
+```
+#!/usr/bin/env bash
+YARN_RESOURCEMANAGER_USER=root
+HADOOP_SECURE_DN_USER=yarn
+YARN_NODEMANAGER_USER=root
+```
+
+修改后重启 ./start-dfs.sh
+
+问题2：
+出现错误 ERROR: JAVA_HOME is not set and could not be found.到hadoop的安装目录修改配置文件“/usr/local/hadoop/etc/hadoop/hadoop-env.sh”，在里面找到“export JAVA_HOME=${JAVA_HOME}”这行，然后，把它修改成JAVA安装路径的具体地址，比如，“export JAVA_HOME=/usr/lib/jvm/default-java”，然后，再次启动Hadoop。
 
 
 
