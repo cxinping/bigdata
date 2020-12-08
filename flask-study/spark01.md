@@ -165,13 +165,21 @@ $ source /etc/profile
 ```
 mkdir /usr/local/pycharm
 
-tar -zxvf pycharm-community-2020.2.3.tar.gz -C /usr/local/pycharm
+tar -zxvf pycharm-community-2020.2.3.tar.gz -C /usr/local 
 ```
 
 进入你所解压的目录中找到解压文件，即/usr/local/pycharm 
 ```
-cd /usr/local/pycharm 
+cd /usr/local 
+
+mv pycharm-community-2020.2.3/ pycharm
 ```
+
+
+
+
+
+
 
 
 
