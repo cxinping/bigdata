@@ -88,20 +88,10 @@ ssh localhost
 ```
 
 
-## 安装 Hadoop 2
-
-选择将 Hadoop 安装至 /usr/local/ 
-
-```
-sudo tar -zxf ~/下载/hadoop-3.1.4.tar.gz -C /usr/local    # 解压到/usr/local中
-cd /usr/local/
-sudo mv ./hadoop-2.6.0/ ./hadoop            # 将文件夹名改为hadoop
-sudo chown -R hadoop ./hadoop       # 修改文件权限
-
-```
 
 
-# 安装Python3 环境
+
+## 安装Python3 环境
 
 安装Python3前的库环境
 ```
@@ -218,7 +208,19 @@ source ENV/bin/activate
 
 
 
+## 安装 Hadoop 2
 
+### Hadoop伪分布式配置
+选择将 Hadoop 安装至 /usr/local/ 
+
+```
+sudo tar -zxf ~/下载/hadoop-3.1.4.tar.gz -C /usr/local    # 解压到/usr/local中
+
+cd /usr/local/
+
+sudo mv hadoop-3.1.4/ hadoop           # 将文件夹名改为hadoop
+
+```
 
 
 
