@@ -109,15 +109,15 @@ $ yum install gcc patch libffi-devel python-devel  zlib-devel bzip2-devel openss
 
 ```
 
-把Python-3.6.4.tar上传到CentOS的/software文件夹下，解压文件
+把Python-3.9.1.tgz上传到CentOS的/software文件夹下，解压文件
 ```
 $ cd /software
-$ tar –xvf Python-3.6.4.tar
+$ tar –xvf Python-3.9.1.tgz
 ```
 
 进入解压后的文件夹
 ```
-$ cd Python-3.6.4/
+$ cd Python-3.9.1.tgz
 ```
 
 编译安装Python3的默认安装路径是/usr/local，如果要改成其他目录可以在编译(make)前使用configure命令后面追加参数“-prefix=/usr/local/python”来完成修改，指定Python3的安装目录为/usr/local/python。
