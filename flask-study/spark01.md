@@ -109,6 +109,22 @@ $ yum install gcc patch libffi-devel python-devel  zlib-devel bzip2-devel openss
 
 ```
 
+centOS卸载自带的Python2.7
+卸载Python
+```
+#rpm -qa|grep python|xargs rpm -ev --allmatches --nodeps
+```
+
+删除残余文件
+```
+#whereis python |xargs rm -frv
+```
+
+验证删除
+```
+#whereis python
+```
+
 把Python-3.9.1.tgz上传到CentOS的/software文件夹下，解压文件
 ```
 $ cd /software
