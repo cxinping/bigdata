@@ -347,8 +347,8 @@ YARN_NODEMANAGER_USER=root
 出现错误 ERROR: JAVA_HOME is not set and could not be found.到hadoop的安装目录修改配置文件“/usr/local/hadoop/etc/hadoop/hadoop-env.sh”，在里面找到“export JAVA_HOME=${JAVA_HOME}”这行，然后，把它修改成JAVA安装路径的具体地址，比如，“export JAVA_HOME=/usr/lib/jvm/default-java”，然后，再次启动Hadoop。
 
 
-
-
+### 启动成功Hadoop
+成功启动后，可以访问 Web 界面 http://localhost:50070 查看 NameNode 和 Datanode 信息，还可以在线查看 HDFS 中的文件。
 
 
 
