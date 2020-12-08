@@ -93,12 +93,58 @@ ssh localhost
 选择将 Hadoop 安装至 /usr/local/ 
 
 ```
-sudo tar -zxf ~/下载/hadoop-2.6.0.tar.gz -C /usr/local    # 解压到/usr/local中
+sudo tar -zxf ~/下载/hadoop-3.1.4.tar.gz -C /usr/local    # 解压到/usr/local中
 cd /usr/local/
 sudo mv ./hadoop-2.6.0/ ./hadoop            # 将文件夹名改为hadoop
 sudo chown -R hadoop ./hadoop       # 修改文件权限
 
 ```
+
+
+# 安装Python3 环境
+
+安装Python3前的库环境
+```
+$ yum install gcc patch libffi-devel python-devel  zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel -y
+
+```
+
+把Python-3.6.4.tar上传到CentOS的/software文件夹下，解压文件
+```
+$ cd /software
+$ tar –xvf Python-3.6.4.tar
+```
+
+进入解压后的文件夹
+```
+$ cd Python-3.6.4/
+```
+
+编译安装Python3的默认安装路径是/usr/local，如果要改成其他目录可以在编译(make)前使用configure命令后面追加参数“-prefix=/usr/local/python”来完成修改，指定Python3的安装目录为/usr/local/python。
+```
+$ ./configure -prefix=/usr/local/python
+```
+编译Python源码
+```
+$ make 
+```
+执行安装
+```
+$ make install
+```
+至此已经在CentOS7系统中成功安装了Python3,还需要把Python3的配置信息添加到Linux的环境变量PATH中，修改/etc/profile下的内容
+```
+$ vi /etc/profile
+```
+添加以下内容在文件末尾，然后保存文件，退出到命令行。
+```
+export PATH=/usr/local/python/bin:.:$PATH
+```
+最后，激活 /etc/profile文件
+```
+$ source /etc/profile
+```
+
 
 
 
