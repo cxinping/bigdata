@@ -66,7 +66,7 @@ FastDFS服务端有两个角色：跟踪器（tracker）和存储节点（storag
 
 
 
-```linux
+``` 
 yum install git gcc gcc-c++ make automake autoconf libtool pcre pcre-devel zlib zlib-devel openssl-devel wget vim -y
  
 
