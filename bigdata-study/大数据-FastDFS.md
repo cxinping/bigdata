@@ -57,6 +57,46 @@ FastDFS服务端有两个角色：跟踪器（tracker）和存储节点（storag
 需要说明的是，client为使用FastDFS服务的调用方，client也应该是一台服务器，它对tracker和storage的调用均为服务器间的调用。
 
 
+### 参考
+
+官方网站：https://github.com/happyfish100/
+
+配置文档：https://github.com/happyfish100/fastdfs/wiki/
+
+参考资料：https://www.oschina.net/question/tag/fastdfs
+
+Java客户端：https://github.com/happyfish100/fastdfs-client-java
+
+### 术语
+
+fastDFS
+
+```
+FastDFS是一款开源的轻量级分布式文件系统纯C实现，支持Linux、FreeBSD等UNIX系统类google FS，不是通用的文件系统，只能通过专有API访问，目前提供了C、Java和PHP API为互联网应用量身定做，解决大容量文件存储问题，追求高性能和高扩展性FastDFS可以看做是基于文件的key value pair存储系统，称作分布式文件存储服务更为合适。
+------ 来自官网介绍
+```
+
+tracker-server:
+```
+跟踪服务器， 主要做调度工作， 起负载均衡的作用。 在内存中记录集群中所有存储组和存储服务器的状态信息， 是客户端和数据服务器交互的枢纽。 相比GFS中的master更为精简， 不记录文件索引信息， 占用的内存量很少。
+```
+
+storage-server:
+```
+存储服务器（ 又称：存储节点或数据服务器） ， 文件和文件属性（ metadata） 都保存到存储服务器上。 Storage server直接利用OS的文件系统调用管理文件。
+```
+
+group
+```
+组， 也可称为卷。 同组内服务器上的文件是完全相同的 ，同一组内的storage server之间是对等的， 文件上传、 删除等操作可以在任意一台storage server上进行 。
+```
+
+meta data
+```
+meta data：文件相关属性，键值对（ Key Value Pair） 方式，如：width=1024,heigth=768 。
+```
+
+
 
 ## 安装FastDFS
 
