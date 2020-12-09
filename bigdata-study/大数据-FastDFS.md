@@ -379,7 +379,7 @@ fdfs_download_file /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9g
 #### 删除文件
 
 ```
-fdfs_download_file  /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
+fdfs_delete_file  /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
 ```
 
 
@@ -441,15 +441,87 @@ $ /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
 ```
 
 
+##启动
+### 关闭防火墙
 
 
+不关闭防火墙的话无法正常使用FastDFS
+```
+$ systemctl stop firewalld.service #停止firewall
+$ systemctl disable firewalld.service #禁止firewall开机启动
+```
 
 
+### tracker
+启动tracker服务
+```
+$ /etc/init.d/fdfs_trackerd start 
+```
+重启动tracker服务
+```
+$ /etc/init.d/fdfs_trackerd restart 
+```
+停止tracker服务
+```
+$ /etc/init.d/fdfs_trackerd stop 
+```
+自启动tracker服务
+```
+$ chkconfig fdfs_trackerd on 
+```
 
+### storage
+启动storage服务
+```
+$ /etc/init.d/fdfs_storaged start 
+```
+重动storage服务
+```
+$ /etc/init.d/fdfs_storaged restart 
+```
+停止动storage服务
+```
+$ /etc/init.d/fdfs_storaged stop 
+```
+自启动storage服务
+```
+$ chkconfig fdfs_storaged on 
+```
 
+### nginx
+启动nginx
+```
+$ /usr/local/nginx/sbin/nginx 
 
+$ /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+```
 
+重启nginx
+```
+$ /usr/local/nginx/sbin/nginx -s reload
+```
 
+停止nginx
+```
+$ /usr/local/nginx/sbin/nginx -s stop
+```
+
+# Python操作FastDFS
+
+安装FastDFS客户端
+```
+pip3 install fdfs_client
+```
+
+例子
+```
+from fdfs_client import Fdfs_client, get_tracker_conf
+
+conf = get_tracker_conf('/etc/fastdfs/client.conf')
+client = Fdfs_client(conf)
+client.upload_by_filename('test.jpg')
+// 返回file_id则成功
+```
 
 
 
