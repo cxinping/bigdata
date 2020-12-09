@@ -1,5 +1,5 @@
 
-# FastDFS 
+# FastDFS 分布式文件管理系统
 
 
 
@@ -21,6 +21,214 @@ FastDFS服务端有两个角色：跟踪器（tracker）和存储节点（storag
 
 当存储空间不足或即将耗尽时，可以动态添加卷。只需要增加一台或多台服务器，并将它们配置为一个新的卷，这样就扩大了存储系统的容量。
  FastDFS中的文件标识分为两个部分：卷名和文件名，二者缺一不可。
+
+ **FastDFS file upload** 
+
+![dfs2](.\images\dfs2.jpg)
+
+
+
+
+
+ 上传文件交互过程：
+
+1. client询问tracker上传到的storage，不需要附加参数。
+
+2. tracker返回一台可用的storage。
+
+3. client直接和storage通讯完成文件上传。
+
+   
+
+ **FastDFS file download** 
+
+![dfs3](.\images\dfs3.jpg)
+
+
+
+下载文件交互过程：
+
+1. client询问tracker下载文件的storage，参数为文件标识（卷名和文件名）；
+
+2. tracker返回一台可用的storage；
+
+3. client直接和storage通讯完成文件下载。
+
+需要说明的是，client为使用FastDFS服务的调用方，client也应该是一台服务器，它对tracker和storage的调用均为服务器间的调用。
+
+
+
+## 安装FastDFS
+
+
+
+### 编译环境
+
+
+
+```linux
+yum install git gcc gcc-c++ make automake autoconf libtool pcre pcre-devel zlib zlib-devel openssl-devel wget vim -y
+ 
+
+yum install gcc-c++
+
+yum install -y pcre pcre-devel
+
+yum install -y zlib zlib-devel
+
+yum -y install pcre pcre-devel zlib zlib-devel openssl openssl-devel
+```
+
+
+
+### 磁盘目录
+
+| 说明         | 位置           |
+| ------------ | -------------- |
+| 所有安装包   | /usr/local/src |
+| 数据存储位置 | /home/dfs/     |
+
+ 
+
+创建数据存储目录
+```
+$ mkdir /home/dfs 
+```
+
+
+切换到安装目录准备下载安装包
+```
+$ cd /usr/local/src 
+```
+
+
+### 安装libfastcommon
+```
+$ cd /usr/local/src 
+
+$ git clone https://github.com/happyfish100/libfastcommon.git --depth 1
+
+$ cd libfastcommon/
+
+$ ./make.sh && ./make.sh install #编译安装
+```
+
+
+### 安装FastDFS
+
+```
+rm -f /etc/fdfs
+
+$ cd /usr/local/src 
+
+$ git clone https://github.com/happyfish100/fastdfs.git --depth 1
+
+$ cd fastdfs/
+
+$ ./make.sh && ./make.sh install #编译安装
+```
+
+配置文件准备
+```
+$ cp /etc/fdfs/tracker.conf.sample /etc/fdfs/tracker.conf
+$ cp /etc/fdfs/storage.conf.sample /etc/fdfs/storage.conf
+$ cp /etc/fdfs/client.conf.sample /etc/fdfs/client.conf #客户端文件，测试用
+$ cp /usr/local/src/fastdfs/conf/http.conf /etc/fdfs/ #供nginx访问使用
+$ cp /usr/local/src/fastdfs/conf/mime.types /etc/fdfs/ #供nginx访问使用
+
+$ cd /etc/fdfs/
+$ rm -rf client.conf.sample storage.conf.sample tracker.conf.sample
+```
+
+### 安装fastdfs-nginx-module
+
+```
+$ cd /usr/local/src 
+
+$ git clone https://github.com/happyfish100/fastdfs-nginx-module.git --depth 1
+
+$ cp /usr/local/src/fastdfs-nginx-module/src/mod_fastdfs.conf /etc/fdfs
+```
+
+### 安装nginx
+
+```
+$ cd /usr/local/src 
+
+$ wget http://nginx.org/download/nginx-1.15.4.tar.gz #下载nginx压缩包
+
+$ tar -zxvf nginx-1.15.4.tar.gz #解压
+
+$ cd nginx-1.15.4/
+
+# 添加fastdfs-nginx-module模块
+$ ./configure --add-module=/usr/local/src/fastdfs-nginx-module/src/ 
+
+$ make && make install #编译安装
+```
+
+## 单机部署
+
+### tracker配置
+服务器ip为 192.168.11.10
+
+```
+$ vi /etc/fdfs/tracker.conf
+```
+
+需要修改的内容如下
+```
+port=22122                   # tracker服务器端口（默认22122,一般不修改）
+base_path=/home/dfs/tracker  # 存储日志和数据的根目录
+```
+
+
+在tracker.conf文件里的store_lookup=0 轮询向storage存储文件，在fastdfs及群里使用
+
+
+
+生成tracker存储日志和数据的根目录
+
+```
+mkdir -p /home/dfs/tracker
+```
+
+
+
+启动tracker
+
+```
+$ /etc/init.d/fdfs_trackerd start 
+```
+
+
+
+查看 FastDFS Tracker 是否已成功启动 ，22122端口正在被监听，则算是Tracker服务安装成功。
+
+```
+$ netstat -unltp|grep fdfs
+
+$ ps -ef | grep fdfs
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
