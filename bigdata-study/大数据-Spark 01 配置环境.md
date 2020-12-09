@@ -51,8 +51,7 @@ su hadoop
 1)集群、单节点模式都需要用到 SSH 登陆（类似于远程登陆，你可以登录某台 Linux 主机，并且在上面运行命令），Ubuntu 默认已安装了 SSH client，此外还需要安装 SSH server：
 
 ```
-sudo yum install openssh-server
- 
+sudo yum install openssh-server 
 ```
 
 首先退出刚才的 ssh，就回到了我们原先的终端窗口，然后利用 ssh-keygen 生成密钥，并将密钥加入到授权中
@@ -73,139 +72,22 @@ ssh-keygen -t rsa              # 会有提示，都按回车就可以
 ```
 cd /home/hadoop/.ssh
 cd ~/.ssh
-
 ```
 
 3)将公钥追加到authorized_keys文件中
 ```
 cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
-
 ```
 
 此时再用 ssh localhost 命令，无需输入密码就可以直接登陆了，如下图所示
 ```
 ssh localhost
-
 ```
 
 
 
 
 
-## 安装Python3 环境
-
-安装Python3前的库环境
-```
-$ yum install gcc patch libffi-devel python-devel  zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel -y
-
-```
-
-centOS卸载自带的Python2.7
-卸载Python
-```
-#rpm -qa|grep python|xargs rpm -ev --allmatches --nodeps
-```
-
-删除残余文件
-```
-#whereis python |xargs rm -frv
-```
-
-验证删除
-```
-#whereis python
-```
-
-把Python-3.9.1.tgz上传到CentOS的/software文件夹下，解压文件
-```
-$ cd /software
-$ tar –xvf Python-3.9.1.tgz
-```
-
-进入解压后的文件夹
-```
-$ cd Python-3.9.1.tgz
-```
-
-编译安装Python3的默认安装路径是/usr/local，如果要改成其他目录可以在编译(make)前使用configure命令后面追加参数“-prefix=/usr/local/python”来完成修改，指定Python3的安装目录为/usr/local/python。
-```
-$ ./configure -prefix=/usr/local/python
-```
-编译Python源码
-```
-$ make 
-```
-执行安装
-```
-$ make install
-```
-至此已经在CentOS7系统中成功安装了Python3,还需要把Python3的配置信息添加到Linux的环境变量PATH中，修改/etc/profile下的内容
-```
-$ vi /etc/profile
-```
-添加以下内容在文件末尾，然后保存文件，退出到命令行。
-```
-export PATH=/usr/local/python/bin:.:$PATH
-```
-最后，激活 /etc/profile文件
-```
-$ source /etc/profile
-```
-
-## Linux下pycharm的安装
-```
-mkdir /usr/local/pycharm
-
-tar -zxvf pycharm-community-2020.2.3.tar.gz -C /usr/local 
-```
-
-进入你所解压的目录中找到解压文件，即/usr/local/pycharm 
-```
-cd /usr/local 
-
-mv pycharm-community-2020.2.3/ pycharm
-
-cd /usr/local/pycharm/bin
-
-运行 pycharm
-./pycharm.sh
-
-```
-
-把启动Pycharm的脚本放到 /etc/profile里
-
-$ vi /etc/profile
-```
-export PATH=/usr/local/pycharm/bin:.:$PATH
-```
-最后，激活 /etc/profile文件
-```
-$ source /etc/profile
-```
-
-### 安装虚拟环境
-
-装虚拟环境软件包
-```
-pip3 install virtualenv
-
-pip3 install -i https://pypi.doubanio.com/simple/ virtualenv
-
-```
-
-在 projects 文件夹下创建一个独立的虚拟环境，用于支持该项目，以后MyPlatformPlus启动时将会从这个虚拟环境启动；创建MyPlatformPlus文件夹及创建虚拟环境的代码如下；
-```
-mkdir /root/projects  #创建项目目录
-
-cd /root/projects #进入目录                 
-
-virtualenv ENV        #创建一个虚拟环境，虚拟环境的名字为ENV
-```
-
-激活虚拟环境
-```
-source ENV/bin/activate
-```
 
 
 
@@ -354,6 +236,113 @@ YARN_NODEMANAGER_USER=root
 成功启动后，可以访问 Web 界面 http://localhost:9870 查看 NameNode 和 Datanode 信息，还可以在线查看 HDFS 中的文件。
 
 http://localhost:9870
+
+
+
+# PySpark
+
+## 安装Python3 环境
+
+安装Python3前的库环境
+```
+$ yum install gcc patch libffi-devel python-devel  zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel gdbm-devel db4-devel libpcap-devel xz-devel -y
+```
+
+把Python-3.9.1.tgz上传到CentOS的/software文件夹下，解压文件
+
+```
+$ cd /software
+$ tar –xvf Python-3.9.1.tgz
+```
+
+进入解压后的文件夹
+
+```
+$ cd Python-3.9.1.tgz
+```
+
+编译安装Python3的默认安装路径是/usr/local，如果要改成其他目录可以在编译(make)前使用configure命令后面追加参数“-prefix=/usr/local/python”来完成修改，指定Python3的安装目录为/usr/local/python。
+```
+$ ./configure -prefix=/usr/local/python
+```
+编译Python源码
+```
+$ make 
+```
+执行安装
+```
+$ make install
+```
+至此已经在CentOS7系统中成功安装了Python3,还需要把Python3的配置信息添加到Linux的环境变量PATH中，修改/etc/profile下的内容
+```
+$ vi /etc/profile
+```
+添加以下内容在文件末尾，然后保存文件，退出到命令行。
+```
+export PATH=/usr/local/python/bin:.:$PATH
+```
+最后，激活 /etc/profile文件
+```
+$ source /etc/profile
+```
+
+## Linux下pycharm的安装
+```
+mkdir /usr/local/pycharm
+
+tar -zxvf pycharm-community-2020.2.3.tar.gz -C /usr/local 
+```
+
+进入你所解压的目录中找到解压文件，即/usr/local/pycharm 
+```
+cd /usr/local 
+
+mv pycharm-community-2020.2.3/ pycharm
+
+cd /usr/local/pycharm/bin
+
+运行 pycharm
+./pycharm.sh
+
+```
+
+把启动Pycharm的脚本放到 /etc/profile里
+
+$ vi /etc/profile
+```
+export PATH=/usr/local/pycharm/bin:.:$PATH
+```
+最后，激活 /etc/profile文件
+```
+$ source /etc/profile
+```
+
+## 安装虚拟环境
+
+装虚拟环境软件包
+```
+$ pip3 install virtualenv
+
+$ pip3 install -i https://pypi.doubanio.com/simple/ virtualenv
+```
+
+在 projects 文件夹下创建一个独立的虚拟环境，用于支持该项目，以后MyPlatformPlus启动时将会从这个虚拟环境启动；创建MyPlatformPlus文件夹及创建虚拟环境的代码如下；
+```
+$ mkdir /root/projects  #创建项目目录
+
+$ cd /root/projects     #进入目录                 
+
+$ virtualenv ENV        #创建一个虚拟环境，虚拟环境的名字为ENV
+```
+
+激活虚拟环境
+```
+$ source ENV/bin/activate
+```
+
+
+
+
 
 
 
