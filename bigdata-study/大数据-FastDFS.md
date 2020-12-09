@@ -509,8 +509,8 @@ $ /usr/local/nginx/sbin/nginx -s stop
 # Python操作FastDFS
 
 
-## Python3与FastDFS交互(py3Fdfs)
-安装FastDFS客户端
+## 安装py3Fdfs
+Python3与FastDFS交互使用py3Fdfs, 安装FastDFS客户端，py3Fdfs
 ```
 pip install py3Fdfs
 ```
