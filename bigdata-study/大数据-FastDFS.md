@@ -211,6 +211,208 @@ $ netstat -unltp|grep fdfs
 $ ps -ef | grep fdfs
 ```
 
+### storage配置
+```
+$ vim /etc/fdfs/storage.conf
+```
+
+需要修改的内容如下
+```
+port=23000  # storage服务端口（默认23000,一般不修改）
+base_path=/home/dfs/storage  # 数据和日志文件存储根目录
+store_path0=/home/dfs/storage  # 第一个存储目录
+tracker_server=192.168.11.10:22122  # tracker服务器IP和端口
+http.server_port=8888  # http访问文件的端口(默认8888,看情况修改,和nginx中保持一致)
+
+
+```
+
+
+
+创建存储路径
+
+```
+mkdir -p /home/dfs/storage
+```
+
+
+
+启动 Storage
+
+```
+$ /etc/init.d/fdfs_storaged start
+```
+
+
+
+查看 Storage 是否成功启动，23000 端口正在被监听，就算 Storage 启动成功。
+
+```
+$ netstat -unltp|grep fdfs
+
+$ ps -ef | grep fdfs_storaged
+```
+
+
+
+查看Storage和Tracker是否在通信：
+
+```
+/usr/bin/fdfs_monitor  /etc/fdfs/storage.conf
+```
+
+
+### client测试
+
+```
+$ vim /etc/fdfs/client.conf
+```
+
+需要修改的内容如下
+```
+base_path=/home/dfs/tracker   #tracker服务器文件路径
+
+tracker_server=192.168.11.10:22122    #tracker服务器IP和端口
+```
+
+保存后测试,返回ID表示成功 如：group1/M00/00/00/xx.tar.gz
+
+#### 上传文件
+
+测试上传文件
+```
+$ fdfs_upload_file /etc/fdfs/client.conf /usr/local/src/nginx-1.15.4.tar.gz
+```
+
+
+
+例如: 上传文件
+
+```
+[root@localhost fdfs]# fdfs_upload_file /etc/fdfs/client.conf /usr/local/src/nginx-1.15.4.tar.gz
+group1/M00/00/00/wKgLCl9Eh0GAUrxzAA-itrfn0m4.tar.gz
+
+```
+
+
+成功之后会返回图片的路径
+
+```
+group1/M00/00/00/wKgLCl9Eh0GAUrxzAA-itrfn0m4.tar.gz
+```
+
+组名：group1 
+磁盘：M00 
+目录：00/00 
+文件名称：wKgLCl9Eh0GAUrxzAA-itrfn0m4.tar.gz
+
+
+例如：上传图片
+```
+$ fdfs_upload_file /etc/fdfs/client.conf /usr/local/src/fenjing.jpg
+group1/M00/00/00/wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
+```
+
+组名：group1 
+磁盘：M00 
+目录：00/00 
+文件名称：wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
+
+
+
+去上传路径查看，是否上传成功。
+
+```
+$ cd /home/dfs/storage
+```
+
+
+
+#### 下载文件
+
+```
+fdfs_download_file /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg a.jpg
+```
+
+
+
+#### 删除文件
+
+```
+fdfs_download_file  /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
+```
+
+
+
+## 配置nginx访问  
+
+```
+vim /etc/fdfs/mod_fastdfs.conf
+```
+
+
+
+需要修改的内容如下
+
+```
+tracker_server=192.168.11.10:22122  #tracker服务器IP和端口
+url_have_group_name=true
+store_path0=/home/dfs/storage  
+```
+
+配置nginx.config
+```
+vim /usr/local/nginx/conf/nginx.conf
+```
+
+
+
+添加如下配置
+```
+server {
+    listen       8888;    ## 该端口为storage.conf中的http.server_port相同
+    server_name  localhost;
+    location ~/group[0-9]/ {
+        ngx_fastdfs_module;
+    }
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+    root   html;
+    }
+}
+```
+
+
+
+测试下载，用外部浏览器访问刚才已传过的nginx安装包,引用返回的ID
+
+http://192.168.11.10:8888/group1/M00/00/00/wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
+http://192.168.11.10:8888/group1/M00/00/00/wKgLCl9E19qALeueAAa9gM70jnk705.jpg
+
+常用Nginx操作
+```
+$ /usr/local/nginx/sbin/nginx -V
+
+$ /usr/local/nginx/sbin/nginx -s reload
+
+$ /usr/local/nginx/sbin/nginx -s stop
+
+$ /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
