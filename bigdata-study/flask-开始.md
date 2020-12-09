@@ -1,6 +1,33 @@
 # Flask
 
 
+## 安装Flask
+```	
+pip3 install flask
+```
+
+
+
+## werkzeug简介
+
+安装flask后自动就有werkzeug
+Werkzeug是一个WSGI工具包，他可以作为一个Web框架的底层库。这里稍微说一下， werkzeug 不是一个web服务器，也不是一个web框架，而是一个工具包，官方的介绍说是一个 WSGI 工具包，它可以作为一个 Web 框架的底层库，因为它封装好了很多 Web 框架的东西，例如 Request，Response 等等 
+
+```	
+from werkzeug.wrappers import Response,Request
+
+@Request.application
+def hello(request):       #wsgi协议需要两个参数，env和response，这里只有一个参数，不符合该协议,     #werkzeug是个工具包，在wsgi基础上又做了封装，所以传一个参数就行
+ 
+   def hello(request):   
+        return Response('Hello World!')
+
+    if __name__ == '__main__':
+        from werkzeug.serving import run_simple
+        run_simple('localhost', 4000, hello)   #三个参数分别是跑的地址，跑的端口，最后一个是可调用对象
+```
+
+
 
 ## 第一个例子
 
@@ -20,7 +47,9 @@ if __name__ == '__main__':
     app.run(debug=True  )
 
 
-```	
+```
+
+
 
 ## jsonfiy
 
@@ -45,5 +74,11 @@ tasks = [
 @users_bp.route('/test', methods=['GET'])
 def test():
     return jsonify({'tasks': tasks})
-```		
-	
+```
+
+
+
+
+
+
+
