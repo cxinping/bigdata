@@ -15,7 +15,8 @@ Spark Streaming 集成 Kafka 总结
 > https://colobu.com/2015/01/05/kafka-spark-streaming-integration-summary/
 
 
-# Hadoop安装教程_单机/伪分布式配置_Hadoop2.6.0(2.7.1)/Ubuntu14.04(16.04)
+
+# Hadoop安装教程_单机/伪分布式配置_
 
 > http://dblab.xmu.edu.cn/blog/install-hadoop/
 
@@ -56,7 +57,7 @@ sudo yum install openssh-server
 
 首先退出刚才的 ssh，就回到了我们原先的终端窗口，然后利用 ssh-keygen 生成密钥，并将密钥加入到授权中
 
- 
+
 ```
 exit                           # 退出刚才的 ssh localhost
 cd ~/.ssh/                     # 若没有该目录，请先执行一次ssh localhost
@@ -274,7 +275,7 @@ Hadoop 的配置文件位于 /usr/local/hadoop/etc/hadoop/ 中，伪分布式需
 	</property>
 </configuration>
 ```
-	
+
 同样的，修改配置文件 hdfs-site.xml
 
 ```
