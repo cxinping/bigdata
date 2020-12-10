@@ -1,11 +1,104 @@
 
+# elasticsearch
+
+基本概念
+	索引
+	索引(index)是ElasticSearch对逻辑数据的逻辑存储，所以他可以分为更小的部分。
+	可以把索引看成关系型数据库的表，索引的结构视为快速有效的全文索引准备的，特别是它不存储原始值。
+	ElasticSearch可以吧索引存放在一台机器或者分散在多台服务器上，每个索引有一个或多个分片(shard)，每个分片可以有多个副本(replica)。
+
+文档
+	存储子Elasticsearch中的主要实体叫文档(document)，用关系型数据库来类比的话，一个文档相当于数据库中个表的一行记录。
+	ElasticSearch和MongoDb中的文档类似，都可以有不同的结构，但ElasticSearch的文档相同字段必须有相同类型。
+	文档由多个字段组成，每个字段可能多次出现在一个文档里，这杨的字段叫多值字段(multivalued)
+	每个字段的类型，可以是文本，数值，日期等，字段类型也可以是复杂类型，一个字段包含其他文档或者数组。
+
+映射
+	所有文档写进索引之前都会先进行分析，如何将输入的文本分割成词条，那些词条又会被过滤，这种行为叫做映射(mapping)，一般有用户定义规则。
+
+文档类型
+	在ElasticSearch中，一个索引对象可以存储很多不同用途的对象。
+	每个文档可以有不同的结构。
+	不同的文档类型不能为相同的属性设置不同的类型
 
 
 
 
-## 下载elasticsearch
+
+
+## 下载 elasticsearch
 下载目录
-https://www.elastic.co/cn/downloads/elasticsearch
+> https://www.elastic.co/cn/downloads/elasticsearch
 
-https://mirrors.huaweicloud.com/
+> https://mirrors.huaweicloud.com/
+
+## 安装 elasticsearch
+
+
+解压：
+``` 
+tar -zvxf elasticsearch-7.7.1-linux-x86_64.tar.gz
+```
+
+elasticsearch不能以root账户启动，需新建一个用户启动
+```
+useradd  es 
+chown  -R  es:es /soft/elasticsearch-7.7.1
+```
+
+然后切换到es用户，重新启动elasticsearch
+
+```
+su es
+```
+elasticsearch 不需要特别的配置，只需要启动即可，切到elasticsearch的目录下进行启动：bin/elasticsearch
+```
+cd /soft/elasticsearch-7.7.1/bin
+
+./elasticsearch
+```
+
+后台启动elasticsearch
+
+```
+./elasticsearch -d
+```
+
+启动完成后，可使用命令#  curl http://localhost:9200  验证服务是否开启成功
+
+> curl http://localhost:9200
+
+得到如下结果
+
+
+
+
+
+
+
+
+### 安装JDK
+略
+
+
+### 关闭防火墙
+关闭防火墙，并禁止开机启动
+```
+systemctl stop firewalld.service  
+
+systemctl disable firewalld.service  
+```
+
+
+
+
+# 参考资料
+```
+https://www.cnblogs.com/wwjj4811/p/13054685.html
+
+https://www.cnblogs.com/guoxiangyue/archive/2004/01/13/9635232.html
+
+https://www.cnblogs.com/wwjj4811/p/13051006.html
+```
+
 
