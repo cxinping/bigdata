@@ -47,6 +47,18 @@ grep "password" /var/log/mysqld.log
 mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY '123@Welcome';
 ```
 
+然后在进入数据库 mysql -uroot -p,输入新密码 123@Welcome
+
+
+
+
+
+
+
+
+
+
+
 
 
 
