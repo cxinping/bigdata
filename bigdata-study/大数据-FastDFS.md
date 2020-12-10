@@ -510,26 +510,16 @@ $ /usr/local/nginx/sbin/nginx -s stop
 
 
 ## 安装py3Fdfs
-Python3与FastDFS交互使用py3Fdfs, 安装FastDFS客户端，py3Fdfs
+Python3与FastDFS交互使用py3Fdfs, 安装FastDFS客户端模块 py3Fdfs
 ```
 pip install py3Fdfs
 ```
 
-## 例子
-```
-# -*- coding: utf-8 -*-
-from fdfs_client.client import Fdfs_client, get_tracker_conf
 
-tracker_path = get_tracker_conf(r'D:\work_software\python_workspace\FastDFSDemo\client.conf')
-client = Fdfs_client(tracker_path)
-result = client.upload_by_filename(r'd:\car1.jpg')
-print(result)
 
-if result.get('Status') != 'Upload successed.':
-    raise Exception('上传文件到FastDFS失败')
-filename = result.get('Remote file_id')
-print('filename={}'.format(filename))
-```
+## FastDFS配置文件
+
+
 
 client.conf 参考例子
 
@@ -604,22 +594,82 @@ http.tracker_server_port = 80
 
 #use "#include" directive to include HTTP other settiongs
 ##include http.conf
+```
+
+## 上传文件
+```
+# -*- coding: utf-8 -*-
+from fdfs_client.client import Fdfs_client, get_tracker_conf
+
+def upload_demo():
+    tracker_path = get_tracker_conf(r'D:\work_software\python_workspace\FastDFSDemo\client.conf')
+    client = Fdfs_client(tracker_path)
+    result = client.upload_by_filename(r'd:\test\car1.jpg')
+    print(result)
+
+    if result.get('Status') != 'Upload successed.':
+        raise Exception('上传文件到FastDFS失败')
+    filename = result.get('Remote file_id')
+    print('filename={}'.format(filename))
+```
+运行代码得到如下返回值
+
+```
+{'Group name': b'group1', 'Remote file_id': b'group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg', 'Status': 'Upload successed.', 'Local file name': 'd:\\test\\car1.jpg', 'Uploaded size': '16.85KB', 'Storage IP': b'192.168.11.10'}
+```
+
+可以通过Nginx访问上传的图片
+
+> http://192.168.11.10:8888/group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg
 
 
+## 下载文件
 
+```
+from fdfs_client.client import Fdfs_client, get_tracker_conf
 
+def download_demo():
+    tracker_path = get_tracker_conf(r'D:\work_software\python_workspace\FastDFSDemo\client.conf')
+    client = Fdfs_client(tracker_path)
+    result = client.download_to_file(local_filename=r'd:\test\car2.jpg',remote_file_id=b'group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg')
+    print(result)
+	
+download_demo()
 ```
 
 
+运行代码得到如下返回值
+```
+{'Remote file_id': b'group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg', 'Content': 'd:\\test\\car2.jpg', 'Download size': '16.85KB', 'Storage IP': b'192.168.11.10'}
+```
+
+把 remote_file_id为b'group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg'的图片保存到了本地硬盘 d:/test/car2.jpg下
 
 
+## 删除文件
 
+```
+from fdfs_client.client import Fdfs_client, get_tracker_conf
 
+def delete_demo():
+    tracker_path = get_tracker_conf(r'D:\work_software\python_workspace\FastDFSDemo\client.conf')
+    client = Fdfs_client(tracker_path)
+    result = client.delete_file(remote_file_id=b'group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg')
+    print(result)
+	
+delete_demo()
+```
 
+运行代码得到如下返回值
+```
+('Delete file successed.', b'group1/M00/00/00/wKgLCl_SO76AGaoJAABDY48Ib9w180.jpg', b'192.168.11.10')
 
+```
 
-
-
+去服务器的 /home/dfs/storage 路径下查看是否成功删除上传到FastDFS的图片
+```
+cd /home/dfs/storage
+```
 
 
 
