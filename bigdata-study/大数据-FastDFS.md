@@ -382,6 +382,95 @@ fdfs_download_file /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9g
 fdfs_delete_file  /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
 ```
 
+## 分布式部署
+
+配置环境
+
+|  IP            | 所属组 |	角色  |
+|  ----  		 | ----   | ----  |
+| 192.168.11.10  | group1 | storage，tracker1 | 
+| 192.168.11.11  | group1 | storage, tracker2 |
+
+
+### tracker配置
+
+服务器ip为 192.168.11.10
+```
+$ vi /etc/fdfs/tracker.conf
+```
+
+需要修改的内容如下
+```
+port=22122               # tracker服务器端口（默认22122,一般不修改）
+base_path=/home/dfs/tracker  # 存储日志和数据的根目录
+```
+
+生成tracker存储日志和数据的根目录
+```
+mkdir -p /home/dfs/tracker
+```
+
+启动tracker
+```
+$ /etc/init.d/fdfs_trackerd start 
+
+$ fdfs_trackerd /etc/fdfs/tracker.conf start
+```
+
+查看 FastDFS Tracker 是否已成功启动 ，22122端口正在被监听，则算是Tracker服务安装成功。
+```
+$ netstat -unltp|grep fdfs
+
+$ ps -ef | grep fdfs
+```
+
+在192.168.10.11上也是一样的操作
+
+### storage配置
+
+在192.168.11.10上操作
+```	
+$ vim /etc/fdfs/storage.conf
+```
+
+需要修改的内容如下
+```
+port=23000  # storage服务端口（默认23000,一般不修改）
+base_path=/home/dfs/storage  # 数据和日志文件存储根目录
+store_path0=/home/dfs/storage  # 第一个存储目录
+tracker_server=192.168.11.10:22122  # tracker服务器IP和端口
+tracker_server=192.168.11.11:22122  
+
+http.server_port=8888  # http访问文件的端口(默认8888,看情况修改,和nginx中保持一致)
+```
+建立存储路径
+```
+mkdir -p /home/dfs/storage
+```
+
+启动 Storage
+```
+$ /etc/init.d/fdfs_storaged start
+或者
+fdfs_storaged /etc/fdfs/storage.conf start
+```
+
+在192.168.10.11上也是一样的操作
+
+
+查看 Storage 是否成功启动，23000 端口正在被监听，就算 Storage 启动成功。
+```
+$ netstat -unltp|grep fdfs
+
+ps -ef | grep fdfs_storaged
+```
+
+查看Storage和Tracker是否在通信：
+```
+/usr/bin/fdfs_monitor  /etc/fdfs/storage.conf
+```
+
+
 
 
 ## 配置nginx访问  
