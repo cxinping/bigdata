@@ -45,6 +45,14 @@ CLASSPATH=/usr/local/java/lib
 5, source /etc/profile
 
 6, java -version
+配置好JDK8后，在命令行输入 java -version会返回如下信息
+```
+[root@localhost local]# java -version
+java version "1.8.0_271"
+Java(TM) SE Runtime Environment (build 1.8.0_271-b09)
+Java HotSpot(TM) 64-Bit Server VM (build 25.271-b09, mixed mode)
+```
+
 
 
 
