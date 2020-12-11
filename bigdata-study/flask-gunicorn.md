@@ -24,3 +24,19 @@ systemctl restatus bmo-lre
 
 Flask run启动Falsk APP
 https://flask.palletsprojects.com/en/1.1.x/quickstart/
+
+$ export FLASK_APP=hello.py
+$ flask run
+
+C:\path\to\app>set FLASK_APP=hello.py
+
+Alternatively you can use python -m flask:
+
+$ export FLASK_APP=hello.py
+$ python -m flask run
+ * Running on http://127.0.0.1:5000/
+ 
+
+
+
+
