@@ -110,8 +110,12 @@ $ python -m flask run
  
 ## gunicorn
 
+https://gunicorn.org/
+
+
 > pip install gunicorn flask
 
+gunicorn -w 4 "bmolre:init_app(config_object='config.development')"
 
 
 
