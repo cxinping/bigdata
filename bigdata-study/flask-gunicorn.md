@@ -17,6 +17,78 @@ Flask Is Not Your Production Server
 
 > cd /etc/systemd/system/
 
+## 配置文件
+
+/etc/systemd/system/下的bmo-lre.service配置文件
+
+```
+[Unit]
+Description=bmo-lre.service
+After=syslog.target network.target
+
+[Service]
+Type=simple
+WorkingDirectory='/etc/bmo-lre'
+ExecStart=/usr/local/bin/gunicorn --config /etc/bmo-lre/gunicorn-config.py 'bmolre:init_app(config_object="config.development")'
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+gunicorn-config.py
+```
+keyfile = '/etc/bmo-lre/bmo-lre.key'
+ssl_version = 2
+ciphers = 'TLSv1.2'
+
+logconfig_dict = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s.%(module)s.%(funcName)s (%(lineno)d): %(message)s'
+        },
+        'access': {
+            'format': '%(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'formatter': 'standard',
+            'class': 'logging.StreamHandler',
+        },
+        'access_file': {
+            'formatter': 'access',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': '/var/log/bmo-lre/bmo-lre.access.log',
+            'when': 'D',
+            'encoding': 'utf-8',
+        },
+        'error_file': {
+            'formatter': 'standard',
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': '/var/log/bmo-lre/bmo-lre.error.log',
+            'when': 'D',
+            'encoding': 'utf-8',
+        },
+    },
+    'loggers': {
+        'gunicorn.access': {
+            'handlers': ['console', 'access_file'],
+            'level': 'DEBUG',
+        },
+        'gunicorn.error': {
+            'handlers': ['console', 'error_file'],
+            'level': 'DEBUG',
+        },
+    },
+}
+
+```
+
+
 
 systemctl restart bmo-lre
 
