@@ -12,3 +12,9 @@ FlaskApp本身的web service是一个测试用的
 
 Flask Is Not Your Production Server
 > https://vsupalov.com/flask-web-server-in-production/
+
+在Linux下注册服务
+
+> cd /etc/systemd/system/
+
+
