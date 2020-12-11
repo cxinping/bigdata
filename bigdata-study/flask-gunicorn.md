@@ -21,3 +21,6 @@ Flask Is Not Your Production Server
 systemctl restart bmo-lre
 
 systemctl restatus bmo-lre
+
+Flask run启动Falsk APP
+https://flask.palletsprojects.com/en/1.1.x/quickstart/
