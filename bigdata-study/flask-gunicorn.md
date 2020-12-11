@@ -18,3 +18,6 @@ Flask Is Not Your Production Server
 > cd /etc/systemd/system/
 
 
+systemctl restart bmo-lre
+
+systemctl restatus bmo-lre
