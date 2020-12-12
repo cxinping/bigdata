@@ -1,4 +1,65 @@
 
+
+### 项目打包
+
+
+
+安装 wheel模块
+
+>  pip3 install wheel
+
+
+
+setup.py
+
+```	
+from setuptools import find_packages, setup
+
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setup(
+    name='flask-service',
+    version='0.0.1',
+    packages=find_packages(),
+    description='My Flask Service',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'Operating System :: OS Independent',
+    ],
+    include_package_data=True,
+    zip_safe=False,
+    install_requires=[
+        'flask'
+    ],
+    python_requires='>=3.6',
+)
+```
+
+
+
+编写 MANIFEST.in
+
+```	
+include demo/static/*.*
+include demo/templates/*.*
+
+```
+
+
+
+同时发布源码包和 whl 二进制包
+
+> python setup.py sdist bdist_wheel upload
+
+打包项目
+> python setup.py sdist bdist_wheel
+
+
+
 使用gunicorn启动Flask App
 
 启动 gunicorn服务
@@ -34,7 +95,6 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-
 ```
 
 gunicorn-config.py
@@ -107,7 +167,7 @@ Alternatively you can use python -m flask:
 $ export FLASK_APP=hello.py
 $ python -m flask run
  * Running on http://127.0.0.1:5000/
- 
+
 ## gunicorn
 
 https://gunicorn.org/
@@ -121,11 +181,13 @@ gunicorn -w 4 "bmolre:init_app(config_object='config.development')"
 # 参考资料
 
 How To Serve Flask Applications with Gunicorn and Nginx on Ubuntu 18.04
-https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
+
+> https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-18-04
 
 
+MANIFEST.in ignored on “python setup.py install” - no data files installed?
 
-
+> https://stackoverflow.com/questions/3596979/manifest-in-ignored-on-python-setup-py-install-no-data-files-installed/3597263#3597263
 
 
 
