@@ -263,8 +263,6 @@ base_path=/home/dfs/storage  # 数据和日志文件存储根目录
 store_path0=/home/dfs/storage  # 第一个存储目录
 tracker_server=192.168.11.10:22122  # tracker服务器IP和端口
 http.server_port=8888  # http访问文件的端口(默认8888,看情况修改,和nginx中保持一致)
-
-
 ```
 
 
@@ -300,6 +298,7 @@ $ ps -ef | grep fdfs_storaged
 ```
 /usr/bin/fdfs_monitor  /etc/fdfs/storage.conf
 ```
+
 
 
 ### client测试
@@ -382,13 +381,66 @@ fdfs_download_file /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9g
 fdfs_delete_file  /etc/fdfs/client.conf group1/M00/00/00/ wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
 ```
 
+
+### 配置nginx访问  
+
+#### 配置Nginx访问FastDFS的资源
+
+```
+vim /etc/fdfs/mod_fastdfs.conf
+```
+
+需要修改的内容如下
+```
+tracker_server=192.168.11.10:22122  #tracker服务器IP和端口
+url_have_group_name=true
+store_path0=/home/dfs/storage  
+```
+
+
+
+配置nginx.config
+
+```
+vim /usr/local/nginx/conf/nginx.conf
+```
+添加如下配置
+```
+server {
+    listen       8888;    ## 该端口为storage.conf中的http.server_port相同
+    server_name  localhost;
+    location ~/group[0-9]/ {
+        ngx_fastdfs_module;
+    }
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+    root   html;
+    }
+}
+```
+
+测试下载，用外部浏览器访问刚才已传过的nginx安装包,引用返回的ID
+http://192.168.11.10:8888/group1/M00/00/00/wKgLCl9EnDSAUGD1AAa9gM70jnk407.jpg
+
+
+#### 常用Nginx 操作
+```
+$ /usr/local/nginx/sbin/nginx -V
+$ /usr/local/nginx/sbin/nginx -s reload
+$ /usr/local/nginx/sbin/nginx -s stop
+$ /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+```
+
+
+
+
 ## 分布式部署
 
 配置环境
 
 |  IP            | 所属组 |	角色  |
 |  ----  		 | ----   | ----  |
-| 192.168.11.10  | group1 | storage，tracker1 | 
+| 192.168.11.10  | group1 | storage，tracker1 |
 | 192.168.11.11  | group1 | storage, tracker2 |
 
 

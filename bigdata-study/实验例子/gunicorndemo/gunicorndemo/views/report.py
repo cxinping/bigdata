@@ -8,7 +8,7 @@ Created on 2020-12-03
 
 from flask import Blueprint, jsonify
 from flask import render_template
-import time
+from gunicorndemo.commons.util import get_current_time
 
 from ..commons.logging import log_entry_exit, get_logger
 from ..exts import db
@@ -33,9 +33,9 @@ def hello(name=None):
 
 # http://127.0.0.1:8888/report/hello2
 # http://192.168.11.10:8888/report/hello2
-@report_bp.route("/hello2")
+@report_bp.route("/hello2",methods=['GET', 'POST'])
 def hello2():
-    return "<h1 style='color:blue;text-align: center;'>Hello world!</h1>"
+    return "<h1 style='color:blue;text-align: center;'>Hello world! {time}</h1>".format(time=(get_current_time()))
 
 
 
