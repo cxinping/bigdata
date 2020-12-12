@@ -2,3 +2,5 @@ include gunicorndemo/*/*.*
 include gunicorndemo/static/css/*.css
 include gunicorndemo/static/images/*.*
 include gunicorndemo/static/js/*.js
+include config/*.py
+include tests/*.py
