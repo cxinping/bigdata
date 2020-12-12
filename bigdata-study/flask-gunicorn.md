@@ -1,16 +1,37 @@
+# Gunicorn
+
+Gunicorn ‘Green Unicorn’ 是一个 UNIX 下的 WSGI HTTP 服务器，它是一个 移植自 Ruby 的 Unicorn 项目的 pre-fork worker 模型。它既支持 eventlet ， 也支持 greenlet
+
+在管理 worker 上，使用了 pre-fork 模型，即一个 master 进程管理多个 worker 进程，所有请求和响应均由 Worker 处理。Master 进程是一个简单的 loop, 监听 worker 不同进程信号并且作出响应。比如接受到 TTIN 提升 worker 数量，TTOU 降低运行 Worker 数量。如果 worker 挂了，发出 CHLD, 则重启失败的 worker, 同步的 Worker 一次处理一个请求。
 
 
-### 项目打包
+## 安装Gunicorn
+目前Gunicorn只能运行在Linux环境中，不支持windows平台
+
+> pip3 install gunicorn
+
+gunicorn安装成功后，使用 pip3 show gunicorn命令查看安装的gunicorn的模块信息
+> pip3 status gunicorn
 
 
+# Flask项目打包和注册服务
+
+
+
+### 安装wheel模块
 
 安装 wheel模块
 
 >  pip3 install wheel
 
+使用pycharm新建一个Flask项目 gunicorndemo，项目结构如下图所示：
+
+![gunicorn1](.\images\gunicorn1.jpg)
 
 
-setup.py
+
+
+项目的setup.py的内容如下
 
 ```	
 from setuptools import find_packages, setup
@@ -20,10 +41,10 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name='flask-service',
+    name='gunicorndemo',
     version='0.0.1',
     packages=find_packages(),
-    description='My Flask Service',
+    description='gunicorndemo Flask Service',
     long_description=long_description,
     long_description_content_type="text/markdown",
     classifiers=[
@@ -39,143 +60,133 @@ setup(
 )
 ```
 
-
-
-编写 MANIFEST.in
+项目的MANIFEST.in的内容如下
 
 ```	
 include demo/static/*.*
 include demo/templates/*.*
-
 ```
 
+在项目目录下使用以下命令打包项目
 
-
-同时发布源码包和 whl 二进制包
-
-> python setup.py sdist bdist_wheel upload
-
-打包项目
 > python setup.py sdist bdist_wheel
 
 
 
-使用gunicorn启动Flask App
+在 %/gunicorndemo/dist新生成 gunicorndemo-0.0.1-py3-none-any.whl 和 gunicorndemo-0.0.1.tar.gz
 
-启动 gunicorn服务
-
-FlaskApp本身的web service是一个测试用的
-
-在自己的PC上面启动Flask的时候会看到这样一句：WARNING: This is a development server. Do not use it in a production deployment.
+![gunicorn2](.\images\gunicorn2.jpg)
 
 
-> https://vsupalov.com/flask-web-server-in-production/
 
-Flask Is Not Your Production Server
-> https://vsupalov.com/flask-web-server-in-production/
+### 在Linux上安装Flask App应用
 
-在Linux下注册服务
 
-> cd /etc/systemd/system/
 
-## 配置文件
+把gunicorndemo-0.0.1-py3-none-any.whl 上传到Linux服务器 192.168.11.10，需要在LInux服务器 192.168.11.10先安装好Python3的环境，还需要安装Flask app依赖的第三方模块。
 
-/etc/systemd/system/下的bmo-lre.service配置文件
+```
+pip3 install flask 
+
+pip3 install flask-sqlalchemy
+```
+
+
+
+#### 方法一  
+
+然后在Linux上安装Flask App应用
+
+> pip3 install gunicorndemo-0.0.1-py3-none-any.whl
+
+
+
+安装好Flask App后在 服务器 192.168.11.10的/usr/local/python/lib/python3.9/site-packages/gunicorndemo目录会看到上传的Flask APP源码,如下图所示。
+
+![gunicorn3](.\images\gunicorn3.jpg)
+
+
+
+使用gunicorn启动Flask App，Flask App本身的web service是可以开发使用，在生产环境需要启动 gunicorn服务
+
+> gunicorn -w 4 "bmolre:init_app(config_object='config.development')"
+
+
+
+启动gunicorn服务，使用了4个线程，调用了Flask APP了，这种方式关闭Linux客户端就关闭了gunicorn服务
+
+
+
+#### 方法二
+
+在Linux下注册服务, 使用Systemd确保引导时启动Gunicorn
+
+在/etc/systemd/system/下创建gunicorndemo.service配置文件
 
 ```
 [Unit]
-Description=bmo-lre.service
+Description=gunicorn.service
 After=syslog.target network.target
 
 [Service]
 Type=simple
-WorkingDirectory='/etc/bmo-lre'
-ExecStart=/usr/local/bin/gunicorn --config /etc/bmo-lre/gunicorn-config.py 'bmolre:init_app(config_object="config.development")'
+# 项目的工作目录，manage.py所在的目录
+WorkingDirectory='/usr/local/python/lib/python3.9/site-packages/gunicorndemo'
+ExecStart= /usr/local/python/bin/gunicorn --config /soft/demo/gunicorn_config.py 'gunicorndemo:init_app(config_object="config.development")'
+# #指明在进程崩溃时自动重启进程
 Restart=on-failure
 
 [Install]
+# 让systemd在引导时启动这个服务
 WantedBy=multi-user.target
 ```
 
-gunicorn-config.py
+
+
+/soft/demo下创建gunicorn-config.py
+
 ```
-keyfile = '/etc/bmo-lre/bmo-lre.key'
-ssl_version = 2
-ciphers = 'TLSv1.2'
-
-logconfig_dict = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s.%(module)s.%(funcName)s (%(lineno)d): %(message)s'
-        },
-        'access': {
-            'format': '%(message)s'
-        },
-    },
-    'handlers': {
-        'console': {
-            'formatter': 'standard',
-            'class': 'logging.StreamHandler',
-        },
-        'access_file': {
-            'formatter': 'access',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': '/var/log/bmo-lre/bmo-lre.access.log',
-            'when': 'D',
-            'encoding': 'utf-8',
-        },
-        'error_file': {
-            'formatter': 'standard',
-            'class': 'logging.handlers.TimedRotatingFileHandler',
-            'filename': '/var/log/bmo-lre/bmo-lre.error.log',
-            'when': 'D',
-            'encoding': 'utf-8',
-        },
-    },
-    'loggers': {
-        'gunicorn.access': {
-            'handlers': ['console', 'access_file'],
-            'level': 'DEBUG',
-        },
-        'gunicorn.error': {
-            'handlers': ['console', 'error_file'],
-            'level': 'DEBUG',
-        },
-    },
-}
-
+bind = "0.0.0.0:8000"
+workers = 4
 ```
 
 
 
-systemctl restart bmo-lre
+启动gunicorndemo服务
 
-systemctl restatus bmo-lre
+> systemctl restart gunicorndemo
 
-Flask run启动Falsk APP
-https://flask.palletsprojects.com/en/1.1.x/quickstart/
+查看gunicorndemo服务
 
-$ export FLASK_APP=hello.py
-$ flask run
+> systemctl status gunicorndemo
 
-C:\path\to\app>set FLASK_APP=hello.py
+```
+[root@localhost system]# systemctl status gunicorndemo
+● gunicorndemo.service - gunicorn.service
+   Loaded: loaded (/etc/systemd/system/gunicorndemo.service; disabled; vendor preset: disabled)
+   Active: active (running) since 六 2020-12-12 17:57:54 CST; 48min ago
+ Main PID: 78204 (gunicorn)
+    Tasks: 5
+   CGroup: /system.slice/gunicorndemo.service
+           ├─78204 /usr/local/python/bin/python3.9 /usr/local/python/bin/gunicorn --config /soft/demo/gunicorn_config.py gunicorndemo:init_app(config_object="config.development")
+           ├─78205 /usr/local/python/bin/python3.9 /usr/local/python/bin/gunicorn --config /soft/demo/gunicorn_config.py gunicorndemo:init_app(config_object="config.development")
+           ├─78206 /usr/local/python/bin/python3.9 /usr/local/python/bin/gunicorn --config /soft/demo/gunicorn_config.py gunicorndemo:init_app(config_object="config.development")
+           ├─78207 /usr/local/python/bin/python3.9 /usr/local/python/bin/gunicorn --config /soft/demo/gunicorn_config.py gunicorndemo:init_app(config_object="config.development")
+           └─78208 /usr/local/python/bin/python3.9 /usr/local/python/bin/gunicorn --config /soft/demo/gunicorn_config.py gunicorndemo:init_app(config_object="config.development")
 
-Alternatively you can use python -m flask:
+12月 12 17:57:54 localhost.localdomain systemd[1]: Started gunicorn.service.
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78204] [INFO] Starting gunicorn 20.0.4
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78204] [INFO] Listening at: http://0.0.0.0:8000 (78204)
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78204] [INFO] Using worker: sync
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78205] [INFO] Booting worker with pid: 78205
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78206] [INFO] Booting worker with pid: 78206
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78207] [INFO] Booting worker with pid: 78207
+12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78208] [INFO] Booting worker with pid: 78208
+```
 
-$ export FLASK_APP=hello.py
-$ python -m flask run
- * Running on http://127.0.0.1:5000/
-
-## gunicorn
-
-https://gunicorn.org/
+可以看到gunicorndemo服务已经启动了，访问http://192.168.11.10:8000/report/hello2
 
 
-> pip install gunicorn flask
-
-gunicorn -w 4 "bmolre:init_app(config_object='config.development')"
 
 
 # 参考资料
@@ -189,6 +200,9 @@ MANIFEST.in ignored on “python setup.py install” - no data files installed?
 
 > https://stackoverflow.com/questions/3596979/manifest-in-ignored-on-python-setup-py-install-no-data-files-installed/3597263#3597263
 
+
+Flask Is Not Your Production Server
+> https://vsupalov.com/flask-web-server-in-production/
 
 
 

@@ -56,6 +56,12 @@
 
 
 
+安装 flask-sqlalchemy
+
+> pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple flask-sqlalchemy
+
+
+
 
 
 ##  问题搜索
