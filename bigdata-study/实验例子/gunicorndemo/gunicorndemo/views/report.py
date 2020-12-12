@@ -37,7 +37,14 @@ def hello(name=None):
 def hello2():
     return "<h1 style='color:blue;text-align: center;'>Hello world! {time}</h1>".format(time=(get_current_time()))
 
+# http://127.0.0.1:8888/report/line
+@report_bp.route('/line')
+def show_line():
+    return render_template('echarts_line.html')
 
-
+# http://127.0.0.1:8888/report/pie
+@report_bp.route('/pie')
+def show_pie():
+    return render_template('echarts_pie.html')
 
 
