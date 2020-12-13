@@ -514,6 +514,8 @@ def delete_data():
 
 ```
 elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.7.1/elasticsearch-analysis-ik-7.7.1.zip
+
+elasticsearch-plugin install elasticsearch-analysis-ik-7.7.1.zip 
 ```
 
 这里的版本号请替换成你的 Elasticsearch 的版本号。
@@ -541,6 +543,14 @@ def create_index_cn():
     result = es.indices.put_mapping(index='news', doc_type='politics', body=mapping)
     print(result)
 ```
+
+
+
+
+
+
+
+
 
 
 
