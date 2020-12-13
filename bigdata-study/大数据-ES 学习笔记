@@ -378,6 +378,32 @@ DELETE
 
 
 
+## 查询
+
+
+
+http://192.168.11.10:9200/people/man/1 
+
+GET
+
+返回值：
+{
+    "_index": "people",
+    "_type": "man",
+    "_id": "1",
+    "_version": 2,
+    "_seq_no": 2,
+    "_primary_term": 1,
+    "found": true,
+    "_source": {
+        "name": "谁是瓦力1",
+        "country": "China",
+        "age": 30,
+        "date": "1977-03-07"
+    }
+}
+
+
 
 
 
@@ -385,17 +411,28 @@ DELETE
 
 # Python操作ES
 
+安装elasticsearch模块
+
 > pip install elasticsearch
 
-http://192.168.11.10:9200/people/man/1/_update
-POST
 
-{
-   "doc":{
-       "name":"谁是瓦力"
-   }
-}
+## 创建索引
 
+
+创建一个索引（Index），使用python创建一个名为 news 的索引
+
+```
+from elasticsearch import Elasticsearch
+
+def create_index():
+    es = Elasticsearch(['192.168.11.10:9200'] )
+    result = es.indices.create(index='news', ignore=400)
+    print(result)
+```
+返回值：
+```
+{'acknowledged': True, 'shards_acknowledged': True, 'index': 'news'}
+```
 
 
 
