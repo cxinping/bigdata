@@ -411,6 +411,9 @@ GET
 
 # Python操作ES
 
+Python Elasticsearch Client 官网
+> https://elasticsearch-py.readthedocs.io/en/7.10.0/
+
 安装elasticsearch模块
 
 > pip install elasticsearch
