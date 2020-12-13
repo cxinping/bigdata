@@ -51,8 +51,33 @@ mysql> ALTER USER 'root'@'localhost' IDENTIFIED BY '123@Welcome';
 
 
 
+添加远程登录用户
 
 
+```
+mysql> GRANT ALL PRIVILEGES ON *.* TO 'xinping'@'%' IDENTIFIED BY '123@Welcome' WITH GRANT OPTION;
+Query OK, 0 rows affected, 1 warning (0.10 sec)
+
+mysql> use mysql;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+
+mysql> flush privileges;
+Query OK, 0 rows affected (0.20 sec)
+
+mysql> select host,user from user;
++-----------+---------------+
+| host      | user          |
++-----------+---------------+
+| %         | xinping       |
+| localhost | mysql.session |
+| localhost | mysql.sys     |
+| localhost | root          |
++-----------+---------------+
+4 rows in set (0.00 sec)
+```
 
 
 

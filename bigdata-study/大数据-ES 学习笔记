@@ -26,13 +26,20 @@ Elasticsearch也使用Java开发并使用 Lucene 作为其核心来实现所有�
 ## 基本概念
 
 索引
+* 索引含有相同属性的文档集合
+
+  
+
 * 索引(index)是ElasticSearch对逻辑数据的逻辑存储，所以他可以分为更小的部分。
+
 * 可以把索引看成关系型数据库的表，索引的结构视为快速有效的全文索引准备的，特别是它不存储原始值。
+
 * ElasticSearch可以吧索引存放在一台机器或者分散在多台服务器上，每个索引有一个或多个分片(shard)，每个分片可以有多个副本(replica)。
 
 
 
 文档
+* 索引可以定义一个或多个类型，文档必须属于一个类型
 
 * 存储子Elasticsearch中的主要实体叫文档(document)，用关系型数据库来类比的话，一个文档相当于数据库中个表的一行记录。
 * ElasticSearch和MongoDb中的文档类似，都可以有不同的结构，但ElasticSearch的文档相同字段必须有相同类型。
@@ -42,17 +49,9 @@ Elasticsearch也使用Java开发并使用 Lucene 作为其核心来实现所有�
 
 
 
-映射
+文档 
 
-* 所有文档写进索引之前都会先进行分析，如何将输入的文本分割成词条，那些词条又会被过滤，这种行为叫做映射(mapping)，一般有用户定义规则。
-
-
-
-文档类型
-
-* 在ElasticSearch中，一个索引对象可以存储很多不同用途的对象。
-* 每个文档可以有不同的结构。
-* 不同的文档类型不能为相同的属性设置不同的类型
+* 文档是可以被索引的基本数据单位
 
 
 
@@ -70,46 +69,6 @@ Elasticsearch也使用Java开发并使用 Lucene 作为其核心来实现所有�
 ## 安装 Elasticsearch
 
 
-解压：
-``` 
-tar -zvxf elasticsearch-7.7.1-linux-x86_64.tar.gz
-```
-
-elasticsearch不能以root账户启动，需新建一个用户启动
-```
-useradd  es 
-chown  -R  es:es /soft/elasticsearch-7.7.1
-```
-
-然后切换到es用户，重新启动elasticsearch
-
-```
-su es
-```
-elasticsearch 不需要特别的配置，只需要启动即可，切到elasticsearch的目录下进行启动：bin/elasticsearch
-```
-cd /soft/elasticsearch-7.7.1/bin
-
-./elasticsearch
-```
-
-后台启动elasticsearch
-
-```
-./elasticsearch -d
-```
-
-启动完成后，可使用命令#  curl http://localhost:9200  验证服务是否开启成功
-
-> curl http://localhost:9200
-
-得到如下结果
-
-
-
-
-
-
 
 
 ### 安装JDK
@@ -123,6 +82,158 @@ systemctl stop firewalld.service
 
 systemctl disable firewalld.service  
 ```
+
+
+
+
+### 安装 Elasticsearch
+
+解压：
+
+``` 
+tar -zvxf elasticsearch-7.7.1-linux-x86_64.tar.gz
+```
+给解压缩的文件夹改名
+```
+mv elasticsearch-7.7.1 elasticsearch
+```
+
+elasticsearch不能以root账户启动，需新建一个用户启动
+```
+useradd  es 
+chown  -R  es:es /soft/elasticsearch
+
+passwd es
+```
+给用户es设置密码123456
+
+
+然后切换到es用户，重新启动elasticsearch
+
+```
+su es
+```
+elasticsearch 不需要特别的配置，只需要启动即可，切到elasticsearch的目录下进行启动：bin/elasticsearch
+```
+cd /soft/elasticsearch/bin
+
+./elasticsearch
+```
+
+后台启动elasticsearch
+
+```
+./elasticsearch -d
+```
+
+启动完成后，可使用命令 curl http://localhost:9200  验证服务是否开启成功
+
+> curl http://localhost:9200
+
+得到如下结果
+```
+[root@localhost ~]# curl http://localhost:9200
+{
+  "name" : "localhost.localdomain",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "3B2WRq8lQfeYPSs8oXY4PA",
+  "version" : {
+    "number" : "7.7.1",
+    "build_flavor" : "default",
+    "build_type" : "tar",
+    "build_hash" : "ad56dce891c901a492bb1ee393f12dfff473a423",
+    "build_date" : "2020-05-28T16:30:01.040088Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.5.1",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+```
+
+### 允许外网连接服务配置
+
+上节的配置只能在本机使用，但是要想为集群或者其他的机器连接，则需要做以下配置
+
+1, 修改/soft/elasticsearch-7.7.1/config /elasticsearch.yml文件
+
+把 network.host 和 http.port 前面的# 备注去掉 然后Host改成你的机器的IP即可
+```
+vi /soft/elasticsearch/config/elasticsearch.yml
+```
+修改以下内容， 
+```
+# Set the bind address to a specific IP (IPv4 or IPv6):
+#
+network.host: 0.0.0.0
+#
+# Set a custom port for HTTP:
+#
+http.port: 9200
+
+cluster.initial_master_nodes: ["node-1", "node-2"]
+```
+修改后，保存退出
+
+
+
+2,为防止bootstrap checks failed报错，进行以下修改
+
+1>编辑 /etc/security/limits.conf，追加以下内容；
+
+```
+* soft nofile 65536
+
+* hard nofile 131072
+
+* soft nproc 4096
+
+* hard nproc 4096
+```
+
+追加后，保存退出。此文件修改后需要重新登录用户，才会生效
+
+2>编辑 /etc/sysctl.conf，追加以下内容：
+```
+vm.max_map_count=655360
+```
+保存后，执行以下命令，使配置文件生效。
+```
+sysctl -p
+```
+
+
+
+重启机器
+执行命令 # reboot  重启机器，使用es用户登录，再次启动elasticsearch，启动完成后，使用外部浏览器请求 
+
+> http://192.168.11.10:9200
+
+### 安装ElasticSearch head插件
+
+ElasticSearch head是一款 对elasticsearch集群管理工具、数据可视化、增删改查工具， Elasticsearch  语句可视化，使用起来也非常方便。下面提供一下安装方式。
+在github上开源了这个插件 ，点击 下载链接 至github上下载插件
+> https://github.com/mobz/elasticsearch-head
+
+我们可以看到，在其主页也提供了一些安装方式，使用谷歌插件安装还是比较方便的，下载es-head-master.zip，解压后会有一个 elasticsearch-head.crx文件，将其更名为elasticsearch-head.rar 后再解压，将_metadata文件夹重命名为metadata。
+
+打开谷歌浏览器的扩展程序,点击浏览器右上角 ,此时安装完成，你就可以使用elasticsearch-head连接到你的elasicsearch服务器
+
+![es4](.\images\es4.jpg)
+
+
+# 快速入门
+
+
+
+
+
+
+
+
+
+
 
 
 
