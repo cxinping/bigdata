@@ -8,12 +8,12 @@ Created on
 DEBUG = True
 
 # configure database information
-SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:123456@127.0.0.1/testdb2'
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://xinping:123@Welcome@192.168.11.10:3306/RRAD1?charset-utf8'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = True
 
 SQLALCHEMY_BINDS = {
-    'rra':   'oracle://LREQUERY:Dti_202011@10.119.61.174:1521/RRAD1'
+    'rra':   'mysql+pymysql://xinping:123@Welcome@192.168.11.10:3306/RRAD2?charset-utf8'
 }
 
 

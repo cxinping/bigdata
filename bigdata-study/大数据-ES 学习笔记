@@ -434,6 +434,8 @@ def create_index():
 {'acknowledged': True, 'shards_acknowledged': True, 'index': 'news'}
 ```
 
+返回结果是 JSON 格式，其中的 acknowledged 字段表示创建操作执行成功
+
 
 
 
