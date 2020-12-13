@@ -460,7 +460,7 @@ Elasticsearch 就像 MongoDB 一样，在插入数据的时候可以直接插入
 ```
 from elasticsearch import Elasticsearch
 
-def create_record():
+def create_data():
     es = Elasticsearch(['192.168.11.10:9200'])
     es.indices.create(index='news', ignore=400)
 
@@ -477,7 +477,67 @@ def create_record():
 {'_index': 'news', '_type': 'politics', '_id': '1', '_version': 1, 'result': 'created', '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 0, '_primary_term': 1}
 ```
 
+### 更新数据
 
+更新数据也非常简单，需要指定数据的 id 和内容，调用 update() 方法即可
+```
+from elasticsearch import Elasticsearch
+
+def update_data():
+    es = Elasticsearch(['192.168.11.10:9200'])
+    data = {'title': '测试数据aaa',
+            'url': 'http://www.163.com'
+            }
+    result = es.update(index='news', doc_type='politics', body=data, id=1)
+    print(result)
+```
+
+### 删除数据
+
+如果想删除一条数据可以调用 delete() 方法，指定需要删除的数据 id 即可
+
+```
+from elasticsearch import Elasticsearch
+
+def delete_data():
+    es = Elasticsearch(['192.168.11.10:9200'])
+    result = es.delete(index='news', doc_type='politics', id=1)
+    print(result)
+```
+
+### 查询
+
+安装分词扩展插件，对于中文来说，需要安装一个分词插件，这里使用的是 elasticsearch-analysis-ik，GitHub 链接为：https://github.com/medcl/elasticsearch-analysis-ik，这里我们使用 Elasticsearch 的另一个命令行工具 elasticsearch-plugin 来安装，这里安装的版本是 7.7.1，请确保和 Elasticsearch 的版本对应起来
+
+```
+elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.7.1/elasticsearch-analysis-ik-7.7.1.zip
+```
+
+这里的版本号请替换成你的 Elasticsearch 的版本号。
+
+安装之后重新启动 Elasticsearch 就可以了，它会自动加载安装好的插件
+
+新建一个索引并指定需要分词的字段
+
+```
+from elasticsearch import Elasticsearch
+
+def create_index_cn():
+    es = Elasticsearch(['192.168.11.10:9200'])
+    mapping = {
+        'properties': {
+            'title': {
+                'type': 'text',
+                'analyzer': 'ik_max_word',
+                'search_analyzer': 'ik_max_word'
+            }
+        }
+    }
+    es.indices.delete(index='news', ignore=[400, 404])
+    es.indices.create(index='news', ignore=400)
+    result = es.indices.put_mapping(index='news', doc_type='politics', body=mapping)
+    print(result)
+```
 
 
 
@@ -492,5 +552,8 @@ https://www.cnblogs.com/wwjj4811/p/13051006.html
 Elasticsearch 技术分析
 https://www.cnblogs.com/jajian/p/9976900.html
 ```
+
+https://blog.csdn.net/wufaliang003/article/details/81368365
+
 
 
