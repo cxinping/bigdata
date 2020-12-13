@@ -316,7 +316,7 @@ PUT
 * 指定文档id插入
 * 自动产生文档id插入
 
-使用PostMan发送请求
+1,使用PostMan发送请求,指定id
 http://192.168.11.10:9200/people/man/1
 PUT
 {
@@ -334,12 +334,59 @@ PUT
 
 
 
+2,不指定ID
+http://192.168.11.10:9200/people/man/
+POST
+{
+    "name": "超级瓦力",
+    "country": "China",
+    "age": 30,
+    "date": "1977-03-07"
+}
+
+
+## 修改 
+
+修改
+
+* 直接修改文档
+* 脚本修改文档
+
+
+
+
+## 删除
+
+
+http://192.168.11.10:9200/people/man/1
+DELETE
+{
+  "query":{
+    "term":{
+      "_id": "b2j2W3YBohneJ1oppn4Y"
+    }
+  }
+}
 
 
 
 
 
 
+
+
+# Python操作ES
+
+> pip install elasticsearch
+
+http://192.168.11.10:9200/people/man/1/_update
+POST
+
+{
+   "doc":{
+       "name":"谁是瓦力"
+   }
+}
 
 
 
