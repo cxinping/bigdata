@@ -436,9 +436,46 @@ def create_index():
 
 返回结果是 JSON 格式，其中的 acknowledged 字段表示创建操作执行成功
 
+## 删除 Index
+
+```
+from elasticsearch import Elasticsearch
+
+def delete_index():
+    es = Elasticsearch(['192.168.11.10:9200'])
+    result = es.indices.delete(index='news', ignore=[400, 404])
+    print(result)
+```
+返回值：
+
+```
+{'acknowledged': True}
+```
 
 
+## 插入数据
 
+Elasticsearch 就像 MongoDB 一样，在插入数据的时候可以直接插入结构化字典数据，插入数据可以调用 create() 方法，例如这里插入一条新闻数据
+
+```
+from elasticsearch import Elasticsearch
+
+def create_record():
+    es = Elasticsearch(['192.168.11.10:9200'])
+    es.indices.create(index='news', ignore=400)
+
+    data = {'title': '测试数据', 'url': 'http://www.163.com'}
+    result = es.create(index='news', doc_type='politics', id=1, body=data)
+    print(result)
+```
+
+这里声明了一条新闻数据，包括标题和链接，然后通过调用 create() 方法插入了这条数据，在调用 create() 方法时，我们传入了四个参数，index 参数代表了索引名称，doc_type 代表了文档类型，body 则代表了文档具体内容，id 则是数据的唯一标识 ID
+
+返回值：
+
+```
+{'_index': 'news', '_type': 'politics', '_id': '1', '_version': 1, 'result': 'created', '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 0, '_primary_term': 1}
+```
 
 
 
