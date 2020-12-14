@@ -1,4 +1,4 @@
-windows下打开.ipynb文件
+### windows下打开.ipynb文件
 
 1.首先要下载python，设置环境变量
 
@@ -6,8 +6,16 @@ windows下打开.ipynb文件
 
 3.打开命令行，进入到python的Scripts文件中，按顺序执行下面三个命令
 
-pip install ipython
+> pip install -i https://pypi.tuna.tsinghua.edu.cn/simple  ipython
 
-pip install “ipython[notebook]”  
+> pip install  -i https://pypi.tuna.tsinghua.edu.cn/simple jupyter notebook 
 
-ipython notebook
+> jupyter notebook
+
+
+
+进入虚拟目录
+
+>  cd D:\test2\env2\virtualenv\Scripts
+
+> activate
