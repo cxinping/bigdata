@@ -24,6 +24,12 @@ gunicorn安装成功后，使用 pip3 show gunicorn命令查看安装的gunicorn
 
 >  pip3 install wheel
 
+
+
+> pip install -i https://pypi.tuna.tsinghua.edu.cn/simple wheel
+
+
+
 使用pycharm新建一个Flask项目 gunicorndemo，项目结构如下图所示：
 
 ![gunicorn1](.\images\gunicorn1.jpg)
@@ -63,8 +69,12 @@ setup(
 项目的MANIFEST.in的内容如下
 
 ```	
-include demo/static/*.*
-include demo/templates/*.*
+include gunicorndemo/*/*.*
+include gunicorndemo/static/css/*.css
+include gunicorndemo/static/images/*.*
+include gunicorndemo/static/js/*.js
+include config/*.py
+include tests/*.py
 ```
 
 在项目目录下使用以下命令打包项目
@@ -184,8 +194,13 @@ workers = 4
 12月 12 17:57:54 localhost.localdomain gunicorn[78204]: [2020-12-12 17:57:54 +0800] [78208] [INFO] Booting worker with pid: 78208
 ```
 
-可以看到gunicorndemo服务已经启动了，访问http://192.168.11.10:8000/report/hello2
+可以看到gunicorndemo服务已经启动了，访问以下网址
 
+```
+http://192.168.11.10:8000/report/hello2
+
+http://192.168.11.10:8000/report/line
+```
 
 
 

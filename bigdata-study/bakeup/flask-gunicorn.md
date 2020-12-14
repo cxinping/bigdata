@@ -6,7 +6,7 @@
 
 安装 wheel模块
 
->  pip3 install wheel
+>  pip install wheel
 
 
 
@@ -192,7 +192,7 @@ gunicorn -w 4 "bmolre:init_app(config_object='config.development')"
 ```	
 bind = "0.0.0.0:8000"
 workers = 4
-```	
+```
 
 /usr/local/python/bin/gunicorn -c /soft/demo/gunicorn.config -w 4  'gunicorndemo:init_app(config_object="config.development")'
 
