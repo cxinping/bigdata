@@ -218,7 +218,7 @@ YARN_NODEMANAGER_USER=root
 ## 启动成功Hadoop
 成功启动后，可以访问 Web 界面 http://localhost:9870 查看 NameNode 和 Datanode 信息，还可以在线查看 HDFS 中的文件。
 
-http://localhost:9870
+> http://localhost:9870
 
 
 
