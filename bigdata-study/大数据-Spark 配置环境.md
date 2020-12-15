@@ -306,7 +306,6 @@ cd /usr/local/pycharm/bin
 
 运行 pycharm
 ./pycharm.sh
-
 ```
 
 把启动Pycharm的脚本放到 /etc/profile里
@@ -319,6 +318,8 @@ export PATH=/usr/local/pycharm/bin:.:$PATH
 ```
 $ source /etc/profile
 ```
+
+
 
 ## 安装虚拟环境
 
