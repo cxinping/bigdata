@@ -286,7 +286,10 @@ export PATH=/usr/local/python/bin:.:$PATH
 $ source /etc/profile
 ```
 
+
+
 ## Linux下pycharm的安装
+
 ```
 mkdir /usr/local/pycharm
 
