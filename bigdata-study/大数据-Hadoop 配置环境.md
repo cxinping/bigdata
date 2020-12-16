@@ -178,7 +178,7 @@ cd /usr/local/hadoop
 ./sbin/start-dfs.sh  #start-dfs.sh是个完整的可执行文件，中间没有空格
 ```
 
-出现以下错误，问题1：
+出现以下错误，
 ```
 [root@localhost sbin]# start-dfs.sh
 Starting namenodes on [localhost]
@@ -186,8 +186,9 @@ ERROR: Attempting to operate on hdfs namenode as root
 ERROR: but there is no HDFS_NAMENODE_USER defined. Aborting operation.
 ```
 
-在/hadoop/sbin路径下：
-将start-dfs.sh，stop-dfs.sh两个文件顶部添加以下参数
+问题1：Attempting to operate on hdfs namenode as root
+
+在/usr/local/hadoop/sbin路径下，将start-dfs.sh，stop-dfs.sh两个文件顶部添加以下参数
 
 ```
 #!/usr/bin/env bash
@@ -210,8 +211,21 @@ YARN_NODEMANAGER_USER=root
 
 
 问题2：
-出现错误 ERROR: JAVA_HOME is not set and could not be found.到hadoop的安装目录修改配置文件“/usr/local/hadoop/etc/hadoop/hadoop-env.sh”，在里面找到“export JAVA_HOME=${JAVA_HOME}”这行，然后，把它修改成JAVA安装路径的具体地址，比如，“export JAVA_HOME=/usr/lib/jvm/default-java”，然后，再次启动Hadoop。
+出现错误 ERROR: JAVA_HOME is not set and could not be found.到hadoop的安装目录修改配置文件“/usr/local/hadoop/etc/hadoop/hadoop-env.sh”，在里面找到“export JAVA_HOME=${JAVA_HOME}”这行，然后，把它修改成JAVA安装路径的具体地址，比如，“export JAVA_HOME=/usr/local/java”，然后，再次启动Hadoop。
 
+
+## 设置环境变量
+
+vi /etc/profile
+
+```
+export HADOOP_HOME=/usr/local/hadoop
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin
+```
+使配置文件生效
+```
+source /etc/profile
+```
 
 
 
@@ -220,13 +234,21 @@ YARN_NODEMANAGER_USER=root
 
 > http://localhost:9870
 
+> http://192.168.11.10:9870
 
 
 
+启动Hadoop
+
+> cd /usr/local/hadoop
+>
+> ./sbin/start-dfs.sh
 
 
 
+测试HDFS是否能正常创建目录。
 
+> hdfs dfs -mkdir /input
 
 
 
