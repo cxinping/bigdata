@@ -344,7 +344,9 @@ $ virtualenv ENV        #创建一个虚拟环境，虚拟环境的名字为ENV
 $ source ENV/bin/activate
 ```
 
+# 安装 PyCharm
 
+http://dblab.xmu.edu.cn/blog/hadoop-build-project-using-eclipse/
 
 
 
