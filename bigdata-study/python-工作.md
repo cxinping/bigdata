@@ -593,6 +593,12 @@ d4.fill = fill
 wb.save('test.xlsx')
 ```
 
+### openpyxl读取excel中公式的结果值
+```
+wb=openpyxl.load_workbook("文件路径",data_only=True)
+```
+
+
 # 工作
 
 ## 精确到小数点后6位
