@@ -350,6 +350,90 @@ http://dblab.xmu.edu.cn/blog/hadoop-build-project-using-eclipse/
 
 
 
+# 安装Spark
+
+步骤1：解压文件
+
+> tar -zxvf spark-2.4.0-bin-hadoop2.7.tgz -C /usr/local/
+
+步骤2：重命名Spark文件夹
+
+> cd /usr/local/
+
+> mv spark-2.4.0-bin-hadoop2.7/ spark
+
+
+步骤3：重命名spark-env文件
+
+> cd /usr/local/spark/conf
+
+> mv spark-env.sh.template spark-env.sh
+
+步骤4：配置环境变量，修改文件
+
+> vi /etc/profile
+
+添加Spark路径
+
+```
+export JAVA_HOME=/usr/local/java
+export SPARK_HOME=/usr/local/spark
+export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
+export PYTHONSPARK_PYTHON=python3
+export PATH=$SPARK_HOME/bin:$PATH
+```
+
+步骤4：使修改生效
+> source /etc/profile
+
+
+
+## 启动Spark
+
+> cd $SPARK_HOME
+> ./sbin/start-all.sh
+
+访问 http://192.168.11.10:8080
+
+![spark1](.\images\spark1.jpg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

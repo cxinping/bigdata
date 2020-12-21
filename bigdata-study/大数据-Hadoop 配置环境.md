@@ -246,9 +246,44 @@ source /etc/profile
 
 
 
+1, 启动ResourceManager
+
+> cd /usr/local/hadoop
+> sbin/yarn-daemon.sh start resourcemanager
+
+2,启动NodeManager
+
+> cd /usr/local/hadoop
+> sbin/yarn-daemon.sh start nodemanager
+
+
+
+
+
 测试HDFS是否能正常创建目录。
 
 > hdfs dfs -mkdir /input
+
+
+## 文件管理
+
+1,创建目录
+> hdfs dfs -mkdir /test
+
+2, 上传文件到系统
+
+> hdfs dfs -put /usr/local/hadoop/etc/hadoop/core-site.xml /test
+
+3, 查看目录
+
+> hdfs dfs -ls /test
+
+
+
+
+
+
+
 
 
 
