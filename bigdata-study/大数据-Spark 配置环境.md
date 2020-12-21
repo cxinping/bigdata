@@ -379,7 +379,7 @@ http://dblab.xmu.edu.cn/blog/hadoop-build-project-using-eclipse/
 export JAVA_HOME=/usr/local/java
 export SPARK_HOME=/usr/local/spark
 export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
-export PYTHONSPARK_PYTHON=python3
+export PYSPARK_PYTHON=python3
 export PATH=$SPARK_HOME/bin:$PATH
 ```
 
@@ -399,7 +399,13 @@ export PATH=$SPARK_HOME/bin:$PATH
 
 
 
+pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pipenv
 
+
+
+## 安装PySpark
+
+在Spark安装中pyspark和spark.egg-info文件夹，将其复制到Python3安装目录下(/usr/local/python/lib/python3.9/site-packages)。
 
 
 
