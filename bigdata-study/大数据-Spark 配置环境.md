@@ -379,14 +379,30 @@ http://dblab.xmu.edu.cn/blog/hadoop-build-project-using-eclipse/
 export JAVA_HOME=/usr/local/java
 export SPARK_HOME=/usr/local/spark
 export PYTHONPATH=$SPARK_HOME/python:$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
+
+export PYTHONPATH=$SPARK_HOME/python/lib/pyspark.zip:$PYTHONPATH
+
 export PYSPARK_PYTHON=/usr/local/python/bin/python3
 export PATH=$SPARK_HOME/bin:$PATH
 ```
 
+
+> vi ~/.bashrc 
+```
+export PYTHONPATH=$SPARK_HOME/python/:$PYTHONPATH
+export PYTHONPATH=$SPARK_HOME/python/lib/py4j-0.10.7-src.zip:$PYTHONPATH
+```
+source ~/.bashrc 
+
 步骤4：使修改生效
+
 > source /etc/profile
 
 
+pip3 install pyspark==2.4.7
+pip3 install -i https://pypi.doubanio.com/simple/ pyspark==2.4.7
+
+pip3 install --upgrade pip
 
 ## 启动Spark
 
@@ -420,8 +436,8 @@ pip3 install -i https://pypi.tuna.tsinghua.edu.cn/simple pipenv
 
 
 
-
-
+https://zhidao.baidu.com/question/501763959126083524.html
+如何将PySpark导入Python
 
 
 
