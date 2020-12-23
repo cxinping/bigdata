@@ -593,12 +593,31 @@ d4.fill = fill
 wb.save('test.xlsx')
 ```
 
-
-
 ## 读取excel中公式的结果值
 
 ```
 wb=openpyxl.load_workbook("文件路径",data_only=True)
+```
+例子
+
+```
+import openpyxl
+
+def test(from_report):
+    wb = openpyxl.load_workbook(from_report, data_only=True)
+
+    sheet = wb['Summary Control']
+    cell_value = sheet['C2'].value
+    print(cell_value)
+    cell_value = sheet['C3'].value
+    print(cell_value)
+
+def just_open(filename):
+    xlApp = Dispatch("Excel.Application")
+    xlApp.Visible = False
+    xlBook = xlApp.Workbooks.Open(filename)
+    xlBook.Save()
+    xlBook.Close()
 ```
 
 
