@@ -14,3 +14,6 @@ PyCharm+PySpark远程调试的环境配置的方法
 https://www.jianshu.com/p/06b40a77b6ee
 
 https://www.jianshu.com/p/8369f4312b23
+
+Window下安装Spark
+https://yxnchen.github.io/technique/Windows%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8D%95%E6%9C%BASpark%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/#Python
