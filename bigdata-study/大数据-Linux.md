@@ -63,14 +63,19 @@ http://www.hostbuf.com/t/988.html
 
 ```
 
-FileZilla
+# FileZilla
 
 FTP工具
 
+# PyCharm安装
 
+```
+cd ~  #进入当前hadoop用户的主目录
+sudo tar -zxvf ~/下载/pycharm-community-2016.3.2.tar.gz -C /usr/local  #把pycharm解压缩到/usr/local目录下
+cd /usr/local
+sudo mv pycharm-community-2016.3.2 pycharm  #重命名
+sudo chown -R hadoop ./pycharm  #把pycharm目录权限赋予给当前登录Ubuntu系统的hadoop用户
 
-
-
-
+```
 
 
