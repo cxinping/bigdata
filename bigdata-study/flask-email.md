@@ -1,5 +1,7 @@
 ### 参考资料
 
+https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support
+
 https://pythonhosted.org/Flask-Mail/
 
 https://pythonbasics.org/flask-mail/
