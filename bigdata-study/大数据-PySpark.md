@@ -22,3 +22,23 @@ https://yxnchen.github.io/technique/Windows%E5%B9%B3%E5%8F%B0%E4%B8%8B%E5%8D%95%
 > pip install --upgrade pyspark
 
 That will update the package, if one is available. If this doesn't help then you might have to downgrade to a compatible version of python.
+
+## 使用数组创建RDD
+
+
+```
+from pyspark import SparkContext
+import os
+
+os.environ['HADOOP_HOME'] = r'C:\bigdata\hadoop'
+os.environ['SPARK_HOME'] = r'C:\bigdata\spark'
+os.environ['PYTHON_HOME'] = r'C:\mysoft\python36\python.exe'
+os.environ['PYSPARK_PYTHON'] = r'C:\mysoft\python36\python.exe'
+
+sc = SparkContext()
+rdd = sc.parallelize([1, 2, 3, 4, 5, 6], 3)
+print(rdd)
+print(rdd.getNumPartitions())
+print(rdd.count())
+
+```
