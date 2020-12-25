@@ -42,3 +42,27 @@ print(rdd.getNumPartitions())
 print(rdd.count())
 
 ```
+
+## 转换操作
+
+### 使用map(func)转换数据
+
+```
+from pyspark import SparkContext
+import os
+
+os.environ['HADOOP_HOME'] = r'C:\bigdata\hadoop'
+os.environ['SPARK_HOME'] = r'C:\bigdata\spark'
+os.environ['PYTHON_HOME'] = r'C:\mysoft\python36\python.exe'
+os.environ['PYSPARK_PYTHON'] = r'C:\mysoft\python36\python.exe'
+
+sc = SparkContext()
+rdd1 = sc.parallelize([0, 1, 2, 3, 4, 6])
+rdd2 = rdd1.map(lambda x: x * 2)
+local_data = rdd2.collect()
+[print("当前元素是: ", item ) for item in local_data]
+
+```
+
+
+
