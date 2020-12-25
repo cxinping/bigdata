@@ -612,6 +612,8 @@ def test(from_report):
     cell_value = sheet['C3'].value
     print(cell_value)
 
+from win32com.client import Dispatch
+
 def just_open(filename):
     xlApp = Dispatch("Excel.Application")
     xlApp.Visible = False
