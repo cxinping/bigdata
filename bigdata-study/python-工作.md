@@ -598,7 +598,7 @@ wb.save('test.xlsx')
 ```
 wb=openpyxl.load_workbook("文件路径",data_only=True)
 ```
-例子
+例子1
 
 ```
 import openpyxl
@@ -622,7 +622,34 @@ def just_open(filename):
     xlBook.Close()
 ```
 
+例子2
 
+import openpyxl
+
+def test(from_report):
+    print('* test')
+    wb = openpyxl.load_workbook(from_report, data_only=True, keep_vba=True,)
+    sheet = wb['Summary Control']
+    cell_value = sheet['C2'].value
+    print(cell_value)
+    cell_value = sheet['C3'].value
+    print(cell_value)
+
+import xlwings
+def save_open_excel(report_path):
+    print('* save_open_excel')
+    excel_app = xlwings.App(visible=False)
+    excel_book = excel_app.books.open(report_path)
+    excel_book.save()
+    excel_book.close()
+    excel_app.quit()
+
+if __name__ == '__main__':   
+    report_file2 = r"C:\codes2\bmo-lre\bmolre\templates\report\daily.xlsx"
+
+    save_open_excel(report_file2)
+    test(report_file2)
+```
 
 # 工作
 
