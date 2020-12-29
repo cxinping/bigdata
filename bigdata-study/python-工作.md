@@ -623,7 +623,7 @@ def just_open(filename):
 ```
 
 例子2
-
+```
 import openpyxl
 
 def test(from_report):
@@ -654,6 +654,7 @@ if __name__ == '__main__':
 # 工作
 
 ## 精确到小数点后6位
+
 ```
 from decimal import Decimal
 rt = Decimal(1 / 0.916857).quantize(Decimal('0.000000'))
@@ -695,6 +696,7 @@ writer.close()
 
 ```
 
+
 ## 过滤数据
 
 ```	
@@ -729,8 +731,8 @@ def read_data():
 
 ## 访问 DataFrame
 
-```	
 
+```	
 import numpy as np
 
 data = np.arange(12).reshape(3,4)
@@ -740,18 +742,18 @@ rowNum = df.shape[0]
 colNum = df.shape[1]
 
 
-# print(df['b'][0] )
+print(df['b'][0] )
 
-#方式1
-	for row in df.itertuples():
-		print( getattr(row, 'a') , getattr(row, 'b') ,getattr(row, 'c') , getattr(row, 'd') )
+###方式1
+for row in df.itertuples():
+	print( getattr(row, 'a') , getattr(row, 'b') ,getattr(row, 'c') , getattr(row, 'd') )
 
-# 方式2
-	for x in range(rowNum):
-		for y in range(colNum):
-			print(df.iloc[x,y], end=' ')
+###方式2
+for x in range(rowNum):
+	for y in range(colNum):
+		print(df.iloc[x,y], end=' ')
 
-		print()
+	print()
 
 ```
 
@@ -766,6 +768,9 @@ df['new'] = np.where(df['list'] == '', 0, df['amount'])
 
 print(df)
 ```
+
+
+
 
 
 
