@@ -33,6 +33,13 @@ PySpark 学习资料
 
 > https://campus.datacamp.com/courses/introduction-to-pyspark/getting-to-know-pyspark?ex=2
 
+> https://www.tutorialspoint.com/pyspark/pyspark_environment_setup.htm
+
+
+
+
+
+
 
 
 
