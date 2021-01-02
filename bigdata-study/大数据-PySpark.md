@@ -64,7 +64,7 @@ That will update the package, if one is available. If this doesn't help then you
 
 ## 使用数组创建RDD
 
-
+例子1
 ```
 from pyspark import SparkContext
 import os
@@ -81,6 +81,27 @@ print(rdd.getNumPartitions())
 print(rdd.count())
 
 ```
+
+
+例子2
+```
+from pyspark import SparkContext
+import os
+
+os.environ['HADOOP_HOME'] = '/usr/local/hadoop'
+os.environ['SPARK_HOME'] = '/usr/local/spark'
+os.environ['PYTHON_HOME'] = r'/usr/local/spark/python'
+os.environ['JAVA_HOME'] = '/usr/local/java'
+os.environ['PYSPARK_DRIVER_PYTHON'] = '/usr/local/python/bin/python3'
+os.environ['PYSPARK_PYTHON'] = '/usr/local/python/bin/python3'
+
+sc = SparkContext()
+rdd = sc.parallelize([1, 2, 3, 4, 5, 6], 3)
+print(rdd)
+print(rdd.getNumPartitions())
+print(rdd.count())
+```
+
 
 ## 转换操作
 
