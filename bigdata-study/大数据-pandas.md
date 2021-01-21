@@ -3,7 +3,7 @@ Pandas学习资料
 
 > https://geek-docs.com/pandas/pandas-tutorials/pandas-dataframe-read-add-delete.html
 
-
+## 轮询Pandas
 方法1：下标循环
 
 df1 = df
@@ -32,6 +32,18 @@ Apply是pandas的一个常用函数，通常的用法是内接一个lambda匿名
 
 res = df.sum()
 Pandas为我们提供了大量的内置向量化函数，比如sum，mean就可以快速计算某一列的求和和平均
+
+
+## pycharm 控制台输出显示 pandas解决方案
+
+import pandas as pd
+pd.set_option('display.max_columns', a)  # 设置显示的最大列数参数为a
+pd.set_option('display.max_rows', b)  # 设置显示的最大的行数参数为b
+pd.set_option('display.width', 2000)
+
+
+
+
 
 
 方法5：Numpy向量化函数
