@@ -45,5 +45,9 @@ for msg in consumer:
 
 
 
+# 参考资料
+
+https://github.com/dpkp/kafka-python
+
 
 
