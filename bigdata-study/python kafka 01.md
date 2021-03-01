@@ -49,5 +49,5 @@ for msg in consumer:
 
 https://github.com/dpkp/kafka-python
 
-
-
+hello world kafuka
+https://timber.io/blog/hello-world-in-kafka-using-python/
