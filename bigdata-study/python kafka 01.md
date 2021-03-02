@@ -39,11 +39,16 @@ for msg in consumer:
 
 # 参考资料
 
+官网资料
+
 > https://github.com/dpkp/kafka-python
 
 hello world kafuka
+
 > https://timber.io/blog/hello-world-in-kafka-using-python/
 
 
 > https://eventador.io/blog/connecting-to-kafka/
+
+
 
