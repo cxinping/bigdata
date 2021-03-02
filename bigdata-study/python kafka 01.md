@@ -45,5 +45,5 @@ hello world kafuka
 > https://timber.io/blog/hello-world-in-kafka-using-python/
 
 
-
+> https://eventador.io/blog/connecting-to-kafka/
 
