@@ -769,16 +769,49 @@ df['new'] = np.where(df['list'] == '', 0, df['amount'])
 print(df)
 ```
 
+## pandas实现两个dataframe数据的合并：按行和按列
+
+1、按行合并（df1,df2上下拼接），axis=0可省略。
+
+```	
+pd.concat([df1,df2],axis=0)
+
+**例子：**
+
+df1= pd.DataFrame(0,columns=["a","b"],index=range(5))  
+df2= pd.DataFrame(1,columns=["a","b"],index=range(3))  
+pd.concat([df1,df2],axis=0)
+
+```	
 
 
+2、按列合并（df1,df2左右拼接）
+```
+pd.concat([df1,df2],axis=1)
+
+**例子：**
+
+df1= pd.DataFrame(0,columns=["a","b"],index=range(5))  
+df2= pd.DataFrame(1,columns=["a","b"],index=range(3))  
+pd.concat([df1,df2],axis=1)
 
 
+```
 
+3 根据某列，将两个 dataframe 合并
 
+```
+import pandas as pd
+import numpy as np
+df1 = pd.DataFrame(np.array([['a', 5, 9], ['b', 4, 61], ['c', 24, 9]]),
+                   columns = ['name', 'attr11', 'attr12'])
+df2 = pd.DataFrame(np.array([['a', 5, 19], ['b', 14, 16], ['c', 4, 9]]),
+                   columns = ['name', 'attr21', 'attr22'])
+df3 = pd.DataFrame(np.array([['a', 15, 49], ['b', 4, 36], ['c', 14, 9]]),
+                   columns = ['name', 'attr31', 'attr32'])
+print(pd.merge(pd.merge(df1, df2, on = 'name'), df3, on = 'name'))
 
-
-
-
+```
 
 
 
