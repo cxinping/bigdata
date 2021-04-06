@@ -813,5 +813,26 @@ print(pd.merge(pd.merge(df1, df2, on = 'name'), df3, on = 'name'))
 
 ```
 
+# 请求数据
 
+```
+def get_url_content(url, form , max_try_number=5):
+    try_num = 5
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'
+    }
+
+    while True:
+        try:
+            response = requests.post(url=url, data=form, headers=headers, timeout=120)
+            return response.json()
+        except Exception as err:
+            print(url, '抓取数据报错',str(err))
+            try_num = try_num + 1
+            if try_num >= max_try_number:
+                print('尝试失败次数超过5次，放弃尝试!')
+                return None
+
+```
 
