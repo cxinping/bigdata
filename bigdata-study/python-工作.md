@@ -6,6 +6,14 @@
 
 Flask WTF
 ```
+https://python3-cookbook.readthedocs.io/zh_CN/latest/c12/p01_start_stop_thread.html
+
+https://python3-cookbook.readthedocs.io/zh_CN/latest/c05/p11_manipulating_pathnames.html
+
+https://spacewander.github.io/explore-flask-zh/5-configuration.html
+
+https://uniwebsidad.com/libros/explore-flask/chapter-5/instance-folder
+
 http://codingdict.com/article/4881
 
 https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support
@@ -33,8 +41,21 @@ https://python3-cookbook.readthedocs.io/zh_CN/latest/c08/p13_implementing_data_m
 bigdata
 ```
 https://spark.apache.org/docs/latest/streaming-programming-guide.html
+
 https://docs.databricks.com/spark/latest/spark-sql/spark-pandas.html
+
 http://dblab.xmu.edu.cn/blog/2501-2/
+
+https://dimajix.de/running-pyspark-on-anaconda-in-pycharm/?lang=en
+
+http://excelformulabeautifier.com/
+
+https://intellipaat.com/blog/tutorial/spark-tutorial/pyspark-tutorial/
+
+https://intellipaat.com/blog/tutorial/spark-tutorial/pyspark-tutorial/
+
+http://codingdict.com/article/8882
+
 ```
 
 Ansible
@@ -53,6 +74,13 @@ Elastic Search
 
 Java 引用
 > https://www.cnblogs.com/bigsai/p/14153696.html
+
+
+30G 数据导入
+> https://www.cnblogs.com/goodAndyxublog/p/14182457.html
+
+Python 并发编程
+> https://python3-cookbook.readthedocs.io/zh_CN/latest/c12/p01_start_stop_thread.html
 
 ## markdown-toc
 
