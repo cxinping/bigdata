@@ -43,6 +43,13 @@ https://python3-cookbook.readthedocs.io/zh_CN/latest/c08/p13_implementing_data_m
 
 bigdata
 ```
+
+https://timber.io/blog/hello-world-in-kafka-using-python/
+
+https://data-flair.training/blogs/apache-flink-tutorial/
+
+https://www.tutorialspoint.com/apache_flink/apache_flink_quick_guide.htm
+
 https://dzone.com/articles/apache-flink-with-kafka-consumer-and-producer
 
 https://spark.apache.org/docs/latest/streaming-programming-guide.html
@@ -101,6 +108,12 @@ Pandas
 
 Pandas
 > https://www.cjavapy.com/article/366/
+
+hello-world-in-kafka-using-python
+> https://timber.io/blog/hello-world-in-kafka-using-python/
+
+Python 垃圾回收机制
+> http://www.ityouknow.com/python/2020/01/06/python-gc-111.html
 
 ## 案例
 
