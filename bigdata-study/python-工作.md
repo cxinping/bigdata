@@ -23,6 +23,10 @@ http://secangel.me/1816/
 http://www.ityouknow.com/python/2019/12/29/python-excel-103.html
 ```
 
+Python3
+```
+https://python3-cookbook.readthedocs.io/zh_CN/latest/c08/p13_implementing_data_model_or_type_system.html
+```
 
 ## markdown-toc
 
