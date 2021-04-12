@@ -43,6 +43,8 @@ https://python3-cookbook.readthedocs.io/zh_CN/latest/c08/p13_implementing_data_m
 
 bigdata
 ```
+https://dzone.com/articles/apache-flink-with-kafka-consumer-and-producer
+
 https://spark.apache.org/docs/latest/streaming-programming-guide.html
 
 https://docs.databricks.com/spark/latest/spark-sql/spark-pandas.html
@@ -84,6 +86,12 @@ Java 引用
 
 Python 并发编程
 > https://python3-cookbook.readthedocs.io/zh_CN/latest/c12/p01_start_stop_thread.html
+
+How to install PyQt5 in PyCharm
+> https://pythonpyqt.com/how-to-install-pyqt5-in-pycharm/
+
+Pandas 
+> https://www.journaldev.com/33306/pandas-read_excel-reading-excel-file-in-python
 
 ## markdown-toc
 
