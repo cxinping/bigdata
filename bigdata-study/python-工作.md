@@ -4,6 +4,19 @@
 
 ## 参考资料
 
+```
+to fix it, please run below command in Ansible server:
+
+cd /ansible_source/bmo-lre/playbook
+
+ansible-playbook -i prd site.yml --extra-vars "app_ver=1.0.1.996" --tags “bmo-lre”
+
+And in LRE server, run below command by user “bmo-lre”
+
+curl -k https://127.0.0.1:8443/report/g14/20210412?sftp=False\&email=False
+```
+
+
 Flask WTF
 ```
 Building a Data Pipeline with Flink and Kafka
