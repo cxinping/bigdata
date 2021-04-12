@@ -46,6 +46,12 @@ https://ansible-tran.readthedocs.io/en/latest/docs/
 Elastic Search
 > https://www.cnblogs.com/jajian/p/9976900.html
 
+多线程创建
+> https://www.cnblogs.com/vipstone/p/14149065.html
+
+Java 引用
+> https://www.cnblogs.com/bigsai/p/14153696.html
+
 ## markdown-toc
 
 > https://blog.csdn.net/weixin_33695082/article/details/91367266
