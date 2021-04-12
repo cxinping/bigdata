@@ -6,6 +6,9 @@
 
 Flask WTF
 ```
+Building a Data Pipeline with Flink and Kafka
+https://www.baeldung.com/kafka-flink-data-pipeline
+
 https://python3-cookbook.readthedocs.io/zh_CN/latest/c12/p01_start_stop_thread.html
 
 https://python3-cookbook.readthedocs.io/zh_CN/latest/c05/p11_manipulating_pathnames.html
