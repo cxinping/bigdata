@@ -8,6 +8,8 @@ Flask WTF
 ```
 http://codingdict.com/article/4881
 
+https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-xi-email-support
+
 https://www.mdeditor.tw/pl/2UCN
 
 https://www.cnblogs.com/ityouknow/p/12993209.html
