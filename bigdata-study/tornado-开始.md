@@ -15,5 +15,41 @@ http://shouce.jb51.net/tornado/ch1.html#ch1-1
 pip3 install tornado
 ```
 
+## hello
 
+```
+# -*- coding: utf-8 -*-
+
+import tornado.httpserver
+import tornado.ioloop
+import tornado.options
+import tornado.web
+
+from tornado.options import define, options
+define("port", default=8000, help="run on the given port", type=int)
+
+class IndexHandler(tornado.web.RequestHandler):
+    def get(self):
+        greeting = self.get_argument('greeting', 'Hello')
+        self.write(greeting + ', friendly user!')
+
+if __name__ == "__main__":
+    tornado.options.parse_command_line()
+    app = tornado.web.Application(handlers=[(r"/", IndexHandler)])
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.listen(8000)
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+在浏览器中打开http://localhost:8000
+
+
+或者打开另一个终端窗口使用curl测试我们的应用：
+
+```
+$ curl http://localhost:8000/
+Hello, friendly user!
+$ curl http://localhost:8000/?greeting=Salutations
+Salutations, friendly user!
+```
 
