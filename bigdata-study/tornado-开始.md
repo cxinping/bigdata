@@ -80,6 +80,37 @@ yield关键字的作用是返回控制，异步任务执行完毕后，程序在
 使用生成器和回调函数异步请求是一样的。
 
 
+```
+import tornado.httpserver
+import tornado.ioloop
+import tornado.options
+import tornado.web
+from tornado.options import define, options
+from tornado.httpclient import AsyncHTTPClient, HTTPClient
+
+
+class SynIndexHandler(tornado.web.RequestHandler):
+
+    def get(self):
+        print('invoke SynIndexHandler()')
+        client = AsyncHTTPClient()
+        response = client.fetch("http://www.163.com")
+        self.write("invoke AsyncHTTPClient success")
+        self.finish()
+
+if __name__ == "__main__":
+    tornado.options.parse_command_line()
+    app = tornado.web.Application(handlers=[
+                    (r"/syn", SynIndexHandler)
+        ] , debug=True)
+    http_server = tornado.httpserver.HTTPServer(app)
+    http_server.listen(5000)
+    print('--- http://127.0.0.1:5000 ---')
+    tornado.ioloop.IOLoop.instance().start()
+```
+
+
+
 
 
 
