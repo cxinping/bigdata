@@ -4,6 +4,9 @@
 ```	
 http://shouce.jb51.net/tornado/ch1.html#ch1-1
 
+tornado中@tornado.web.asynchronous装饰器使用介绍
+http://blog.sina.com.cn/s/blog_172bac9430102x0vl.html
+
 ```	
 
 
