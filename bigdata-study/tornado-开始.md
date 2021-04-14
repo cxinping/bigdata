@@ -53,3 +53,15 @@ $ curl http://localhost:8000/?greeting=Salutations
 Salutations, friendly user!
 ```
 
+## 使用@run_on_executor 创建线程，写异步请求
+
+
+from concurrent.futures import ThreadPoolExecutor
+from tornado.concurrent import run_on_executor
+ 
+# 只需要引入这两个包，加上@run_on_executor注解即可  凡是请求当前get的接口都是异步
+
+```
+@run_on_executor
+def get(self, url=None):
+```
