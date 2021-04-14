@@ -7,6 +7,9 @@ http://shouce.jb51.net/tornado/ch1.html#ch1-1
 tornado中@tornado.web.asynchronous装饰器使用介绍
 http://blog.sina.com.cn/s/blog_172bac9430102x0vl.html
 
+生成器，函数，数组
+https://www.cnblogs.com/shijingjing07/p/6478539.html
+
 ```	
 
 
