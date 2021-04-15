@@ -105,6 +105,25 @@ if __name__ == '__main__':
     synchronous_visit()
     print('--- end ---')
 ```
+### 异步例子
+
+```
+# -*- coding: utf-8 -*-
+from tornado.httpclient import HTTPClient, AsyncHTTPClient
+import time
+
+def synchronous_visit():
+    http_client = HTTPClient()
+    response = http_client.fetch('http://www.163.com')
+    time.sleep(3)
+    print(response.body)
+
+if __name__ == '__main__':
+    AsyncHTTPClient()
+    print('--- end ---')
+```
+
+
 
 
 
