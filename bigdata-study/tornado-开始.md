@@ -59,6 +59,30 @@ $ curl http://localhost:8000/?greeting=Salutations
 Salutations, friendly user!
 ```
 
+## hello2
+```
+import tornado.ioloop
+import tornado.web
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.write("Hello world")
+
+def make_app():
+    return tornado.web.Application([
+        (r"/", MainHandler),
+    ])
+
+def main():
+    app = make_app()
+    app.listen(8888)
+    tornado.ioloop.IOLoop.current().start()
+
+if __name__ == "__main__":
+    main()
+```   
+
+
 ## 使用@run_on_executor 创建线程，写异步请求
 
 ```
