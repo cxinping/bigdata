@@ -177,7 +177,7 @@ def test():
 
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(coroutime_visit())
+loop.run_until_complete(test())
 
 ```
 
