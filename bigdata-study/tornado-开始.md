@@ -408,9 +408,39 @@ if __name__ == "__main__":
 
 ### 安全 cookie机制
 
+例子
+```
+# -*- coding: utf-8 -*-
+
+import tornado.web
+import tornado.ioloop
+
+session_id = 1
+
+class MainHandler(tornado.web.RequestHandler):
+    def get(self):
+        global session_id
+        if not self.get_secure_cookie("session"):
+            self.set_secure_cookie("session",str(session_id))
+            session_id = session_id + 1
+            self.write("Your session got a new session! " +  session_id)
+        else:
+            self.write("Your session was set! session_id=%s" % session_id )
+
+def main():
+    application = tornado.web.Application([
+        (r"/", MainHandler),
+    ], cookie_secret="SECRET_DONT_LEAK" , debug=True)
+    application.listen(8888)
+    print('--- service --')
+    tornado.ioloop.IOLoop.current().start()
+
+if __name__ == "__main__":
+    main()
+
+```
 
 
 
 
-
-
+         
