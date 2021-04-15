@@ -132,6 +132,29 @@ if __name__ == '__main__':
 
 异步I/O访问 http://www.163.com网站的函数无需等待访问完成再返回
 
+## 协程
+使用Tornado协程可以开发出类似同步代码的异步行为，协程本身不使用线程，所以减少了线程上下文切换的开销，是一种更搞笑的开发模式。
+
+1， 编写协程函数
+使用协程技术开发网页访问功能
+
+```
+# -*- coding: utf-8 -*-
+from tornado import gen
+from tornado.httpclient import AsyncHTTPClient
+import asyncio
+
+@gen.coroutine
+def coroutime_visit():
+    http_client = AsyncHTTPClient()
+    response = yield http_client.fetch("http://www.163.com")
+    print(response.body)
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(coroutime_visit())
+```
+
 
 
 
