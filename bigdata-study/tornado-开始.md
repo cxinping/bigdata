@@ -205,6 +205,34 @@ func_normal()
 
 ```
 
+4, 在协程中调用阻塞函数
+
+```
+# -*- coding: utf-8 -*-
+
+from tornado import gen
+from concurrent.futures import ThreadPoolExecutor
+import time
+
+thread_pool = ThreadPoolExecutor(2)
+
+def mySleep(count):
+    for i in range(count):
+        time.sleep(i)
+        print('exec mySleep()')
+
+@gen.coroutine
+def call_blocking():
+    print('---- start ---')
+    yield thread_pool.submit(mySleep, 5)
+    print('---- end ---')
+
+call_blocking()
+
+```
+
+
+
 
 ## 异步调用
 ```
