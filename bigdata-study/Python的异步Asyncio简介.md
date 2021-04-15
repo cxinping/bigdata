@@ -17,6 +17,9 @@ Asyncio 并不能带来真正的并行（parallelism）。当然，因为 GIL（
 
 > async def do_some_work(x): pass
 
+do_some_work 便是一个协程。
+准确来说，do_some_work 是一个协程函数，可以通过 asyncio.iscoroutinefunction 来验证：
 
+> print(asyncio.iscoroutinefunction(do_some_work)) # True
 
 
