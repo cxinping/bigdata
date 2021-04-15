@@ -25,3 +25,13 @@ do_some_work 便是一个协程。
 准确来说，do_some_work 是一个协程函数，可以通过 asyncio.iscoroutinefunction 来验证：
 
 > print(asyncio.iscoroutinefunction(do_some_work)) # True
+
+```
+async def do_somework(x):
+    print("Waiting " + str(x))
+    await asyncio.sleep(x)
+```
+
+
+
+
