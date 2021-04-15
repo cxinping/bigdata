@@ -38,9 +38,21 @@ asyncio.sleep 也是一个协程，所以 await asyncio.sleep(x) 就是等待另
 
 调用协程函数，协程并不会开始运行，只是返回一个协程对象，可以通过 asyncio.iscoroutine 来验证：
 
+```
+print(asyncio.iscoroutine(do_some_work(3))) # True
+```
 
+此处还会引发一条警告
 
+```
+/Users/leicx/wangshuo/workspace/demo1/test1/test_async1.py:9: RuntimeWarning: coroutine 'do_somework' was never awaited
+  print(asyncio.iscoroutine(do_somework(3)))
+```
 
+要让这个协程对象运行的话，有两种方式
+
+* 在另一个已经运行的协程中用 `await` 等待它
+* 通过 `ensure_future` 函数计划它的执行
 
 
 
