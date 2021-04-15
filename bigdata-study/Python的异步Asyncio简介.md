@@ -62,7 +62,21 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(do_some_work(3))
 ```
 
+完整代码
 
+```
+import asyncio
+import time
+
+async def do_somework(x):
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime() ))
+    print("Waiting " + str(x))
+    await asyncio.sleep(x)
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime() ))
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(do_somework(3))
+```
 
 
 
