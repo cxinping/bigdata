@@ -241,8 +241,41 @@ Tornado有两种方式可改变同步的处理流程
 1, 异步化
 
 ···
+import tornado.ioloop
+import tornado.web
+import tornado.httpclient
 
+class MainHandler(tornado.web.RequestHandler):
+    @tornado.web.asynchronous
+    def get(self):
+        http = tornado.httpclient.AsyncHTTPClient()
+        http.fetch("http://www.baidu.com",
+                   callback=self.on_response)
+
+    def on_response(self, response):
+        if response.error: raise tornado.web.HTTPError(500)
+        self.write(response.body)
+        self.finish()
+
+
+def make_app():
+    return tornado.web.Application([
+        (r"/", MainHandler),
+    ])
+
+def main():
+    app = make_app()
+    app.listen(8888)
+    tornado.ioloop.IOLoop.current().start()
+
+if __name__ == "__main__":
+    main()
 ···
+本例中用装饰器 tornado.web.asynchronous定义了HTTP访问处理函数 get()，当get()函数返回时，对改HTTP访问的请求尚未完成，所以Tornado无法发送HTTP REsposne.只有当在随后的on_response()中的finish()函数被调用时，Tornado才知道本次处理已经完成，可以发送Response给客户端。
+
+2， 协程化
+
+
 
 
 ## 异步调用
