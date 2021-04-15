@@ -274,7 +274,11 @@ if __name__ == "__main__":
 本例中用装饰器 tornado.web.asynchronous定义了HTTP访问处理函数 get()，当get()函数返回时，对改HTTP访问的请求尚未完成，所以Tornado无法发送HTTP REsposne.只有当在随后的on_response()中的finish()函数被调用时，Tornado才知道本次处理已经完成，可以发送Response给客户端。
 
 2， 协程化
+Tornado协程结合了同步处理和异步处理的有点，能够适应海量客户端的高并发请求。
 
+```
+
+```
 
 
 
