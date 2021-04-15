@@ -94,21 +94,7 @@ if __name__ == "__main__":
 ### 同步例子
 
 ```
-from tornado.httpclient import HTTPClient
-
-def synchronous_visit():
-    http_client = HTTPClient()
-    response = http_client.fetch('http://www.163.com')
-    print(response.body)
-
-if __name__ == '__main__':
-    synchronous_visit()
-    print('--- end ---')
-```
-### 异步例子
-
-```
-# -*- coding: utf-8 -*-
+f# -*- coding: utf-8 -*-
 from tornado.httpclient import HTTPClient, AsyncHTTPClient
 import time
 
@@ -119,10 +105,32 @@ def synchronous_visit():
     print(response.body)
 
 if __name__ == '__main__':
-    AsyncHTTPClient()
+    synchronous_visit()
     print('--- end ---')
 ```
+### 异步例子
 
+```
+# -*- coding: utf-8 -*-
+import time
+from tornado.httpclient import AsyncHTTPClient
+import asyncio
+
+async def asynchronous_fetch(url):
+    http_client = AsyncHTTPClient()
+    response = await http_client.fetch(url)
+    await asyncio.sleep(5)
+    print(response.body)
+
+    return response.body
+
+if __name__ == '__main__':
+    print('--- end ---')
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(asynchronous_fetch('http://www.163.com'))
+```
+
+异步I/O访问 http://www.163.com网站的函数无需等待访问完成再返回
 
 
 
