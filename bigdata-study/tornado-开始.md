@@ -155,7 +155,31 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(coroutime_visit())
 ```
 
+2, 调用协程函数
 
+```
+# -*- coding: utf-8 -*-
+from tornado import gen
+from tornado.httpclient import AsyncHTTPClient
+import asyncio
+
+@gen.coroutine
+def coroutime_visit():
+    http_client = AsyncHTTPClient()
+    response = yield http_client.fetch("http://www.163.com")
+    print(response.body)
+
+@gen.coroutine
+def test():
+    print('--- start test()')
+    yield coroutime_visit()
+    print('--- end test()')
+
+
+loop = asyncio.get_event_loop()
+loop.run_until_complete(coroutime_visit())
+
+```
 
 
 ## 异步调用
