@@ -182,6 +182,30 @@ loop.run_until_complete(test())
 ```
 
 
+3, 通过协程函数调用协程函数
+
+```
+# -*- coding: utf-8 -*-
+from tornado.ioloop import IOLoop
+from tornado import gen
+from tornado.httpclient import AsyncHTTPClient
+
+@gen.coroutine
+def coroutime_visit():
+    http_client = AsyncHTTPClient()
+    response = yield http_client.fetch("http://www.163.com")
+    print(response.body)
+
+def func_normal():
+    print('start to call a coroutine')
+    IOLoop.current().run_sync(lambda: coroutime_visit())
+    print('end of calling coroutine')
+
+func_normal()
+
+```
+
+
 ## 异步调用
 ```
 import tornado.ioloop
