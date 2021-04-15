@@ -54,6 +54,13 @@ print(asyncio.iscoroutine(do_some_work(3))) # True
 * 在另一个已经运行的协程中用 `await` 等待它
 * 通过 `ensure_future` 函数计划它的执行
 
+简单来说，只有 loop 运行了，协程才可能运行。
+下面先拿到当前线程缺省的 loop ，然后把协程对象交给 loop.run_until_complete，协程对象随后会在 loop 里得到运行。
+
+```
+loop = asyncio.get_event_loop()
+loop.run_until_complete(do_some_work(3))
+```
 
 
 
