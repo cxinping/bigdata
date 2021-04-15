@@ -32,6 +32,19 @@ async def do_somework(x):
     await asyncio.sleep(x)
 ```
 
+asyncio.sleep 也是一个协程，所以 await asyncio.sleep(x) 就是等待另一个协程。
+
+## 运行协程
+
+调用协程函数，协程并不会开始运行，只是返回一个协程对象，可以通过 asyncio.iscoroutine 来验证：
+
+
+
+
+
+
+
+
 
 
 
