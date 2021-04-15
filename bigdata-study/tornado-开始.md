@@ -91,6 +91,23 @@ if __name__ == "__main__":
 
 在Python中，同步I/O操作被理解为一个可被调用的I/O函数会阻塞调用函数的执行，异步 I/O操作不会阻塞调用函数的执行。
 
+### 同步例子
+
+```
+from tornado.httpclient import HTTPClient
+
+def synchronous_visit():
+    http_client = HTTPClient()
+    response = http_client.fetch('http://www.163.com')
+    print(response.body)
+
+if __name__ == '__main__':
+    synchronous_visit()
+    print('--- end ---')
+```
+
+
+
 ## 异步调用
 ```
 import tornado.ioloop
