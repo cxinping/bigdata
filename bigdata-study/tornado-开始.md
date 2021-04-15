@@ -89,6 +89,8 @@ if __name__ == "__main__":
 
 > 异步 I/O 操作（asynchronous I/O operation）不导致请求进程阻塞 
 
+在Python中，同步I/O操作被理解为一个可被调用的I/O函数会阻塞调用函数的执行，异步 I/O操作不会阻塞调用函数的执行。
+
 ## 异步调用
 ```
 import tornado.ioloop
