@@ -277,8 +277,43 @@ if __name__ == "__main__":
 Tornado协程结合了同步处理和异步处理的有点，能够适应海量客户端的高并发请求。
 
 ```
+# -*- coding: utf-8 -*-
+
+import tornado.ioloop
+import tornado.web
+import tornado.httpclient
+
+
+class MainHandler(tornado.web.RequestHandler):
+    @tornado.gen.coroutine
+    def get(self):
+        http = tornado.httpclient.AsyncHTTPClient()
+        response = yield http.fetch("http://www.baidu.com")
+        self.write(response.body)
+
+
+def make_app():
+    return tornado.web.Application([
+        (r"/", MainHandler),
+    ], debug=True)
+
+
+def main():
+    app = make_app()
+    app.listen(8888)
+    print('--- start service ---')
+    tornado.ioloop.IOLoop.current().start()
+
+
+if __name__ == "__main__":
+    main()
 
 ```
+用tornado.gen.coroutine装饰 MainHandler的get(), post()等处理函数。
+
+使用一步对象处理耗时操作，。
+
+调用yield关键字获取异步对象的处理结果
 
 
 
