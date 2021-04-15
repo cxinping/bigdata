@@ -62,6 +62,10 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(do_some_work(3))
 ```
 
+run_until_complete 是一个阻塞（blocking）调用，直到协程运行结束，它才返回。这一点从函数名不难看出。
+
+run_until_complete 的参数是一个 future，但是我们这里传给它的却是协程对象，之所以能这样，是因为它在内部做了检查，通过 ensure_future 函数把协程对象包装（wrap）成了 future。所以，我们可以写得更明显一些：
+
 完整代码
 
 ```
