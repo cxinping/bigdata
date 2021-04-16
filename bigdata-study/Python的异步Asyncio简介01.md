@@ -82,6 +82,59 @@ loop = asyncio.get_event_loop()
 loop.run_until_complete(do_somework(3))
 ```
 
+## 回调
+
+假如协程是一个 IO 的读操作，等它读完数据后，我们希望得到通知，以便下一步数据的处理。这一需求可以通过往 future 添加回调来实现。
+
+```
+
+import asyncio
+import time
+
+async def do_somework(x):
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime() ))
+    print("Waiting " + str(x))
+    await asyncio.sleep(x)
+    print(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime() ))
+
+def done_callback(futu):
+    print('Done')
+
+loop = asyncio.get_event_loop()
+future = asyncio.ensure_future(do_somework(3))
+future.add_done_callback(done_callback)
+loop.run_until_complete(future)
+print('---- end ----')
+```
+
+## 多个协程
+
+实际项目中，往往有多个协程，同时在一个 loop 里运行。为了把多个协程交给 loop，需要借助 asyncio.gather 函数。
+
+> loop.run_until_complete(asyncio.gather(do_some_work(1), do_some_work(3)))
+
+或者先把协程存在列表里：
+
+```
+coros = [do_some_work(1), do_some_work(3)]
+loop.run_until_complete(asyncio.gather(*coros))
+```
+
+这两个协程是并发运行的，所以等待的时间不是 1 + 3 = 4 秒，而是以耗时较长的那个协程为准。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
