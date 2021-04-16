@@ -49,6 +49,43 @@ timer(add,1,2)
 
 嵌套函数和闭包可以理解为是同时存在的，上面的timer已经是高阶函数了，它接受函数作为入参，我们把它改造为嵌套函数实现装饰器：
 
+```
+def timer(func):
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        func(*args, **kwargs) #此处拿到了被装饰的函数func
+        time.sleep(2)#模拟耗时操作
+        long = time.time() - start
+        print(f'共耗时{long}秒。')
+    return wrapper #返回内层函数的引用
+
+@timer
+def add(a, b):
+    print(a+b)
+
+add(1, 2) #正常调用add
+```
+
+timer被我们改造成了装饰器，它接受被装饰函数为入参，返回内部嵌套函数的引用（注意：此处并未执行函数），内部嵌套函数wrapper持有被装饰函数的引用即func。
+
+“@”是Python的语法糖，它的作用类似于：
+
+```
+add = timer(add) #此处返回的是timer.<locals>.wrapper函数引用
+add(1, 2)
+```
+
+装饰器的加载到执行的流程：
+
+模块加载 ->> 遇到@，执行timer函数，传入add函数 ->> 生成timer.<locals>.wrapper函数并命名为add，其实是覆盖了原同名函数 ->> 调用add(1, 2) ->> 去执行timer.<locals>.wrapper(1, 2) ->> wrapper内部持有原add函数引用(func)，调用func(1, 2) ->>继续执行完wrapper函数
+    
+
+
+
+
+
+
+
 
 
 
