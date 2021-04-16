@@ -79,6 +79,155 @@ add(1, 2)
 
 模块加载 ->> 遇到@，执行timer函数，传入add函数 ->> 生成timer.<locals>.wrapper函数并命名为add，其实是覆盖了原同名函数 ->> 调用add(1, 2) ->> 去执行timer.<locals>.wrapper(1, 2) ->> wrapper内部持有原add函数引用(func)，调用func(1, 2) ->>继续执行完wrapper函数
     
+问：如果存在多个装饰器，执行顺序是什么样的呢？看下面的代码
+
+```
+def test1(func):
+    def wrapper(*args, **kwargs):
+        print('before test1 ...')
+        func(*args, **kwargs)
+        print('after test1 ...')
+    return wrapper #返回内层函数的引用
+
+def test2(func):
+    def wrapper(*args, **kwargs):
+        print('before test2 ...')
+        func(*args, **kwargs)
+        print('after test2 ...')
+    return wrapper #返回内层函数的引用
+
+@test2
+@test1
+def add(a, b):
+    print(a+b)
+
+add(1, 2) #正常调用add
+
+输出：
+before test2 ...
+before test1 ...
+3
+after test1 ...
+after test2 ...
+```
+
+如果把add函数比喻为圆心，test1为近心端，test2为远心端，那么执行的过程就好比一颗子弹从远心端沿着直径的轨迹穿过圆心再从远心端穿出。
+
+再形象一点，可以把装饰器想象成洋葱，由近及远对函数进行层层包裹，执行的时候就是拿一把刀从一侧开始切，直到切到另一侧结束。
+
+理解了装饰器之后，我们可以思考一下，带参数的装饰器该怎么写呢？
+
+我们知道装饰器最终返回的是嵌套函数的引用，只要记住这点，装饰器就任由我们发挥了。写一个带参数的装饰器：
+
+```
+def auth(permission):
+    def _auth(func):
+        def wrapper(*args, **kwargs):
+            print(f"验证权限[{permission}]...")
+            func(*args, **kwargs)
+            print("执行完毕...")
+
+        return wrapper
+
+    return _auth
+
+
+@auth("add")
+def add(a, b):
+    """
+    求和运算
+    """
+    print(a + b)
+
+
+add(1, 2)  # 正常调用add
+
+输出：
+验证权限[add]...
+3
+执行完毕...
+```
+
+有些同学要问了，经过装饰器之后的函数还是原来的函数吗？原来的函数肯定还存在的，只不过真正调用的是装饰后生成的新函数。
+
+那岂不是打破了“不能修改原函数”的规则？
+
+是的，看下面的示例：
+
+```
+print(add)
+print(add.__name__)
+print(add.__doc__)
+
+输出：
+<function auth.<locals>._auth.<locals>.wrapper at 0x10c871400>
+wrapper
+None
+```
+
+为了消除装饰器对原函数的影响，我们需要伪装成原函数，拥有原函数的属性，看起来就像是同一个人一样。
+
+functools为我们提供了便捷的方式，只需这样：
+
+
+```
+def auth(permission):
+    def _auth(func):
+        @functools.wraps(func) # 注意此处
+        def wrapper(*args, **kwargs):
+            print(f"验证权限[{permission}]...")
+            func(*args, **kwargs)
+            print("执行完毕...")
+
+        return wrapper
+
+    return _auth
+
+
+@auth("add")
+def add(a, b):
+    """
+    求和运算
+    """
+    print(a + b)
+
+print(add)
+print(add.__name__)
+print(add.__doc__)
+
+输出：
+<function add at 0x10997c488>
+add
+求和运算
+```
+
+unctools.wraps对我们的装饰器函数进行了装饰之后，add表面上看起来还是add。
+
+functools.wraps内部通过partial和update_wrapper对函数进行再加工，将原始被装饰函数(add)的属性拷贝给装饰器函数(wrapper)。 
+
+
+总结：
+
+1、装饰器原则：1）不能修改原函数 2）不能修改调用方式
+
+2、装饰器通过嵌套函数和闭包实现
+
+3、装饰器执行顺序：洋葱法则
+
+4、装饰器通过语法糖“@”修饰
+
+5、谨记装饰器返回的是持有被装饰函数引用的闭包函数的引用这条原则。
+
+
+
+
+
+
+
+
+
+
+
 
 
 
