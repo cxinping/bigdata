@@ -11,6 +11,12 @@ Asyncio 并不能带来真正的并行（parallelism）。当然，因为 GIL（
 
 可交给 asyncio 执行的任务，称为协程（coroutine）。一个协程可以放弃执行，把机会让给其它协程（即 yield from 或 await）。
 
+
+参考资料
+···
+https://segmentfault.com/a/1190000016676530
+···
+
 ## 定义协程
 
 协程的定义，需要使用 async def 语句。
