@@ -18,3 +18,5 @@ File(文件)->Preferences(首选项)->Usersettings(设置)
 在C:\Users\swang50\ 目录下新建pip文件夹，在pip文件加下，创建pip.ini文件，内容如下。
 
 
+Ansible playbooks
+https://docs.ansible.com/ansible/latest/user_guide/playbooks.html
