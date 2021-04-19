@@ -85,3 +85,8 @@ class SFTPClient:
         return True
 
 
+def is_blank(val):
+    return not (val and val.strip())
+    
+    
+
