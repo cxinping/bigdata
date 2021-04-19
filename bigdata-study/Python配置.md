@@ -13,5 +13,8 @@ File(文件)->Preferences(首选项)->Usersettings(设置)
 搜索 encod  或者 encoding ，然后修改为想要的编码格式。
 
 
+安装pip.ini
+
+在C:\Users\swang50\ 目录下新建pip文件夹，在pip文件加下，创建pip.ini文件，内容如下。
 
 
