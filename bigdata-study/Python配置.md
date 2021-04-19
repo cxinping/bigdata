@@ -38,3 +38,50 @@ def create_random_number(length=10):
         i += 1
 
     return raw
+    
+
+
+
+
+def __sftp_put_file(local_file):
+    host = app.config[CFG_SFTP_HOST] if CFG_SFTP_HOST in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_HOST)
+    port = app.config[CFG_SFTP_PORT] if CFG_SFTP_PORT in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_PORT)
+    username = app.config[CFG_SFTP_USER] if CFG_SFTP_USER in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_USER)
+    private_key_path = app.config[CFG_SFTP_PRIVATE_PATH] if CFG_SFTP_PRIVATE_PATH in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_PRIVATE_PATH)
+    remote_dirs = app.config[CFG_SFTP_PUT_DIRS] if CFG_SFTP_PUT_DIRS in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_PUT_DIRS)
+
+    log.info("sftp put %s to %s", local_file, remote_dirs)
+    with SFTPClient(host, port, username, private_key_path) as sftp_client:
+        for remote_dir in remote_dirs:
+            sftp_client.put(local_file, '/'.join((remote_dir, os.path.basename(local_file))))
+
+import paramiko
+
+class SFTPClient:
+    @log_entry_exit
+    def __init__(self, host, port, username, private_key_path):
+        self.host = host
+        self.port = port
+        self.username = username
+        self.private_key_path = private_key_path
+
+    def __enter__(self):
+        self.transport = paramiko.Transport((self.host, self.port))
+        with open(self.private_key_path) as private_key_file:
+            private_key = paramiko.RSAKey.from_private_key(private_key_file)
+        self.transport.connect(username=self.username, pkey=private_key)
+        self.sftp_client = paramiko.SFTPClient.from_transport(self.transport)
+        return self.sftp_client
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.sftp_client is not None:
+            self.sftp_client.close()
+        if self.transport is not None:
+            self.transport.close()
+
+        if exc_type is not None:
+            tb.print_exception(exc_type, exc_value, traceback)
+
+        return True
+
+
