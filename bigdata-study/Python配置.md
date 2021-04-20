@@ -1,3 +1,6 @@
+Python配置
+
+# PyCharm, VSCode 设置默认编码
 pycharm设置默认编码为utf-8
 
 第一步在我们的电脑上打开pycharm，点击file->settings
@@ -5,23 +8,27 @@ pycharm设置默认编码为utf-8
 第三步将Global Encoding和project Encoding的编码设置为utf-8，点击下拉框可以进行设置，如下图所示
 第五步我们也可以设置属性文件“Default Encoding for properties files”的编码为utf-8
 
-
+```
 # -*- coding: utf-8 -*-  
+```
 
 VS Code 改变默认文字编码 为utf-8
 File(文件)->Preferences(首选项)->Usersettings(设置)
 搜索 encod  或者 encoding ，然后修改为想要的编码格式。
 
-
+## 配置 Python源
 安装pip.ini
 
 在C:\Users\swang50\ 目录下新建pip文件夹，在pip文件加下，创建pip.ini文件，内容如下。
 
-
+## Ansible playbooks
 Ansible playbooks
-https://docs.ansible.com/ansible/latest/user_guide/playbooks.html
+> https://docs.ansible.com/ansible/latest/user_guide/playbooks.html
 
+## 参考代码
 
+生成随机数
+```
 def create_random_number(length=10):
     """ 生成len位的随机数 """
 
@@ -39,10 +46,11 @@ def create_random_number(length=10):
 
     return raw
     
+```
 
 
-
-
+上传文件
+```
 def __sftp_put_file(local_file):
     host = app.config[CFG_SFTP_HOST] if CFG_SFTP_HOST in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_HOST)
     port = app.config[CFG_SFTP_PORT] if CFG_SFTP_PORT in app.config else log.warning(WARN_MSG_MISSING_CONFIG, CFG_SFTP_PORT)
@@ -84,9 +92,13 @@ class SFTPClient:
 
         return True
 
+```
 
+
+判断空
+```
 def is_blank(val):
     return not (val and val.strip())
-    
+```    
     
 
