@@ -1,6 +1,6 @@
-Python配置
+# Python配置
 
-# PyCharm, VSCode 设置默认编码
+## PyCharm, VSCode 设置默认编码
 pycharm设置默认编码为utf-8
 
 第一步在我们的电脑上打开pycharm，点击file->settings
