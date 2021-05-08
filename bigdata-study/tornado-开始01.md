@@ -452,6 +452,6 @@ time_local = time.localtime(timestamp/1000)
 dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
 print(dt)
 ```
-
+转换成新的时间格式(精确到秒)
 
          
