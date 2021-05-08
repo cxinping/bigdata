@@ -440,7 +440,18 @@ if __name__ == "__main__":
 
 ```
 
+# 工作
 
+## 毫秒转成时间
+
+```
+import time
+
+timestamp = 1620432021000
+time_local = time.localtime(timestamp/1000)
+dt = time.strftime("%Y-%m-%d %H:%M:%S", time_local)
+print(dt)
+```
 
 
          
