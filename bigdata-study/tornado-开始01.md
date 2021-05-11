@@ -454,4 +454,34 @@ print(dt)
 ```
 转换成新的时间格式(精确到秒)
 
+## MySQL数据库连接重试功能和连接超时功能的DB连接Python实现
+
+```
+
+
+def reConndb(self):
+    # 数据库连接重试功能和连接超时功能的DB连接
+     _conn_status = True
+     _max_retries_count = 10  # 设置最大重试次数
+     _conn_retries_count = 0  # 初始重试次数
+     _conn_timeout = 3  # 连接超时时间为3秒
+     while _conn_status and _conn_retries_count <= _max_retries_count:
+        try:
+            print '连接数据库中..'
+            conn = pymysql.connect(host=DB_HOST,  port=3306, user=DB_USER, passwd=DB_PASSWORD, db=DB_DATABASE, charset=DB_CHARSET, connect_timeout=_conn_timeout)
+            _conn_status = False  # 如果conn成功则_status为设置为False则退出循环，返回db连接对象
+ 	    return conn
+        except:
+            _conn_retries_count += 1
+ 	    print _conn_retries_count
+        print 'connect db is error!!'
+        time.sleep(3)  # 此为测试看效果
+ 	continue
+
+
+
+```
+
+
+
          
