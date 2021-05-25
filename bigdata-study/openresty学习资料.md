@@ -2,9 +2,11 @@
 官网
 > https://openresty.org/en/download.html
 
-参考ziliao 
+参考资料
 ```
 https://www.jianshu.com/p/a20ff673d483
+
+
 ```
 
 # 源码安装 OpenResty
