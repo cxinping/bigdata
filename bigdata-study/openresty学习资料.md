@@ -30,6 +30,8 @@ cd openresty-1.19.3.1
 
 make && make install
 ```
+安装后会默认安装到 /usr/local/openresty 目录下。
+
 
 检查
 ```
