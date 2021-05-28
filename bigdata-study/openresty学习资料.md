@@ -79,7 +79,9 @@ Commercial support is available at
 ## 设置环境变量
 
 为了后面启动 OpenResty 的命令简单一些，不用在 OpenResty 的安装目录下进行启动，我们设置环境变量来简化操作。 将 nginx 目录添加到 PATH 中。打开文件 /etc/profile， 在文件末尾加入
+
 > export PATH=$PATH:/usr/local/openresty/nginx/sbin
+
 若你的安装目录不一样，则做相应修改。 注意：这一步操作需要重新加载环境变量才会生效，可通过命令source /etc/profile或者重启服务器等方式实现。
 
 
