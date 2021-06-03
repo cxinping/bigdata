@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-06-03T09:08:10.162Z" agent="5.0 (Macintosh)" etag="zVAkFh_Buj3MHbsE5bAv" version="14.7.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-06-03T09:14:14.104Z" agent="5.0 (Macintosh)" etag="FjLdjOw9QmNDfwlEhAkw" version="14.7.4" type="github">
   <diagram id="856ZvJbGQnMX7ldOnDJI" name="Page-1">
     <mxGraphModel dx="1051" dy="819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -25,7 +25,7 @@
             <mxPoint x="430" y="270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-7" value="&lt;div&gt;tidb_utils.get_related_addr(addr)&lt;/div&gt;&lt;div&gt;获得相关地址&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-7" value="&lt;div&gt;tidb_utils.eth_get_related_addr(addr)&lt;/div&gt;&lt;div&gt;获得相关地址&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="380" width="220" height="73" as="geometry" />
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-8" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-5" target="XW7_ojzKSVhWm9udO3rs-7">
