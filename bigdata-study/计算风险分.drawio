@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-06-03T09:52:38.696Z" agent="5.0 (Macintosh)" etag="U15iZF1R1ueIx6c6pgns" version="14.7.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-06-03T09:57:01.693Z" agent="5.0 (Macintosh)" etag="0LjAGoNW2up-3Xt_n2Kd" version="14.7.4" type="github">
   <diagram id="856ZvJbGQnMX7ldOnDJI" name="Page-1">
     <mxGraphModel dx="1465" dy="913" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -50,6 +50,45 @@
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="370" y="670" as="sourcePoint" />
             <mxPoint x="420" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-20" value="ETH 根据交易号计算风险分 " style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="451" y="30" width="130" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-21" value="eth_get_txs_riskscore(txid)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="406" y="147" width="220" height="73" as="geometry" />
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-22" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-20" target="XW7_ojzKSVhWm9udO3rs-21">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="486" y="370" as="sourcePoint" />
+            <mxPoint x="506" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-23" value="1, tidb_utils.eth_get_txs_addrs(txid)&lt;br&gt;根据txid, 查询代币为ETH的交易记录" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="406" y="258" width="220" height="73" as="geometry" />
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-24" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-21" target="XW7_ojzKSVhWm9udO3rs-23">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="726" y="310" as="sourcePoint" />
+            <mxPoint x="776" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-25" value="&lt;div&gt;2，eth_get_addr_riskscore2(from_addr)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="406" y="370" width="220" height="73" as="geometry" />
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-26" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-23" target="XW7_ojzKSVhWm9udO3rs-25">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="756" y="420" as="sourcePoint" />
+            <mxPoint x="806" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-27" value="3，eth_get_addr_riskscore2(to_addr)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="406" y="480" width="220" height="73" as="geometry" />
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-28" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-25" target="XW7_ojzKSVhWm9udO3rs-27">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="786" y="530" as="sourcePoint" />
+            <mxPoint x="516" y="500" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
