@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-06-03T06:55:57.707Z" agent="5.0 (Macintosh)" etag="E1ZO-nIhAOlTITnKrHOA" version="14.7.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-06-03T06:56:37.978Z" agent="5.0 (Macintosh)" etag="9t09LqV1duXOx7nIFINw" version="14.7.4" type="github">
   <diagram id="856ZvJbGQnMX7ldOnDJI" name="Page-1">
     <mxGraphModel dx="1051" dy="819" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -17,7 +17,13 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-5" value="get_labeled_addr_riskscore(addr)&lt;br&gt;根据地质查询标签，计算risk" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="60" y="270" width="220" height="73" as="geometry" />
+          <mxGeometry x="60" y="260" width="220" height="73" as="geometry" />
+        </mxCell>
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-6" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-2" target="XW7_ojzKSVhWm9udO3rs-5">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="380" y="320" as="sourcePoint" />
+            <mxPoint x="430" y="270" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
