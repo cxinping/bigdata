@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2021-06-04T11:10:42.480Z" agent="5.0 (Macintosh)" etag="dBqqVncGUDzY_4Ix2iPA" version="14.7.6" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2021-06-04T11:14:04.062Z" agent="5.0 (Macintosh)" etag="nrKHQRip68tHGzNCFfyC" version="14.7.6" type="github" pages="2">
   <diagram id="856ZvJbGQnMX7ldOnDJI" name="Page-1">
     <mxGraphModel dx="1606" dy="951" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -81,7 +81,7 @@
             <mxPoint x="230" y="157" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="IIjvISD3lN-DGj-ZSIPH-3" value="1, token_utils.query_tron_transaction_info(txid)&lt;br&gt;获得TRON交易的双方账户地址,包括TRX转账和智能合约转账" style="rounded=1;whiteSpace=wrap;html=1;" parent="N9jU_cckzsBoXIB6CpFo-1" vertex="1">
+        <mxCell id="IIjvISD3lN-DGj-ZSIPH-3" value="1, token_utils.query_tron_transaction_info(txid)&lt;br&gt;获得TRON交易的双方账户地址, 接收账户地址可以是个人账户，也可以是只能合约账户" style="rounded=1;whiteSpace=wrap;html=1;" parent="N9jU_cckzsBoXIB6CpFo-1" vertex="1">
           <mxGeometry x="130" y="273" width="270" height="85" as="geometry" />
         </mxCell>
         <mxCell id="IIjvISD3lN-DGj-ZSIPH-4" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="N9jU_cckzsBoXIB6CpFo-1" source="IIjvISD3lN-DGj-ZSIPH-1" target="IIjvISD3lN-DGj-ZSIPH-3" edge="1">
