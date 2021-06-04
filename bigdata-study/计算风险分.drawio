@@ -1,13 +1,13 @@
-<mxfile host="app.diagrams.net" modified="2021-06-04T09:32:45.469Z" agent="5.0 (Macintosh)" etag="6sLJUPrtnZaSLf6vl9xJ" version="14.7.4" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2021-06-04T09:45:37.954Z" agent="5.0 (Macintosh)" etag="xgpGHSuK0nRUtuT6UYYU" version="14.7.4" type="github" pages="2">
   <diagram id="856ZvJbGQnMX7ldOnDJI" name="Page-1">
     <mxGraphModel dx="1465" dy="913" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-1" value="ETH 根据账号计算风险分 " style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-1" value="TRON 根据账号计算风险分 " style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="105" y="40" width="130" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-2" value="eth_get_addr_riskscore2(addr)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-2" value="tron_get_addr_riskscore2(addr)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="157" width="220" height="73" as="geometry" />
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-3" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-1" target="XW7_ojzKSVhWm9udO3rs-2">
@@ -16,7 +16,7 @@
             <mxPoint x="160" y="160" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-5" value="1, eth_get_labeled_addr_riskscore(addr)&lt;br&gt;根据地址查询标签，计算risk" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-5" value="1, tron_get_labeled_addr_riskscore(addr)&lt;br&gt;根据地址查询标签，计算risk" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="268" width="220" height="73" as="geometry" />
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-6" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-2" target="XW7_ojzKSVhWm9udO3rs-5">
@@ -25,7 +25,7 @@
             <mxPoint x="430" y="270" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-7" value="&lt;div&gt;2，tidb_utils.eth_get_related_addr(addr)&lt;/div&gt;&lt;div&gt;在eth_token_traces表进行查询，根据账号地址获得发送方，接收方的最大的20条记录，在183天内&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-7" value="&lt;div&gt;2，tidb_utils.eth_get_related_addr(addr)&lt;/div&gt;&lt;div&gt;在trx_token_traces表进行查询，根据账号地址获得发送方，接收方的最大的20条记录，在183天内&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="380" width="220" height="73" as="geometry" />
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-8" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-5" target="XW7_ojzKSVhWm9udO3rs-7">
@@ -34,7 +34,7 @@
             <mxPoint x="460" y="380" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-13" value="3,eth_get_addr_riskscore_array()" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-13" value="3, tron_get_addr_riskscore_array()" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="60" y="490" width="220" height="73" as="geometry" />
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-14" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-7" target="XW7_ojzKSVhWm9udO3rs-13">
@@ -43,52 +43,13 @@
             <mxPoint x="170" y="510" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-16" value="tidb_utils.eth_get_addr_array_labels()&lt;br&gt;查询标签" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="XW7_ojzKSVhWm9udO3rs-16" value="tidb_utils.tron_get_addr_array_labels()&lt;br&gt;查询标签" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="54" y="612" width="220" height="73" as="geometry" />
         </mxCell>
         <mxCell id="XW7_ojzKSVhWm9udO3rs-19" value="" style="endArrow=classic;html=1;exitX=0.468;exitY=0.986;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-13" target="XW7_ojzKSVhWm9udO3rs-16">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="370" y="670" as="sourcePoint" />
             <mxPoint x="420" y="620" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-20" value="ETH 根据交易号计算风险分 " style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="448" y="37" width="130" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-21" value="eth_get_txs_riskscore(txid)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="403" y="154" width="220" height="73" as="geometry" />
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-22" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-20" target="XW7_ojzKSVhWm9udO3rs-21">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="483" y="377" as="sourcePoint" />
-            <mxPoint x="503" y="157" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-23" value="1, tidb_utils.eth_get_txs_addrs(txid)&lt;br&gt;根据txid, 查询代币为ETH的交易记录" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="403" y="265" width="220" height="73" as="geometry" />
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-24" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-21" target="XW7_ojzKSVhWm9udO3rs-23">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="723" y="317" as="sourcePoint" />
-            <mxPoint x="773" y="267" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-25" value="&lt;div&gt;2，eth_get_addr_riskscore2(from_addr)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="403" y="377" width="220" height="73" as="geometry" />
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-26" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-23" target="XW7_ojzKSVhWm9udO3rs-25">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="753" y="427" as="sourcePoint" />
-            <mxPoint x="803" y="377" as="targetPoint" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-27" value="3，eth_get_addr_riskscore2(to_addr)" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="403" y="487" width="220" height="73" as="geometry" />
-        </mxCell>
-        <mxCell id="XW7_ojzKSVhWm9udO3rs-28" value="" style="endArrow=classic;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="XW7_ojzKSVhWm9udO3rs-25" target="XW7_ojzKSVhWm9udO3rs-27">
-          <mxGeometry width="50" height="50" relative="1" as="geometry">
-            <mxPoint x="783" y="537" as="sourcePoint" />
-            <mxPoint x="513" y="507" as="targetPoint" />
           </mxGeometry>
         </mxCell>
       </root>
