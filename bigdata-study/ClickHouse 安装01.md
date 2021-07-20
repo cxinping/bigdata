@@ -23,6 +23,18 @@ yum install yum-utils
 
 
 
+ 确保CentOS支持SSE 
+
+```
+grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not supported"
+```
+
+
+
+
+
+
+
 导入镜像源 
 
 ```
@@ -135,6 +147,72 @@ vi /etc/clickhouse-server/config.xml中的如下配置项，类似mysql中的远
 
 
 
+## 创建账号
+
+1，clickhouse的密码有2种形式，一种是明文，一种是写sha256sum的Hash值
+
+官方不建议直接写明文密码，可以用以下命令生成密码
+
+```
+PASSWORD=$(base64 < /dev/urandom | head -c8); echo "$PASSWORD"; echo -n "$PASSWORD" | sha256sum | tr -d '-'
+```
+
+命令的返回值是
+
+```
+[root@localhost etc]# PASSWORD=$(base64 < /dev/urandom | head -c8); echo "$PASSWORD"; echo -n "$PASSWORD" | sha256sum | tr -d '-'
+mCcteXsK
+95f4ea9e80e5c679fbe4771f0aeb0209d9b88378e57bedc09fcc6ccfbd643e24  
+```
+
+mCcteXsK 是明文密码
+
+95f4ea9e80e5c679fbe4771f0aeb0209d9b88378e57bedc09fcc6ccfbd643e24 是加密密码
+
+
+
+2，cilckhouse的配置文件默认地址 /etc/clickhouse-server
+
+```
+cd /etc/clickhouse-server
+```
+
+修改 /etc/clickhouse-server/users.xml 文件， 找到 users --> default --> 标签下的password修改成password_sha256_hex，并把密文填进去 
+
+```
+<password_sha256_hex>密码密文</password_sha256_hex>
+```
+
+
+
+添加密码后，命令行启动的方式为
+
+```
+clickhouse-client -h ip地址 -d default -m -u default --password 明文密码
+```
+
+可以使用命令
+```
+clickhouse-client -h 127.0.0.1 -d default -m -u default --password mCcteXsK
+```
+
+用户名是default，密码是密码明文  mCcteXsK
+
+
+
+
+3, 重启服务
+
+```
+systemctl restart clickhouse-server
+```
+
+
+
+
+
+
+
 # 常用操作
 
 
@@ -176,7 +254,7 @@ vi /etc/clickhouse-server/config.xml中的如下配置项，类似mysql中的远
 
 ## python连接clickhouse
 
- 安装模块
+ 安装clickhouse驱动模块
 
 ```python
 pip install clickhouse-driver
