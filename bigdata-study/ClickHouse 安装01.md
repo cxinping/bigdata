@@ -323,6 +323,12 @@ create table mysql_engine
 
 
 
+参考资料：
+
+https://www.cnblogs.com/tencentdb/p/13915001.html
+
+https://blog.csdn.net/weixin_39025362/article/details/109165055
+
 
 
 
