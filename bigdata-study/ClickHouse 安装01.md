@@ -51,6 +51,18 @@ clickhouse-client-20.9.3.45-2.noarch.rpm
 
  注意，这三个rpm版本最好一致 , 注意安装顺序
 
+```
+rpm -ivh clickhouse-common-static-20.9.3.45-2.x86_64.rpm
+
+rpm -ivh clickhouse-server-20.9.3.45-2.noarch.rpm  
+
+rpm -ivh clickhouse-client-20.9.3.45-2.noarch.rpm 
+```
+
+
+
+
+
 
 
 启动服务 
@@ -123,13 +135,64 @@ vi /etc/clickhouse-server/config.xml中的如下配置项，类似mysql中的远
 
 
 
+# 常用操作
+
+
+
+## 创建数据库
+
+
+
+语法： CREATE DATABASE [IF NOT EXISTS] db_name 
+
+如果数据库db_name已经存在，则不会创建新的db_name数据库
+
+
+
+> create database if not exists spider
+
+
+
+## 创建表
+
+
+
+语法： CREATE TABLE t1(id UInt16,name String) ENGINE=TinyLog
+
+例如： create table t1(id UInt8,name String,address String)engine=MergeTree order by id 
+
+
+
+## 插入数据INSERT
+
+语法：INSERT INTO [db.]table [(c1, c2, c3)] VALUES (v11, v12, v13), (v21, v22, v23), …
+
+例如：insert into t1 (id,name,address) values(1,'aa','addr1'),(2,'bb','addr2')
 
 
 
 
+# 开发
+
+## python连接clickhouse
+
+ 安装模块
+
+```python
+pip install clickhouse-driver
+```
 
 
 
+使用
+
+```
+from clickhouse_driver import Client
+client = Client(host='127.0.0.1',port='9000',user=clickhouse_user ,password=clickhouse_pwd)
+sql = 'select * from db_name.tb_name limit 0, 1000'
+ans = client.execute(sql)
+
+```
 
 
 
