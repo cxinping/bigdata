@@ -262,13 +262,24 @@ pip install clickhouse-driver
 
 
 
-使用
+使用python操作clickhouse的表
 
 ```
 from clickhouse_driver import Client
-client = Client(host='127.0.0.1',port='9000',user=clickhouse_user ,password=clickhouse_pwd)
-sql = 'select * from db_name.tb_name limit 0, 1000'
-ans = client.execute(sql)
+
+def get_clickhouse_client():
+    host='192.168.11.128' #服务器地址
+    port = 9000 #端口
+    user= 'default' #用户名
+    password= 'mCcteXsK' #密码
+    database= 'spider' #数据库
+    send_receive_timeout = 5 #超时时间
+    client = Client(host=host, port=port, user=user, password=password,database=database, send_receive_timeout=send_receive_timeout)
+    return client
+
+def insert_demo():
+    client = get_clickhouse_client()
+    client.execute("""insert into t1(name) values('wangwu-111')""")
 
 ```
 
