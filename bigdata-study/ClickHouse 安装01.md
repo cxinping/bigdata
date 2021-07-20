@@ -49,14 +49,22 @@ clickhouse-server-20.9.3.45-2.noarch.rpm
 clickhouse-client-20.9.3.45-2.noarch.rpm 
 ```
 
- 注意，这三个rpm版本最好一致 
+ 注意，这三个rpm版本最好一致 , 注意安装顺序
 
 
 
- 启动服务 
+启动服务 
 
 ```
 systemctl start clickhouse-server
+```
+
+
+
+停止服务
+
+```
+systemctl stop clickhouse-server
 ```
 
 
@@ -71,15 +79,11 @@ clickhouse-client
 
 
 
-
-
-
-
 ## 设置系统参数 
 
 
 
-CentOS取消打开文件数限制：
+CentOS 取消 打开文件数限制：
 
 在/etc/security/limits.conf  /etc/security/limits.d/90-nproc.conf这两个文件最后新增以下内容：
 
@@ -95,9 +99,27 @@ CentOS取消打开文件数限制：
 
 
 
+## 远程连接配置项
 
+vi /etc/clickhouse-server/config.xml中的如下配置项，类似mysql中的远程连接权限，放开ipv4连接打开注释 
 
+> <listen_host>0.0.0.0</listen_host>
 
+具体配置如下所示
+
+```
+<!-- Listen specified host. use :: (wildcard IPv6 address), if you want to accept connections both with IPv4 and IPv6 from everywhere. -->
+<!-- <listen_host>::</listen_host> -->
+<!-- Same for hosts with disabled ipv6: -->
+ <listen_host>0.0.0.0</listen_host>
+
+<!-- Default values - try listen localhost on ipv4 and ipv6: -->
+<!--
+<listen_host>::1</listen_host>
+<listen_host>127.0.0.1</listen_host>
+-->
+
+```
 
 
 
