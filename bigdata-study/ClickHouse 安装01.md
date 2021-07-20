@@ -291,7 +291,7 @@ def insert_demo():
 
 
 
-创建一张mysql测试表
+创建一张MySQL测试表
 
 ```
 DROP TABLE IF EXISTS `mysql_engine`;
@@ -304,6 +304,8 @@ CREATE TABLE `mysql_engine` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='测试表';
 
 ```
+
+
 
 
 
