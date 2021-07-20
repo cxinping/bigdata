@@ -287,6 +287,36 @@ def insert_demo():
 
 
 
+# MySQL表引擎
+
+
+
+创建一张mysql测试表
+
+```
+DROP TABLE IF EXISTS `mysql_engine`;
+
+CREATE TABLE `mysql_engine` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `createDate` datetime default now() comment '创建时间' ,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=1000 DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='测试表';
+
+```
+
+
+
+
+
+create table mysql_engine
+(
+    id     Int32,
+    user_name String,
+    createDate DateTime
+)
+    engine = MySQL('192.168.11.128:3306', 'spider', 'mysql_engine', 'root', 'root');
+
 
 
 
