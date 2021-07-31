@@ -280,7 +280,6 @@ def get_clickhouse_client():
 def insert_demo():
     client = get_clickhouse_client()
     client.execute("""insert into t1(name) values('wangwu-111')""")
-
 ```
 
 
@@ -293,6 +292,8 @@ def insert_demo():
 
 MySQL引擎用于将远程的MySQL服务器中的表映射到ClickHouse中，并允许您对表进行insert和select查询，以方便您在ClickHouse与MySQL之间进行数据交换。
 MySQL数据库引擎会将对其的查询转换为MySQL语法并发送到MySQL服务器中，因此您可以执行诸如show tables或show create table之类的操作。
+
+
 
 创建一张MySQL测试表
 
@@ -312,14 +313,16 @@ CREATE TABLE `mysql_engine` (
  创建clickhouse表，并指定引擎为mysql 
 
 ```
-create table mysql_engine
+create table remote_mysql_engine
 (
     id     Int32,
     user_name String,
     createDate DateTime
 )
-    engine = MySQL('192.168.11.128:3306', 'spider', 'mysql_engine', 'root', 'root');
+    engine = MySQL('192.168.11.129:3306', 'spider', 'mysql_engine', 'root', 'root');
 ```
+
+
 
 
 
