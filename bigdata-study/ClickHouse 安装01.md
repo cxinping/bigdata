@@ -268,7 +268,7 @@ pip install clickhouse-driver
 from clickhouse_driver import Client
 
 def get_clickhouse_client():
-    host='192.168.11.128' #服务器地址
+    host='192.168.11.129' #服务器地址
     port = 9000 #端口
     user= 'default' #用户名
     password= 'mCcteXsK' #密码
