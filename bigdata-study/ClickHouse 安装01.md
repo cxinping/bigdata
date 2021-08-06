@@ -31,10 +31,6 @@ grep -q sse4_2 /proc/cpuinfo && echo "SSE 4.2 supported" || echo "SSE 4.2 not su
 
 
 
-
-
-
-
 导入镜像源 
 
 ```
