@@ -134,7 +134,6 @@ vi /etc/clickhouse-server/config.xml中的如下配置项，类似mysql中的远
 <listen_host>::1</listen_host>
 <listen_host>127.0.0.1</listen_host>
 -->
-
 ```
 
 
