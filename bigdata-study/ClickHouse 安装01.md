@@ -69,10 +69,6 @@ rpm -ivh clickhouse-client-20.9.3.45-2.noarch.rpm
 
 
 
-
-
-
-
 启动服务 
 
 ```
