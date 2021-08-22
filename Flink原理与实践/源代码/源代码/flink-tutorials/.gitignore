@@ -1,0 +1,6 @@
+target
+dependency-reduced-pom.xml
+*iml
+.idea
+derby.log
+.DS_Store
