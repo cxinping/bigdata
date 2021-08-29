@@ -14,8 +14,7 @@ public class BatchWCApp {
 
     public static void main(String[] args) throws Exception {
         ExecutionEnvironment environment = ExecutionEnvironment.getExecutionEnvironment();
-
-        DataSource<String> source = environment.readTextFile("data/wc.data");
+        DataSource<String> source = environment.readTextFile("src/main/resources/data/wc.data");
 
         source.flatMap(new PKFlatMapFunction())
                 .map(new PKMapFunction())
