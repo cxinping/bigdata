@@ -110,17 +110,15 @@ class AsyncKudu(object):
                     result = None
 
                     if sqltype == 'insert':
-                        # conn.jconn.setAutoCommit(False)
                         await cur.execute(sql)
-                        # conn.commit() # hive 不支持 commit
                     else:
                         await cur.execute(sql)
                         result = await cur.fetchall()
 
                     # 关闭游标
-                    cur.close()
+                    await cur.close()
                     # 关闭连接
-                    conn.close()
+                    await conn.close()
                     if sqltype != 'insert':
                         return result
         except Exception as ex:
@@ -199,7 +197,7 @@ def demo1():
     # for sql in select_sql_ls:
     #     print(sql)
 
-    # par2  insert sql
+    # part2  insert sql
     event_loop = asyncio.new_event_loop()
     task = event_loop.create_task(exec_insert(event_loop, sqltype='select', sqllist=select_sql_ls))
     event_loop.run_until_complete(task)
@@ -210,7 +208,6 @@ def demo1():
     insert_sql_ls = []
     if results:
         for rs in results:
-            #data = []
             if rs.result():
                 for item in rs.result():
                     #log.info(item)
@@ -283,6 +280,6 @@ def demo2():
 
 
 if __name__ == "__main__":
-    #demo1()
+    demo1()
 
-    demo2()
+    #demo2()
