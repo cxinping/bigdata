@@ -43,103 +43,123 @@ def execute_sql(sql):
     # jvm = jpype.getDefaultJVMPath()
     jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
 
-    if not jpype.isJVMStarted():
-        try:
-            #print('--------startjvm---------')
+    #if not jpype.isJVMStarted():
+        # try:
+        #     #print('--------startjvm---------')
+        #     jpype.startJVM(jvm, jvm_options)
+        #     # print("JVM path:"+ jpype.getDefaultJVMPath())
+        #     # print('----- running jvm -------------')
+        #
+        # except Exception as e:
+        #     print('====== throw error ======')
+        #     traceback.print_exc()
+        #     jpype.shutdownJVM()
+
+    try:
+        print('--------startjvm---------')
+        jpype.startJVM(jvm, jvm_options)
+    except Exception as e:
+        print('====== throw error ======')
+        pass
+
+    System = jpype.java.lang.System
+    # System = jpype.JClass('java.lang.System')
+    System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
+
+    Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
+    conf = Configuration()
+    conf.set("hadoop.security.authentication", "kerberos")
+
+    try:
+        UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
+        UserGroupInformation.setConfiguration(conf)
+        UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
+
+        conn = jaydebeapi.connect(dirver, url)
+        # print("* create connection object")
+
+        cur = conn.cursor()
+        cur.execute(sql)
+        list = cur.fetchall()
+        #list = cur.fetchone()
+
+        # 关闭游标
+        cur.close()
+        # 关闭连接
+        conn.close()
+        return list
+    except Exception as ex:
+        print(ex)
+        traceback.print_exc()
+
+
+def prod_execute_sql( sqltype='insert', sql='' ):
+    jars_path = '/you_filed_algos/jars/'
+    dirver = "org.apache.hive.jdbc.HiveDriver"
+    is_prod_env = True
+
+    if is_prod_env:
+        url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
+    else:
+        # 测试连接KUDU
+        url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
+
+    jars_file_ls = []
+    jars_file_str = ''
+    for jar in os.listdir(jars_path):
+        jars_file_ls.append(jars_path + jar)
+
+    jars_file_str = ':'.join(jars_file_ls)
+
+    jvm_options = "-Djava.class.path=" + jars_file_str
+
+    # jvm = jpype.getDefaultJVMPath()
+    jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
+
+    # if not jpype.isJVMStarted():
+    #     try:
+    #         # print('--------startjvm---------')
+    #         jpype.startJVM(jvm, jvm_options)
+    #         # print("JVM path:"+ jpype.getDefaultJVMPath())
+    #         # print('----- running jvm -------------')
+    #
+    #     except Exception as e:
+    #         print('====== throw error ======')
+    #         traceback.print_exc()
+    #         jpype.shutdownJVM()
+
+    try:
+        if not jpype.isJVMStarted():
+            print('--------startjvm---------')
             jpype.startJVM(jvm, jvm_options)
-            # print("JVM path:"+ jpype.getDefaultJVMPath())
-            # print('----- running jvm -------------')
 
-        except Exception as e:
-            print('====== throw error ======')
-            traceback.print_exc()
-            jpype.shutdownJVM()
+        if jpype.isJVMStarted() and not jpype.isThreadAttachedToJVM():
+            print('-----attaching jvm-----')
+            jpype.attachThreadToJVM()
+            jpype.java.lang.Thread.currentThread().setContextClassLoader(
+                jpype.java.lang.ClassLoader.getSystemClassLoader()
+            )
 
+            #print('--------startjvm---------')
+        #jpype.startJVM(jvm, jvm_options)
+        # print("JVM path:"+ jpype.getDefaultJVMPath())
+        # print('----- running jvm -------------')
+    except Exception as e:
+        #print('====== throw error ======')
+        traceback.print_exc()
+
+    try:
+        #print('----- running jvm ，' , jpype.isJVMStarted())
         System = jpype.java.lang.System
-        # System = jpype.JClass('java.lang.System')
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
+        if is_prod_env:
+            System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
+        else:
+            System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
 
         Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
         conf = Configuration()
         conf.set("hadoop.security.authentication", "kerberos")
 
-        try:
-            UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
-            UserGroupInformation.setConfiguration(conf)
-            UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-
-            conn = jaydebeapi.connect(dirver, url)
-            # print("* create connection object")
-
-            cur = conn.cursor()
-            cur.execute(sql)
-            list = cur.fetchall()
-            #list = cur.fetchone()
-
-            # 关闭游标
-            cur.close()
-            # 关闭连接
-            conn.close()
-            return list
-        except Exception as ex:
-            print(ex)
-            traceback.print_exc()
-
-
-def prod_execute_sql(  sqltype='insert', sql='' ):
-    is_commit = False
-    conn = None
-    database_list = None
-    jars_path = '/you_filed_algos/jars/'
-    dirver = "org.apache.hive.jdbc.HiveDriver"
-    # url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-    # url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    is_prod_env = True
-
-    if is_prod_env:
-        url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    else:
-        url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-
-    jars_file_ls = []
-    jars_file_str = ''
-    for jar in os.listdir(jars_path):
-        jars_file_ls.append(jars_path + jar)
-
-    jars_file_str = ':'.join(jars_file_ls)
-
-    jvm_options = "-Djava.class.path=" + jars_file_str
-
-    # jvm = jpype.getDefaultJVMPath()
-    jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
-
-    if not jpype.isJVMStarted():
-        try:
-            # print('--------startjvm---------')
-            jpype.startJVM(jvm, jvm_options)
-            # print("JVM path:"+ jpype.getDefaultJVMPath())
-            # print('----- running jvm -------------')
-
-        except Exception as e:
-            print('====== throw error ======')
-            traceback.print_exc()
-            jpype.shutdownJVM()
-
-    System = jpype.java.lang.System
-
-    # System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-    # System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-
-    if is_prod_env:
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-    else:
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-
-    Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
-    conf = Configuration()
-    conf.set("hadoop.security.authentication", "kerberos")
-
-    try:
         UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
         UserGroupInformation.setConfiguration(conf)
         # UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
@@ -151,7 +171,7 @@ def prod_execute_sql(  sqltype='insert', sql='' ):
             UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
 
         conn = jaydebeapi.connect(dirver, url)
-        # print("* create connection object")
+        #print("1111 * create connection object")
 
         cur = conn.cursor()
 
@@ -161,187 +181,19 @@ def prod_execute_sql(  sqltype='insert', sql='' ):
         else:
             cur.execute(sql)
             result = cur.fetchall()
+            #print('111 result', result)
             #result = cur.fetchone()
 
         # 关闭游标
         cur.close()
         # 关闭连接
         conn.close()
+
         if sqltype != 'insert':
             return result
     except Exception as ex:
         print(ex)
         traceback.print_exc()
-
-def exe_pro_sql(  sqltype='insert', sql='' ):
-    is_commit = False
-    conn = None
-    database_list = None
-    jars_path = '/you_filed_algos/jars/'
-    dirver = "org.apache.hive.jdbc.HiveDriver"
-    # url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-    # url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    is_prod_env = True
-
-    if is_prod_env:
-        url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    else:
-        url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-
-    jars_file_ls = []
-    jars_file_str = ''
-    for jar in os.listdir(jars_path):
-        jars_file_ls.append(jars_path + jar)
-
-    jars_file_str = ':'.join(jars_file_ls)
-
-    jvm_options = "-Djava.class.path=" + jars_file_str
-
-    # jvm = jpype.getDefaultJVMPath()
-    jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
-
-    if not jpype.isJVMStarted():
-        try:
-            # print('--------startjvm---------')
-            jpype.startJVM(jvm, jvm_options)
-            # print("JVM path:"+ jpype.getDefaultJVMPath())
-            # print('----- running jvm -------------')
-
-        except Exception as e:
-            print('====== throw error ======')
-            traceback.print_exc()
-            jpype.shutdownJVM()
-
-    System = jpype.java.lang.System
-
-    # System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-    # System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-
-    if is_prod_env:
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-    else:
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-
-    Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
-    conf = Configuration()
-    conf.set("hadoop.security.authentication", "kerberos")
-
-    try:
-        UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
-        UserGroupInformation.setConfiguration(conf)
-        # UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-        # UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
-
-        if is_prod_env:
-            UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
-        else:
-            UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-
-        conn = jaydebeapi.connect(dirver, url)
-        # print("* create connection object")
-
-        cur = conn.cursor()
-
-        if sqltype == 'insert':
-            #conn.jconn.setAutoCommit(False)
-            cur.execute(sql)
-            #conn.commit() # hive 不支持 commit
-        else:
-            cur.execute(sql)
-            result = cur.fetchall()
-            #result = cur.fetchone()
-
-        # 关闭游标
-        cur.close()
-        # 关闭连接
-        conn.close()
-        if sqltype != 'insert':
-            return result
-    except Exception as ex:
-        print(ex)
-        traceback.print_exc()
-
-def exe_pro_many_sql(  sql='' ,data=[] ):
-    is_commit = False
-    conn = None
-    database_list = None
-    jars_path = '/you_filed_algos/jars/'
-    dirver = "org.apache.hive.jdbc.HiveDriver"
-    # url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-    # url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    is_prod_env = True
-
-    if is_prod_env:
-        url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    else:
-        url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-
-    jars_file_ls = []
-    jars_file_str = ''
-    for jar in os.listdir(jars_path):
-        jars_file_ls.append(jars_path + jar)
-
-    jars_file_str = ':'.join(jars_file_ls)
-
-    jvm_options = "-Djava.class.path=" + jars_file_str
-
-    # jvm = jpype.getDefaultJVMPath()
-    jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
-
-    if not jpype.isJVMStarted():
-        try:
-            # print('--------startjvm---------')
-            jpype.startJVM(jvm, jvm_options)
-            # print("JVM path:"+ jpype.getDefaultJVMPath())
-            # print('----- running jvm -------------')
-
-        except Exception as e:
-            print('====== throw error ======')
-            traceback.print_exc()
-            jpype.shutdownJVM()
-
-    System = jpype.java.lang.System
-
-    # System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-    # System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-
-    if is_prod_env:
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-    else:
-        System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-
-    Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
-    conf = Configuration()
-    conf.set("hadoop.security.authentication", "kerberos")
-
-    try:
-        UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
-        UserGroupInformation.setConfiguration(conf)
-        # UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-        # UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
-
-        if is_prod_env:
-            UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
-        else:
-            UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-
-        conn = jaydebeapi.connect(dirver, url)
-        # print("* create connection object")
-
-        cur = conn.cursor()
-
-        cur.executemany(sql, data)
-
-        # 关闭游标
-        cur.close()
-        # 关闭连接
-        conn.close()
-
-    except Exception as ex:
-        print(ex)
-        traceback.print_exc()
-
-
 
 def dis_connection():
     if jpype.isJVMStarted():
@@ -384,12 +236,16 @@ if __name__ == "__main__":
     # dis_connection()
 
     # select finance_travel_id ,bill_id, apply_emp_id, apply_emp_name, check_amount,jzpz  from 01_datamart_layer_007_h_cw_df.finance_travel_bill where check_amount > jzpz
-    sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz'
+    sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz limit 5'
     print(sql)
     records = prod_execute_sql(sqltype='select', sql=sql)
-    print('***' * 10 )
-    print('*** query_kudu_data=>', len(records))
-    print('***' * 10 )
+    print('111*** query_kudu_data=>', len(records))
+
+    sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz limit 5'
+    print(sql)
+    records = prod_execute_sql(sqltype='select', sql=sql)
+    print('222*** query_kudu_data=>', len(records))
+
     dis_connection()
     print('-- ok --')
 
