@@ -6,46 +6,13 @@ Created on 2021-08-05
 """
 
 from report.commons.logging import get_logger
-import pandas as pd
 from report.commons.connect_kudu import prod_execute_sql, dis_connection
 import time
-
-pd.set_option('display.max_columns', None)  # 显示完整的列
-pd.set_option('display.max_rows', None)  # 显示完整的行
-pd.set_option('display.expand_frame_repr', False)  # 设置不折叠数据
 
 log = get_logger(__name__)
 
 
-def query_kudu_data(sql, columns):
-    """
-    发票日期异常检查
-    :return:
-    """
-    records = prod_execute_sql(sqltype='select', sql=sql)
-    log.info('***' * 10)
-    log.info('*** query_kudu_data=>' + str(len(records)))
-    log.info('***' * 10)
-
-    dataFromKUDU = []
-    for item in records:
-        record = []
-        if columns:
-            for idx in range(len(columns)):
-                # print(item[idx], type(item[idx]))
-
-                if str(item[idx]) == "None":
-                    record.append(None)
-                else:
-                    record.append(str(item[idx]))
-
-        dataFromKUDU.append(record)
-
-    df = pd.DataFrame(data=dataFromKUDU, columns=columns)
-    return df
-
-
-def check_03_consistent_amount_222():
+def check_03_consistent_amount():
     columns_ls = ['company_code', 'bill_id', 'account_period', 'account_item', 'finance_number', 'cost_center',
                   'profit_center', 'bill_code', 'origin_name', 'destin_name', 'travel_beg_date', 'travel_end_date',
                   'jour_amount', 'accomm_amount', 'subsidy_amount', 'other_amount',
@@ -74,7 +41,7 @@ def check_03_consistent_amount_222():
                 tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill order by bill_id limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
-                if limit_size != 0 :
+                if limit_size != 0:
                     select_sql_ls.append(tmp_sql)
                 break
             else:
@@ -93,7 +60,7 @@ def check_03_consistent_amount_222():
 
     query_data = []
     for sel_sql in select_sql_ls:
-        #log.info(sel_sql)
+        # log.info(sel_sql)
         data = prod_execute_sql(sqltype='select', sql=sel_sql)
         # print(data)
         if data:
@@ -117,7 +84,7 @@ jour_amount, accomm_amount,
 subsidy_amount, other_amount,
 emp_code,emp_name, 
 check_amount,  jzpz, unusual_id)VALUES
-    """.replace('\r','').replace('\n','').strip()
+    """.replace('\r', '').replace('\n', '').strip()
     idx = 0
     start_time = time.perf_counter()
 
@@ -157,25 +124,25 @@ check_amount,  jzpz, unusual_id)VALUES
 "{emp_code}", "{emp_name}" , 
 {check_amount} , {jzpz} , "{unusual_id}" )
         """.format(company_code=company_code, bill_id=bill_id,
-                                               account_period=account_period, account_item=account_item,
-                                               finance_number=finance_number, cost_center=cost_center,
-                                               profit_center=profit_center, cart_head=cart_head, bill_code=bill_code,
-                                               origin_city=origin_city, destin_city=destin_city, beg_date=beg_date,
-                                               end_date=end_date,
-                                               jour_amount=jour_amount, accomm_amount=accomm_amount,
-                                               subsidy_amount=subsidy_amount, other_amount=other_amount,
-                                               emp_code=emp_code, emp_name=emp_name,
-                                               check_amount=check_amount, jzpz=jzpz, unusual_id=unusual_id).replace('\r','').replace('\n','').strip()
+                   account_period=account_period, account_item=account_item,
+                   finance_number=finance_number, cost_center=cost_center,
+                   profit_center=profit_center, cart_head=cart_head, bill_code=bill_code,
+                   origin_city=origin_city, destin_city=destin_city, beg_date=beg_date,
+                   end_date=end_date,
+                   jour_amount=jour_amount, accomm_amount=accomm_amount,
+                   subsidy_amount=subsidy_amount, other_amount=other_amount,
+                   emp_code=emp_code, emp_name=emp_name,
+                   check_amount=check_amount, jzpz=jzpz, unusual_id=unusual_id).replace('\r', '').replace('\n',
+                                                                                                          '').strip()
 
-
-        if idx < batch_size :
+        if idx < batch_size:
             tmp_ls.append(value_sql)
-        elif idx == batch_size :
+        elif idx == batch_size:
             # 满一个批次进行处理操作
             tmp_ls.append(value_sql)
             result_sql = insert_sql + ",".join(tmp_ls)
             sqllist.append(result_sql)
-            #print('* inner batch tmp_ls=', ','.join(tmp_ls))
+            # print('* inner batch tmp_ls=', ','.join(tmp_ls))
             tmp_ls.clear()
             idx = 0
 
@@ -186,12 +153,86 @@ check_amount,  jzpz, unusual_id)VALUES
 
     log.info('* ready sql for insert')
     for insert_sql in sqllist:
-        #print(insert_sql)
+        # print(insert_sql)
         prod_execute_sql(sqltype='insert', sql=insert_sql)
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 插入耗时 {consumed_time} sec')
 
 
+def check_06_reasonsubsidy_amount():
+    """
+    需求6： 通过按出差人天和报销标准，重新计算和复核出差补助报销金额，是否复核集团要求和规定，尤其是连续出差超过14天的，是否按照分段报销标准进行计算。
+    :return:
+    """
+
+    # part1 select data
+    start_time = time.perf_counter()
+    # check_amount费用报销金额， jzpz 票据金额， 检查是否存在费用报销金额大于原始票据金额情况
+    columns_ls = ['bill_id', 'apply_beg_date', 'apply_end_date', 'check_amount', 'total_date']
+    sel_sql = """
+    select a.bill_id, a.apply_beg_date, a.apply_end_date, a.check_amount,  a.total_date from
+    (
+     select bill_id, apply_beg_date, apply_end_date ,check_amount, (unix_timestamp(apply_end_date, 'yyyyMMdd')-unix_timestamp(apply_beg_date, 'yyyyMMdd'))/ (60 * 60 * 24) as total_date
+     from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+    )a,(select standard_value, out_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='06') b
+    where  a.check_amount > ( 14 * b.standard_value + (a.total_date - 14 ) * b.out_value ) 
+    and a.total_date >14 limit 1020
+    """.replace('\r', '').replace('\n', '').strip()
+    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sel_sql)
+    records = prod_execute_sql(sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    log.info(f'* 查询结果 {count_records} 条' )
+
+    max_size = 1 * 1000
+    limit_size = 10000
+    select_sql_ls = []
+    sel_columns = []
+    for column in columns_ls:
+        sel_columns.append("a." + column)
+    columns_str = ",".join(sel_columns)
+
+    if count_records >= max_size:
+        offset_size = 0
+        while offset_size <= count_records:
+
+            if offset_size + limit_size > count_records:
+                limit_size = count_records - offset_size
+                # sel_sql
+                tmp_sql = "select {columns_str} from (sel_sql) order by bill_id limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size,sel_sql=sel_sql)
+
+                #if limit_size != 0:
+                select_sql_ls.append(tmp_sql)
+                print('111 ',tmp_sql)
+                break
+            else:
+                tmp_sql = "select {columns_str} from (sel_sql) order by bill_id limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size,sel_sql=sel_sql)
+                select_sql_ls.append(tmp_sql)
+
+            offset_size = offset_size + limit_size
+    else:
+        tmp_sql = "select {columns_str} from ({sel_sql})a".format(
+            columns_str=columns_str,sel_sql=sel_sql)
+        select_sql_ls.append(tmp_sql)
+
+    # print(len(select_sql_ls), select_sql_ls)
+    log.info('* 开始分页查询')
+    for sql in select_sql_ls:
+        print(sql)
+
+
+
+    consumed_time = round(time.perf_counter() - start_time)
+    print(f'* consumed_time={consumed_time} sec')
+
+    dis_connection()
+
+
 if __name__ == "__main__":
-    check_03_consistent_amount_222()
+    # 需求3
+    # check_03_consistent_amount()
+
+    # 需求6
+    check_06_reasonsubsidy_amount()

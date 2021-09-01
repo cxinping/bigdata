@@ -130,7 +130,7 @@ def prod_execute_sql( sqltype='insert', sql='' ):
 
     try:
         if not jpype.isJVMStarted():
-            print('--------startjvm---------')
+            #print('--------startjvm---------')
             jpype.startJVM(jvm, jvm_options)
 
         if jpype.isJVMStarted() and not jpype.isThreadAttachedToJVM():
