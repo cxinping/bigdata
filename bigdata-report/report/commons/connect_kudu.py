@@ -121,6 +121,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
 
     jars_file_str = ':'.join(jars_file_ls)
 
+    #jvm_options = ["-Djava.class.path=" + jars_file_str, '-Xmx2G','-Xms512M']
     jvm_options = "-Djava.class.path=" + jars_file_str
 
     # jvm = jpype.getDefaultJVMPath()
@@ -141,7 +142,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
     try:
         if not jpype.isJVMStarted():
             #print('--------startjvm---------')
-            jpype.startJVM(jvm, jvm_options)
+            jpype.startJVM(jvm, "-ea", jvm_options, '-Xmx5g', '-Xms5g', '-Xmn2g' ,'-XX:+UseParNewGC', '-XX:ParallelGCThreads=8' , '-XX:SurvivorRatio=6', '-XX:+UseConcMarkSweepGC')
 
         if jpype.isJVMStarted() and not jpype.isThreadAttachedToJVM():
             print('-----attaching jvm-----')
@@ -240,16 +241,22 @@ if __name__ == "__main__":
     # print(f'* consumed_time={consumed_time}')
     # dis_connection()
 
-    # select finance_travel_id ,bill_id, apply_emp_id, apply_emp_name, check_amount,jzpz  from 01_datamart_layer_007_h_cw_df.finance_travel_bill where check_amount > jzpz
-    sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz limit 5'
-    print(sql)
-    records = prod_execute_sql(sqltype='select', sql=sql)
-    print('111*** query_kudu_data=>', len(records))
+    # sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz limit 5'
+    # print(sql)
+    # records = prod_execute_sql(sqltype='select', sql=sql)
+    # print('111*** query_kudu_data=>', len(records))
+    #
+    # sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz limit 5'
+    # print(sql)
+    # records = prod_execute_sql(sqltype='select', sql=sql)
+    # print('222*** query_kudu_data=>', len(records))
 
-    sql = 'select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t where t.check_amount > t.jzpz limit 5'
+    sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 3'
     print(sql)
     records = prod_execute_sql(sqltype='select', sql=sql)
-    print('222*** query_kudu_data=>', len(records))
+    print('*** query_kudu_data=>', len(records))
+    for record in records:
+        print(record)
 
     dis_connection()
     print('-- ok --')

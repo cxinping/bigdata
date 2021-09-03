@@ -26,7 +26,7 @@ def demo():
  from  01_datamart_layer_007_h_cw_df.finance_travel_bill   
  group by bill_id,invo_code,billingdate,travel_beg_date,travel_end_date,company_code,account_period,account_item,finance_number,cost_center,bill_code,origin_name,destin_name,jour_amount,accomm_amount,subsidy_amount,other_amount,check_amount,jzpz 
     """
-    sel_sql = 'select a.* from ({sel_sql})a limit 500000'.format(sel_sql=sel_sql)
+    sel_sql = 'select a.* from ({sel_sql})a limit 1000000'.format(sel_sql=sel_sql)
     start_time = time.perf_counter()
     records = prod_execute_sql(sqltype='select', sql=sel_sql)
     consumed_time = round(time.perf_counter() - start_time)
@@ -39,13 +39,13 @@ def demo():
 
 
 def main():
-    demo()
+    #demo()
 
     # 需求1
     #check_01_invoice_data()
 
     # 需求2 未做
-    # check_02_trip_data()
+    check_02_trip_data()
 
     # 需求3
     #check_03_consistent_amount()
@@ -172,9 +172,28 @@ def check_01_invoice_data():
     dis_connection()
 
 
-# def check_02_trip_data():
-#     pass
+def check_02_trip_data():
+    sql = """
+    select * from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name != ''
+    """
+    start_time = time.perf_counter()
+    select_sql_ls= []
+    select_sql_ls.append(sql)
+    query_data = []
+    for sel_sql in select_sql_ls:
+        # log.info(sel_sql)
+        data = prod_execute_sql(sqltype='select', sql=sel_sql)
+        # print(data)
+        if data:
+            query_data.extend(data)
 
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 查询耗时 {consumed_time} sec')
+    print(len(data))
+
+
+
+    dis_connection()
 
 def check_03_consistent_amount():
     columns_ls = ['company_code', 'bill_id', 'account_period', 'account_item', 'finance_number', 'cost_center',
