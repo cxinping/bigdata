@@ -37,7 +37,7 @@ def test():
         out = 'result=> %s|%s|%s|%s' %(country, province, city, district)
         print(out)
 
-def match_Address(data):
+def match_address(data):
     import re
     #PATTERN1 = r'([\u4e00-\u9fa5]{2,5}?(?:省|自治区|市)){0,1}([\u4e00-\u9fa5]{2,7}?(?:区|县|州)){0,1}([\u4e00-\u9fa5]{2,7}?(?:镇)){0,1}([\u4e00-\u9fa5]{2,7}?(?:村|街|街道)){0,1}([\d]{1,3}?(号)){0,1}'
     PATTERN1 = r'([\u4e00-\u9fa5]{2,5}?(?:省|自治区|市)){0,1}([\u4e00-\u9fa5]{2,7}?(?:区|县|州)){0,1}([\u4e00-\u9fa5]{2,7}?(?:镇)){0,1}([\u4e00-\u9fa5]{2,7}?(?:村|街|街道)){0,1}([\d]{1,3}?(号)){0,1}'
@@ -54,7 +54,7 @@ def match_Address(data):
     p5 = ''
     p6 = ''
     m = pattern.search(data)
-    print(m.lastindex)
+    #print(m.lastindex)
     if not m:
         print('None')
     if m.lastindex >= 1:
@@ -72,15 +72,44 @@ def match_Address(data):
     out = '%s|%s|%s|%s|%s|%s' % (province, city, p3, p4, p5, p6)
     return province, city
 
+def match_address2(place , key):
+
+    ssxq = ['省', '市', '县', '区']
+    indexes0 = [place.find(x) for x in ssxq]
+    indexes = [x for x in indexes0 if x > 0]
+    indexes2 = sorted(indexes)
+    indexes2.insert(0, -1)
+    address = []
+
+    for i, x in enumerate(indexes2):
+        if i == len(indexes2) - 1:
+            continue
+        else:
+            address.append(place[x + 1:indexes2[i + 1] + 1])
+
+    for addr in address:
+
+        if addr.find(key) > -1:
+            return addr
+    return None
+
 if __name__ == '__main__':
     #data = str(input("请输入文本:"))
-    data = "安徽省淮南县大通区大通街道某某某"
+    #data = "安徽省淮南县大通区大通街道某某某"
+    data = "贵州省黔南州贵定县"
     #data = '贵州省黔南州贵定县'
-    province, city = match_Address(data)
+    province, city = match_address(data)
     print(province, city)
-    idx = city.find('县')
 
-    xian_city = city[0:city.find('县')+1]
+    idx = city.find('市')+1
+    xian_city = city[idx:]
     print(xian_city)
+    print('--------------------------------')
+    # print(''.join(re.compile(r"[\u4E00-\u9FA5\w]+市").findall(data)[0]))
+    # print(''.join(re.compile(r"[\u4E00-\u9FA5\w]+省").findall(data)[0]))
+    # print(''.join(re.compile(r"[\u4E00-\u9FA5\w]+县").findall(data)[0]))
 
+    place = '上海市金山区金一东路80号37909988'
+    address = match_address2(place=place,key='市')
+    print(address)
 
