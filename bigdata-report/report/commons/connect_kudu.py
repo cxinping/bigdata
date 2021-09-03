@@ -93,14 +93,24 @@ def execute_sql(sql):
         traceback.print_exc()
 
 
-def prod_execute_sql( sqltype='insert', sql='' ):
+def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
+    """
+    :param conn_type: 连接类型
+                    prod 生产环境
+                    test 测试环境
+    :param sqltype:
+    :param sql:
+    :return:
+    """
     jars_path = '/you_filed_algos/jars/'
     dirver = "org.apache.hive.jdbc.HiveDriver"
     is_prod_env = True
+    PROD = 'prod'    # 生产环境
+    TEST = 'test'    # 测试环境
 
-    if is_prod_env:
+    if conn_type == PROD:
         url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
-    else:
+    elif conn_type == TEST:
         # 测试连接KUDU
         url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
 
@@ -151,9 +161,9 @@ def prod_execute_sql( sqltype='insert', sql='' ):
     try:
         #print('----- running jvm ，' , jpype.isJVMStarted())
         System = jpype.java.lang.System
-        if is_prod_env:
+        if conn_type == PROD:
             System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
-        else:
+        elif conn_type == TEST:
             System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
 
         Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
@@ -162,12 +172,10 @@ def prod_execute_sql( sqltype='insert', sql='' ):
 
         UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
         UserGroupInformation.setConfiguration(conf)
-        # UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-        # UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
 
-        if is_prod_env:
+        if conn_type == PROD:
             UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
-        else:
+        elif conn_type == TEST:
             UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
 
         conn = jaydebeapi.connect(dirver, url)
@@ -177,12 +185,9 @@ def prod_execute_sql( sqltype='insert', sql='' ):
 
         if sqltype == 'insert':
             cur.execute(sql)
-            #conn.commit() # hive 不支持 commit
         else:
             cur.execute(sql)
             result = cur.fetchall()
-            #print('111 result', result)
-            #result = cur.fetchone()
 
         # 关闭游标
         cur.close()
