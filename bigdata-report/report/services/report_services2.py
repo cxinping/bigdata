@@ -9,6 +9,8 @@ from report.commons.logging import get_logger
 from report.commons.connect_kudu import prod_execute_sql, dis_connection
 from report.commons.tools import match_address
 import time
+import json
+import os
 
 log = get_logger(__name__)
 
@@ -40,13 +42,13 @@ def demo():
 
 
 def main():
-    demo()
+    #demo()
 
     # 需求1
     #check_01_invoice_data()
 
     # 需求2 未做
-    #check_02_trip_data()
+    check_02_trip_data()
 
     # 需求3
     #check_03_consistent_amount()
@@ -174,11 +176,15 @@ def check_01_invoice_data():
 
 
 def check_02_trip_data():
-    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank','bill_id']
+    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank' ]
+    extra_columns_ls = ['bill_id', 'company_code', 'account_period', 'account_item','finance_number','cost_center','profit_center','bill_code', 'origin_name',
+                        'destin_name', 'travel_beg_date' , 'travel_end_date', 'jour_amount', 'accomm_amount', 'subsidy_amount', 'other_amount',
+                        'check_amount', 'jzpz' ]
+    columns_ls.extend(extra_columns_ls)
     columns_str = ",".join(columns_ls)
 
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 1000000
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 800000
     """.format(columns_str=columns_str)
     start_time = time.perf_counter()
     select_sql_ls= []
@@ -232,11 +238,48 @@ def check_02_trip_data():
             if is_match == False:
                 match_query_ls.append(data)
 
-    for record in match_query_ls:
-        print(record)
+    dest_file = "/my_filed_algos/check_02_trip_data.json"
+    if os.path.exists(dest_file):
+        os.remove(dest_file)
 
+    for item in match_query_ls:
+        print(item)
+        unusual_id = '02'
+        bill_id = str(item[4]) if item[4] is not None else ''
+        company_code = str(item[5]) if item[5] is not None else ''
+        account_period = str(item[6]) if item[6] is not None else ''
+        account_item = str(item[7]) if item[7] is not None else ''
+        finance_number = str(item[8]) if item[8] is not None else ''
+        cost_center = str(item[9]) if item[9] is not None else ''
+        profit_center = str(item[10]) if item[10] is not None else ''
+        cart_head = ' '
+        bill_code = str(item[11]) if item[11] is not None else ''
+        origin_city = str(item[12]) if item[12] is not None else ''
+        destin_city = str(item[13]) if item[13] is not None else ''
+        beg_date = str(item[14]) if item[14] is not None else ''
+        end_date = str(item[15]) if item[15] is not None else ''
+        emp_name = ' '
+        emp_code = ' '
+        jour_amount = item[16] if item[16] is not None else 0
+        accomm_amount = item[17] if item[17] is not None else 0
+        subsidy_amount = item[18] if item[18] is not None else 0
+        other_amount = item[19] if item[19] is not None else 0
+        check_amount = item[20] if item[20] is not None else 0
+        jzpz = item[21] if item[21] is not None else 0
+
+        dict_data = {'unusual_id' : unusual_id, 'bill_id' : bill_id, 'company_code': company_code, 'account_period' : account_period , 'account_item' : account_item,
+                     'finance_number' : finance_number, 'cost_center': cost_center, 'profit_center' : profit_center, 'cart_head':cart_head, 'bill_code' : bill_code,
+                     'origin_city' : origin_city, 'destin_city' : destin_city,  'beg_date' : beg_date, 'end_date' : end_date , 'emp_name' : emp_name, 'emp_code':emp_code,
+                     'jour_amount' : jour_amount, 'accomm_amount' : accomm_amount, 'subsidy_amount': subsidy_amount, 'other_amount': other_amount,'check_amount':check_amount,
+                     'jzpz': jzpz}
+
+
+        with open(dest_file, "a", encoding='utf-8') as file:
+            json.dump(dict_data, file)
+            file.write("\n")
 
     dis_connection()
+    print('-- ok ---')
 
 
 

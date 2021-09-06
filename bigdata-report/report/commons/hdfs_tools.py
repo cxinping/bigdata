@@ -6,6 +6,7 @@ import os
 import traceback
 import pandas as pd
 import time
+from jpype import JString
 
 class HDFSTools(object):
 
@@ -24,14 +25,19 @@ class HDFSTools(object):
 
         try:
             jpype.startJVM(jvm, jvm_options)
+            Configuration = jpype.JClass('org.apache.hadoop.conf.Configuration')
+            conf = Configuration()
+            conf.addResource(conf_path + "/core-site.xml")
+            conf.addResource(conf_path + "/hdfs-site.xml")
+            conf.set('hadoop.security.authorization', 'true')
+            conf.set('hadoop.security.authentication', 'kerberos')
 
-            conf = jpype.JClass('org.apache.hadoop.conf.Configuration')
-            print(conf, conf_path + "/core-site.xml")
-            #conf.addResource(str(conf_path + "/core-site.xml"))
-            #conf.addResource(conf_path + "/hdfs-site.xml")
+            System = jpype.java.lang.System
+            System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
 
-            conf.set('hadoop.security.authorization' , 'true')
-            conf.set('hadoop.security.authentication' , 'kerberos')
+            UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
+            UserGroupInformation.setConfiguration(conf)
+            UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
 
         except Exception as e:
             print('====== throw error ======')

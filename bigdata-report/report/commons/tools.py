@@ -29,7 +29,7 @@ def match_address(place , key):
 
 if __name__ == '__main__':
     #data = str(input("请输入文本:"))
-    data = "新疆机场集团天缘酒店管理有限责任公司库尔勒市天缘商务酒店"
+    data = "安徽安庆市大观区经三路3号 0556-5386666"
     #data = '贵州省黔南州贵定县'
     province = match_address(place=data,key='市')
     print(province )
