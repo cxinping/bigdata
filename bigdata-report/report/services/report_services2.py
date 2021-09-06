@@ -40,13 +40,13 @@ def demo():
 
 
 def main():
-    #demo()
+    demo()
 
     # 需求1
     #check_01_invoice_data()
 
     # 需求2 未做
-    check_02_trip_data()
+    #check_02_trip_data()
 
     # 需求3
     #check_03_consistent_amount()
@@ -178,7 +178,7 @@ def check_02_trip_data():
     columns_str = ",".join(columns_ls)
 
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 600000
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 1000000
     """.format(columns_str=columns_str)
     start_time = time.perf_counter()
     select_sql_ls= []
@@ -207,11 +207,10 @@ def check_02_trip_data():
         if sales_name != 'None' and sales_addressphone != 'None' and sales_bank != 'None':
             #print(destin_name , '| ',sales_name, sales_addressphone, sales_bank)
 
-            # 匹配市和县
+            # 只匹配市和县
             if sales_name != 'None':
                 sales_name_city = match_address(place=sales_name,key='市') if match_address(place=sales_name,key='市') else match_address(place=sales_name,key='县')
                 if sales_name_city != None:
-                    #print('市 sales_name_city=', sales_name_city, destin_name)
                     if destin_name.find(sales_name_city) > -1:
                         is_match = True
                         break
@@ -219,7 +218,6 @@ def check_02_trip_data():
             if sales_addressphone != 'None':
                 sales_addressphone_city = match_address(place=sales_addressphone,key='市') if match_address(place=sales_addressphone,key='市') else match_address(place=sales_addressphone,key='县')
                 if sales_addressphone_city != None:
-                    #print('市 sales_addressphone_city=', sales_addressphone_city, destin_name)
                     if destin_name.find(sales_addressphone_city) > -1:
                         is_match = True
                         break
@@ -228,7 +226,6 @@ def check_02_trip_data():
                 sales_bank_city = match_address(place=sales_bank,key='市') if match_address(place=sales_bank,key='市') else match_address(place=sales_bank,key='县')
                 if sales_bank_city != None:
                     if destin_name.find(sales_bank_city) > -1:
-                        #print('市 sales_bank_city=', sales_bank_city, destin_name)
                         is_match = True
                         break
 

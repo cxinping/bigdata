@@ -34,6 +34,9 @@ if __name__ == '__main__':
     province = match_address(place=data,key='市')
     print(province )
 
+    str1 ='北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
+    str2 = '安庆市'
+    print(str1.find(str2))
 
 
 
