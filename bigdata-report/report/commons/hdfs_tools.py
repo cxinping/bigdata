@@ -28,15 +28,16 @@ class HDFSTools(object):
             jpype.startJVM(jvm, jvm_options)
             Configuration = jpype.JClass('org.apache.hadoop.conf.Configuration')
             conf = Configuration()
-            conf.addResource(conf_path + "/core-site.xml")
-            conf.addResource(conf_path + "/hdfs-site.xml")
+            Path = jpype.JClass('org.apache.hadoop.fs.Path')
+            conf.addResource(Path(conf_path + "/core-site.xml"))
+            conf.addResource(Path(conf_path + "/hdfs-site.xml"))
             conf.set('hadoop.security.authorization', 'true')
             conf.set('hadoop.security.authentication', 'kerberos')
 
             System = jpype.java.lang.System
-            PROD = 'prod'
-            TEST = 'test'
-            conn_type = 'prod'
+            PROD = 'wangsh12348'
+            TEST = 'pbpang'
+            conn_type = 'wangsh12348'
             if conn_type == PROD:
                 System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
             elif conn_type == TEST:
@@ -52,7 +53,6 @@ class HDFSTools(object):
 
             FileSystem = jpype.JClass('org.apache.hadoop.fs.FileSystem')
             self.fs = FileSystem.get(conf)
-
         except Exception as e:
             print('====== throw error ======')
             print(e)
@@ -77,6 +77,9 @@ class HDFSTools(object):
             IOUtils.copy(fin, fout)
             fout.flush()
             print('---- end uploadFile ----')
+
+
+
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -90,6 +93,32 @@ class HDFSTools(object):
                 print(e2)
                 traceback.print_exc()
 
+    def ls(self):
+        Path = jpype.JClass('org.apache.hadoop.fs.Path')
+        try:
+            url = '/user/sjfw_wangsh12348/test_data/'
+            path = Path(url)
+            fsArr = self.fs.listStatus(path)
+            for fss in fsArr:
+                print('fss.getPath().getName()=> ', fss.getPath().getName())
+                print('fss.getLen()=> ', fss.getLen())
+                print('fss.getOwner()=> ', fss.getOwner())
+                print('fss.getGroup()=> ', fss.getGroup())
+                ts = int(fss.getModificationTime())
+                print('fss.getModificationTime()=> ', ts, self.timeStamp(ts))
+                print('fss.getPermission()=> ', fss.getPermission().toString())
+                print('fss.isDirectory()=> ', fss.isDirectory())
+                print('')
+        except Exception as e:
+            print(e)
+
+    def timeStamp(self, timeNum):
+        timeStamp = float(timeNum / 1000)
+        timeArray = time.localtime(timeStamp)
+        otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
+        return otherStyleTime
+
+
     def shutdownJVM(self):
         if jpype.isJVMStarted():
             jpype.shutdownJVM()
@@ -98,10 +127,12 @@ class HDFSTools(object):
 if __name__ == "__main__":
     hdfs = HDFSTools()
 
-    hdfsDirPath = '/user/sjfw_wangsh12348/test_data/'
+    hdfsDirPath = 'hdfs:///user/sjfw_wangsh12348/test_data/'
     # 对外挂载地址地址 /public_filed_algos/report/check_02_trip_data.json
     # docker 容器地址  /my_filed_algos/check_02_trip_data.json
     localPath = r'/my_filed_algos/check_02_trip_data.json'
 
-    hdfs.uploadFile(hdfsDirPath, localPath)
+    #hdfs.uploadFile(hdfsDirPath, localPath)
+    hdfs.ls()
+
     hdfs.shutdownJVM()
