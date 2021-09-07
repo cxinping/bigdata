@@ -184,7 +184,7 @@ def check_02_trip_data():
     columns_str = ",".join(columns_ls)
 
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 800000
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 1000000
     """.format(columns_str=columns_str)
     start_time = time.perf_counter()
     select_sql_ls= []
@@ -238,7 +238,7 @@ def check_02_trip_data():
             if is_match == False:
                 match_query_ls.append(data)
 
-    dest_file = "/my_filed_algos/check_02_trip_data.json"
+    dest_file = "/my_filed_algos/check_02_trip_data2.json"
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
