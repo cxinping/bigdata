@@ -251,7 +251,7 @@ if __name__ == "__main__":
     # records = prod_execute_sql(sqltype='select', sql=sql)
     # print('222*** query_kudu_data=>', len(records))
 
-    sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 3'
+    sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 5'
     print(sql)
     records = prod_execute_sql(sqltype='select', sql=sql)
     print('*** query_kudu_data=>', len(records))

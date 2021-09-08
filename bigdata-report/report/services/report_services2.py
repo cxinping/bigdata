@@ -561,7 +561,7 @@ group by {columns_str}
 
         value_sql = f"""(
  "{unusual_id}", "{bill_id}", "{company_code}" ,"{account_period}" )
-        """.replace('\r', '').replace('\n','').strip()
+        """.replace('\r', '').replace('\n', '').strip()
 
         if idx < batch_size:
             tmp_ls.append(value_sql)
