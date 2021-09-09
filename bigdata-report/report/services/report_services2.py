@@ -24,7 +24,7 @@ def demo():
     # count_records = records[0][0]
     # log.info(f'查询记录总数 {count_records}')
 
-    sel_sql ="""
+    sel_sql = """
  select bill_id,invo_code,billingdate,travel_beg_date,travel_end_date,company_code,account_period,account_item,finance_number,cost_center,bill_code,origin_name,destin_name,jour_amount,accomm_amount,subsidy_amount,other_amount,check_amount,jzpz 
  from  01_datamart_layer_007_h_cw_df.finance_travel_bill   
  group by bill_id,invo_code,billingdate,travel_beg_date,travel_end_date,company_code,account_period,account_item,finance_number,cost_center,bill_code,origin_name,destin_name,jour_amount,accomm_amount,subsidy_amount,other_amount,check_amount,jzpz 
@@ -42,28 +42,37 @@ def demo():
 
 
 def main():
-    #demo()
+    # demo()
 
-    # 需求1
+    # 需求1 done
     #check_01_invoice_data()
 
     # 需求2 未做
-    #check_02_trip_data()
+    # check_02_trip_data()
 
-    # 需求3
+    # 需求3 done
     #check_03_consistent_amount()
 
-    # 需求4
-    check_04_overlap_amount()
+    # 需求4 done
+    #check_04_overlap_amount()
 
     # 需求6 暂时不做
     # check_06_reasonsubsidy_amount()
 
-    # 需求10
+    # 需求7 正在开发......
+    check_07_continuous_business_trip()
+
+    # 需求8 正在开发......
+
+
+    # 需求10 done
     #check_10_beforeapply_amount()
 
-    # 需求15
+    # 需求15 done
     #check_15_coststructure_data()
+
+    # 需求19 正在开发......
+    # check_19_accommodation_expenses()
 
 
 def check_01_invoice_data():
@@ -90,7 +99,8 @@ accomm_amount,
 subsidy_amount,
 other_amount,
 check_amount,
-jzpz
+jzpz,
+'差旅费'
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill  
 WHERE  billingdate is not null and travel_beg_date is not null and travel_end_date  is not null
 and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') < unix_timestamp(travel_beg_date,'yyyyMMdd')
@@ -106,10 +116,12 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
 
 
 def check_02_trip_data():
-    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank' ]
-    extra_columns_ls = ['bill_id', 'company_code', 'account_period', 'account_item','finance_number','cost_center','profit_center','bill_code', 'origin_name',
-                        'destin_name', 'travel_beg_date' , 'travel_end_date', 'jour_amount', 'accomm_amount', 'subsidy_amount', 'other_amount',
-                        'check_amount', 'jzpz' ]
+    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank']
+    extra_columns_ls = ['bill_id', 'company_code', 'account_period', 'account_item', 'finance_number', 'cost_center',
+                        'profit_center', 'bill_code', 'origin_name',
+                        'destin_name', 'travel_beg_date', 'travel_end_date', 'jour_amount', 'accomm_amount',
+                        'subsidy_amount', 'other_amount',
+                        'check_amount', 'jzpz']
     columns_ls.extend(extra_columns_ls)
     columns_str = ",".join(columns_ls)
 
@@ -117,7 +129,7 @@ def check_02_trip_data():
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 1000000
     """.format(columns_str=columns_str)
     start_time = time.perf_counter()
-    select_sql_ls= []
+    select_sql_ls = []
     select_sql_ls.append(sql)
     query_data = []
     for sel_sql in select_sql_ls:
@@ -133,7 +145,7 @@ def check_02_trip_data():
 
     match_query_ls = []
     for data in query_data:
-        #print(data)
+        # print(data)
         destin_name = str(data[0])
         sales_name = str(data[1])
         sales_addressphone = str(data[2])
@@ -141,25 +153,30 @@ def check_02_trip_data():
 
         is_match = False
         if sales_name != 'None' and sales_addressphone != 'None' and sales_bank != 'None':
-            #print(destin_name , '| ',sales_name, sales_addressphone, sales_bank)
+            # print(destin_name , '| ',sales_name, sales_addressphone, sales_bank)
 
             # 只匹配市和县
             if sales_name != 'None':
-                sales_name_city = match_address(place=sales_name,key='市') if match_address(place=sales_name,key='市') else match_address(place=sales_name,key='县')
+                sales_name_city = match_address(place=sales_name, key='市') if match_address(place=sales_name,
+                                                                                            key='市') else match_address(
+                    place=sales_name, key='县')
                 if sales_name_city != None:
                     if destin_name.find(sales_name_city) > -1:
                         is_match = True
                         break
 
             if sales_addressphone != 'None':
-                sales_addressphone_city = match_address(place=sales_addressphone,key='市') if match_address(place=sales_addressphone,key='市') else match_address(place=sales_addressphone,key='县')
+                sales_addressphone_city = match_address(place=sales_addressphone, key='市') if match_address(
+                    place=sales_addressphone, key='市') else match_address(place=sales_addressphone, key='县')
                 if sales_addressphone_city != None:
                     if destin_name.find(sales_addressphone_city) > -1:
                         is_match = True
                         break
 
             if sales_bank != 'None':
-                sales_bank_city = match_address(place=sales_bank,key='市') if match_address(place=sales_bank,key='市') else match_address(place=sales_bank,key='县')
+                sales_bank_city = match_address(place=sales_bank, key='市') if match_address(place=sales_bank,
+                                                                                            key='市') else match_address(
+                    place=sales_bank, key='县')
                 if sales_bank_city != None:
                     if destin_name.find(sales_bank_city) > -1:
                         is_match = True
@@ -197,12 +214,15 @@ def check_02_trip_data():
         check_amount = item[20] if item[20] is not None else 0
         jzpz = item[21] if item[21] is not None else 0
 
-        dict_data = {'unusual_id' : unusual_id, 'bill_id' : bill_id, 'company_code': company_code, 'account_period' : account_period , 'account_item' : account_item,
-                     'finance_number' : finance_number, 'cost_center': cost_center, 'profit_center' : profit_center, 'cart_head':cart_head, 'bill_code' : bill_code,
-                     'origin_city' : origin_city, 'destin_city' : destin_city,  'beg_date' : beg_date, 'end_date' : end_date , 'emp_name' : emp_name, 'emp_code':emp_code,
-                     'jour_amount' : jour_amount, 'accomm_amount' : accomm_amount, 'subsidy_amount': subsidy_amount, 'other_amount': other_amount,'check_amount':check_amount,
+        dict_data = {'unusual_id': unusual_id, 'bill_id': bill_id, 'company_code': company_code,
+                     'account_period': account_period, 'account_item': account_item,
+                     'finance_number': finance_number, 'cost_center': cost_center, 'profit_center': profit_center,
+                     'cart_head': cart_head, 'bill_code': bill_code,
+                     'origin_city': origin_city, 'destin_city': destin_city, 'beg_date': beg_date, 'end_date': end_date,
+                     'emp_name': emp_name, 'emp_code': emp_code,
+                     'jour_amount': jour_amount, 'accomm_amount': accomm_amount, 'subsidy_amount': subsidy_amount,
+                     'other_amount': other_amount, 'check_amount': check_amount,
                      'jzpz': jzpz}
-
 
         with open(dest_file, "a", encoding='utf-8') as file:
             json.dump(dict_data, file)
@@ -210,7 +230,6 @@ def check_02_trip_data():
 
     dis_connection()
     print('-- ok ---')
-
 
 
 def check_03_consistent_amount():
@@ -238,7 +257,8 @@ a.accomm_amount,
 a.subsidy_amount,
 a.other_amount,
 a.check_amount,
-a.jzpz
+a.jzpz,
+'差旅费'
 from (
 	select bill_id,company_code,account_period,
 		account_item,finance_number,cost_center,
@@ -273,12 +293,59 @@ from (
 def check_04_overlap_amount():
     start_time = time.perf_counter()
     sql = """
-    
+UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+select a.bill_id, 
+'04' as unusual_id,
+a.company_code,
+a.account_period,
+a.account_item,
+a.finance_number,
+a.cost_center,
+a.profit_center,
+'' as cart_head,
+a.bill_code,
+a.origin_name   as  origin_city,
+a.destin_name  as destin_city,
+a.travel_beg_date  as beg_date,
+a.travel_end_date  as end_date,
+'' as emp_name,
+'' as emp_code,
+a.jour_amount,
+a.accomm_amount,
+a.subsidy_amount,
+a.other_amount,
+a.check_amount,
+a.jzpz,
+'差旅费'
+from  01_datamart_layer_007_h_cw_df.finance_travel_bill a, (
+	select 
+    jour_beg_date, 
+    jour_end_date,
+    member_emp_id, 
+    bill_code,
+    bill_id
+	from (
+		select 
+			 y.jour_beg_date, 
+			 y.jour_end_date,
+			 y.member_emp_id, 
+			 y.bill_code,
+			 y.bill_id,
+			 lead(y.jour_beg_date,1) over (partition by y.member_emp_id order by jour_beg_date) next_jour_beg_date,
+			 lag(y.jour_end_date,1) over (partition by y.member_emp_id order by jour_beg_date) next_jour_end_date
+		from  `01_datamart_layer_007_h_cw_df`.finance_travel_bill y 
+		group by y.jour_beg_date, y.jour_end_date, y.member_emp_id, y.bill_code,y.bill_id
+		having y.jour_beg_date is not null and y.jour_beg_date is not null
+	) t1
+	where jour_end_date>next_jour_beg_date
+	or next_jour_end_date>jour_beg_date
+) b
+where a.bill_id = b.bill_id	
+
     """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行SQL耗时 {consumed_time} sec')
-
     dis_connection()
 
 
@@ -299,7 +366,7 @@ def check_06_reasonsubsidy_amount():
      from 01_datamart_layer_007_h_cw_df.finance_travel_bill
     )a,(select standard_value, out_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='06') b
     where  a.check_amount > ( 14 * b.standard_value + (a.total_date - 14 ) * b.out_value ) 
-    and a.total_date >14 limit 1020
+    and a.total_date >14 limit 100
     """.replace('\r', '').replace('\n', '').strip()
     count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sel_sql)
     records = prod_execute_sql(sqltype='select', sql=count_sql)
@@ -350,6 +417,18 @@ def check_06_reasonsubsidy_amount():
     dis_connection()
 
 
+def check_07_continuous_business_trip():
+    start_time = time.perf_counter()
+    sql = """
+       
+    
+    """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行check_07_continuous_business_trip SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
 def check_10_beforeapply_amount():
     """
     需求10： 报销申请单不存在关联的事前申请单号，或者事前申请的日期晚于出差开始日期（即差旅行程的出发日期）
@@ -380,7 +459,8 @@ accomm_amount,
 subsidy_amount,
 other_amount,
 check_amount,
-jzpz
+jzpz,
+'差旅费'
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
 WHERE apply_id='' or unix_timestamp(base_apply_date, 'yyyyMMdd') > unix_timestamp(jour_beg_date, 'yyyyMMdd')
 group by bill_id,company_code,account_period,account_item,finance_number,cost_center,profit_center,bill_code,origin_name,
@@ -418,7 +498,8 @@ def check_15_coststructure_data():
     subsidy_amount,
     other_amount,
     check_amount,
-    jzpz
+    jzpz,
+    '差旅费'
     FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill  
     WHERE accomm_amount=0 or jour_amount=0
     group by bill_id,company_code,account_period,account_item,finance_number,cost_center,profit_center,bill_code,origin_name,
@@ -428,6 +509,18 @@ def check_15_coststructure_data():
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行SQL耗时 {consumed_time} sec')
 
+    dis_connection()
+
+
+def check_19_accommodation_expenses():
+    start_time = time.perf_counter()
+    sql = """
+        
+        
+        """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
