@@ -63,7 +63,7 @@ def main():
     check_07_continuous_business_trip()
 
     # 需求8 正在开发......
-
+    #check_08_transportation_expenses()
 
     # 需求10 done
     #check_10_beforeapply_amount()
@@ -74,6 +74,7 @@ def main():
     # 需求19 正在开发......
     # check_19_accommodation_expenses()
 
+    pass
 
 def check_01_invoice_data():
     sql = """
@@ -111,7 +112,7 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
     start_time = time.perf_counter()
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'*** 执行SQL耗时 {consumed_time} sec录')
+    log.info(f'*** 执行 check_01_invoice_data SQL耗时 {consumed_time} sec录')
     dis_connection()
 
 
@@ -286,7 +287,7 @@ from (
     """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 执行SQL耗时 {consumed_time} sec')
+    log.info(f'* 执行 check_03_consistent_amount SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -345,7 +346,7 @@ where a.bill_id = b.bill_id
     """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 执行SQL耗时 {consumed_time} sec')
+    log.info(f'* 执行 check_04_overlap_amount SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -428,6 +429,16 @@ def check_07_continuous_business_trip():
     log.info(f'* 执行check_07_continuous_business_trip SQL耗时 {consumed_time} sec')
     dis_connection()
 
+def check_08_transportation_expenses():
+    start_time = time.perf_counter()
+    sql = """
+
+
+    """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_08_transportation_expenses SQL耗时 {consumed_time} sec')
+    dis_connection()
 
 def check_10_beforeapply_amount():
     """
@@ -468,7 +479,7 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
         """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 执行SQL耗时 {consumed_time} sec')
+    log.info(f'* 执行 check_10_beforeapply_amount SQL耗时 {consumed_time} sec')
 
     dis_connection()
 
@@ -507,7 +518,7 @@ def check_15_coststructure_data():
             """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 执行SQL耗时 {consumed_time} sec')
+    log.info(f'* 执行 check_15_coststructure_data SQL耗时 {consumed_time} sec')
 
     dis_connection()
 
