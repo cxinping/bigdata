@@ -53,6 +53,9 @@ def main():
     # 需求3
     #check_03_consistent_amount()
 
+    # 需求4
+    check_04_overlap_amount()
+
     # 需求6 暂时不做
     # check_06_reasonsubsidy_amount()
 
@@ -60,7 +63,7 @@ def main():
     #check_10_beforeapply_amount()
 
     # 需求15
-    check_15_coststructure_data()
+    #check_15_coststructure_data()
 
 
 def check_01_invoice_data():
@@ -264,8 +267,20 @@ from (
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
+def check_04_overlap_amount():
+    start_time = time.perf_counter()
+    sql = """
+    
+    """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行SQL耗时 {consumed_time} sec')
 
     dis_connection()
+
 
 def check_06_reasonsubsidy_amount():
     """
