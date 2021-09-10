@@ -45,16 +45,16 @@ def main():
     # demo()
 
     # 需求1 done
-    #check_01_invoice_data()
+    # check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
 
     # 需求3 done
-    #check_03_consistent_amount()
+    # check_03_consistent_amount()
 
     # 需求4 done
-    #check_04_overlap_amount()
+    # check_04_overlap_amount()
 
     # 需求6 暂时不做
     # check_06_reasonsubsidy_amount()
@@ -63,18 +63,19 @@ def main():
     check_07_continuous_business_trip()
 
     # 需求8 正在开发......
-    #check_08_transportation_expenses()
+    # check_08_transportation_expenses()
 
     # 需求10 done
-    #check_10_beforeapply_amount()
+    # check_10_beforeapply_amount()
 
     # 需求15 done
-    #check_15_coststructure_data()
+    # check_15_coststructure_data()
 
     # 需求19 正在开发......
     # check_19_accommodation_expenses()
 
     pass
+
 
 def check_01_invoice_data():
     sql = """
@@ -127,7 +128,7 @@ def check_02_trip_data():
     columns_str = ",".join(columns_ls)
 
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null limit 1000000
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) limit 1000000
     """.format(columns_str=columns_str)
     start_time = time.perf_counter()
     select_sql_ls = []
@@ -367,7 +368,7 @@ def check_06_reasonsubsidy_amount():
      from 01_datamart_layer_007_h_cw_df.finance_travel_bill
     )a,(select standard_value, out_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='06') b
     where  a.check_amount > ( 14 * b.standard_value + (a.total_date - 14 ) * b.out_value ) 
-    and a.total_date >14 limit 100
+    and a.total_date > 14 limit 100
     """.replace('\r', '').replace('\n', '').strip()
     count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sel_sql)
     records = prod_execute_sql(sqltype='select', sql=count_sql)
@@ -421,13 +422,62 @@ def check_06_reasonsubsidy_amount():
 def check_07_continuous_business_trip():
     start_time = time.perf_counter()
     sql = """
-       
-    
+UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+SELECT bill_id, 
+'07' as unusual_id,
+company_code,
+account_period,
+account_item,
+finance_number,
+cost_center,
+profit_center,
+'' as cart_head,
+bill_code,
+origin_name   as  origin_city,
+destin_name  as destin_city,
+travel_beg_date  as beg_date,
+travel_end_date  as end_date,
+'' as emp_name,
+'' as emp_code,
+jour_amount,
+accomm_amount,
+subsidy_amount,
+other_amount,
+check_amount,
+jzpz,
+'差旅费'
+FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill where bill_id in (
+	select 
+	    bill_id
+	from (
+		select 
+		   t.bill_id,
+		   t.destin_name,
+		   t.jour_beg_date,
+		   t.jour_end_date,
+		   lead(t.jour_beg_date,1) over (partition by t.destin_name order by t.jour_beg_date) next_jour_beg_date,
+		   lag(t.jour_end_date,1) over (partition by t.destin_name order by t.jour_beg_date) before_jour_end_date
+		from  `01_datamart_layer_007_h_cw_df`.finance_travel_bill t
+		where t.destin_name is not null and  t.jour_beg_date is not null 
+			 and  t.jour_end_date is not null
+	) t
+	where
+		datediff(
+			concat(left(next_jour_beg_date,4),'-',substr(next_jour_beg_date,5,2),'-',right(next_jour_beg_date,2)),
+			concat(left(jour_end_date,4),'-',substr(jour_end_date,5,2),'-',right(jour_end_date,2))
+		) <= 2
+		or
+		datediff(
+			concat(left(jour_beg_date,4),'-',substr(jour_beg_date,5,2),'-',right(jour_beg_date,2)),
+			concat(left(before_jour_end_date,4),'-',substr(before_jour_end_date,5,2),'-',right(before_jour_end_date,2))
+		) <= 2
+)
     """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行check_07_continuous_business_trip SQL耗时 {consumed_time} sec')
     dis_connection()
+
 
 def check_08_transportation_expenses():
     start_time = time.perf_counter()
@@ -439,6 +489,7 @@ def check_08_transportation_expenses():
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_08_transportation_expenses SQL耗时 {consumed_time} sec')
     dis_connection()
+
 
 def check_10_beforeapply_amount():
     """
