@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-from report.services.report_services import getKUDUdata, check_10_beforeapply_amount,query_kudu_data, check_03_consistent_amount
+from report.services.travel_expense_service import getKUDUdata, check_10_beforeapply_amount,query_kudu_data, check_03_consistent_amount
 from report.commons.connect_kudu import  dis_connection,prod_execute_sql
 
 import time

@@ -45,31 +45,31 @@ def main():
     # demo()
 
     # 需求1 done
-    # check_01_invoice_data()
+    #check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
 
     # 需求3 done
-    # check_03_consistent_amount()
+    #check_03_consistent_amount()
 
     # 需求4 done
-    # check_04_overlap_amount()
+    #check_04_overlap_amount()
 
     # 需求6 暂时不做
     # check_06_reasonsubsidy_amount()
 
     # 需求7 done
-    # check_07_continuous_business_trip()
+    #check_07_continuous_business_trip()
 
     # 需求8 正在开发......
     # check_08_transportation_expenses()
 
     # 需求10 done
-    # check_10_beforeapply_amount()
+    #check_10_beforeapply_amount()
 
     # 需求15 done
-    # check_15_coststructure_data()
+    check_15_coststructure_data()
 
     # 需求19 正在开发......
     # check_19_accommodation_expenses()
@@ -102,7 +102,8 @@ subsidy_amount,
 other_amount,
 check_amount,
 jzpz,
-'差旅费'
+'差旅费',
+0 as meeting_amount
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill  
 WHERE  billingdate is not null and travel_beg_date is not null and travel_end_date  is not null
 and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') < unix_timestamp(travel_beg_date,'yyyyMMdd')
@@ -260,7 +261,8 @@ a.subsidy_amount,
 a.other_amount,
 a.check_amount,
 a.jzpz,
-'差旅费'
+'差旅费',
+0 as meeting_amount
 from (
 	select bill_id,company_code,account_period,
 		account_item,finance_number,cost_center,
@@ -318,7 +320,8 @@ a.subsidy_amount,
 a.other_amount,
 a.check_amount,
 a.jzpz,
-'差旅费'
+'差旅费',
+0 as meeting_amount
 from  01_datamart_layer_007_h_cw_df.finance_travel_bill a, (
 	select 
     jour_beg_date, 
@@ -343,7 +346,6 @@ from  01_datamart_layer_007_h_cw_df.finance_travel_bill a, (
 	or next_jour_end_date>jour_beg_date
 ) b
 where a.bill_id = b.bill_id	
-
     """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
@@ -445,7 +447,8 @@ subsidy_amount,
 other_amount,
 check_amount,
 jzpz,
-'差旅费'
+'差旅费',
+0 as meeting_amount
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill where bill_id in (
 	select 
 	    bill_id
@@ -522,7 +525,8 @@ subsidy_amount,
 other_amount,
 check_amount,
 jzpz,
-'差旅费'
+'差旅费',
+0 as meeting_amount
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
 WHERE apply_id='' or unix_timestamp(base_apply_date, 'yyyyMMdd') > unix_timestamp(jour_beg_date, 'yyyyMMdd')
 group by bill_id,company_code,account_period,account_item,finance_number,cost_center,profit_center,bill_code,origin_name,
@@ -531,7 +535,6 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_10_beforeapply_amount SQL耗时 {consumed_time} sec')
-
     dis_connection()
 
 
@@ -561,7 +564,8 @@ def check_15_coststructure_data():
     other_amount,
     check_amount,
     jzpz,
-    '差旅费'
+    '差旅费',
+    0 as meeting_amount
     FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill  
     WHERE accomm_amount=0 or jour_amount=0
     group by bill_id,company_code,account_period,account_item,finance_number,cost_center,profit_center,bill_code,origin_name,
@@ -570,7 +574,6 @@ def check_15_coststructure_data():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_15_coststructure_data SQL耗时 {consumed_time} sec')
-
     dis_connection()
 
 
