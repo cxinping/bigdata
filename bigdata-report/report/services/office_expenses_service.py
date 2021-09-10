@@ -56,6 +56,8 @@ or unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss')> unix_timestamp(met_endate
 
 
 def main():
-    # 需求 24 开发中......
+    # 需求 24 done
     check_24_invoice()
+
+
     pass
