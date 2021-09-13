@@ -27,12 +27,21 @@ def match_address(place , key):
             return addr
     return None
 
+def check_invoicing_place(addr1,  addr2):
+    if addr1.find(addr2) > -1 or addr2.find(addr1):
+        return True
+
+    return False
+
+
 if __name__ == '__main__':
     #data = str(input("请输入文本:"))
-    data = "安徽安庆市大观区经三路3号 0556-5386666"
-    #data = '贵州省黔南州贵定县'
+    #data = "安徽安庆市大观区经三路3号 0556-5386666"
+    data = '江苏省无锡市滨湖区环湖路188号0510'
     province = match_address(place=data,key='市')
     print(province )
+    key = '无锡'
+    print(province.find(key))
 
     str1 ='北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
     str2 = '安庆市'
