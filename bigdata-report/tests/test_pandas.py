@@ -43,3 +43,8 @@ for row in df.itertuples():
 
 for row in inner_pd.itertuples():
     print(row.c1, row.c2 , type(row), row )
+
+
+print('---------' * 3 )
+
+

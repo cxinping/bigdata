@@ -69,10 +69,10 @@ def main():
     #check_10_beforeapply_amount()
 
     # 需求15 done
-    check_15_coststructure_data()
+    #check_15_coststructure_data()
 
     # 需求19 正在开发......
-    # check_19_accommodation_expenses()
+    check_19_accommodation_expenses()
 
     pass
 
