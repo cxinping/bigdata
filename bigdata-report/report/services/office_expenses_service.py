@@ -72,7 +72,7 @@ def check_25_meeting_address():
         if data:
             query_data.extend(data)
 
-    print('*** 查询记录数量 => ',len(query_data))
+    print('*** 查询记录数量 => ', len(query_data))
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
@@ -85,25 +85,23 @@ def check_25_meeting_address():
         sales_bank = str(data[3])
         bill_id = str(data[4])
 
-        print('111 check ', meet_addr, sales_name, sales_addressphone, sales_bank)
+        # print('111 check ', meet_addr, sales_name, sales_addressphone, sales_bank)
 
         is_match = False
         if sales_name != 'None' or sales_addressphone != 'None' or sales_bank != 'None':
-            print('222 check ', meet_addr, sales_name, sales_addressphone, sales_bank)
-
             # sales_name 只匹配市和县
             if sales_name != 'None':
                 sales_name_city = match_address(place=sales_name, key='市')
                 if sales_name_city != None:
                     if sales_name_city.find(meet_addr) > -1 or meet_addr.find(sales_name_city) > -1:
                         is_match = True
-                        break
+                        continue
 
-                sales_name_city = match_address( place=sales_name, key='县')
+                sales_name_city = match_address(place=sales_name, key='县')
                 if sales_name_city != None:
                     if sales_name_city.find(meet_addr) > -1 or meet_addr.find(sales_name_city) > -1:
                         is_match = True
-                        break
+                        continue
 
             # sales_addressphone 只匹配市和县
             if sales_addressphone != 'None':
@@ -111,13 +109,13 @@ def check_25_meeting_address():
                 if sales_addressphone_city != None:
                     if sales_addressphone_city.find(meet_addr) > -1 or meet_addr.find(sales_addressphone_city) > -1:
                         is_match = True
-                        break
+                        continue
 
                 sales_addressphone_city = match_address(place=sales_addressphone, key='县')
                 if sales_addressphone_city != None:
                     if sales_addressphone_city.find(meet_addr) > -1 or meet_addr.find(sales_addressphone_city) > -1:
                         is_match = True
-                        break
+                        continue
 
             # sales_bank 只匹配市和县
             if sales_bank != 'None':
@@ -125,27 +123,22 @@ def check_25_meeting_address():
                 if sales_bank_city != None:
                     if sales_bank_city.find(meet_addr) > -1 or meet_addr.find(sales_bank_city) > -1:
                         is_match = True
-                        break
+                        continue
 
                 sales_bank_city = match_address(place=sales_bank, key='县')
                 if sales_bank_city != None:
                     if sales_bank_city.find(meet_addr) > -1 or meet_addr.find(sales_bank_city) > -1:
                         is_match = True
-                        break
+                        continue
 
             if is_match == False:
-                match_bill_id_ls.append("'" + bill_id + "'" )
-                #print('333 no match => , data)
-
-    print('------------------------------------------------------------')
-    # for item in match_bill_id_ls:
-    #     print(item)
+                match_bill_id_ls.append("'" + bill_id + "'")
 
     if len(match_bill_id_ls) > 0:
         columns_str = ",".join(match_bill_id_ls)
-        print(columns_str)
+
         sql = f"""
-        UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
     SELECT bill_id, 
     '25' as unusual_id,
     company_code,
@@ -174,11 +167,9 @@ def check_25_meeting_address():
         """
     start_time = time.perf_counter()
     prod_execute_sql(sqltype='insert', sql=sql)
-    print(sql)
-    #consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行 SQL 耗时 {consumed_time} sec')
     dis_connection()
-
 
 
 def check_27_consistent_amount():
@@ -218,15 +209,105 @@ def check_27_consistent_amount():
     dis_connection()
 
 
+def check_30_apply_data():
+    start_time = time.perf_counter()
+    sql = """
+     UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    SELECT bill_id, 
+    '30' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    met_bgdate  as beg_date,
+    met_endate  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '会议费',
+    met_money
+    from 01_datamart_layer_007_h_cw_df.finance_meeting_bill    
+    where apply_id = '' or base_apply_date > met_bgdate 
+            """
+
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_30_apply_data SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
+def check_39_reimburse():
+    start_time = time.perf_counter()
+    sql = """
+      UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+     SELECT bill_id, 
+     '39' as unusual_id,
+     company_code,
+     account_period,
+     account_item,
+     finance_number,
+     cost_center,
+     profit_center,
+     '' as cart_head,
+     bill_code,
+     ''   as  origin_city,
+     ''  as destin_city,
+     met_bgdate  as beg_date,
+     met_endate  as end_date,
+     '' as emp_name,
+     '' as emp_code,
+     0 as jour_amount,
+     0 as accomm_amount,
+     0 as subsidy_amount,
+     0 as other_amount,
+     check_amount,
+     jzpz,
+     '会议费',
+     met_money
+     from 01_datamart_layer_007_h_cw_df.finance_meeting_bill    
+     where bill_id in (     
+            select a.bill_id  from
+                (select bill_id, (unix_timestamp(bill_apply_date, 'yyyyMMdd')-unix_timestamp(met_endate, 'yyyyMMdd'))/ (60 * 60 * 24) as diff_date 
+                from  01_datamart_layer_007_h_cw_df.finance_meeting_bill where bill_apply_date > met_endate)a, (
+                select standard_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='39')b
+                where a.diff_date > b.standard_value  
+     )
+             """
+
+    # print(sql)
+
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_39_reimburse SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
 def main():
     # 需求 24 done
     # check_24_invoice()
 
+    # 需求25 done
+    # check_25_meeting_address()
+
     # 需求 27 done
     # check_27_consistent_amount()
 
-    # 需求25
-    check_25_meeting_address()
+    # 需求30 done
+    # check_30_apply_data()
+
+    # 需求39 done
+    check_39_reimburse()
 
     pass
 
