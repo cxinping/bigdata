@@ -14,6 +14,7 @@ import os
 
 log = get_logger(__name__)
 
+
 def check_41_credit():
     start_time = time.perf_counter()
     sql = """
@@ -51,9 +52,50 @@ where billingdate is not null and substr(billingdate,1,4)<>cast(year(now()) as s
     log.info(f'* check_41_credit SQL耗时 {consumed_time} sec')
     dis_connection()
 
+
+def check_43_consistent_amount():
+    start_time = time.perf_counter()
+    sql = """
+    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    SELECT bill_id, 
+    '43' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    met_bgdate  as beg_date,
+    met_endate  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '办公费',
+    met_money
+    from 01_datamart_layer_007_h_cw_df.finance_official_bill  
+    where check_amount > jzpz
+        """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_27_consistent_amount SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
 def main():
-    # 需求41 未测试
-    check_41_credit()
+    # 需求41 done 未测试
+    #check_41_credit()
+
+    # 需求43 done 未测试
+    #check_43_consistent_amount()
 
     pass
 
