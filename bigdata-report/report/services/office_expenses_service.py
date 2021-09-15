@@ -208,6 +208,102 @@ def check_27_consistent_amount():
     log.info(f'* check_27_consistent_amount SQL耗时 {consumed_time} sec')
     dis_connection()
 
+def check_28_meeting():
+    start_time = time.perf_counter()
+    sql = """
+    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    SELECT bill_id, 
+    '28' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    met_bgdate  as beg_date,
+    met_endate  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '会议费',
+    met_money
+    from 01_datamart_layer_007_h_cw_df.finance_meeting_bill  
+    where bill_id in (
+    select a.bill_id from 01_datamart_layer_007_h_cw_df.finance_meeting_bill a,(
+select concat(province, city,county,address,scenery_name) as scenery_name_details from 01_datamart_layer_007_h_cw_df.finance_scenery
+)b
+where a.meet_addr is not null and b.scenery_name_details like concat('%', a.meet_addr , '%') 
+    )
+        """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_28_meeting SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
+def check_29_cost():
+    start_time = time.perf_counter()
+    sql = """
+        UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+        SELECT bill_id, 
+        '29' as unusual_id,
+        company_code,
+        account_period,
+        account_item,
+        finance_number,
+        cost_center,
+        profit_center,
+        '' as cart_head,
+        bill_code,
+        ''   as  origin_city,
+        ''  as destin_city,
+        met_bgdate  as beg_date,
+        met_endate  as end_date,
+        '' as emp_name,
+        '' as emp_code,
+        0 as jour_amount,
+        0 as accomm_amount,
+        0 as subsidy_amount,
+        0 as other_amount,
+        check_amount,
+        jzpz,
+        '会议费',
+        met_money
+        from 01_datamart_layer_007_h_cw_df.finance_meeting_bill  
+        where bill_id in (
+            select 
+                bill_id
+                from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+                where meet_type_name is not null 
+                and met_bgdate is not null 
+                and met_endate is not null
+                and met_money is not null
+                and meet_num is not null 
+                and (case 
+                when meet_type_name='集团外部会议' then 550
+                when meet_type_name='党组决议召开会议' then 550
+                when meet_type_name='系统外商业会议' then 500
+                when meet_type_name='系统内会议' then 550
+                when meet_type_name='企业自办会议' then 550
+                when meet_type_name='集团内部会议' then 550
+                when meet_type_name='集团公司工作会议' then 550
+                else 500 end)<cast(met_money as int)/(cast(meet_num as int)*(datediff(from_unixtime(unix_timestamp(met_endate,'yyyyMMdd'),'yyyy-MM-dd'), from_unixtime(unix_timestamp(met_bgdate,'yyyyMMdd'),'yyyy-MM-dd'))+1))
+        )
+            """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_28_meeting SQL耗时 {consumed_time} sec')
+    dis_connection()
+
 
 def check_30_apply_data():
     start_time = time.perf_counter()
@@ -244,6 +340,100 @@ def check_30_apply_data():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_30_apply_data SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+
+def check_33_meeting_level():
+    start_time = time.perf_counter()
+    sql = """
+     UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    SELECT bill_id, 
+    '33' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    met_bgdate  as beg_date,
+    met_endate  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '会议费',
+    met_money
+    from 01_datamart_layer_007_h_cw_df.finance_meeting_bill    
+    where meet_lvl_name in (
+      select t.meet_lvl_name from (
+        select round(avg(a.diff_met_date)) as  diff_met_date , a.meet_lvl_name ,(case 
+        when a.meet_lvl_name='一类会议' then '1'
+        when a.meet_lvl_name='二类会议' then '2'
+        when a.meet_lvl_name='三类会议' then '3'
+        when a.meet_lvl_name='四类会议' then '4'
+        else '0' end) as meet_lvl
+        from (
+        select  bill_id,meet_lvl_name, met_bgdate,met_endate, (unix_timestamp(met_endate, 'yyyyMMdd')-unix_timestamp(met_bgdate, 'yyyyMMdd'))/ (60 * 60 * 24) as diff_met_date 
+        from 01_datamart_layer_007_h_cw_df.finance_meeting_bill where (meet_lvl_name is not null and meet_lvl_name !='')
+        and met_bgdate is not null and met_bgdate is not null
+        ) a group by a.meet_lvl_name )t, 01_datamart_layer_007_h_cw_df.finance_standard s
+        where t.meet_lvl = s.unusual_level and s.unusual_id = '39'
+        and diff_met_date > s.out_value        
+    )
+            """
+
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_30_apply_data SQL耗时 {consumed_time} sec')
+    dis_connection()
+
+def check_38_credit ():
+    start_time = time.perf_counter()
+    sql = """
+          UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+         SELECT bill_id, 
+         '38' as unusual_id,
+         company_code,
+         account_period,
+         account_item,
+         finance_number,
+         cost_center,
+         profit_center,
+         '' as cart_head,
+         bill_code,
+         ''   as  origin_city,
+         ''  as destin_city,
+         met_bgdate  as beg_date,
+         met_endate  as end_date,
+         '' as emp_name,
+         '' as emp_code,
+         0 as jour_amount,
+         0 as accomm_amount,
+         0 as subsidy_amount,
+         0 as other_amount,
+         check_amount,
+         jzpz,
+         '会议费',
+         met_money
+         from 01_datamart_layer_007_h_cw_df.finance_meeting_bill    
+         where account_period is not null 
+            and arrivedtimes is not null
+            and cast(substr(account_period,5,3) as int)> cast(substr(arrivedtimes,6,2)  as int)
+                 """
+
+    # print(sql)
+
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* check_39_reimburse SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -303,11 +493,24 @@ def main():
     # 需求 27 done
     # check_27_consistent_amount()
 
+    # 需求 28 done 未测试 ......
+    #check_28_meeting()
+
+    # 需求 29 done 未测试
+    #check_29_cost()
+
     # 需求30 done
     # check_30_apply_data()
 
+    # 需求 33 done 未测试
+    #check_33_meeting_level()
+
+    # 需求 38 done 未测试
+    #check_38_credit()
+
     # 需求39 done
-    check_39_reimburse()
+    #check_39_reimburse()
+
 
     pass
 

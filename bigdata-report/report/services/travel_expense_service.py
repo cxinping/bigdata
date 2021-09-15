@@ -11,6 +11,8 @@ from report.commons.tools import match_address
 import time
 import json
 import os
+import csv
+
 
 log = get_logger(__name__)
 
@@ -72,7 +74,11 @@ def main():
     #check_15_coststructure_data()
 
     # 需求19 正在开发......
-    check_19_accommodation_expenses()
+    #check_19_accommodation_expenses()
+
+    # 需求 13 算法 正在开发......
+    check_13_accommodation_price()
+
 
     pass
 
@@ -536,6 +542,57 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_10_beforeapply_amount SQL耗时 {consumed_time} sec')
     dis_connection()
+
+
+def check_13_accommodation_price():
+    columns_ls = ['finance_travel_id', 'bill_id', 'apply_emp_id', 'bill_code', 'bill_type_code', 'bill_type_name', 'apply_emp_name', 'bill_apply_date', 'check_amount', 'bill_remark',
+                  'bill_beg_date', 'bill_end_date', 'travel_bill_id', 'travel_aim_name','travel_country_name', 'travel_region_name', 'travel_city_name', 'travel_beg_date', 'travel_end_date',
+                  'apply_id', 'apply_code', 'cost_cent_sname', 'base_apply_date', 'base_currcy_amount', 'base_remark', 'b_currcy_name', 'base_beg_date', 'base_end_date',
+                  'travel_apply_id', 'apply_aim_name', 'apply_country_name', 'apply_region_name', 'apply_city_name', 'apply_beg_date', 'apply_end_date', 'bill_apply_id', 'rebill_apply_id',
+                  'creater', 'member_bill_id', 'member_emp_id', 'member_emp_name', 'invo_code', 'invo_number', 'invoice_type_name', 'billingdate', 'sales_name','sales_addressphone',
+                  'sales_bank', 'origin_name', 'jour_amount', 'jour_beg_date', 'jour_end_date', 'destin_name', 'accomm_amount', 'subsidy_amount', 'other_amount', 'jzpz', 'company_code', 'account_period',
+                  'finance_number', 'cost_center', 'profit_center', 'account_item', 'exec_name','arrivedtimes' ]
+    columns_str = ",".join(columns_ls)
+
+    sql = """
+        select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 100000
+            """.format(columns_str=columns_str)
+    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    # log.info(count_sql)
+    records = prod_execute_sql(sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    log.info(f'* count_records={count_records}')
+
+    start_time = time.perf_counter()
+    log.info('* 开始查询')
+    select_sql_ls = []
+
+    select_sql_ls.append(sql)
+    query_data = []
+    for sel_sql in select_sql_ls:
+        # log.info(sel_sql)
+        data = prod_execute_sql(sqltype='select', sql=sel_sql)
+        # print(data)
+        if data:
+            query_data.extend(data)
+
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'*** 查询耗时 {consumed_time} sec, 共有 {len(query_data)} 条记录')
+
+    create_finance_travel_bill_csv(columns_ls, query_data)
+
+
+def create_finance_travel_bill_csv(columns_ls, query_data):
+    # 创建 csv 文件
+    out = open('/my_filed_algos/finance_travel_bill.csv','a', newline='', encoding='utf-8')
+    csv_writer = csv.writer(out, dialect='excel')
+    csv_writer.writerow(columns_ls)
+
+    for data in query_data:
+        csv_writer.writerow(data)
+
+    log.info("* write csv over")
+
 
 
 def check_15_coststructure_data():
