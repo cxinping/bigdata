@@ -47,7 +47,7 @@ def main():
     # demo()
 
     # 需求1 done
-    #check_01_invoice_data()
+    check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
@@ -77,7 +77,7 @@ def main():
     #check_19_accommodation_expenses()
 
     # 需求 13 算法 正在开发......
-    check_13_accommodation_price()
+    #check_13_accommodation_price()
 
 
     pass
@@ -85,7 +85,7 @@ def main():
 
 def check_01_invoice_data():
     sql = """
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
 SELECT bill_id, 
 '01' as unusual_id,
 company_code,
@@ -172,7 +172,7 @@ def check_02_trip_data():
                 if sales_name_city != None:
                     if destin_name.find(sales_name_city) > -1:
                         is_match = True
-                        break
+                        continue
 
             if sales_addressphone != 'None':
                 sales_addressphone_city = match_address(place=sales_addressphone, key='市') if match_address(
@@ -180,7 +180,7 @@ def check_02_trip_data():
                 if sales_addressphone_city != None:
                     if destin_name.find(sales_addressphone_city) > -1:
                         is_match = True
-                        break
+                        continue
 
             if sales_bank != 'None':
                 sales_bank_city = match_address(place=sales_bank, key='市') if match_address(place=sales_bank,
@@ -189,7 +189,7 @@ def check_02_trip_data():
                 if sales_bank_city != None:
                     if destin_name.find(sales_bank_city) > -1:
                         is_match = True
-                        break
+                        continue
 
             if is_match == False:
                 match_query_ls.append(data)
@@ -244,7 +244,7 @@ def check_02_trip_data():
 def check_03_consistent_amount():
     start_time = time.perf_counter()
     sql = """
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets 
 select a.bill_id, 
 '03' as unusual_id,
 a.company_code,
@@ -303,7 +303,7 @@ from (
 def check_04_overlap_amount():
     start_time = time.perf_counter()
     sql = """
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
 select a.bill_id, 
 '04' as unusual_id,
 a.company_code,
@@ -430,7 +430,7 @@ def check_06_reasonsubsidy_amount():
 def check_07_continuous_business_trip():
     start_time = time.perf_counter()
     sql = """
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
 SELECT bill_id, 
 '07' as unusual_id,
 company_code,
@@ -508,7 +508,7 @@ def check_10_beforeapply_amount():
 
     start_time = time.perf_counter()
     sql = """
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
 SELECT bill_id, 
 '10' as unusual_id,
 company_code,
@@ -598,7 +598,7 @@ def create_finance_travel_bill_csv(columns_ls, query_data):
 def check_15_coststructure_data():
     start_time = time.perf_counter()
     sql = """
-    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '15' as unusual_id,
     company_code,
