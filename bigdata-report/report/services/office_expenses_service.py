@@ -20,7 +20,7 @@ log = get_logger(__name__)
 def check_41_credit():
     start_time = time.perf_counter()
     sql = """
-     UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+     UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '41' as unusual_id,
     company_code,
@@ -33,8 +33,8 @@ def check_41_credit():
     bill_code,
     ''   as  origin_city,
     ''  as destin_city,
-    met_bgdate  as beg_date,
-    met_endate  as end_date,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
     '' as emp_name,
     '' as emp_code,
     0 as jour_amount,
@@ -44,7 +44,7 @@ def check_41_credit():
     check_amount,
     jzpz,
     '办公费',
-    met_money
+    0 as meeting_amount
     from 01_datamart_layer_007_h_cw_df.finance_official_bill 
 where billingdate is not null and substr(billingdate,1,4)<>cast(year(now()) as string)
             """
@@ -58,7 +58,7 @@ where billingdate is not null and substr(billingdate,1,4)<>cast(year(now()) as s
 def check_43_consistent_amount():
     start_time = time.perf_counter()
     sql = """
-    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '43' as unusual_id,
     company_code,
@@ -71,8 +71,8 @@ def check_43_consistent_amount():
     bill_code,
     ''   as  origin_city,
     ''  as destin_city,
-    met_bgdate  as beg_date,
-    met_endate  as end_date,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
     '' as emp_name,
     '' as emp_code,
     0 as jour_amount,
@@ -82,13 +82,13 @@ def check_43_consistent_amount():
     check_amount,
     jzpz,
     '办公费',
-    met_money
+    0 as meeting_amount
     from 01_datamart_layer_007_h_cw_df.finance_official_bill  
     where check_amount > jzpz
         """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* check_27_consistent_amount SQL耗时 {consumed_time} sec')
+    log.info(f'* check_43_consistent_amount SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -97,7 +97,7 @@ def main():
     #check_41_credit()
 
     # 需求43 done 未测试
-    #check_43_consistent_amount()
+    check_43_consistent_amount()
 
     pass
 

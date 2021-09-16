@@ -18,8 +18,7 @@ log = get_logger(__name__)
 def check_24_invoice():
     start_time = time.perf_counter()
     sql = """
-
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets 
 SELECT bill_id, 
 '24' as unusual_id,
 company_code,
@@ -138,7 +137,7 @@ def check_25_meeting_address():
         columns_str = ",".join(match_bill_id_ls)
 
         sql = f"""
-    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets 
     SELECT bill_id, 
     '25' as unusual_id,
     company_code,
@@ -175,7 +174,7 @@ def check_25_meeting_address():
 def check_27_consistent_amount():
     start_time = time.perf_counter()
     sql = """
-    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '27' as unusual_id,
     company_code,
@@ -212,7 +211,7 @@ def check_27_consistent_amount():
 def check_28_meeting():
     start_time = time.perf_counter()
     sql = """
-    UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+    UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '28' as unusual_id,
     company_code,
@@ -254,7 +253,7 @@ where a.meet_addr is not null and b.scenery_name_details like concat('%', a.meet
 def check_29_cost():
     start_time = time.perf_counter()
     sql = """
-        UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+        UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets 
         SELECT bill_id, 
         '29' as unusual_id,
         company_code,
@@ -309,7 +308,7 @@ def check_29_cost():
 def check_30_apply_data():
     start_time = time.perf_counter()
     sql = """
-     UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+     UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '30' as unusual_id,
     company_code,
@@ -347,7 +346,7 @@ def check_30_apply_data():
 def check_33_meeting_level():
     start_time = time.perf_counter()
     sql = """
-     UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+     UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT bill_id, 
     '33' as unusual_id,
     company_code,
@@ -400,7 +399,7 @@ def check_33_meeting_level():
 def check_38_credit():
     start_time = time.perf_counter()
     sql = """
-          UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+          UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
          SELECT bill_id, 
          '38' as unusual_id,
          company_code,
@@ -442,7 +441,7 @@ def check_38_credit():
 def check_39_reimburse():
     start_time = time.perf_counter()
     sql = """
-      UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
+      UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
      SELECT bill_id, 
      '39' as unusual_id,
      company_code,

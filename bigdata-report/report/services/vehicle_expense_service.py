@@ -131,7 +131,7 @@ def check_65_reimburse():
         """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* check_56_consistent_amount SQL耗时 {consumed_time} sec')
+    log.info(f'* check_65_reimburse SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
