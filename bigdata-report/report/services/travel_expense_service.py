@@ -47,7 +47,7 @@ def main():
     # demo()
 
     # 需求1 done
-    check_01_invoice_data()
+    #check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
@@ -71,14 +71,13 @@ def main():
     #check_10_beforeapply_amount()
 
     # 需求15 done
-    #check_15_coststructure_data()
+    check_15_coststructure_data()
 
     # 需求19 正在开发......
     #check_19_accommodation_expenses()
 
     # 需求 13 算法 正在开发......
     #check_13_accommodation_price()
-
 
     pass
 
