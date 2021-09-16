@@ -301,7 +301,7 @@ def check_29_cost():
             """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* check_28_meeting SQL耗时 {consumed_time} sec')
+    log.info(f'* check_29_cost SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -392,7 +392,7 @@ def check_33_meeting_level():
 
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* check_30_apply_data SQL耗时 {consumed_time} sec')
+    log.info(f'* check_33_meeting_level SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -428,13 +428,13 @@ def check_38_credit():
          where account_period is not null 
             and arrivedtimes is not null
             and cast(substr(account_period,5,3) as int)> cast(substr(arrivedtimes,6,2)  as int)
-                 """
+        """
 
     # print(sql)
 
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* check_39_reimburse SQL耗时 {consumed_time} sec')
+    log.info(f'* check_38_credit SQL耗时 {consumed_time} sec')
     dis_connection()
 
 
@@ -474,7 +474,7 @@ def check_39_reimburse():
                 select standard_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='39')b
                 where a.diff_date > b.standard_value  
      )
-             """
+      """
 
     # print(sql)
 
@@ -486,7 +486,7 @@ def check_39_reimburse():
 
 def main():
     # 需求 24 done
-    # check_24_invoice()
+    #check_24_invoice()
 
     # 需求25 done
     # check_25_meeting_address()
