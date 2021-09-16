@@ -120,14 +120,12 @@ def check_65_reimburse():
         0 as meeting_amount
     from 01_datamart_layer_007_h_cw_df.finance_car_bill  
     where bill_id in (
-             select a.bill_id  from
+        select a.bill_id from
             (select bill_id, (unix_timestamp(bill_apply_date, 'yyyyMMdd')-unix_timestamp(tb_times, 'yyyyMMdd'))/ (60 * 60 * 24) as diff_date 
             from  01_datamart_layer_007_h_cw_df.finance_car_bill where bill_apply_date > tb_times)a, (
             select standard_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='65')b
             where a.diff_date > b.standard_value      
-    )   
-      
-        
+    )         
         """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
