@@ -13,7 +13,6 @@ import json
 import os
 import csv
 
-
 log = get_logger(__name__)
 
 
@@ -47,37 +46,39 @@ def main():
     # demo()
 
     # 需求1 done
-    #check_01_invoice_data()
+    # check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
 
     # 需求3 done
-    #check_03_consistent_amount()
+    # check_03_consistent_amount()
 
     # 需求4 done
-    #check_04_overlap_amount()
+    # check_04_overlap_amount()
 
     # 需求6 暂时不做
     # check_06_reasonsubsidy_amount()
 
     # 需求7 done
-    #check_07_continuous_business_trip()
+    # check_07_continuous_business_trip()
 
     # 需求8 正在开发......
+    pre_check_08_transportation()
+
     # check_08_transportation_expenses()
 
     # 需求10 done
-    #check_10_beforeapply_amount()
+    # check_10_beforeapply_amount()
 
     # 需求15 done
-    check_15_coststructure_data()
+    # check_15_coststructure_data()
 
     # 需求19 正在开发......
-    #check_19_accommodation_expenses()
+    # check_19_accommodation_expenses()
 
     # 需求 13 算法 正在开发......
-    #check_13_accommodation_price()
+    # check_13_accommodation_price()
 
     pass
 
@@ -487,6 +488,39 @@ FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill where bill_id in (
     dis_connection()
 
 
+def pre_check_08_transportation():
+    org_id = '20020001'
+    org_id_ls = []
+    org_id_ls.append(org_id)
+    org_id, parent_id = query_check_08(org_id=org_id)
+    org_id_ls.append(parent_id)
+
+    while True:
+        org_id, parent_id = query_check_08(org_id=parent_id)
+        if parent_id is not None and len(parent_id) > 0:
+            org_id_ls.append(parent_id)
+        elif parent_id is None or len(parent_id) == 0:
+            break
+
+    print('****** show org_id  ******')
+    print( ','.join(org_id_ls))
+
+
+def query_check_08(org_id='20020001'):
+    sql = f"select org_id,parent_id,org_name from 03_basal_layer_zfybxers00.zfybxers00_z_mdm_organization where org_id = '{org_id}'"
+    log.info(sql)
+    result = prod_execute_sql(sqltype='select', sql=sql)
+    #print(result)
+
+    if len(result) > 0:
+        item = result[0]
+        org_id = str(item[0])
+        parent_id = str(item[1])
+        return org_id, parent_id
+    else:
+        return None, None
+
+
 def check_08_transportation_expenses():
     start_time = time.perf_counter()
     sql = """
@@ -544,13 +578,19 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
 
 
 def check_13_accommodation_price():
-    columns_ls = ['finance_travel_id', 'bill_id', 'apply_emp_id', 'bill_code', 'bill_type_code', 'bill_type_name', 'apply_emp_name', 'bill_apply_date', 'check_amount', 'bill_remark',
-                  'bill_beg_date', 'bill_end_date', 'travel_bill_id', 'travel_aim_name','travel_country_name', 'travel_region_name', 'travel_city_name', 'travel_beg_date', 'travel_end_date',
-                  'apply_id', 'apply_code', 'cost_cent_sname', 'base_apply_date', 'base_currcy_amount', 'base_remark', 'b_currcy_name', 'base_beg_date', 'base_end_date',
-                  'travel_apply_id', 'apply_aim_name', 'apply_country_name', 'apply_region_name', 'apply_city_name', 'apply_beg_date', 'apply_end_date', 'bill_apply_id', 'rebill_apply_id',
-                  'creater', 'member_bill_id', 'member_emp_id', 'member_emp_name', 'invo_code', 'invo_number', 'invoice_type_name', 'billingdate', 'sales_name','sales_addressphone',
-                  'sales_bank', 'origin_name', 'jour_amount', 'jour_beg_date', 'jour_end_date', 'destin_name', 'accomm_amount', 'subsidy_amount', 'other_amount', 'jzpz', 'company_code', 'account_period',
-                  'finance_number', 'cost_center', 'profit_center', 'account_item', 'exec_name','arrivedtimes' ]
+    columns_ls = ['finance_travel_id', 'bill_id', 'apply_emp_id', 'bill_code', 'bill_type_code', 'bill_type_name',
+                  'apply_emp_name', 'bill_apply_date', 'check_amount', 'bill_remark',
+                  'bill_beg_date', 'bill_end_date', 'travel_bill_id', 'travel_aim_name', 'travel_country_name',
+                  'travel_region_name', 'travel_city_name', 'travel_beg_date', 'travel_end_date',
+                  'apply_id', 'apply_code', 'cost_cent_sname', 'base_apply_date', 'base_currcy_amount', 'base_remark',
+                  'b_currcy_name', 'base_beg_date', 'base_end_date',
+                  'travel_apply_id', 'apply_aim_name', 'apply_country_name', 'apply_region_name', 'apply_city_name',
+                  'apply_beg_date', 'apply_end_date', 'bill_apply_id', 'rebill_apply_id',
+                  'creater', 'member_bill_id', 'member_emp_id', 'member_emp_name', 'invo_code', 'invo_number',
+                  'invoice_type_name', 'billingdate', 'sales_name', 'sales_addressphone',
+                  'sales_bank', 'origin_name', 'jour_amount', 'jour_beg_date', 'jour_end_date', 'destin_name',
+                  'accomm_amount', 'subsidy_amount', 'other_amount', 'jzpz', 'company_code', 'account_period',
+                  'finance_number', 'cost_center', 'profit_center', 'account_item', 'exec_name', 'arrivedtimes']
     columns_str = ",".join(columns_ls)
 
     sql = """
@@ -583,7 +623,7 @@ def check_13_accommodation_price():
 
 def create_finance_travel_bill_csv(columns_ls, query_data):
     # 创建 csv 文件
-    out = open('/my_filed_algos/finance_travel_bill.csv','a', newline='', encoding='utf-8')
+    out = open('/my_filed_algos/finance_travel_bill.csv', 'a', newline='', encoding='utf-8')
     csv_writer = csv.writer(out, dialect='excel')
     csv_writer.writerow(columns_ls)
 
@@ -591,7 +631,6 @@ def create_finance_travel_bill_csv(columns_ls, query_data):
         csv_writer.writerow(data)
 
     log.info("* write csv over")
-
 
 
 def check_15_coststructure_data():

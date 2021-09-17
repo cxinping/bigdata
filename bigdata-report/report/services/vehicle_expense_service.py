@@ -135,7 +135,7 @@ def check_65_reimburse():
 def check_64_credit():
     start_time = time.perf_counter()
     sql = """
-            UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
         SELECT bill_id, 
         '64' as unusual_id,
         company_code,
