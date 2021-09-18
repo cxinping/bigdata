@@ -46,7 +46,7 @@ def main():
     # demo()
 
     # 需求1 done
-    # check_01_invoice_data()
+    check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
@@ -64,7 +64,7 @@ def main():
     # check_07_continuous_business_trip()
 
     # 需求8 正在开发......
-    pre_check_08_transportation()
+    #pre_check_08_transportation()
 
     # check_08_transportation_expenses()
 
@@ -79,6 +79,15 @@ def main():
 
     # 需求 13 算法 正在开发......
     # check_13_accommodation_price()
+
+    # 需求21 done , checked
+    check_21_credit()
+
+    # 需求22 done , checked
+    #check_22_apply()
+
+    # 需求23 done , checked
+    #check_23_apply()
 
     pass
 
@@ -121,7 +130,7 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'*** 执行 check_01_invoice_data SQL耗时 {consumed_time} sec录')
-    dis_connection()
+    #dis_connection()
 
 
 def check_02_trip_data():
@@ -237,7 +246,7 @@ def check_02_trip_data():
             json.dump(dict_data, file)
             file.write("\n")
 
-    dis_connection()
+    #dis_connection()
     print('-- ok ---')
 
 
@@ -297,7 +306,7 @@ from (
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_03_consistent_amount SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_04_overlap_amount():
@@ -356,7 +365,7 @@ where a.bill_id = b.bill_id
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_04_overlap_amount SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_06_reasonsubsidy_amount():
@@ -424,7 +433,7 @@ def check_06_reasonsubsidy_amount():
     consumed_time = round(time.perf_counter() - start_time)
     print(f'* consumed_time={consumed_time} sec')
 
-    dis_connection()
+    #dis_connection()
 
 
 def check_07_continuous_business_trip():
@@ -485,40 +494,60 @@ FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill where bill_id in (
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行check_07_continuous_business_trip SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def pre_check_08_transportation():
+    """
+    7499
+    运算结果：4548
+
+    """
     org_id = '20020001'
-    org_id_ls = []
-    org_id_ls.append(org_id)
-    org_id, parent_id = query_check_08(org_id=org_id)
-    org_id_ls.append(parent_id)
-
-    while True:
-        org_id, parent_id = query_check_08(org_id=parent_id)
-        if parent_id is not None and len(parent_id) > 0:
-            org_id_ls.append(parent_id)
-        elif parent_id is None or len(parent_id) == 0:
-            break
-
-    print('****** show org_id  ******')
-    print( ','.join(org_id_ls))
+    result = queryByParent_check08(parent_id=org_id)
+    orgid_ls = []
+    pre_check_08_data(orgid_ls, org_id, result)
+    print(len(orgid_ls))
 
 
-def query_check_08(org_id='20020001'):
-    sql = f"select org_id,parent_id,org_name from 03_basal_layer_zfybxers00.zfybxers00_z_mdm_organization where org_id = '{org_id}'"
-    log.info(sql)
-    result = prod_execute_sql(sqltype='select', sql=sql)
-    #print(result)
-
-    if len(result) > 0:
-        item = result[0]
+def pre_check_08_data(orgid_ls, id, result):
+    sub_orgid_ls = []
+    for item in result:
         org_id = str(item[0])
         parent_id = str(item[1])
-        return org_id, parent_id
+        #print('111 ', item)
+
+        if parent_id == id:
+            sub_orgid_ls.append(org_id)
+            #orgid_ls.append(org_id)
+
+    if len(sub_orgid_ls) > 0:
+        orgid_ls.extend(sub_orgid_ls)
+
+    for sub_orgid in sub_orgid_ls:
+        result = queryByParent_check08(parent_id=sub_orgid)
+        if result and len(result) > 0 :
+            print('222 ',result)
+            pre_check_08_data(orgid_ls, sub_orgid, result)
+        elif result is None:
+            return
+
+
+def queryByParent_check08(parent_id='20020001'):
+    """
+    处理需求8 需要的数据
+    :param org_id:
+    :return:
+    """
+    sql = f"select org_id,parent_id,org_name from 03_basal_layer_zfybxers00.zfybxers00_z_mdm_organization where parent_id = '{parent_id}'"
+    #log.info(sql)
+    result = prod_execute_sql(sqltype='select', sql=sql)
+    # print(len(result),result)
+
+    if len(result) > 0:
+        return result
     else:
-        return None, None
+        return None
 
 
 def check_08_transportation_expenses():
@@ -530,7 +559,7 @@ def check_08_transportation_expenses():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_08_transportation_expenses SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_10_beforeapply_amount():
@@ -574,7 +603,7 @@ destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_am
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_10_beforeapply_amount SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_13_accommodation_price():
@@ -619,6 +648,129 @@ def check_13_accommodation_price():
     log.info(f'*** 查询耗时 {consumed_time} sec, 共有 {len(query_data)} 条记录')
 
     create_finance_travel_bill_csv(columns_ls, query_data)
+
+def check_21_credit():
+    start_time = time.perf_counter()
+    sql = """
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+select bill_id, 
+    '21' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '差旅费',
+    0 as meeting_amount
+  from 01_datamart_layer_007_h_cw_df.finance_travel_bill where account_period !='NULL'  and  
+(cast(CONCAT(substr(account_period,1,4),'',substr(substr(account_period,5,7),2,3)) as int ) > cast(substr(arrivedtimes,1,7) as int))
+                """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行 check_21_credit SQL耗时 {consumed_time} sec')
+    #dis_connection()
+
+def check_22_apply():
+    start_time = time.perf_counter()
+    sql = """
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+select bill_id, 
+    '22' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '差旅费',
+    0 as meeting_amount from 
+01_datamart_layer_007_h_cw_df.finance_travel_bill
+where
+jour_end_date is not null
+and 
+tb_times is not null 
+and
+jour_end_date>tb_times
+            """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行 check_22_apply SQL耗时 {consumed_time} sec')
+    #dis_connection()
+
+def check_23_apply():
+    start_time = time.perf_counter()
+    sql = """
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+with standard as (
+  select standard_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='23'
+)
+select bill_id, 
+    '23' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '差旅费',
+    0 as meeting_amount from 
+01_datamart_layer_007_h_cw_df.finance_travel_bill as travel_bill,standard
+where
+arrivedtimes is not null
+and 
+tb_times is not null 
+and
+((cast(replace(substr(arrivedtimes,1,7),'-','') as int)-cast(replace(substr(tb_times,1,7),'-','')  as int))-(select avg(cast(replace(substr(arrivedtimes,1,7),'-','')  as int)-cast(replace(substr(tb_times,1,7),'-','')  as int)) avgt from 
+01_datamart_layer_007_h_cw_df.finance_travel_bill))>standard.standard_value
+            """
+    prod_execute_sql(sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行 check_23_apply SQL耗时 {consumed_time} sec')
+    #dis_connection()
+
 
 
 def create_finance_travel_bill_csv(columns_ls, query_data):
@@ -669,7 +821,7 @@ def check_15_coststructure_data():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 check_15_coststructure_data SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_19_accommodation_expenses():
@@ -681,7 +833,7 @@ def check_19_accommodation_expenses():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 if __name__ == "__main__":

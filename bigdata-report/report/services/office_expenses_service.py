@@ -52,7 +52,7 @@ where billingdate is not null and substr(billingdate,1,4)<>cast(year(now()) as s
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_41_credit SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_43_consistent_amount():
@@ -89,7 +89,7 @@ def check_43_consistent_amount():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_43_consistent_amount SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 def check_51_credit():
     start_time = time.perf_counter()
@@ -129,7 +129,7 @@ def check_51_credit():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_51_credit SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_52_reimburse():
@@ -173,7 +173,7 @@ def check_52_reimburse():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_51_credit SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 def check_53_approve():
     start_time = time.perf_counter()
@@ -223,7 +223,7 @@ def check_53_approve():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_53_approve SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 def main():
     # 需求41 done

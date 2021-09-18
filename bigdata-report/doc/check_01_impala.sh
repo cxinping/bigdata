@@ -5,8 +5,8 @@ kinit -kt sjfw_admin.keytab sjfw_admin
 
 impala-shell -k -i hadoop-pro-025 --ssl -b hadoop-pro-017 -q "
 
-UPSERT into 01_datamart_layer_007_h_cw_df.finance_all_targets 
-SELECT bill_id, 
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+SELECT bill_id,
 '01' as unusual_id,
 company_code,
 account_period,
@@ -27,7 +27,9 @@ accomm_amount,
 subsidy_amount,
 other_amount,
 check_amount,
-jzpz
+jzpz,
+'差旅费',
+0 as meeting_amount
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill  
 WHERE  billingdate is not null and travel_beg_date is not null and travel_end_date  is not null
 and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') < unix_timestamp(travel_beg_date,'yyyyMMdd')

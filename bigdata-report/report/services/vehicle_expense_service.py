@@ -50,7 +50,7 @@ def check_54_invoice():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_54_invoice SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_56_consistent_amount():
@@ -87,13 +87,13 @@ def check_56_consistent_amount():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_56_consistent_amount SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_65_reimburse():
     start_time = time.perf_counter()
     sql = """
-            UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+        UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
         SELECT bill_id, 
         '65' as unusual_id,
         company_code,
@@ -104,8 +104,8 @@ def check_65_reimburse():
         profit_center,
         '' as cart_head,
         bill_code,
-        ''   as  origin_city,
-        ''  as destin_city,
+        '' as origin_city,
+        '' as destin_city,
         base_beg_date  as beg_date,
         base_end_date  as end_date,
         '' as emp_name,
@@ -130,7 +130,7 @@ def check_65_reimburse():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_65_reimburse SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 def check_64_credit():
     start_time = time.perf_counter()
@@ -160,17 +160,14 @@ def check_64_credit():
         jzpz,
         '车辆使用费',
         0 as meeting_amount
-    from 01_datamart_layer_007_h_cw_df.finance_car_bill  
-    where bill_id in (
-       select bill_id from 01_datamart_layer_007_h_cw_df.finance_car_bill where account_period is not null 
+        from 01_datamart_layer_007_h_cw_df.finance_car_bill where account_period is not null 
         and arrivedtimes is not null
-        and cast(concat(substr(account_period,1,4),substr(account_period,6,2)) as int)> cast(replace(substr(arrivedtimes,1,7),'-','')  as int)     
-    )         
+        and cast(concat(substr(account_period,1,4),substr(account_period,6,2)) as int)> cast(replace(substr(arrivedtimes,1,7),'-','')  as int)  
         """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_64_credit SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_66_approve():
@@ -221,7 +218,7 @@ def check_66_approve():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_66_approve SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 def main():
     # 需求 54 done
@@ -231,10 +228,10 @@ def main():
     #check_56_consistent_amount()
 
     # 需求 64
-    check_64_credit()
+    #check_64_credit()
 
     # 需求 65 done 未测试
-    #check_65_reimburse()
+    check_65_reimburse()
 
     # 需求 66 done
     #check_66_approve()

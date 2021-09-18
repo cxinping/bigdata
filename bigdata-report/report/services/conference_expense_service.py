@@ -18,40 +18,40 @@ log = get_logger(__name__)
 def check_24_invoice():
     start_time = time.perf_counter()
     sql = """
-UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets 
-SELECT bill_id, 
-'24' as unusual_id,
-company_code,
-account_period,
-account_item,
-finance_number,
-cost_center,
-profit_center,
-'' as cart_head,
-bill_code,
-''   as  origin_city,
-''  as destin_city,
-met_bgdate  as beg_date,
-met_endate  as end_date,
-'' as emp_name,
-'' as emp_code,
-0 as jour_amount,
-0 as accomm_amount,
-0 as subsidy_amount,
-0 as other_amount,
-check_amount,
-jzpz,
-'会议费',
-met_money
-from 01_datamart_layer_007_h_cw_df.finance_meeting_bill  
-where  billingdate is not null and met_bgdate is not null and met_endate is not null
-and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss')< unix_timestamp(met_bgdate,'yyyyMMdd')
-or unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss')> unix_timestamp(met_endate,'yyyyMMdd'))
+    UPSERT into  analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets 
+    SELECT bill_id, 
+    '24' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    met_bgdate  as beg_date,
+    met_endate  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '会议费',
+    met_money
+    from 01_datamart_layer_007_h_cw_df.finance_meeting_bill  
+    where  billingdate is not null and met_bgdate is not null and met_endate is not null
+    and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss')< unix_timestamp(met_bgdate,'yyyyMMdd')
+    or unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss')> unix_timestamp(met_endate,'yyyyMMdd'))
     """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_24_invoice SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_25_meeting_address():
@@ -168,7 +168,7 @@ def check_25_meeting_address():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 SQL 耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_27_consistent_amount():
@@ -205,7 +205,7 @@ def check_27_consistent_amount():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_27_consistent_amount SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_28_meeting():
@@ -247,7 +247,7 @@ where a.meet_addr is not null and b.scenery_name_details like concat('%', a.meet
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_28_meeting SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_29_cost():
@@ -302,7 +302,7 @@ def check_29_cost():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_29_cost SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_30_apply_data():
@@ -340,7 +340,7 @@ def check_30_apply_data():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_30_apply_data SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_33_meeting_level():
@@ -393,7 +393,7 @@ def check_33_meeting_level():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_33_meeting_level SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_38_credit():
@@ -435,7 +435,7 @@ def check_38_credit():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_38_credit SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def check_37_ticket():
@@ -477,7 +477,7 @@ def check_37_ticket():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_37_ticket SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 
@@ -526,18 +526,18 @@ def check_39_reimburse():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_39_reimburse SQL耗时 {consumed_time} sec')
-    dis_connection()
+    #dis_connection()
 
 
 def main():
     # 需求 24 done
-    #check_24_invoice()
+    check_24_invoice()
 
     # 需求25 done
-    # check_25_meeting_address()
+    #check_25_meeting_address()
 
     # 需求 27 done
-    # check_27_consistent_amount()
+    check_27_consistent_amount()
 
     # 需求 28 done 未测试 ......
     # check_28_meeting()
