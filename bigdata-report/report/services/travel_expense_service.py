@@ -46,7 +46,7 @@ def main():
     # demo()
 
     # 需求1 done
-    check_01_invoice_data()
+    #check_01_invoice_data()
 
     # 需求2 未做
     # check_02_trip_data()
@@ -64,8 +64,7 @@ def main():
     # check_07_continuous_business_trip()
 
     # 需求8 正在开发......
-    #pre_check_08_transportation()
-
+    pre_check_08_transportation()
     # check_08_transportation_expenses()
 
     # 需求10 done
@@ -81,7 +80,7 @@ def main():
     # check_13_accommodation_price()
 
     # 需求21 done , checked
-    check_21_credit()
+    #check_21_credit()
 
     # 需求22 done , checked
     #check_22_apply()

@@ -173,47 +173,42 @@ def check_64_credit():
 def check_66_approve():
     start_time = time.perf_counter()
     sql = """
-    with standard as (
-        select standard_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='66'
-    )
-
-     UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
-        SELECT bill_id, 
-        '66' as unusual_id,
-        company_code,
-        account_period,
-        account_item,
-        finance_number,
-        cost_center,
-        profit_center,
-        '' as cart_head,
-        bill_code,
-        ''   as  origin_city,
-        ''  as destin_city,
-        base_beg_date  as beg_date,
-        base_end_date  as end_date,
-        '' as emp_name,
-        '' as emp_code,
-        0 as jour_amount,
-        0 as accomm_amount,
-        0 as subsidy_amount,
-        0 as other_amount,
-        check_amount,
-        jzpz,
-        '车辆使用费',
-        0 as meeting_amount
-    from 01_datamart_layer_007_h_cw_df.finance_car_bill  
-    where bill_id in (
-       select bill_id from 
-        01_datamart_layer_007_h_cw_df.finance_car_bill,standard
-        where 
-        arrivedtimes is not null
-        and 
-        tb_times is not null
-        and
-        ((cast(replace(substr(arrivedtimes,1,7),'-','') as int)-cast(replace(substr(tb_times,1,7),'-','')  as int))-(select avg(cast(replace(substr(arrivedtimes,1,7),'-','')  as int)-cast(replace(substr(tb_times,1,7),'-','')  as int)) avgt from 
-        01_datamart_layer_007_h_cw_df.finance_car_bill))>standard.standard_value
-    )         
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+with standard as (
+  select standard_value from 01_datamart_layer_007_h_cw_df.finance_standard where unusual_id='66'
+)
+select bill_id, 
+    '66' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+    '' as emp_name,
+    '' as emp_code,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '车辆使用费',
+    0 as meeting_amount from 
+01_datamart_layer_007_h_cw_df.finance_car_bill,standard
+where 
+arrivedtimes is not null
+and 
+tb_times is not null
+and
+((cast(replace(substr(arrivedtimes,1,7),'-','') as int)-cast(replace(substr(tb_times,1,7),'-','')  as int))-(select avg(cast(replace(substr(arrivedtimes,1,7),'-','')  as int)-cast(replace(substr(tb_times,1,7),'-','')  as int)) avgt from 
+01_datamart_layer_007_h_cw_df.finance_car_bill))>standard.standard_value 
         """
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
@@ -231,10 +226,10 @@ def main():
     #check_64_credit()
 
     # 需求 65 done 未测试
-    check_65_reimburse()
+    #check_65_reimburse()
 
-    # 需求 66 done
-    #check_66_approve()
+    # 需求 66 done, checked
+    check_66_approve()
 
     pass
 

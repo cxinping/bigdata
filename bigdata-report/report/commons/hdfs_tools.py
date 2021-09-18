@@ -77,9 +77,6 @@ class HDFSTools(object):
             IOUtils.copy(fin, fout)
             fout.flush()
             print('---- end uploadFile ----')
-
-
-
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -136,3 +133,6 @@ if __name__ == "__main__":
     hdfs.ls()
 
     hdfs.shutdownJVM()
+
+
+
