@@ -154,7 +154,7 @@ class HDFSTools(object):
 
             print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
 
-            hdfsFileUrl_ls = hdfsFileUrl_ls[0:3000]
+            hdfsFileUrl_ls = hdfsFileUrl_ls[0:1000]
 
 
             # 单线程下载
@@ -170,7 +170,7 @@ class HDFSTools(object):
             # print('共耗时' + str(datetime.now() - x))
 
             # 多线程下载
-            threadPool = ThreadPoolExecutor(max_workers=40)
+            threadPool = ThreadPoolExecutor(max_workers=50)
             x = datetime.now()
             obj_list = []
             for hdfs_file_url in hdfsFileUrl_ls:
