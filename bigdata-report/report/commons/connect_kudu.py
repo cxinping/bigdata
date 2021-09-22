@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+
 sys.path.append("/usr/local/lib64/python3.6/site-packages")
 
 import jaydebeapi
@@ -18,10 +19,9 @@ Created on 2021-08-05
 
 """
 
-pd.set_option('display.max_columns', None)   # 显示完整的列
+pd.set_option('display.max_columns', None)  # 显示完整的列
 pd.set_option('display.max_rows', None)  # 显示完整的行
 pd.set_option('display.expand_frame_repr', False)  # 设置不折叠数据
-
 
 
 def execute_sql(sql):
@@ -43,17 +43,17 @@ def execute_sql(sql):
     # jvm = jpype.getDefaultJVMPath()
     jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
 
-    #if not jpype.isJVMStarted():
-        # try:
-        #     #print('--------startjvm---------')
-        #     jpype.startJVM(jvm, jvm_options)
-        #     # print("JVM path:"+ jpype.getDefaultJVMPath())
-        #     # print('----- running jvm -------------')
-        #
-        # except Exception as e:
-        #     print('====== throw error ======')
-        #     traceback.print_exc()
-        #     jpype.shutdownJVM()
+    # if not jpype.isJVMStarted():
+    # try:
+    #     #print('--------startjvm---------')
+    #     jpype.startJVM(jvm, jvm_options)
+    #     # print("JVM path:"+ jpype.getDefaultJVMPath())
+    #     # print('----- running jvm -------------')
+    #
+    # except Exception as e:
+    #     print('====== throw error ======')
+    #     traceback.print_exc()
+    #     jpype.shutdownJVM()
 
     try:
         print('--------startjvm---------')
@@ -81,7 +81,7 @@ def execute_sql(sql):
         cur = conn.cursor()
         cur.execute(sql)
         list = cur.fetchall()
-        #list = cur.fetchone()
+        # list = cur.fetchone()
 
         # 关闭游标
         cur.close()
@@ -93,7 +93,7 @@ def execute_sql(sql):
         traceback.print_exc()
 
 
-def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
+def prod_execute_sql(conn_type='test', sqltype='insert', sql=''):
     """
     :param conn_type: 连接类型
                     prod 生产环境
@@ -105,8 +105,8 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
     jars_path = '/you_filed_algos/jars/'
     dirver = "org.apache.hive.jdbc.HiveDriver"
     is_prod_env = True
-    PROD = 'prod'    # 生产环境
-    TEST = 'test'    # 测试环境
+    PROD = 'prod'  # 生产环境
+    TEST = 'test'  # 测试环境
 
     if conn_type == PROD:
         url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
@@ -121,7 +121,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
 
     jars_file_str = ':'.join(jars_file_ls)
 
-    #jvm_options = ["-Djava.class.path=" + jars_file_str, '-Xmx2G','-Xms512M']
+    # jvm_options = ["-Djava.class.path=" + jars_file_str, '-Xmx2G','-Xms512M']
     jvm_options = "-Djava.class.path=" + jars_file_str
 
     # jvm = jpype.getDefaultJVMPath()
@@ -141,8 +141,9 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
 
     try:
         if not jpype.isJVMStarted():
-            #print('--------startjvm---------')
-            jpype.startJVM(jvm, "-ea", jvm_options, '-Xmx5g', '-Xms5g', '-Xmn2g' ,'-XX:+UseParNewGC', '-XX:ParallelGCThreads=8' , '-XX:SurvivorRatio=6', '-XX:+UseConcMarkSweepGC')
+            # print('--------startjvm---------')
+            jpype.startJVM(jvm, "-ea", jvm_options, '-Xmx5g', '-Xms5g', '-Xmn2g', '-XX:+UseParNewGC',
+                           '-XX:ParallelGCThreads=8', '-XX:SurvivorRatio=6', '-XX:+UseConcMarkSweepGC')
 
         if jpype.isJVMStarted() and not jpype.isThreadAttachedToJVM():
             print('-----attaching jvm-----')
@@ -151,16 +152,16 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
                 jpype.java.lang.ClassLoader.getSystemClassLoader()
             )
 
-            #print('--------startjvm---------')
-        #jpype.startJVM(jvm, jvm_options)
+            # print('--------startjvm---------')
+        # jpype.startJVM(jvm, jvm_options)
         # print("JVM path:"+ jpype.getDefaultJVMPath())
         # print('----- running jvm -------------')
     except Exception as e:
-        #print('====== throw error ======')
+        # print('====== throw error ======')
         traceback.print_exc()
 
     try:
-        #print('----- running jvm ，' , jpype.isJVMStarted())
+        # print('----- running jvm ，' , jpype.isJVMStarted())
         System = jpype.java.lang.System
         if conn_type == PROD:
             System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
@@ -180,8 +181,6 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
             UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
 
         conn = jaydebeapi.connect(dirver, url)
-        #print("1111 * create connection object")
-
         cur = conn.cursor()
 
         if sqltype == 'insert':
@@ -201,13 +200,15 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql='' ):
         print(ex)
         traceback.print_exc()
 
+
 def dis_connection():
     if jpype.isJVMStarted():
-        #print('=== shutdown JVM===')
+        # print('=== shutdown JVM===')
         jpype.shutdownJVM()
 
+
 def getKUDUdata(sql):
-    records = prod_execute_sql(sqltype='select',sql=sql )
+    records = prod_execute_sql(sqltype='select', sql=sql)
     dataFromHana = []
     dataFfromHana1 = []
     dataFfromHana2 = []
@@ -215,10 +216,10 @@ def getKUDUdata(sql):
     print(records)
 
     for item in records:
-        #print(type(item), item)
-        dataFromHana.append( str(item) )
-        #dataFfromHana1.append(list(item))
-        #dataFfromHana2.append(item[1])
+        # print(type(item), item)
+        dataFromHana.append(str(item))
+        # dataFfromHana1.append(list(item))
+        # dataFfromHana2.append(item[1])
 
     print(dataFromHana)
 
@@ -229,9 +230,9 @@ def getKUDUdata(sql):
 if __name__ == "__main__":
     start_time = time.perf_counter()
     # 连接 KUDU 库下的表
-    #rd_df = getKUDUdata('select * from python_test_kudu.irisdataset limit 10')
+    # rd_df = getKUDUdata('select * from python_test_kudu.irisdataset limit 10')
     # 连接 HIVE 表
-    #rd_df = getKUDUdata('select * from python_test.irisdataset limit 100')
+    # rd_df = getKUDUdata('select * from python_test.irisdataset limit 100')
 
     # 连接生产库
     # rd_df = getKUDUdata('select finance_travel_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 3')
@@ -260,19 +261,3 @@ if __name__ == "__main__":
 
     dis_connection()
     print('-- ok --')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

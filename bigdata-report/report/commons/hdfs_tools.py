@@ -7,15 +7,17 @@ import traceback
 import pandas as pd
 import time
 from jpype import JString
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 
 
 class HDFSTools(object):
 
-    def __init__(self):
+    def __init__(self, conn_type='prod'):
         conf_path = r'/you_filed_algos'
         jars_path = r'/you_filed_algos/jars/'
         jars_file_ls = []
-        jars_file_str = ''
+        # jars_file_str = ''
         for jar in os.listdir(jars_path):
             jars_file_ls.append(jars_path + jar)
 
@@ -35,21 +37,25 @@ class HDFSTools(object):
             conf.set('hadoop.security.authentication', 'kerberos')
 
             System = jpype.java.lang.System
-            PROD = 'wangsh12348'
-            TEST = 'pbpang'
-            conn_type = 'wangsh12348'
+            PROD = 'prod'
+            TEST = 'test'
             if conn_type == PROD:
+                # 生产环境
                 System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
             elif conn_type == TEST:
-                System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
+                # 测试环境
+                System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
 
             UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
             UserGroupInformation.setConfiguration(conf)
 
             if conn_type == PROD:
+                # 生产环境
                 UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
             elif conn_type == TEST:
-                UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
+                # 测试环境
+                UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348",
+                                                         "/you_filed_algos/sjfw_wangsh12348_kaifa.keytab")
 
             FileSystem = jpype.JClass('org.apache.hadoop.fs.FileSystem')
             self.fs = FileSystem.get(conf)
@@ -57,6 +63,12 @@ class HDFSTools(object):
             print('====== throw error ======')
             print(e)
             traceback.print_exc()
+            raise RuntimeError(e)
+
+
+    def uplodFile_recursion(self):
+        pass
+
 
     def uploadFile(self, hdfsDirPath, localPath):
         print('---- begin uploadFile ----')
@@ -90,10 +102,162 @@ class HDFSTools(object):
                 print(e2)
                 traceback.print_exc()
 
-    def ls(self):
+    def downLoadDir(self, hdfsDirUrl, localDirUrl):
+        print('--- downLoadDir ---')
+
+        Path = jpype.JClass('org.apache.hadoop.fs.Path')
+        File = jpype.JClass('java.io.File')
+        path = Path(hdfsDirUrl)
+        file = File(localDirUrl)
+
+        if not file.exists() and not file.isDirectory() :
+            file.mkdirs()
+
+        try:
+            fsArr = self.fs.listStatus(path)
+            for fss in fsArr:
+                name = fss.getPath().getName()
+                print(fss.getPath())
+
+                if fss.isFile():
+                    print('222 ',file.getPath() + "/" + name)
+                    self.downLoadFile(fss.getPath().toString(), file.getPath()+"/"+name)
+
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
+    def downLoadDir_recursion(self, hdfsDirUrl, localDirUrl):
+        """
+        递归下载文件加下的内容
+        :param hdfsDirUrl:
+        :param localDirUrl:
+        :return:
+        """
+        print('--- downLoadDir_recursion ---')
+
+        Path = jpype.JClass('org.apache.hadoop.fs.Path')
+        File = jpype.JClass('java.io.File')
+        path = Path(hdfsDirUrl)
+        file = File(localDirUrl)
+
+        if not file.exists() or not file.isDirectory() :
+            file.mkdirs()
+
+        try:
+            fsArr = self.fs.listStatus(path)
+            hdfsFileUrl_ls = []
+
+            for fss in fsArr:
+                # 遍历文件列表，判断是文件还是文件夹
+                self.isDir(fss, hdfsFileUrl_ls)
+
+
+            print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
+
+            # 单线程下载
+            # for hdfs_file_url in hdfsFileUrl_ls:
+            #     #print(hdfs_file_url)
+            #     local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
+            #     print('* hdfs_file_url=> ',hdfs_file_url)
+            #     print('* local_file_name=> ',local_file_name)
+            #
+            #     self.downLoadFile(hdfs_file_url, local_file_name)
+            #     print('')
+
+
+            # 多线程下载
+            threadPool = ThreadPoolExecutor(max_workers=60)
+            x = datetime.now()
+            for hdfs_file_url in hdfsFileUrl_ls:
+                local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
+                print('* hdfs_file_url=> ', hdfs_file_url)
+                print('* local_file_name=> ', local_file_name)
+                print('')
+                threadPool.submit(self.downLoadFile, hdfs_file_url, local_file_name)
+
+            threadPool.shutdown(wait=True)
+            print('共耗时' + str(datetime.now() - x))
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
+    def isDir(self, fileStatus, hdfsFileUrl_ls):
+        # 如果是文件夹，则获取该文件夹下的文件列表，遍历判断递归调用
+
+        if fileStatus.isDirectory():
+            dirname = fileStatus.getPath().getName()
+            dirname = fileStatus.getPath().toString()
+            #print(dirname, fileStatus.getPath().toString())
+            Path = jpype.JClass('org.apache.hadoop.fs.Path')
+            try:
+                listStatus = self.fs.listStatus(Path(str(dirname) ))
+                for fileStatus2 in listStatus:
+                    self.isDir(fileStatus2, hdfsFileUrl_ls)
+            except Exception as e:
+                print(e)
+                traceback.print_exc()
+        else:
+            dirname = fileStatus.getPath().toString()
+            #print('* filename ==> ' , dirname)
+            hdfsFileUrl_ls.append(dirname)
+
+
+    def downLoadFile(self, hdfsUrl, localUrl):
+        #print('--- downLoadFile ---')
+        fin = None
+        fout = None
+        Path = jpype.JClass('org.apache.hadoop.fs.Path')
+        FSDataInputStream = jpype.JClass('org.apache.hadoop.fs.FSDataInputStream')
+        FileOutputStream = jpype.JClass('java.io.FileOutputStream')
+        IOUtils = jpype.JClass('org.apache.commons.io.IOUtils')
+        path = Path(hdfsUrl)
+
+        # 判断本地文件所在文件夹是否存在，如果不存在就先创建文件夹
+        File = jpype.JClass('java.io.File')
+        file = File(localUrl)
+        file_dir = File(file.getParent())
+
+        if not bool(file_dir.exists()):
+            file_dir.mkdirs()
+
+        try:
+            status = self.fs.getFileStatus(path)
+            #print(status)
+
+            if status is not None and status.isFile():
+                #print('*** it is a file')
+                fin = self.fs.open(path)
+                fout = FileOutputStream(localUrl)
+                IOUtils.copy(fin, fout)
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+        finally:
+            try:
+                if fin:
+                    fin.close()
+                if fout:
+                    fout.close()
+            except Exception as e2:
+                print(e2)
+                traceback.print_exc()
+
+    def delete(self, hdfsDirPath):
+        print('---- delete ----')
+
+        try:
+            Path = jpype.JClass('org.apache.hadoop.fs.Path')
+            flag = self.fs.delete(Path(hdfsDirPath), True)
+            return flag
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
+    def ls(self, url='/user/sjfw_wangsh12348/test_data/'):
+        print('---- hdfs ls ----')
         Path = jpype.JClass('org.apache.hadoop.fs.Path')
         try:
-            url = '/user/sjfw_wangsh12348/test_data/'
             path = Path(url)
             fsArr = self.fs.listStatus(path)
             for fss in fsArr:
@@ -115,24 +279,67 @@ class HDFSTools(object):
         otherStyleTime = time.strftime("%Y-%m-%d %H:%M:%S", timeArray)
         return otherStyleTime
 
-
     def shutdownJVM(self):
         if jpype.isJVMStarted():
             jpype.shutdownJVM()
 
 
-if __name__ == "__main__":
-    hdfs = HDFSTools()
+def prod_demo1():
+    hdfs = HDFSTools(conn_type='prod')
 
     hdfsDirPath = 'hdfs:///user/sjfw_wangsh12348/test_data/'
     # 对外挂载地址地址 /public_filed_algos/report/check_02_trip_data.json
     # docker 容器地址  /my_filed_algos/check_02_trip_data.json
-    localPath = r'/my_filed_algos/check_02_trip_data.json'
+    localPath = r'/my_filed_algos/test.txt'
+    # upload file to HDFS
+    # hdfs.uploadFile(hdfsDirPath, localPath)
 
-    #hdfs.uploadFile(hdfsDirPath, localPath)
-    hdfs.ls()
+    # list HDFS files
+    hdfs.ls(url=hdfsDirPath)
+
+    # delete HDFS file
+    del_hdfs_path = 'hdfs:///user/sjfw_wangsh12348/test_data/test.txt'
+    # hdfs.delete(del_hdfs_path)
+
+    # download from HDFS
+    # hdfs.downLoadFile(hdfsUrl='hdfs:///user/sjfw_wangsh12348/test_data/test.txt', localUrl='/my_filed_algos/test_hdfs.txt')
 
     hdfs.shutdownJVM()
 
 
+def prod_demo2():
+    hdfs = HDFSTools(conn_type='prod')
 
+    hdfsDirPath = 'hdfs:///user/hive/warehouse/'
+    # list HDFS files
+    #hdfs.ls(url=hdfsDirPath)
+
+    # 下载 HDFS 上的单个文件
+    # hdfs.downLoadFile(hdfsUrl='hdfs:///user/hive/warehouse/02_logical_layer_003_z_lf_cw.db/zccw0101_m/importdate=20210921/000000_0',
+    #                   localUrl='/my_filed_algos/prod_kudu_data/000000_0')
+
+    # 递归下载 HDFS 上的文件夹里的文件
+    hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db', localDirUrl='/my_filed_algos/prod_kudu_data/')
+
+    hdfs.shutdownJVM()
+    print('--- ok , completed word ---')
+
+
+
+def test_demo():
+    try:
+        hdfs = HDFSTools(conn_type='test')
+        hdfsDirPath = 'hdfs:///user/sjfw_wangsh12348/'
+        hdfs.ls(url=hdfsDirPath)
+
+        hdfs.shutdownJVM()
+    except Exception as e:
+        print(e)
+
+
+if __name__ == "__main__":
+    prod_demo2()
+
+    #test_demo()
+
+    pass
