@@ -152,10 +152,13 @@ class HDFSTools(object):
                 # 遍历文件列表，判断是文件还是文件夹
                 self.isDir(fss, hdfsFileUrl_ls)
 
-
             print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
 
+            hdfsFileUrl_ls = hdfsFileUrl_ls[0:3000]
+
+
             # 单线程下载
+            # x = datetime.now()
             # for hdfs_file_url in hdfsFileUrl_ls:
             #     #print(hdfs_file_url)
             #     local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
@@ -164,20 +167,27 @@ class HDFSTools(object):
             #
             #     self.downLoadFile(hdfs_file_url, local_file_name)
             #     print('')
-
+            # print('共耗时' + str(datetime.now() - x))
 
             # 多线程下载
-            threadPool = ThreadPoolExecutor(max_workers=60)
+            threadPool = ThreadPoolExecutor(max_workers=40)
             x = datetime.now()
+            obj_list = []
             for hdfs_file_url in hdfsFileUrl_ls:
                 local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
                 print('* hdfs_file_url=> ', hdfs_file_url)
                 print('* local_file_name=> ', local_file_name)
                 print('')
-                threadPool.submit(self.downLoadFile, hdfs_file_url, local_file_name)
+                obj = threadPool.submit(self.downLoadFile, hdfs_file_url, local_file_name)
+                obj_list.append(obj)
+
+            for future in as_completed(obj_list):
+                data = future.result()
+                print(data)
 
             threadPool.shutdown(wait=True)
             print('共耗时' + str(datetime.now() - x))
+
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -230,6 +240,8 @@ class HDFSTools(object):
                 fin = self.fs.open(path)
                 fout = FileOutputStream(localUrl)
                 IOUtils.copy(fin, fout)
+
+            return f'downlaod from hdfs {hdfsUrl} to {localUrl}'
         except Exception as e:
             print(e)
             traceback.print_exc()
