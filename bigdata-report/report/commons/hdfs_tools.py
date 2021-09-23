@@ -376,7 +376,7 @@ def main():
     hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
-    print('* part1 ')
+    print('* part1 123 ')
     hdfsFileUrl_ls = prod_hdfs.downLoadDir_recursion(hdfsDirUrl=hdfsDirUrl,
                                                      localDirUrl=localDirUrl)
     print('* part2 ')
@@ -441,3 +441,14 @@ if __name__ == "__main__":
     main()
 
     pass
+
+
+
+
+
+
+
+
+
+
+

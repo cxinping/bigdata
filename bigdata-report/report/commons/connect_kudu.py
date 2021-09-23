@@ -112,9 +112,10 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     print('---- conn_type=', conn_type)
 
     if conn_type == PROD:
+        # 生产集群使用KUDU
         url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
     elif conn_type == TEST:
-        # 测试连接KUDU
+        # 测试集群使用KUDU
         # jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/home/user/java/keytab/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM
         url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore_kaifa.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
 
@@ -169,8 +170,10 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
 
         System = jpype.java.lang.System
         if conn_type == PROD:
+            # 生产集群使用KUDU
             System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
         elif conn_type == TEST:
+            # 测试集群使用KUDU
             System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5_kaifa.conf")
 
         Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
@@ -181,8 +184,10 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
         UserGroupInformation.setConfiguration(conf)
 
         if conn_type == PROD:
+            # 生产集群使用KUDU
             UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
         elif conn_type == TEST:
+            # 测试集群使用KUDU
             UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348_kaifa.keytab")
 
         conn = jaydebeapi.connect(dirver, url)
