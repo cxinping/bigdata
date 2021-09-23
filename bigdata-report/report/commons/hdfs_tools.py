@@ -27,27 +27,40 @@ class HDFSTools(object):
         jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
 
         try:
-            jpype.startJVM(jvm, jvm_options)
+            if not jpype.isJVMStarted():
+                jpype.startJVM(jvm, jvm_options)
+
             Configuration = jpype.JClass('org.apache.hadoop.conf.Configuration')
             conf = Configuration()
             Path = jpype.JClass('org.apache.hadoop.fs.Path')
-            conf.addResource(Path(conf_path + "/core-site.xml"))
-            conf.addResource(Path(conf_path + "/hdfs-site.xml"))
+            PROD = 'prod'
+            TEST = 'test'
+
+            if conn_type == PROD:
+                # 生产环境
+                conf.addResource(Path(conf_path + "/core-site.xml"))
+                conf.addResource(Path(conf_path + "/hdfs-site.xml"))
+            elif conn_type == TEST:
+                # 测试环境
+                conf.addResource(Path(conf_path + "/core-site_kaifa.xml"))
+                conf.addResource(Path(conf_path + "/hdfs-site_kaifa.xml"))
+
             conf.set('hadoop.security.authorization', 'true')
             conf.set('hadoop.security.authentication', 'kerberos')
 
             System = jpype.java.lang.System
-            PROD = 'prod'
-            TEST = 'test'
+
             if conn_type == PROD:
                 # 生产环境
                 System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
             elif conn_type == TEST:
                 # 测试环境
-                System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
+                System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5_kaifa.conf")
 
             UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
             UserGroupInformation.setConfiguration(conf)
+
+            print('*** HDFSTools init conn_type=', conn_type)
 
             if conn_type == PROD:
                 # 生产环境
@@ -65,13 +78,8 @@ class HDFSTools(object):
             traceback.print_exc()
             raise RuntimeError(e)
 
-
-    def uplodFile_recursion(self):
-        pass
-
-
     def uploadFile(self, hdfsDirPath, localPath):
-        print('---- begin uploadFile ----')
+        print('* begin uploadFile *')
         fin = None
         fout = None
         File = jpype.JClass('java.io.File')
@@ -88,7 +96,7 @@ class HDFSTools(object):
             fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
             IOUtils.copy(fin, fout)
             fout.flush()
-            print('---- end uploadFile ----')
+            print('* end uploadFile *')
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -110,7 +118,7 @@ class HDFSTools(object):
         path = Path(hdfsDirUrl)
         file = File(localDirUrl)
 
-        if not file.exists() and not file.isDirectory() :
+        if not file.exists() and not file.isDirectory():
             file.mkdirs()
 
         try:
@@ -120,8 +128,8 @@ class HDFSTools(object):
                 print(fss.getPath())
 
                 if fss.isFile():
-                    print('222 ',file.getPath() + "/" + name)
-                    self.downLoadFile(fss.getPath().toString(), file.getPath()+"/"+name)
+                    print('222 ', file.getPath() + "/" + name)
+                    self.downLoadFile(fss.getPath().toString(), file.getPath() + "/" + name)
 
         except Exception as e:
             print(e)
@@ -141,7 +149,7 @@ class HDFSTools(object):
         path = Path(hdfsDirUrl)
         file = File(localDirUrl)
 
-        if not file.exists() or not file.isDirectory() :
+        if not file.exists() or not file.isDirectory():
             file.mkdirs()
 
         try:
@@ -152,9 +160,9 @@ class HDFSTools(object):
                 # 遍历文件列表，判断是文件还是文件夹
                 self.isDir(fss, hdfsFileUrl_ls)
 
-            print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
+            #print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
 
-            hdfsFileUrl_ls = hdfsFileUrl_ls[0:1000]
+            # hdfsFileUrl_ls = hdfsFileUrl_ls[0:1000]
 
             # 单线程下载
             # x = datetime.now()
@@ -169,24 +177,25 @@ class HDFSTools(object):
             # print('共耗时' + str(datetime.now() - x))
 
             # 多线程下载
-            threadPool = ThreadPoolExecutor(max_workers=100)
-            x = datetime.now()
-            obj_list = []
-            for hdfs_file_url in hdfsFileUrl_ls:
-                local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
-                print('* hdfs_file_url=> ', hdfs_file_url)
-                print('* local_file_name=> ', local_file_name)
-                print('')
-                obj = threadPool.submit(self.downLoadFile, hdfs_file_url, local_file_name)
-                obj_list.append(obj)
+            # threadPool = ThreadPoolExecutor(max_workers=60)
+            # x = datetime.now()
+            # obj_list = []
+            # for hdfs_file_url in hdfsFileUrl_ls:
+            #     local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
+            #     print('* hdfs_file_url=> ', hdfs_file_url)
+            #     print('* local_file_name=> ', local_file_name)
+            #     print('')
+            #     obj = threadPool.submit(self.downLoadFile, hdfs_file_url, local_file_name)
+            #     obj_list.append(obj)
+            #
+            # for future in as_completed(obj_list):
+            #     data = future.result()
+            #     print(data)
+            #
+            # threadPool.shutdown(wait=True)
+            # print('共耗时' + str(datetime.now() - x))
 
-            for future in as_completed(obj_list):
-                data = future.result()
-                print(data)
-
-            threadPool.shutdown(wait=True)
-            print('共耗时' + str(datetime.now() - x))
-
+            return hdfsFileUrl_ls
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -197,10 +206,10 @@ class HDFSTools(object):
         if fileStatus.isDirectory():
             dirname = fileStatus.getPath().getName()
             dirname = fileStatus.getPath().toString()
-            #print(dirname, fileStatus.getPath().toString())
+            # print(dirname, fileStatus.getPath().toString())
             Path = jpype.JClass('org.apache.hadoop.fs.Path')
             try:
-                listStatus = self.fs.listStatus(Path(str(dirname) ))
+                listStatus = self.fs.listStatus(Path(str(dirname)))
                 for fileStatus2 in listStatus:
                     self.isDir(fileStatus2, hdfsFileUrl_ls)
             except Exception as e:
@@ -208,12 +217,11 @@ class HDFSTools(object):
                 traceback.print_exc()
         else:
             dirname = fileStatus.getPath().toString()
-            #print('* filename ==> ' , dirname)
+            # print('* filename ==> ' , dirname)
             hdfsFileUrl_ls.append(dirname)
 
-
     def downLoadFile(self, hdfsUrl, localUrl):
-        #print('--- downLoadFile ---')
+        print('--- begin downLoadFile ---')
         fin = None
         fout = None
         Path = jpype.JClass('org.apache.hadoop.fs.Path')
@@ -232,15 +240,16 @@ class HDFSTools(object):
 
         try:
             status = self.fs.getFileStatus(path)
-            #print(status)
+            # print(status)
 
             if status is not None and status.isFile():
-                #print('*** it is a file')
+                # print('*** it is a file')
                 fin = self.fs.open(path)
                 fout = FileOutputStream(localUrl)
                 IOUtils.copy(fin, fout)
 
-            return f'downlaod from hdfs {hdfsUrl} to {localUrl}'
+            print('--- end downLoadFile ---')
+            return f'downlaod from {hdfsUrl} to {localUrl}'
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -306,14 +315,14 @@ def prod_demo1():
     # hdfs.uploadFile(hdfsDirPath, localPath)
 
     # list HDFS files
-    hdfs.ls(url=hdfsDirPath)
+    #hdfs.ls(url=hdfsDirPath)
 
     # delete HDFS file
     del_hdfs_path = 'hdfs:///user/sjfw_wangsh12348/test_data/test.txt'
     # hdfs.delete(del_hdfs_path)
 
     # download from HDFS
-    # hdfs.downLoadFile(hdfsUrl='hdfs:///user/sjfw_wangsh12348/test_data/test.txt', localUrl='/my_filed_algos/test_hdfs.txt')
+    hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/BGM_QUOTA_DETAIL/importdate=20210909/20210909164500', localUrl='/my_filed_algos/prod_kudu_data/20210909164500')
 
     hdfs.shutdownJVM()
 
@@ -323,34 +332,112 @@ def prod_demo2():
 
     hdfsDirPath = 'hdfs:///user/hive/warehouse/'
     # list HDFS files
-    #hdfs.ls(url=hdfsDirPath)
+    # hdfs.ls(url=hdfsDirPath)
 
     # 下载 HDFS 上的单个文件
     # hdfs.downLoadFile(hdfsUrl='hdfs:///user/hive/warehouse/02_logical_layer_003_z_lf_cw.db/zccw0101_m/importdate=20210921/000000_0',
     #                   localUrl='/my_filed_algos/prod_kudu_data/000000_0')
 
     # 递归下载 HDFS 上的文件夹里的文件
-    hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db', localDirUrl='/my_filed_algos/prod_kudu_data/')
+    hdfsFileUrl_ls = hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db',
+                                                localDirUrl='/my_filed_algos/prod_kudu_data/')
+
+    for hdfs_file_url in hdfsFileUrl_ls:
+        print(hdfs_file_url)
 
     hdfs.shutdownJVM()
-    print('--- ok , completed word ---')
+    print('--- ok , completed work ---')
 
 
-
-def test_demo():
+def test_demo1():
     try:
         hdfs = HDFSTools(conn_type='test')
         hdfsDirPath = 'hdfs:///user/sjfw_wangsh12348/'
-        hdfs.ls(url=hdfsDirPath)
+        # hdfs.ls(url=hdfsDirPath)
+
+        hdfsDirPath = 'hdfs:///user/sjfw_wangsh12348/'
+        # 对外挂载地址地址 /public_filed_algos/report/check_02_trip_data.json
+        # docker 容器地址  /my_filed_algos/check_02_trip_data.json
+        localPath = r'/you_filed_algos/prod_kudu_data/a.txt'
+        # # upload file to HDFS
+        hdfs.uploadFile(hdfsDirPath, localPath)
 
         hdfs.shutdownJVM()
+
+        print('--- ok ---')
     except Exception as e:
         print(e)
 
 
-if __name__ == "__main__":
-    prod_demo2()
+def main():
+    prod_hdfs = HDFSTools(conn_type='prod')
 
-    #test_demo()
+    # 递归下载 HDFS 上的文件夹里的文件
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db'
+    localDirUrl = '/my_filed_algos/prod_kudu_data/'
+
+    print('* part1 ')
+    hdfsFileUrl_ls = prod_hdfs.downLoadDir_recursion(hdfsDirUrl=hdfsDirUrl,
+                                                     localDirUrl=localDirUrl)
+    print('* part2 ')
+    print('*** 处理文件数 ==> ', len(hdfsFileUrl_ls))
+
+    test_hdfs = HDFSTools(conn_type='test')
+
+    x = datetime.now()
+    for hdfs_file_url in hdfsFileUrl_ls:
+        hdfs_file_url = str(hdfs_file_url)
+        print('prod hdfs_file_url => ', hdfs_file_url)
+        local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
+        print('local_file_name => ', local_file_name)
+        hdfs_file_url = hdfs_file_url.replace('hdfs://nameservice1/user', 'hdfs:///user')
+        print('test hdfs_file_url => ', hdfs_file_url)
+
+        time.sleep(0.01)
+        prod_hdfs.downLoadFile(hdfs_file_url, local_file_name)
+        time.sleep(0.01)
+        test_hdfs.uploadFile(hdfsDirPath=hdfs_file_url, localPath=local_file_name)
+        os.remove(local_file_name)
+        print('')
+
+    print('共耗时' + str(datetime.now() - x))
+
+    # 多线程 1，从生产集群下载文件 2, 向开发集群上传文件
+    # threadPool = ThreadPoolExecutor(max_workers=60)
+    # x = datetime.now()
+    # obj_list = []
+    #
+    # for hdfs_file_url in hdfsFileUrl_ls:
+    #     print('hdfs_file_url => ', hdfs_file_url)
+    #     local_file_name = hdfs_file_url.replace('hdfs://nameservice1/', localDirUrl)
+    #     print('local_file_name => ', local_file_name)
+    #     obj = threadPool.submit(exec_task, prod_hdfs, test_hdfs, hdfs_file_url, local_file_name)
+    #     obj_list.append(obj)
+    #
+    # for future in as_completed(obj_list):
+    #     data = future.result()
+    #     print(data)
+    #
+    # threadPool.shutdown(wait=True)
+    # print('共耗时' + str(datetime.now() - x))
+
+    prod_hdfs.shutdownJVM()
+    print('--- ok , completed work ---')
+
+
+def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
+    prod_hdfs.downLoadFile(hdfs_file_url, local_file_name)
+    test_hdfs.uploadFile(hdfsDirPath=hdfs_file_url, localPath=str(local_file_name))
+    os.remove(str(local_file_name))
+
+    return f'from {local_file_name} to {hdfs_file_url}'
+
+
+if __name__ == "__main__":
+    #prod_demo1()
+
+    # test_demo1()
+
+    main()
 
     pass

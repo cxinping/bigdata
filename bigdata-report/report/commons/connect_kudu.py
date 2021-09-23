@@ -93,7 +93,7 @@ def execute_sql(sql):
         traceback.print_exc()
 
 
-def prod_execute_sql(conn_type='test', sqltype='insert', sql=''):
+def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     """
     :param conn_type: 连接类型
                     prod 生产环境
@@ -108,11 +108,15 @@ def prod_execute_sql(conn_type='test', sqltype='insert', sql=''):
     PROD = 'prod'  # 生产环境
     TEST = 'test'  # 测试环境
 
+    print('**** prod_execute_sql ****')
+    print('---- conn_type=', conn_type)
+
     if conn_type == PROD:
         url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
     elif conn_type == TEST:
         # 测试连接KUDU
-        url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
+        # jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/home/user/java/keytab/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM
+        url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore_kaifa.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
 
     jars_file_ls = []
     jars_file_str = ''
@@ -162,11 +166,12 @@ def prod_execute_sql(conn_type='test', sqltype='insert', sql=''):
 
     try:
         # print('----- running jvm ，' , jpype.isJVMStarted())
+
         System = jpype.java.lang.System
         if conn_type == PROD:
             System.setProperty("java.security.krb5.conf", "/you_filed_algos/prod-krb5.conf")
         elif conn_type == TEST:
-            System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
+            System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5_kaifa.conf")
 
         Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
         conf = Configuration()
@@ -178,7 +183,7 @@ def prod_execute_sql(conn_type='test', sqltype='insert', sql=''):
         if conn_type == PROD:
             UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348.keytab")
         elif conn_type == TEST:
-            UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
+            UserGroupInformation.loginUserFromKeytab("sjfw_wangsh12348", "/you_filed_algos/sjfw_wangsh12348_kaifa.keytab")
 
         conn = jaydebeapi.connect(dirver, url)
         cur = conn.cursor()
@@ -252,12 +257,21 @@ if __name__ == "__main__":
     # records = prod_execute_sql(sqltype='select', sql=sql)
     # print('222*** query_kudu_data=>', len(records))
 
-    sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 5'
-    print(sql)
-    records = prod_execute_sql(sqltype='select', sql=sql)
-    print('*** query_kudu_data=>', len(records))
-    for record in records:
-        print(record)
+    try:
+        prod_sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 5'
+        test_sql = 'select * from 01_datamart_layer_007_h_cw_df.payment_result_info limit 5'
+        print(test_sql)
+        records = prod_execute_sql(conn_type='test', sqltype='select', sql=test_sql)
+        print('*** query_kudu_data=>', len(records))
+        for record in records:
+            print(record)
 
-    dis_connection()
-    print('-- ok --')
+        dis_connection()
+        print('-- ok --')
+    except Exception as e:
+        print(e)
+
+
+
+
+
