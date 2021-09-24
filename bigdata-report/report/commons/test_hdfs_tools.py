@@ -81,7 +81,7 @@ class HDFSTools(object):
             raise RuntimeError(e)
 
     def uploadFile(self, hdfsDirPath, localPath):
-        #print('* begin uploadFile *')
+        print('* begin uploadFile *')
         fin = None
         fout = None
         File = jpype.JClass('java.io.File')
@@ -92,13 +92,14 @@ class HDFSTools(object):
             file = File(localPath)
             fin = FileInputStream(file)
 
-            print('localPath ==> ', localPath)
-            print('upload file to HDFS ==> ', hdfsDirPath + str(file.getName()))
+            # print('localPath ==> ', localPath)
+            # print('upload file to HDFS ==> ', hdfsDirPath + str(file.getName()))
 
             fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
             IOUtils.copy(fin, fout)
+
             fout.flush()
-            #print('* end uploadFile *')
+            print('* end uploadFile *')
         except Exception as e:
             print(e)
             traceback.print_exc()
@@ -111,6 +112,32 @@ class HDFSTools(object):
             except Exception as e2:
                 print(e2)
                 traceback.print_exc()
+
+    def uploadFile2(self, hdfsDirPath, localPath):
+        print('* begin uploadFile2 *')
+        fin = None
+        fout = None
+        File = jpype.JClass('java.io.File')
+        FileInputStream = jpype.JClass('java.io.FileInputStream')
+        Path = jpype.JClass('org.apache.hadoop.fs.Path')
+        IOUtils = jpype.JClass('org.apache.hadoop.io.IOUtils')
+        try:
+            file = File(localPath)
+            fin = FileInputStream(file)
+
+            # print('localPath ==> ', localPath)
+            # print('upload file to HDFS ==> ', hdfsDirPath + str(file.getName()))
+
+            fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
+
+            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, False)  # 带缓冲的下载上传文件，hdfs文件最大 250M
+            IOUtils.closeStream(fin)
+            IOUtils.closeStream(fout)
+            print('* end uploadFile2 *')
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+
 
     def downLoadDir(self, hdfsDirUrl, localDirUrl):
         print('--- downLoadDir ---')
