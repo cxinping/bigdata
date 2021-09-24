@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 import shutil
 
+
 class HDFSTools(object):
 
     def __init__(self, conn_type='prod'):
@@ -80,7 +81,7 @@ class HDFSTools(object):
             raise RuntimeError(e)
 
     def uploadFile(self, hdfsDirPath, localPath):
-        print('* begin uploadFile *')
+        #print('* begin uploadFile *')
         fin = None
         fout = None
         File = jpype.JClass('java.io.File')
@@ -97,7 +98,7 @@ class HDFSTools(object):
             fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
             IOUtils.copy(fin, fout)
             fout.flush()
-            print('* end uploadFile *')
+            #print('* end uploadFile *')
         except Exception as e:
             print(e)
             traceback.print_exc()
