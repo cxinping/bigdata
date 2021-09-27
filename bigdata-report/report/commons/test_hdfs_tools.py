@@ -138,7 +138,6 @@ class HDFSTools(object):
             print(e)
             traceback.print_exc()
 
-
     def downLoadDir(self, hdfsDirUrl, localDirUrl):
         print('--- downLoadDir ---')
 
@@ -189,7 +188,7 @@ class HDFSTools(object):
                 # 遍历文件列表，判断是文件还是文件夹
                 self.isDir(fss, hdfsFileUrl_ls)
 
-            #print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
+            # print('*** 处理任务数 ==> ', len(hdfsFileUrl_ls))
 
             # hdfsFileUrl_ls = hdfsFileUrl_ls[0:1000]
 
@@ -329,7 +328,6 @@ class HDFSTools(object):
             print(e)
             traceback.print_exc()
 
-
     def delete(self, hdfsDirPath):
         print('---- delete ----')
 
@@ -371,6 +369,8 @@ class HDFSTools(object):
             jpype.shutdownJVM()
 
 
+
+
 def prod_demo1():
     hdfs = HDFSTools(conn_type='prod')
 
@@ -382,17 +382,16 @@ def prod_demo1():
     # hdfs.uploadFile(hdfsDirPath, localPath)
 
     # list HDFS files
-    #hdfs.ls(url=hdfsDirPath)
+    # hdfs.ls(url=hdfsDirPath)
 
     # delete HDFS file
-    del_hdfs_path = 'hdfs:///user/sjfw_wangsh12348/test_data/test.txt'
-    # hdfs.delete(del_hdfs_path)
+    # del_hdfs_path = 'hdfs:///user/sjfw_wangsh12348/test_data/test.txt'
+    del_hdfs_path2 = 'hdfs:///user/hive/warehouse/test_database_20210925.db'
+    hdfs.delete(del_hdfs_path2)
 
     # download from HDFS
-    #hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/RFM_POST_VOUCHER/importdate=20210909/20210909182437', localUrl='/my_filed_algos/prod_kudu_data/20210909182437')
-    hdfs.downLoadFile2(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/BGM_PERIOD/importdate=20210916/20210916165936', localUrl='/my_filed_algos/prod_kudu_data/20210916165936')
-
-
+    # hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/RFM_POST_VOUCHER/importdate=20210909/20210909182437', localUrl='/my_filed_algos/prod_kudu_data/20210909182437')
+    # hdfs.downLoadFile2(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/BGM_PERIOD/importdate=20210916/20210916165936', localUrl='/my_filed_algos/prod_kudu_data/20210916165936')
 
     hdfs.shutdownJVM()
 
@@ -438,7 +437,8 @@ def test_demo1():
     except Exception as e:
         print(e)
 
-#test_hdfs = HDFSTools(conn_type='test')
+
+# test_hdfs = HDFSTools(conn_type='test')
 
 def main():
     prod_hdfs = HDFSTools(conn_type='prod')
@@ -455,8 +455,8 @@ def main():
     print('* part2 ')
     print('*** 处理文件数 ==> ', len(hdfsFileUrl_ls))
 
-    if os.path.exists(localDirUrl+'user'):
-        shutil.rmtree(localDirUrl+'user')
+    if os.path.exists(localDirUrl + 'user'):
+        shutil.rmtree(localDirUrl + 'user')
 
     test_hdfs = HDFSTools(conn_type='test')
 
@@ -518,21 +518,12 @@ def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
 
 
 if __name__ == "__main__":
-    #prod_demo1()
+    danger_test()
+
+    # prod_demo1()
 
     # test_demo1()
 
-    main()
+    # main()
 
     pass
-
-
-
-
-
-
-
-
-
-
-
