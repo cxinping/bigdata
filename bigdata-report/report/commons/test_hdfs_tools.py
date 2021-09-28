@@ -328,16 +328,16 @@ class HDFSTools(object):
             print(e)
             traceback.print_exc()
 
-    def delete(self, hdfsDirPath):
-        print('---- delete ----')
-
-        try:
-            Path = jpype.JClass('org.apache.hadoop.fs.Path')
-            flag = self.fs.delete(Path(hdfsDirPath), True)
-            return flag
-        except Exception as e:
-            print(e)
-            traceback.print_exc()
+    # def delete(self, hdfsDirPath):
+    #     print('---- delete ----')
+    #
+    #     try:
+    #         Path = jpype.JClass('org.apache.hadoop.fs.Path')
+    #         flag = self.fs.delete(Path(hdfsDirPath), True)
+    #         return flag
+    #     except Exception as e:
+    #         print(e)
+    #         traceback.print_exc()
 
     def ls(self, url='/user/sjfw_wangsh12348/test_data/'):
         print('---- hdfs ls ----')
@@ -367,8 +367,6 @@ class HDFSTools(object):
     def shutdownJVM(self):
         if jpype.isJVMStarted():
             jpype.shutdownJVM()
-
-
 
 
 def prod_demo1():
@@ -518,7 +516,6 @@ def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
 
 
 if __name__ == "__main__":
-    danger_test()
 
     # prod_demo1()
 

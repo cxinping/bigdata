@@ -273,36 +273,51 @@ class HDFSTools(object):
         :param localUrl:
         :return:
         """
-        print('--- begin downLoadFile2 ---')
+        print('--- begin downLoadFile2 5 ---')
         fin = None
         fout = None
 
         try:
             Path = jpype.JClass('org.apache.hadoop.fs.Path')
-            FSDataInputStream = jpype.JClass('org.apache.hadoop.fs.FSDataInputStream')
+
+            #FSDataInputStream = jpype.JClass('org.apache.hadoop.fs.FSDataInputStream')
             FileOutputStream = jpype.JClass('java.io.FileOutputStream')
             IOUtils = jpype.JClass('org.apache.hadoop.io.IOUtils')
             path = Path(hdfsUrl)
+            print('1_1 hdfsUrl=> ' , hdfsUrl)
 
             # 判断本地文件所在文件夹是否存在，如果不存在就先创建文件夹
             File = jpype.JClass('java.io.File')
             file = File(localUrl)
             file_dir = File(file.getParent())
 
-            if not bool(file_dir.exists()):
-                file_dir.mkdirs()
+            print('1_2 file_dir =>' , file_dir)
 
+            # if not bool(file_dir.exists()):
+            #     file_dir.mkdirs()
+            #     print('2 file make dirs')
+
+            file_dir_str = str(file_dir.getAbsolutePath())
+            print('1_3 file_dir_str =>', file_dir_str)
+
+            if not os.path.exists(file_dir_str):
+                os.makedirs(file_dir_str)
+                print(f'2_1 make dirs {file_dir_str}')
+            else:
+                print(f'2_2 dirs {file_dir_str} exists')
+
+            print('3_1 path => ', path)
             status = self.fs.getFileStatus(path)
-            # print(status)
+            print('3_2 status => ',status)
 
             if status is not None and status.isFile():
-                # print('*** it is a file')
+                print('4 it is a file')
                 fin = self.fs.open(path)
                 fout = FileOutputStream(localUrl)
 
-                IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, False)  # 带缓冲的下载文件，hdfs文件最大 250M
-                IOUtils.closeStream(fin)
-                IOUtils.closeStream(fout)
+                IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, True)  # 带缓冲的下载文件，hdfs文件最大 250M
+                #IOUtils.closeStream(fin)
+                #IOUtils.closeStream(fout)
             print('--- end downLoadFile2 ---')
             return f'downlaod from {hdfsUrl} to {localUrl}'
         except Exception as e:
@@ -342,16 +357,16 @@ class HDFSTools(object):
             print(e)
             traceback.print_exc()
 
-    def delete(self, hdfsDirPath):
-        print('---- delete ----')
-
-        try:
-            Path = jpype.JClass('org.apache.hadoop.fs.Path')
-            flag = self.fs.delete(Path(hdfsDirPath), True)
-            return flag
-        except Exception as e:
-            print(e)
-            traceback.print_exc()
+    # def delete(self, hdfsDirPath):
+    #     print('---- delete ----')
+    #
+    #     try:
+    #         Path = jpype.JClass('org.apache.hadoop.fs.Path')
+    #         flag = self.fs.delete(Path(hdfsDirPath), True)
+    #         return flag
+    #     except Exception as e:
+    #         print(e)
+    #         traceback.print_exc()
 
     def ls(self, url='/user/sjfw_wangsh12348/test_data/'):
         print('---- hdfs ls ----')
@@ -402,12 +417,16 @@ def prod_demo1():
 
     # download from HDFS
     # hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/RFM_POST_VOUCHER/importdate=20210909/20210909182437', localUrl='/my_filed_algos/prod_kudu_data/20210909182437')
-    hdfs.downLoadFile3(
-        hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_cost_averaged_m/importdate=20210923/000006_0',
-        localUrl='/my_filed_algos/prod_kudu_data/000006_0')
+
+    for i in range(50):
+        print('*** index => ',i)
+        time.sleep(0.1)
+        hdfs.downLoadFile2(
+            hdfsUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_base_bill_m/importdate=20210927/000007_0',
+            localUrl='/my_filed_algos/prod_kudu_data/000007_0')
 
     hdfs.shutdownJVM()
-
+    print('--- ok ---')
 
 def prod_demo2():
     hdfs = HDFSTools(conn_type='prod')
@@ -530,24 +549,24 @@ def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
     return f'from {local_file_name} to {hdfs_file_url}'
 
 
-def danger_test():
-    hdfs = HDFSTools(conn_type='prod')
-    del_hdfs_path2 = 'hdfs:///user/hive/warehouse/test_database_20210925.db/test_delete_file_new_3'
-    hdfs.delete(del_hdfs_path2)
+# def danger_test():
+#     hdfs = HDFSTools(conn_type='prod')
+    # del_hdfs_path2 = 'hdfs:///user/hive/warehouse/test_database_20210925.db/test_delete_file_new_3'
+    # hdfs.delete(del_hdfs_path2)
+    #
+    # hdfsFileUrl_ls = hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/test_database_20210925.db',
+    #                                             localDirUrl='/my_filed_algos/prod_kudu_data/')
 
-    hdfsFileUrl_ls = hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/test_database_20210925.db',
-                                                localDirUrl='/my_filed_algos/prod_kudu_data/')
-
-    if hdfsFileUrl_ls:
-        for hdfs_file_url in hdfsFileUrl_ls:
-            print(hdfs_file_url)
-            hdfs.delete(hdfs_file_url)
+    # if hdfsFileUrl_ls:
+    #     for hdfs_file_url in hdfsFileUrl_ls:
+    #         print(hdfs_file_url)
+    #         hdfs.delete(hdfs_file_url)
 
 
 if __name__ == "__main__":
-    danger_test()
+    #danger_test()
 
-    # prod_demo1()
+    prod_demo1()
 
     # test_demo1()
 

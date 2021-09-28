@@ -506,7 +506,8 @@ def pre_check_08_transportation():
     result = queryByParent_check08(parent_id=org_id)
     orgid_ls = []
     pre_check_08_data(orgid_ls, org_id, result)
-    print(len(orgid_ls))
+    print(len(orgid_ls))  # 4548
+    print(orgid_ls[0:5])
 
 
 def pre_check_08_data(orgid_ls, id, result):

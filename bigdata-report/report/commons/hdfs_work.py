@@ -9,14 +9,13 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 def main1():
     prod_hdfs = Prod_HDFSTools(conn_type='prod')
     # 递归下载 HDFS 上的文件夹里的文件
-    # /user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m hdfs:///user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m 倒完数据
-    # /user/hive/warehouse/02_logical_layer_005_n_lf_cw.db/nccw0101_m hdfs:///user/hive/warehouse/02_logical_layer_005_n_lf_cw.db/nccw0101_m
+    # /user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m hdfs:///user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m
     # hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_bill_expense_m
 
-    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_bill_expense_m'
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_base_bill_m'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
-    print('* part1 ')
+    print('* part1 better ')
     hdfsFileUrl_ls = prod_hdfs.downLoadDir_recursion(hdfsDirUrl=hdfsDirUrl,
                                                      localDirUrl=localDirUrl)
     print('* part2 ')
@@ -38,7 +37,7 @@ def main1():
         hdfs_file_url = hdfs_file_url.replace('hdfs://nameservice1/user', 'hdfs:///user')
         print('test hdfs_file_url => ', hdfs_file_url)
 
-        # time.sleep(0.1)
+        time.sleep(0.1)
         prod_hdfs.downLoadFile2(hdfs_file_url, local_file_name)
         # time.sleep(1)
         test_hdfs.uploadFile2(hdfsDirPath=hdfs_file_url, localPath=local_file_name)
