@@ -107,7 +107,7 @@ values('{standard_id}','{unusual_id}','{unusual_level}',{standard_value},{out_va
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功新增一条费用标准（finance_standard）'
+            'details': '成功新增一条"费用标准"记录'
         }
         response = jsonify(data)
         return response
@@ -154,7 +154,7 @@ def finance_standard_update():
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功修改一条费用标准（finance_standard）'
+            'details': '成功修改一条"费用标准"记录'
         }
 
         response = jsonify(data)
@@ -184,15 +184,15 @@ def finance_standard_delete():
     sql = f"""
 delete from  01_datamart_layer_007_h_cw_df.finance_standard where standard_id='{standard_id}'
     """.replace('\n', '')
-
     print(sql)
+
     try:
         prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功删除一条费用标准（finance_standard）'
+            'details': '成功删除一条"费用标准"记录'
         }
 
         response = jsonify(data)
@@ -244,7 +244,7 @@ def finance_scenery_add():
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功新增一条风景名胜记录'
+            'details': '成功新增一条"风景名胜"记录'
         }
         response = jsonify(data)
         return response
@@ -292,7 +292,7 @@ def finance_scenery_update():
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功修改一条风景名胜记录'
+            'details': '成功修改一条"风景名胜"记录'
         }
         response = jsonify(data)
         return response
@@ -327,7 +327,7 @@ def finance_scenery_delete():
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功删除一条风景名胜记录'
+            'details': '成功删除一条"风景名胜"记录'
         }
         response = jsonify(data)
         return response
@@ -471,12 +471,144 @@ def finance_person_delete():
         return response
 
 
+############  【检查点（finance_unusual）相关】  ############
+
+# http://10.5.138.11:8004/report/finance_unusual/add
+@report_bp.route('/finance_unusual/add', methods=['POST'])
+def finance_unusual_add():
+    log.info('----- finance_unusual add -----')
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    cost_project = request.form.get('cost_project') if request.form.get('cost_project') else None
+    unusual_number = request.form.get('unusual_number') if request.form.get('unusual_number') else None
+    number_name = request.form.get('number_name') if request.form.get('number_name') else None
+    unusual_type = request.form.get('unusual_type') if request.form.get('unusual_type') else None
+    unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
+    unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
+    unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
+    isalgorithm = request.form.get('isalgorithm') if request.form.get('isalgorithm') else None
+
+    log.info(f'unusual_id={unusual_id}')
+    log.info(f'cost_project={cost_project}')
+    log.info(f'unusual_number={unusual_number}')
+    log.info(f'number_name={number_name}')
+    log.info(f'unusual_type={unusual_type}')
+    log.info(f'unusual_point={unusual_point}')
+    log.info(f'unusual_content={unusual_content}')
+    log.info(f'unusual_shell={unusual_shell}')
+    log.info(f'isalgorithm={isalgorithm}')
 
 
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    sql = f"""
+insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_type, unusual_point, unusual_content, unusual_shell, isalgorithm)
+values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' ,'{unusual_type}', '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}')
+    """.replace('\n', '')
+
+    print(sql)
+    try:
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功新增一条"检查点相关"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
 
 
+# http://10.5.138.11:8004/report/finance_unusual/update
+@report_bp.route('/finance_unusual/update', methods=['POST'])
+def finance_unusual_update():
+    log.info('----- finance_unusual update -----')
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
+    unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
+    unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
 
+    log.info(f'unusual_id={unusual_id}')
+    log.info(f'unusual_point={unusual_point}')
+    log.info(f'unusual_content={unusual_content}')
+    log.info(f'unusual_shell={unusual_shell}')
 
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    sql = f"""
+    updateinsert into 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', '{unusual_shell}'
+    where unusual_id='{unusual_id}'
+    """.replace('\n', '')
+
+    print(sql)
+    try:
+        #prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功修改一条"检查点相关"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
+
+# http://10.5.138.11:8004/report/finance_unusual/delete
+@report_bp.route('/finance_unusual/delete', methods=['POST'])
+def finance_unusual_delete():
+    log.info('----- finance_unusual delete -----')
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        sql = f"""
+        delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
+            """.replace('\n', '')
+        print(sql)
+
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功删除一条"检查点相关"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
 
 
 
