@@ -635,14 +635,7 @@ def finance_unusual_execute():
         return response
 
     try:
-        # sql = f"""
-        # delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
-        #     """.replace('\n', '')
-        # print(sql)
-        #
-        # prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
-
-        executor.submit(execute_kudu_sql)
+        executor.submit(execute_kudu_sql, unusual_id)
 
         data = {
             'result': 'ok',
@@ -662,9 +655,17 @@ def finance_unusual_execute():
         return response
 
 
-def execute_kudu_sql():
+def execute_kudu_sql(unusual_id):
     print('*** begin execute_kudu_sql ***')
-    time.sleep(10)
+    print('unusual_id=', unusual_id)
+    time.sleep(30)
+
+    # sql = f"""
+    # select unusual_id, unusual_point, unusual_content, unusual_shell from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
+    #     """.replace('\n', '')
+    # print(sql)
+    # prod_execute_sql(conn_type='select', sqltype='insert', sql=sql)
+
     print('*** end execute_kudu_sql ***')
-    
+
     return 'ok'
