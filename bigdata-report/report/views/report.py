@@ -9,14 +9,15 @@ Created on 2021-08-02
 from flask import Blueprint, jsonify, render_template, request
 from flask import current_app as app
 from http import HTTPStatus
-import datetime,time
+import datetime, time
 import json
 from report.commons.logging import get_logger
 from report.commons.connect_kudu import prod_execute_sql
-
+from concurrent.futures import ThreadPoolExecutor
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
+
 
 # http://10.5.138.11:8004/report/test/wang
 @report_bp.route('/test/<name>', methods=['GET', 'POST'])
@@ -37,9 +38,9 @@ def test_report(name):
     result = {
         'name': name,
         'time': datetime.datetime.now(),
-        'gender' : gender if gender else '',
-        'code' : '001',
-        'data' : data_ls
+        'gender': gender if gender else '',
+        'code': '001',
+        'data': data_ls
     }
 
     response = jsonify(result)
@@ -65,13 +66,14 @@ def test_var(name):
     result = {
         'name': name,
         'time': datetime.datetime.now(),
-        'gender' : gender if gender else '',
-        'code' : '001',
-        'data' : data_ls
+        'gender': gender if gender else '',
+        'code': '001',
+        'data': data_ls
     }
 
     response = jsonify(result)
     return response, 200
+
 
 ############  【费用标准（finance_standard）相关】  ############
 
@@ -121,6 +123,7 @@ values('{standard_id}','{unusual_id}','{unusual_level}',{standard_value},{out_va
         response = jsonify(data)
         return response
 
+
 # http://10.5.138.11:8004/report/finance_standard/update
 @report_bp.route('/finance_standard/update', methods=['POST'])
 def finance_standard_update():
@@ -168,6 +171,7 @@ def finance_standard_update():
         }
         response = jsonify(data)
         return response
+
 
 # http://10.5.138.11:8004/report/finance_standard/delete
 @report_bp.route('/finance_standard/delete', methods=['POST'])
@@ -258,6 +262,7 @@ def finance_scenery_add():
         response = jsonify(data)
         return response
 
+
 # http://10.5.138.11:8004/report/finance_scenery/update
 @report_bp.route('/finance_scenery/update', methods=['POST'])
 def finance_scenery_update():
@@ -306,6 +311,7 @@ def finance_scenery_update():
         response = jsonify(data)
         return response
 
+
 # http://10.5.138.11:8004/report/finance_scenery/delete
 @report_bp.route('/finance_scenery/delete', methods=['POST'])
 def finance_scenery_delete():
@@ -340,6 +346,7 @@ def finance_scenery_delete():
         }
         response = jsonify(data)
         return response
+
 
 ############  【集团股份人数（finance_person）相关】  ############
 
@@ -389,6 +396,7 @@ def finance_person_add():
         response = jsonify(data)
         return response
 
+
 # http://10.5.138.11:8004/report/finance_person/update
 @report_bp.route('/finance_person/update', methods=['POST'])
 def finance_person_update():
@@ -434,6 +442,7 @@ def finance_person_update():
         }
         response = jsonify(data)
         return response
+
 
 # http://10.5.138.11:8004/report/finance_person/delete
 @report_bp.route('/finance_person/delete', methods=['POST'])
@@ -497,7 +506,6 @@ def finance_unusual_add():
     log.info(f'unusual_shell={unusual_shell}')
     log.info(f'isalgorithm={isalgorithm}')
 
-
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
         response = jsonify(data)
@@ -556,7 +564,7 @@ def finance_unusual_update():
 
     print(sql)
     try:
-        #prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        # prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -574,6 +582,7 @@ def finance_unusual_update():
         }
         response = jsonify(data)
         return response
+
 
 # http://10.5.138.11:8004/report/finance_unusual/delete
 @report_bp.route('/finance_unusual/delete', methods=['POST'])
@@ -611,11 +620,51 @@ def finance_unusual_delete():
         return response
 
 
+executor = ThreadPoolExecutor(2)
 
 
+# http://10.5.138.11:8004/report/finance_unusual/execute
+@report_bp.route('/finance_unusual/execute', methods=['POST'])
+def finance_unusual_execute():
+    log.info('----- finance_unusual execute -----')
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        # sql = f"""
+        # delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
+        #     """.replace('\n', '')
+        # print(sql)
+        #
+        # prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+
+        executor.submit(execute_kudu_sql)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '检查点语句执行'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
 
 
-
-
-
-
+def execute_kudu_sql():
+    print('*** begin execute_kudu_sql ***')
+    time.sleep(10)
+    print('*** end execute_kudu_sql ***')
+    
+    return 'ok'
