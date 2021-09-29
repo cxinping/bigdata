@@ -164,6 +164,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     except Exception as e:
         # print('====== throw error ======')
         traceback.print_exc()
+        raise RuntimeError(e)
 
     try:
         # print('----- running jvm ，' , jpype.isJVMStarted())
@@ -209,6 +210,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     except Exception as ex:
         print(ex)
         traceback.print_exc()
+        raise RuntimeError(ex)
 
 
 def dis_connection():

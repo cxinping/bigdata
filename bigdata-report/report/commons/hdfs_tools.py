@@ -145,7 +145,6 @@ class HDFSTools(object):
         :return:
         """
         print('--- downLoadDir_recursion ---')
-
         Path = jpype.JClass('org.apache.hadoop.fs.Path')
         File = jpype.JClass('java.io.File')
         path = Path(hdfsDirUrl)
@@ -273,13 +272,12 @@ class HDFSTools(object):
         :param localUrl:
         :return:
         """
-        print('--- begin downLoadFile2 5 ---')
+        print('--- begin downLoadFile2 ---')
         fin = None
         fout = None
 
         try:
             Path = jpype.JClass('org.apache.hadoop.fs.Path')
-
             #FSDataInputStream = jpype.JClass('org.apache.hadoop.fs.FSDataInputStream')
             FileOutputStream = jpype.JClass('java.io.FileOutputStream')
             IOUtils = jpype.JClass('org.apache.hadoop.io.IOUtils')
@@ -307,17 +305,23 @@ class HDFSTools(object):
                 print(f'2_2 dirs {file_dir_str} exists')
 
             print('3_1 path => ', path)
-            status = self.fs.getFileStatus(path)
-            print('3_2 status => ',status)
+            #status = self.fs.getFileStatus(path)
+            #print('3_2 status => ',status)
 
-            if status is not None and status.isFile():
-                print('4 it is a file')
-                fin = self.fs.open(path)
-                fout = FileOutputStream(localUrl)
+            #if status is not None and status.isFile():
+            fin = self.fs.open(path)
+            print('4 fin=' , fin)
 
-                IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, True)  # 带缓冲的下载文件，hdfs文件最大 250M
-                #IOUtils.closeStream(fin)
-                #IOUtils.closeStream(fout)
+            fout = FileOutputStream(localUrl)
+            print('5 fout=', fout)
+
+            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 250, jpype.java.lang.Boolean(False) )  # 带缓冲的下载文件，hdfs文件最大 250M
+
+            print('6_1 fin=', fin)
+            print('6_2 fout=', fout)
+
+            IOUtils.closeStream(fin)
+            IOUtils.closeStream(fout)
             print('--- end downLoadFile2 ---')
             return f'downlaod from {hdfsUrl} to {localUrl}'
         except Exception as e:
@@ -418,11 +422,11 @@ def prod_demo1():
     # download from HDFS
     # hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/RFM_POST_VOUCHER/importdate=20210909/20210909182437', localUrl='/my_filed_algos/prod_kudu_data/20210909182437')
 
-    for i in range(50):
+    for i in range(20):
         print('*** index => ',i)
         time.sleep(0.1)
         hdfs.downLoadFile2(
-            hdfsUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_base_bill_m/importdate=20210927/000007_0',
+            hdfsUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_assist_object_m/importdate=20210927/000007_0',
             localUrl='/my_filed_algos/prod_kudu_data/000007_0')
 
     hdfs.shutdownJVM()

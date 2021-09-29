@@ -12,7 +12,7 @@ def main1():
     # /user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m hdfs:///user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m
     # hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_bill_expense_m
 
-    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_base_bill_m'
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_rebill_m'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
     print('* part1 better ')
@@ -37,7 +37,7 @@ def main1():
         hdfs_file_url = hdfs_file_url.replace('hdfs://nameservice1/user', 'hdfs:///user')
         print('test hdfs_file_url => ', hdfs_file_url)
 
-        time.sleep(0.1)
+        time.sleep(0.01)
         prod_hdfs.downLoadFile2(hdfs_file_url, local_file_name)
         # time.sleep(1)
         test_hdfs.uploadFile2(hdfsDirPath=hdfs_file_url, localPath=local_file_name)
@@ -57,12 +57,9 @@ def main1():
 def main2():
     prod_hdfs = Prod_HDFSTools(conn_type='prod')
     # 递归下载 HDFS 上的文件夹里的文件
-    # /user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m hdfs:///user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m 倒完数据
-    # /user/hive/warehouse/03_basal_layer_zfybxers00.db hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db  未倒完数据
     # /user/hive/warehouse/03_basal_layer_vms00.db  hdfs:///user/hive/warehouse/03_basal_layer_vms00.db
     # /user/hive/warehouse/02_logical_layer_004_d_lf_cw.db/dccw0101_m hdfs:///user/hive/warehouse/02_logical_layer_004_d_lf_cw.db/dccw0101_m
-
-    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_vms00.db'
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_rebill_m'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
     print('* part1 ')
@@ -77,7 +74,7 @@ def main2():
     test_hdfs = Test_HDFSTools(conn_type='test')
 
     # 多线程 1，从生产集群下载文件 2, 向开发集群上传文件
-    threadPool = ThreadPoolExecutor(max_workers=60)
+    threadPool = ThreadPoolExecutor(max_workers=50)
     x = datetime.now()
     obj_list = []
 
@@ -117,6 +114,6 @@ def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
 if __name__ == "__main__":
     main1()
 
-    # main2()
+    #main2()
 
     pass

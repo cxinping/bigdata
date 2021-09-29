@@ -130,7 +130,7 @@ class HDFSTools(object):
 
             fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
 
-            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, False)  # 带缓冲的下载上传文件，hdfs文件最大 250M
+            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, jpype.java.lang.Boolean(False) )  # 带缓冲的下载上传文件，hdfs文件最大 250M
             IOUtils.closeStream(fin)
             IOUtils.closeStream(fout)
             print('* end uploadFile2 *')
