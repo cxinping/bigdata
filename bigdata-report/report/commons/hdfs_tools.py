@@ -463,11 +463,11 @@ def test_demo1():
         hdfsDirPath = 'hdfs:///user/sjfw_wangsh12348/'
         # 对外挂载地址地址 /public_filed_algos/report/check_02_trip_data.json
         # docker 容器地址  /my_filed_algos/check_02_trip_data.json
-        localPath = r'/you_filed_algos/prod_kudu_data/a.txt'
+        localPath = r'/my_filed_algos/prod_kudu_data/a.txt'
         # # upload file to HDFS
         hdfs.uploadFile(hdfsDirPath, localPath)
 
-        hdfs.shutdownJVM()
+        #hdfs.shutdownJVM()
 
         print('--- ok ---')
     except Exception as e:
@@ -570,9 +570,9 @@ def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
 if __name__ == "__main__":
     #danger_test()
 
-    prod_demo1()
+    #prod_demo1()
 
-    # test_demo1()
+    test_demo1()
 
     # main()
 

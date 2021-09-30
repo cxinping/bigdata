@@ -371,14 +371,15 @@ def finance_person_add():
         response = jsonify(data)
         return response
 
-    sql = f"""
-    insert into 01_datamart_layer_007_h_cw_df.finance_person(person_id, company_code, inner_code, sum_person, pesiod )
-    values('{person_id}','{company_code}','{inner_code}', {sum_person}, '{pesiod}' )
-        """.replace('\n', '')
 
-    print(sql)
     try:
+        sql = f"""
+        insert into 01_datamart_layer_007_h_cw_df.finance_person(person_id, company_code, inner_code, sum_person, pesiod )
+        values('{person_id}','{company_code}','{inner_code}', {sum_person}, '{pesiod}' )
+            """.replace('\n', '')
+        print(sql)
         prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+
         data = {
             'result': 'ok',
             'code': 200,
@@ -513,7 +514,7 @@ def finance_unusual_add():
 
     sql = f"""
 insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_type, unusual_point, unusual_content, unusual_shell, isalgorithm)
-values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' ,'{unusual_type}', '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}')
+values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' ,'{unusual_type}', '{unusual_point}' , '{unusual_content}', "{unusual_shell}", '{isalgorithm}')
     """.replace('\n', '')
 
     print(sql)
@@ -635,7 +636,31 @@ def finance_unusual_execute():
         return response
 
     try:
-        executor.submit(execute_kudu_sql, unusual_id)
+        sql = f"""
+            select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
+                """.replace('\n', '')
+        print(sql)
+        result = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+        unusual_shell = str(result[0][1])
+        # "1为sql类2为算法类",
+        isalgorithm = str(result[0][2])
+
+        if unusual_shell is None:
+            data = {"result": "error", "details": f"查询的 {unusual_id} 对应的 unusual_shell 不能为空", "code": 500}
+            response = jsonify(data)
+            return response
+
+        if isalgorithm is None:
+            data = {"result": "error", "details": f"查询的 {unusual_id} 对应的 isalgorithm 不能为空", "code": 500}
+            response = jsonify(data)
+            return response
+
+        if isalgorithm == '1':
+            executor.submit(execute_kudu_sql, unusual_shell)
+
+        elif isalgorithm == '2':
+            # eval("print(1+2)")
+            eval("print('执行算法 shell')")
 
         data = {
             'result': 'ok',
@@ -655,17 +680,12 @@ def finance_unusual_execute():
         return response
 
 
-def execute_kudu_sql(unusual_id):
+def execute_kudu_sql(unusual_shell):
     print('*** begin execute_kudu_sql ***')
-    print('unusual_id=', unusual_id)
-    time.sleep(30)
+    print('unusual_shell=' )
+    print(unusual_shell)
 
-    # sql = f"""
-    # select unusual_id, unusual_point, unusual_content, unusual_shell from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
-    #     """.replace('\n', '')
-    # print(sql)
-    # prod_execute_sql(conn_type='select', sqltype='insert', sql=sql)
+    prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
 
     print('*** end execute_kudu_sql ***')
 
-    return 'ok'

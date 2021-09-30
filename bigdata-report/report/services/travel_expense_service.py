@@ -104,6 +104,8 @@ cost_center,
 profit_center,
 '' as cart_head,
 bill_code,
+bill_beg_date,
+bill_end_date,
 origin_name   as  origin_city,
 destin_name  as destin_city,
 travel_beg_date  as beg_date,
@@ -123,7 +125,8 @@ WHERE  billingdate is not null and travel_beg_date is not null and travel_end_da
 and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') < unix_timestamp(travel_beg_date,'yyyyMMdd')
 or unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') > unix_timestamp(travel_end_date,'yyyyMMdd'))  
 group by bill_id,company_code,account_period,account_item,finance_number,cost_center,profit_center,bill_code,origin_name,
-destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_amount,other_amount,check_amount,jzpz
+destin_name,travel_beg_date,travel_end_date,jour_amount,accomm_amount,subsidy_amount,other_amount,check_amount,jzpz,bill_beg_date,
+bill_end_date
     """
     start_time = time.perf_counter()
     prod_execute_sql(sqltype='insert', sql=sql)
