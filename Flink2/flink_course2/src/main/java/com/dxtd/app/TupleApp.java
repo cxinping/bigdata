@@ -12,14 +12,13 @@ public class TupleApp {
 
     public static void main(String [] args){
         //tuple测试
-        tupleTest();
-        //mapTest();
+        //tupleTest();
+        mapTest();
         //flatMapTest();
     }
 
     private static void tupleTest(){
         Tuple3<Integer,String,Long> tuple3 =  Tuple3.of(1,"ultrapower.com",130L);
-
         System.out.println(tuple3.f0);
         System.out.println(tuple3.f1);
         System.out.println(tuple3.f2);
