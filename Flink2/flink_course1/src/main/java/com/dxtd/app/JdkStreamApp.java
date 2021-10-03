@@ -38,7 +38,6 @@ public class JdkStreamApp {
         System.out.println("videoOrder1Avg1="+videoOrder1Avg1);
         System.out.println("videoOrder1Avg2="+videoOrder1Avg2);
 
-
         //订单总价
         int total1 = videoOrders1.stream().collect(Collectors.summingInt(VideoOrder::getMoney)).intValue();
         int total2 = videoOrders2.stream().collect(Collectors.summingInt(VideoOrder::getMoney)).intValue();
