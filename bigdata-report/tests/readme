@@ -5,3 +5,37 @@ select * from 01_datamart_layer_007_h_cw_df.finance_scenery
 select * from 01_datamart_layer_007_h_cw_df.finance_person
 
 select * from 01_datamart_layer_007_h_cw_df.finance_unusual
+
+
+# 44629577 开发集群数量
+# 134536534 生产集群数量
+select  count(*) from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+
+# 67 开发集群数量
+# 66 生产集群数量
+select count(*) from 01_datamart_layer_007_h_cw_df.finance_unusual
+
+#  开发集群数量 AnalysisException: Could not resolve table reference: '03_basal_layer_zfybxers00.dic_expense_level'
+#  生产集群数量 无权限访问此表
+select count(*) from 03_basal_layer_zfybxers00.DIC_EXPENSE_LEVEL
+
+# 开发集群数量 1
+# 生产集群数量 257867412
+select  count(1) from  03_basal_layer_zfybxers00.zfybxers00_z_rma_operation_his_m
+
+#  开发集群数量 0
+#  生产集群数量 无权限访问此表
+select  count(1) from 03_basal_layer_vms00.vms00_z_vms_inv_special_main_m
+
+#  开发集群数量 0
+#  生产集群数量 无权限访问此表
+select  count(1) from 03_basal_layer_vms00.vms00_z_vms_invspecial_row_m
+
+#  开发集群数量 0
+#  生产集群数量 无权限访问此表
+select  count(1) from 03_basal_layer_vms00.vms00_z_vms_todo_ocr_info_m
+
+#  开发集群数量 0
+#  生产集群数量 无权限访问此表
+select  count(1) from 02_logical_layer_001_o_lf_cw.occw0101_m
+

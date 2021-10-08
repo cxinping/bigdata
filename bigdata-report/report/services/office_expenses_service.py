@@ -91,6 +91,29 @@ def check_43_consistent_amount():
     log.info(f'* check_43_consistent_amount SQL耗时 {consumed_time} sec')
     #dis_connection()
 
+
+def check_49_data():
+    from report.commons.logging import get_logger
+    from report.commons.connect_kudu import prod_execute_sql, dis_connection
+    from report.commons.tools import match_address
+    import time
+    import json
+    import os
+
+    log = get_logger(__name__)
+
+    sql = 'select finance_travel_id ,bill_id from 01_datamart_layer_007_h_cw_df.finance_official_bill '
+    count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    log.info(f'* count_records ==> {count_records}')
+
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    print('* len(records) ==> ', len(records))
+    print('--- ok ---')
+
+
 def check_51_credit():
     start_time = time.perf_counter()
     sql = """
@@ -229,10 +252,13 @@ def main():
     #check_51_credit()
 
     # 需求52 done, checked
-    check_52_reimburse()
+    #check_52_reimburse()
 
     # 需求 53, done, checked
     #check_53_approve()
+
+    # 算法49
+    check_49_data()
 
     pass
 
