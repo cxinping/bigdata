@@ -12,7 +12,7 @@ def main1():
     # /user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m hdfs:///user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m
     # hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_bill_expense_m
 
-    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_rebill_m'
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/DIC_EXPENSE_LEVEL'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
     print('* part1 better ')
