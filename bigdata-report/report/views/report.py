@@ -430,7 +430,7 @@ def finance_person_update():
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功修改一条"集团和股份公司人数"记录'
+            'details': "成功修改一条'集团和股份公司人数'记录"
         }
         response = jsonify(data)
         return response
@@ -559,18 +559,18 @@ def finance_unusual_update():
         return response
 
     sql = f"""
-    updateinsert into 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', '{unusual_shell}'
+    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell="{unusual_shell}"
     where unusual_id='{unusual_id}'
-    """.replace('\n', '')
+    """ #.replace('\n', '').replace('\r', '').strip()
 
     print(sql)
     try:
-        # prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功修改一条"检查点相关"记录'
+            'details': "成功修改一条'检查点相关'记录"
         }
         response = jsonify(data)
         return response
@@ -681,8 +681,7 @@ def finance_unusual_execute():
 
 
 def execute_kudu_sql(unusual_shell):
-    print('*** begin execute_kudu_sql ***')
-    print('unusual_shell=' )
+    print('*** begin execute_kudu_sql unusual_shell=')
     print(unusual_shell)
 
     prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)

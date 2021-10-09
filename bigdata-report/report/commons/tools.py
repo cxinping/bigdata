@@ -33,6 +33,10 @@ def check_invoicing_place(addr1,  addr2):
 
     return False
 
+def read_file(path):
+    with open(path, "r") as f:
+        data = f.read()
+        return data
 
 if __name__ == '__main__':
     #data = str(input("请输入文本:"))
@@ -47,6 +51,9 @@ if __name__ == '__main__':
     str2 = '安庆市'
     print(str1.find(str2))
 
+    path = "/you_filed_algos/prod_kudu_data/123.txt"
+    content = read_file(path)
+    print(content)
 
 
 
