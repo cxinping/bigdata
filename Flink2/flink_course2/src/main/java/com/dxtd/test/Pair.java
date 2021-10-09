@@ -37,8 +37,7 @@ public class Pair<T,K> {
         Pair<String, Integer> pair  = new Pair<> ("wangwu",21);
         System.out.println(pair);
 
-
-
     }
+
 
 }
