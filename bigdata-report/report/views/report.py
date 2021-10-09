@@ -551,7 +551,8 @@ def finance_unusual_update():
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
     log.info(f'unusual_content={unusual_content}')
-    log.info(f'unusual_shell={unusual_shell}')
+    #log.info(f'unusual_shell={unusual_shell}')
+    print(unusual_shell)
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -565,7 +566,7 @@ def finance_unusual_update():
 
     print(sql)
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        #prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
