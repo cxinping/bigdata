@@ -41,7 +41,8 @@ def check_14_data():
     columns_ls = ['bill_id', 'check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill  '.format(
+    # 44745309
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 745309 '.format(
         columns_str=columns_str)
 
     start_time = time.perf_counter()
