@@ -70,14 +70,13 @@ def check_49_data():
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
-    print('--- ok ---')
 
 
 def exec_sql(bill_id_ls):
     sql = """
-    where
-    bill_id in {bill_id_ls}
-        """.format(bill_id_ls=tuple(bill_id_ls))
+    WHERE
+    bill_id IN {bill_id_ls}
+        """.format(bill_id_ls=tuple(bill_id_ls)).replace('\n', '').replace('\r', '').strip()
     print(sql)
     print(len(bill_id_ls))
 
@@ -89,3 +88,4 @@ def exec_sql(bill_id_ls):
 
 if __name__ == "__main__":
     check_49_data()
+    print('--- ok ---')

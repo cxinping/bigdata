@@ -108,8 +108,8 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     PROD = 'prod'  # 生产环境
     TEST = 'test'  # 测试环境
 
-    print('**** prod_execute_sql ****')
-    print('* conn_type=', conn_type)
+    #print('**** prod_execute_sql ****')
+    #print('* conn_type=', conn_type)
 
     if conn_type == PROD:
         # 生产集群使用KUDU
