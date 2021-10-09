@@ -11,3 +11,7 @@ print('------------------------------')
 list = ["a", "b", "c", "d", "e"]
 for index, value in enumerate(list):
     print(index, value)
+
+
+s1 = '<java class \'JDouble\'>'
+print(s1)

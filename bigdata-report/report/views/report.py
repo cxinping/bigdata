@@ -13,7 +13,9 @@ import datetime, time
 import json
 from report.commons.logging import get_logger
 from report.commons.connect_kudu import prod_execute_sql
+from report.commons.tools import transfer_content
 from concurrent.futures import ThreadPoolExecutor
+
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
@@ -550,8 +552,10 @@ def finance_unusual_update():
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
-    log.info(f'unusual_content={unusual_content}')
+    log.info('* unusual_content *')
     #log.info(f'unusual_shell={unusual_shell}')
+
+    unusual_shell = transfer_content(unusual_shell)
     print(unusual_shell)
 
     if unusual_id is None:
@@ -565,8 +569,9 @@ def finance_unusual_update():
     """ #.replace('\n', '').replace('\r', '').strip()
 
     print(sql)
+
     try:
-        #prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -643,7 +648,7 @@ def finance_unusual_execute():
         print(sql)
         result = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
         unusual_shell = str(result[0][1])
-        # "1为sql类2为算法类",
+        # "1为sql类, 2为算法类",
         isalgorithm = str(result[0][2])
 
         if unusual_shell is None:
@@ -661,7 +666,10 @@ def finance_unusual_execute():
 
         elif isalgorithm == '2':
             # eval("print(1+2)")
-            eval("print('执行算法 shell')")
+            print(unusual_shell)
+            exec("print('执行算法 shell 开始')")
+            exec(unusual_shell,globals())
+            exec("print('执行算法 shell 结束')")
 
         data = {
             'result': 'ok',

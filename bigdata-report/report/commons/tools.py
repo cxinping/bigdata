@@ -38,6 +38,25 @@ def read_file(path):
         data = f.read()
         return data
 
+#   处理字符转转义，用于insert sql语句
+def transfer_content(content):
+    if content is None:
+        return None
+    else:
+        string = ""
+        for c in content:
+            if c == '"':
+                string += '\\\"'
+            elif c == "'":
+                string += "\\\'"
+            elif c == "\\":
+                string += "\\\\"
+            elif c == ":":      # 冒号也要转义，否则报错
+                string += "\\:"
+            else:
+                string += c
+        return string
+
 if __name__ == '__main__':
     #data = str(input("请输入文本:"))
     #data = "安徽安庆市大观区经三路3号 0556-5386666"
@@ -55,6 +74,43 @@ if __name__ == '__main__':
     content = read_file(path)
     print(content)
 
+    print('*' * 50)
 
+    sql = """
+    UPSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+    SELECT 
+    bill_id, 
+    '49' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+  bill_beg_date,
+  bill_end_date,
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+  apply_emp_name,
+    '' as emp_name,
+    '' as emp_code,
+  '' as company_name,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '办公费',
+    0 as meeting_amount
+    FROM 01_datamart_layer_007_h_cw_df.finance_official_bill 
+    WHERE bill_id IN ('1','2')
+        """
+
+    print( transfer_content(sql) )
 
 
