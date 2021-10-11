@@ -49,7 +49,7 @@ def check_14_data():
     # 44745309
     # 1745309 67
     # 2745309 118
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill '.format(
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 14745309'.format(
         columns_str=columns_str)
 
     count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
@@ -58,7 +58,7 @@ def check_14_data():
     count_records = records[0][0]
 
     max_size = 1 * 1000000
-    limit_size = 1000000
+    limit_size = 100000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -104,11 +104,13 @@ def check_14_data():
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
     result_rd = pd.concat(rd_list, axis=0, ignore_index=True)
-    print('all len(result_rd) => ',len(result_rd))
+    print('all len(result_rd) => ', len(result_rd))
+
 
 def exec_task(sql, columns_ls):
     rd_df = query_kudu_data(sql, columns_ls)
     return rd_df
+
 
 def calculate_data(rd_df):
     print(rd_df.head())
@@ -131,9 +133,6 @@ def exec_sql(bill_id_ls):
     print(len(bill_id_ls))
 
 
-
-if __name__ == "__main__":
-    check_14_data()
-    print('--- ok ---')
-    os._exit(0) # 无错误退出
-
+check_14_data()
+print('--- ok ---')
+os._exit(0)  # 无错误退出

@@ -73,11 +73,11 @@ def exec_sql(bill_id_ls):
     FROM 01_datamart_layer_007_h_cw_df.finance_official_bill 
     WHERE bill_id IN {bill_id_ls}
         """.format(bill_id_ls=tuple(bill_id_ls)).replace('\n', '').replace('\r', '').strip()
-    print(sql)
+    #print(sql)
     print(len(bill_id_ls))
 
     start_time = time.perf_counter()
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+    #prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'*** 执行SQL耗时 {consumed_time} sec')
 
