@@ -5,8 +5,46 @@
 
 
 
-======================================
+============================================================================
 
 
+
+
+需求 49 SQL
+
+UPSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+    SELECT
+    bill_id,
+    '49' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+  bill_beg_date,
+  bill_end_date,
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+  apply_emp_name,
+    '' as emp_name,
+    '' as emp_code,
+  '' as company_name,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '办公费',
+    0 as meeting_amount
+    FROM 01_datamart_layer_007_h_cw_df.finance_official_bill
+    where bill_id in ('BDDF0742D30BA9ADE053AA6DF60A7137', 'C5658C2DEC912579E053AC6DF60A4429')
+
+============================================================================
 
 

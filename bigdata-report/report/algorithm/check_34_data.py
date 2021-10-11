@@ -18,18 +18,19 @@ def check_34_data():
     sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_meeting_bill where meet_lvl_name is not null and meet_lvl_name !='不适用' and met_money is not null limit 20".format(
         columns_str=columns_str)
     rd_df = query_kudu_data(sql, columns_ls)
-    print(rd_df.head(10))
+    print(rd_df.head(20))
     print(rd_df.dtypes)
+    print(rd_df.describe())
     print(len(rd_df))
     print('*' * 50)
 
-    group_rd_df = rd_df.groupby('meet_lvl_name')
-    print(group_rd_df.head(20))
+    #group_rd_df = rd_df.groupby('meet_lvl_name')
+    group_rd_df = rd_df['met_money'].groupby(rd_df['meet_lvl_name'])
+    #print(group_rd_df.head(20))
     print(type(group_rd_df))
+    print(group_rd_df.std())
 
-    #print(rd_df.describe())
-
-
+    print(type(group_rd_df.std()))
 
 
 check_34_data()
