@@ -5,6 +5,8 @@ from report.commons.connect_kudu import prod_execute_sql, dis_connection
 import time
 import pandas as pd
 from report.commons.db_helper import query_kudu_data
+from report.commons.tools import list_of_groups
+
 
 log = get_logger(__name__)
 
@@ -39,6 +41,24 @@ def check_49_data():
 
 
 def exec_sql(bill_id_ls):
+    print('exec_sql ==> ',len(bill_id_ls))
+
+    if bill_id_ls and len(bill_id_ls) > 0:
+        group_ls = list_of_groups(bill_id_ls, 1000)
+        #print(len(group_ls), group_ls)
+
+        condition_sql = ''
+        in_codition = 'bill_id IN {temp}'
+
+        for idx, group in enumerate(group_ls):
+            temp = in_codition.format(temp=str(tuple(group)))
+            if idx == 0 :
+                condition_sql = temp
+            else:
+                condition_sql = condition_sql + ' OR ' + temp
+
+        #print(condition_sql)
+
     sql = """
     UPSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     SELECT 
@@ -71,15 +91,13 @@ def exec_sql(bill_id_ls):
     '办公费',
     0 as meeting_amount
     FROM 01_datamart_layer_007_h_cw_df.finance_official_bill 
-    WHERE bill_id IN {bill_id_ls}
-        """.format(bill_id_ls=tuple(bill_id_ls)).replace('\n', '').replace('\r', '').strip()
+    WHERE {condition_sql}
+        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
     #print(sql)
-    print(len(bill_id_ls))
-
     start_time = time.perf_counter()
-    #prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+    prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'*** 执行SQL耗时 {consumed_time} sec')
+    print(f'*** 执行SQL耗时 {consumed_time} sec')
 
 
 check_49_data()
