@@ -17,6 +17,10 @@ commodityname like '%餐费%' or commodityname like '%礼品%' or commodityname 
 if __name__ == "__main__":
     pass
 
+"""
+select commodityname from  01_datamart_layer_007_h_cw_df.finance_official_bill group by commodityname
+
+"""
 
 
 
