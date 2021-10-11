@@ -1,0 +1,12 @@
+select * from 01_datamart_layer_007_h_cw_df.finance_standard
+
+select * from 01_datamart_layer_007_h_cw_df.finance_scenery
+
+select * from 01_datamart_layer_007_h_cw_df.finance_person
+
+select * from 01_datamart_layer_007_h_cw_df.finance_unusual
+
+检查点
+select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual
+
+

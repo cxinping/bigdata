@@ -10,6 +10,7 @@ import os
 from flask import Flask, jsonify
 from http import HTTPStatus
 from .views.report import report_bp
+from .views.test import test_bp
 
 def create_app(config_object='config.default', config_map=None):
     # Create and configure the app
@@ -17,6 +18,7 @@ def create_app(config_object='config.default', config_map=None):
 
     # configure blue print
     app.register_blueprint(report_bp, url_prefix='/report')
+    app.register_blueprint(test_bp, url_prefix='/test')
 
     # Overwrite default config by input parameter
     app.config.from_object(config_object)

@@ -17,7 +17,7 @@ def check_49_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill '.format(
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill limit 10000'.format(
         columns_str=columns_str)
     start_time = time.perf_counter()
     rd_df = query_kudu_data(sql, columns_ls)
@@ -93,7 +93,7 @@ def exec_sql(bill_id_ls):
     FROM 01_datamart_layer_007_h_cw_df.finance_official_bill 
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
-    #print(sql)
+    print(sql)
     start_time = time.perf_counter()
     prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
