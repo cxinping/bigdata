@@ -16,7 +16,7 @@ def execute_02_data():
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) 
-    limit 10000
+    limit 10
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -47,7 +47,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) limit 5".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -60,27 +60,29 @@ def execute_02_data():
 
     for sel_sql in select_sql_ls:
         log.info(sel_sql)
-        obj = threadPool.submit(exec_task, sel_sql, columns_ls)
+        obj = threadPool.submit(exec_task, sel_sql)
         obj_list.append(obj)
 
     for future in as_completed(obj_list):
         data = future.result()
         if data:
-            #print(data)
-            pass
+            print(data)
 
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
 
-def exec_task(sql, columns_ls):
+
+def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if len(records) > 0:
         return records
     else:
         return None
 
-execute_02_data()
-print('--- ok ---')
-os._exit(0)  # 无错误退出
+
+if __name__ == "__main__":
+    execute_02_data()
+    print('--- ok ---')
+    os._exit(0)  # 无错误退出

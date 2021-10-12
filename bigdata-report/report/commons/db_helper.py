@@ -21,11 +21,13 @@ def query_kudu_data(sql, columns):
         record = []
         if columns:
             for idx in range(len(columns)):
-                # print(item[idx], type(item[idx]))
+                #print(item[idx], type(item[idx]))
 
                 if str(item[idx]) == "None":
                     record.append(None)
                 elif str(type(item[idx])) == "<java class 'JDouble'>":
+                    record.append(float(item[idx]))
+                elif str(type(item[idx])) == "<java class 'java.lang.Long'>":
                     record.append(float(item[idx]))
                 else:
                     record.append(str(item[idx]))
