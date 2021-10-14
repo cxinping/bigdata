@@ -12,9 +12,9 @@ def query_kudu_data(sql, columns):
     :return:
     """
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    log.info('***' * 10)
+    log.info('***' * 20)
     log.info('*** query_kudu_data=>' + str(len(records)))
-    log.info('***' * 10)
+    log.info('***' * 20)
 
     dataFromKUDU = []
     for item in records:
