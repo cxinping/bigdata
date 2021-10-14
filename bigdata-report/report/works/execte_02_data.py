@@ -7,25 +7,33 @@ import json
 import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from report.commons.tools import match_address
+from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 
 
+"""
+
+把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
+"""
 
 log = get_logger(__name__)
 
-dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.json"
+dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
+upload_hdfs_path = '/user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/'
+
+
 
 def init_file():
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
 def execute_02_data():
-    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank']
+    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank' , 'finance_travel_id']
     extra_columns_ls = ['bill_id']
     columns_ls.extend(extra_columns_ls)
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) 
-   
+    
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -56,7 +64,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) limit 20".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null and (sales_name is not null and sales_addressphone is not null and sales_bank is not null ) ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -76,9 +84,10 @@ def execute_02_data():
 
     for future in as_completed(obj_list):
         data = future.result()
-        print(len(data))
 
         if data and len(data) > 0:
+            print(len(data))
+
             for record in data:
                 sales_address = operate_reocrd(record)
                 #print()
@@ -87,12 +96,13 @@ def execute_02_data():
                 sales_name = str(record[1])
                 sales_addressphone = str(record[2])
                 sales_bank = str(record[3])
+                finance_travel_id = str(record[4])
 
-                dict_data = {'destin_name': destin_name, 'sales_name': sales_name, 'sales_addressphone': sales_addressphone,
-                             'sales_bank': sales_bank, 'sales_address': sales_address}
+                record = f'{finance_travel_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
+                print(record)
 
                 with open(dest_file, "a", encoding='utf-8') as file:
-                    json.dump(dict_data, file)
+                    file.write(record)
                     file.write("\n")
 
     threadPool.shutdown(wait=True)
@@ -140,13 +150,21 @@ def operate_reocrd(record):
 
 def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    if len(records) > 0:
+    if records and len(records) > 0:
         return records
     else:
         return None
 
 
-if __name__ == "__main__":
+def main():
     execute_02_data()
     print('--- ok ---')
+
+    test_hdfs = Test_HDFSTools(conn_type='test')
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
     os._exit(0)  # 无错误退出
+
+
+if __name__ == "__main__":
+    main()
