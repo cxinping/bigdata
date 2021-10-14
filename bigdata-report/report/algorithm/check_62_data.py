@@ -18,7 +18,7 @@ def check_62_data():
 
     """
 
-    columns_ls = ['finance_travel_id', 'bill_id' ]
+    columns_ls = ['finance_travel_id', 'bill_id']
     columns_str = ",".join(columns_ls)
 
     sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill  '
@@ -27,6 +27,7 @@ def check_62_data():
 
 
 
+
+
+
 check_62_data()
-
-
