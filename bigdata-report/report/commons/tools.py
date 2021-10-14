@@ -76,7 +76,8 @@ def list_of_groups(list_info, per_list_len):
 if __name__ == '__main__':
     # data = str(input("请输入文本:"))
     # data = "安徽安庆市大观区经三路3号 0556-5386666"
-    data = '江苏省无锡市滨湖区环湖路188号0510'
+    #data = '江苏省无锡市滨湖区环湖路188号0510'
+    data = '山东省东营市东营区北二路504号 0546-8718562'
     province = match_address(place=data, key='市')
     print(province)
     key = '无锡'
