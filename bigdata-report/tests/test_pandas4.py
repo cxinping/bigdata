@@ -7,3 +7,21 @@ df2 = pd.DataFrame({'a': [4, 5, 6], 'b': [4, 4, 4]})
 res = pd.concat([df1,df2],axis=0,ignore_index=True)
 
 print(res)
+
+print('*' * 20)
+
+import pandas as pd
+
+
+def complex_function(x, y=0):
+    print(f'x={x},y={y}')
+    if x > 5 and x > y:
+        return 1
+    else:
+        return 2
+
+
+df = pd.DataFrame(data={'col1': [1, 4, 6, 2, 7], 'col2': [6, 7, 1, 2, 8]})
+df['col3'] = df.apply(lambda x: complex_function(x['col1'], x['col2']), axis=1)
+
+print(df)
