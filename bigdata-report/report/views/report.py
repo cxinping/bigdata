@@ -15,8 +15,8 @@ from report.commons.logging import get_logger
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.tools import transfer_content
 from concurrent.futures import ThreadPoolExecutor
-
-
+from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames
+from report.services.office_expenses_service import query_checkpoint_42_commoditynames
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
 
@@ -697,3 +697,34 @@ def execute_kudu_sql(unusual_shell):
 
     print('*** end execute_kudu_sql ***')
 
+
+
+# http://10.5.138.11:8004/report/query/commoditynames/55
+@report_bp.route('/query/commoditynames/55', methods=['GET'])
+def query_55_commoditynames():
+    log.info('---- query_55_commoditynames ----')
+
+    data = query_checkpoint_55_commoditynames()
+
+    result = {
+        'type': '车辆使用费',
+        'data': data
+    }
+
+    response = jsonify(result)
+    return response, 200
+
+# http://10.5.138.11:8004/report/query/commoditynames/42
+@report_bp.route('/query/commoditynames/42', methods=['GET'])
+def query_42_commoditynames():
+    log.info('---- query_42_commoditynames -----')
+
+    data = query_checkpoint_42_commoditynames()
+
+    result = {
+        'type': '办公费',
+        'data': data
+    }
+
+    response = jsonify(result)
+    return response, 200

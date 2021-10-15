@@ -827,16 +827,7 @@ def check_15_coststructure_data():
     #dis_connection()
 
 
-def check_19_accommodation_expenses():
-    start_time = time.perf_counter()
-    sql = """
 
-
-        """
-    prod_execute_sql(sqltype='insert', sql=sql)
-    consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 执行SQL耗时 {consumed_time} sec')
-    #dis_connection()
 
 
 if __name__ == "__main__":

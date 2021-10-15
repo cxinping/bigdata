@@ -12,6 +12,10 @@ import time
 import json
 import os
 import pandas as pd
+from report.commons.db_helper import query_kudu_data
+from report.commons.tools import not_empty
+from report.services.vehicle_expense_service import cal_commodityname_function
+
 
 log = get_logger(__name__)
 
@@ -315,5 +319,29 @@ def main():
     pass
 
 
+def query_checkpoint_42_commoditynames():
+    columns_ls = ['commodityname']
+    columns_str = ",".join(columns_ls)
+
+    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill where commodityname is not null '
+    rd_df = query_kudu_data(sql, columns_ls)
+    #print(len(rd_df))
+
+    rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
+    #print(rd_df)
+
+    category_class_ls = rd_df['category_class'].tolist()
+    category_class_ls = list(filter(not_empty, category_class_ls))
+
+    # 去重
+    category_class_ls = list(set(category_class_ls))
+
+    #print(len(category_class_ls))
+    #print(category_class_ls)
+
+    return category_class_ls
+
+
 if __name__ == "__main__":
-    main()
+   #main()
+   query_checkpoint_42_commoditynames()

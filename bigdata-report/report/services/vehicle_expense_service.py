@@ -11,6 +11,8 @@ from report.commons.tools import match_address
 import time
 import json
 import os
+from report.commons.db_helper import query_kudu_data
+from report.commons.tools import not_empty
 
 log = get_logger(__name__)
 
@@ -50,7 +52,7 @@ def check_54_invoice():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_54_invoice SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_56_consistent_amount():
@@ -87,7 +89,7 @@ def check_56_consistent_amount():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_56_consistent_amount SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_65_reimburse():
@@ -130,7 +132,8 @@ def check_65_reimburse():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_65_reimburse SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
+
 
 def check_64_credit():
     start_time = time.perf_counter()
@@ -167,7 +170,7 @@ def check_64_credit():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_64_credit SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_66_approve():
@@ -213,20 +216,21 @@ and
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_66_approve SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
+
 
 def main():
     # 需求 54 done
-    #check_54_invoice()
+    # check_54_invoice()
 
     # 需求 56 done 未测试
-    #check_56_consistent_amount()
+    # check_56_consistent_amount()
 
     # 需求 64
-    #check_64_credit()
+    # check_64_credit()
 
     # 需求 65 done 未测试
-    #check_65_reimburse()
+    # check_65_reimburse()
 
     # 需求 66 done, checked
     check_66_approve()
@@ -234,5 +238,53 @@ def main():
     pass
 
 
+def query_checkpoint_55_commoditynames():
+    columns_ls = ['commodityname']
+    columns_str = ",".join(columns_ls)
+
+    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill where commodityname is not null '
+    rd_df = query_kudu_data(sql, columns_ls)
+
+    rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
+    #print(rd_df)
+
+    category_class_ls = rd_df['category_class'].tolist()
+    category_class_ls = list(filter(not_empty, category_class_ls))
+    # 去重
+
+    category_class_ls = list(set(category_class_ls))
+    #print(len(category_class_ls), category_class_ls)
+    return category_class_ls
+
+
+
+def cal_commodityname_function(commodityname):
+    """
+    计算大类
+    :param commodityname:
+    :return:
+    """
+    category_class = None
+    if commodityname:
+
+        if commodityname.find('*') > -1 and commodityname.find(',') > -1:
+            commodityname_ls = commodityname.split(',')
+            commodityname_ls = list(filter(not_empty, commodityname_ls))
+            first_category = commodityname_ls[0]
+
+            category_ls = first_category.split('*')
+            category_ls = list(filter(not_empty, category_ls))
+            category_class = category_ls[0]
+
+        elif commodityname.find('*') > -1:
+            category_ls = commodityname.split('*')
+            category_ls = list(filter(not_empty, category_ls))
+            category_class = category_ls[0]
+
+    return category_class
+
+
 if __name__ == "__main__":
-    main()
+    #main()
+
+    query_checkpoint_55_commoditynames()
