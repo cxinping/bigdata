@@ -6,7 +6,7 @@ Created on 2021-08-02
 @author: WangShuo
 '''
 
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, jsonify, render_template, request, make_response
 from flask import current_app as app
 from http import HTTPStatus
 import datetime, time
@@ -700,7 +700,7 @@ def execute_kudu_sql(unusual_shell):
 
 
 # http://10.5.138.11:8004/report/query/commoditynames/55
-@report_bp.route('/query/commoditynames/55', methods=['GET'])
+@report_bp.route('/query/commoditynames/55', methods=['GET', 'POST'])
 def query_55_commoditynames():
     log.info('---- query_55_commoditynames ----')
 
@@ -711,8 +711,9 @@ def query_55_commoditynames():
         'data': data
     }
 
-    response = jsonify(result)
-    return response, 200
+    # response = jsonify(result)
+    # return response, 200
+    return mk_utf8resp(result)
 
 # http://10.5.138.11:8004/report/query/commoditynames/42
 @report_bp.route('/query/commoditynames/42', methods=['GET'])
@@ -726,5 +727,15 @@ def query_42_commoditynames():
         'data': data
     }
 
-    response = jsonify(result)
-    return response, 200
+    # response = jsonify(result)
+    # return response, 200
+    return mk_utf8resp(result)
+
+
+def mk_utf8resp(js):
+    '''
+    传入一个字典，返回一个json格式的http回复。
+    '''
+    resp = make_response(json.dumps(js, ensure_ascii=False))
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
