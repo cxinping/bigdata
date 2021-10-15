@@ -22,7 +22,7 @@ def exec_42_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
     columns_str = ",".join(columns_ls)
 
-    sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null limit 20000'
+    sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null'
     rd_df = query_kudu_data(sql, columns_ls)
 
     # print(rd_df.head(5))
@@ -51,7 +51,7 @@ def exec_42_data():
     print('* len==> ', len(rd_df))
     finance_travel_id_ls = rd_df['finance_travel_id'].tolist()
     print(finance_travel_id_ls[:5])
-
+    exec_sql(finance_travel_id_ls)
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
@@ -82,6 +82,64 @@ def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls
                 flag = 1
 
     return flag
+
+
+def exec_sql(finance_travel_id_ls):
+    print('exec_sql ==> ',len(finance_travel_id_ls))
+
+    if finance_travel_id_ls and len(finance_travel_id_ls) > 0:
+        group_ls = list_of_groups(finance_travel_id_ls, 1000)
+        #print(len(group_ls), group_ls)
+
+        condition_sql = ''
+        in_codition = 'finance_travel_id IN {temp}'
+
+        for idx, group in enumerate(group_ls):
+            temp = in_codition.format(temp=str(tuple(group)))
+            if idx == 0 :
+                condition_sql = temp
+            else:
+                condition_sql = condition_sql + ' OR ' + temp
+
+    #print(condition_sql)
+    sql = """
+    UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+    select     
+    bill_id, 
+    '42' as unusual_id,
+    company_code,
+    account_period,
+    account_item,
+    finance_number,
+    cost_center,
+    profit_center,
+    '' as cart_head,
+    bill_code,
+     bill_beg_date,
+    bill_end_date,  
+    ''   as  origin_city,
+    ''  as destin_city,
+    base_beg_date  as beg_date,
+    base_end_date  as end_date,
+    apply_emp_name,
+    '' as emp_name,
+    '' as emp_code,
+  '' as company_name,
+    0 as jour_amount,
+    0 as accomm_amount,
+    0 as subsidy_amount,
+    0 as other_amount,
+    check_amount,
+    jzpz,
+    '办公费',
+    0 as meeting_amount from 01_datamart_layer_007_h_cw_df.finance_official_bill 
+    WHERE {condition_sql}
+    """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+    #print(sql)
+    start_time = time.perf_counter()
+    prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+    consumed_time = round(time.perf_counter() - start_time)
+    print(f'*** 执行SQL耗时 {consumed_time} sec')
 
 
 
