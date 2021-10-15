@@ -9,6 +9,10 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 log = get_logger(__name__)
 
 
+import sys
+sys.path.append('/you_filed_algos/app')
+
+
 def query_kudu_data(sql, columns):
     """
     发票日期异常检查
