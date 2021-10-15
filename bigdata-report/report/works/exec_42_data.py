@@ -12,7 +12,7 @@ import sys
 sys.path.append('/you_filed_algos/app')
 
 
-def exec_55_data():
+def exec_42_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
     columns_str = ",".join(columns_ls)
 
@@ -33,8 +33,9 @@ def exec_55_data():
     whitelist_category_ls = category_df['whitelist_category'].tolist()
     rd_df['is_blacklist'] = rd_df.apply(lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
 
-    #rd_df = rd_df[rd_df['is_blacklist'] == 1]
-    print(rd_df.head(20000))
+    rd_df = rd_df[rd_df['is_blacklist'] == 1]
+    print(rd_df.head(20))
+    print('* len==> ',len(rd_df))
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
@@ -72,4 +73,4 @@ def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls
 
 
 
-exec_55_data()
+exec_42_data()
