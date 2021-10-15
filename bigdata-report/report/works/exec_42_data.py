@@ -68,9 +68,4 @@ def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls
     return flag
 
 
-
-
-
-
-
 exec_42_data()
