@@ -34,8 +34,8 @@ def exec_42_data():
     rd_df['is_blacklist'] = rd_df.apply(lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
 
     rd_df = rd_df[rd_df['is_blacklist'] == 1]
-    print(rd_df.head(20))
-    print('* len==> ',len(rd_df))
+    print(rd_df.head(30))
+    print('* len==> ', len(rd_df))
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
