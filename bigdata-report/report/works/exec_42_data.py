@@ -5,6 +5,8 @@ import time
 import pandas as pd
 from report.commons.db_helper import query_kudu_data
 from report.commons.tools import list_of_groups
+from report.commons.tools import not_empty
+
 
 log = get_logger(__name__)
 
@@ -13,6 +15,10 @@ sys.path.append('/you_filed_algos/app')
 
 
 def exec_42_data():
+    """
+    对于增值税发票，关联发票号，识别和判断发票服务名称，检查是否存在服务名称与办公费不相关的情况，比如礼品、餐费、烟酒、服装等
+    :return:
+    """
     columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
     columns_str = ",".join(columns_ls)
 
@@ -31,11 +37,21 @@ def exec_42_data():
     blacklist_category_ls = category_df['blacklist_category'].tolist()
     # 白名单列表
     whitelist_category_ls = category_df['whitelist_category'].tolist()
+
+    blacklist_category_ls = list(filter(not_empty, blacklist_category_ls))
+    whitelist_category_ls = list(filter(not_empty, whitelist_category_ls))
+
+    # print(blacklist_category_ls)
+    # print(whitelist_category_ls)
+
     rd_df['is_blacklist'] = rd_df.apply(lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
 
     rd_df = rd_df[rd_df['is_blacklist'] == 1]
-    print(rd_df.head(30))
+    print(rd_df.head(50))
     print('* len==> ', len(rd_df))
+    finance_travel_id_ls = rd_df['finance_travel_id'].tolist()
+    print(finance_travel_id_ls[:5])
+
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
@@ -66,6 +82,7 @@ def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls
                 flag = 1
 
     return flag
+
 
 
 exec_42_data()

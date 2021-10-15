@@ -9,4 +9,7 @@ select * from 01_datamart_layer_007_h_cw_df.finance_unusual
 检查点
 select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual
 
-
+黑名单
+insert  into 01_datamart_layer_007_h_cw_df.finance_blacklist values (uuid(),'','文具','办公费');
+insert  into 01_datamart_layer_007_h_cw_df.finance_blacklist values (uuid(),'','插座','办公费');
+select * from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费';

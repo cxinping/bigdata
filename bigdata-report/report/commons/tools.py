@@ -72,6 +72,8 @@ def list_of_groups(list_info, per_list_len):
     end_list.append(list_info[-count:]) if count != 0 else end_list
     return end_list
 
+def not_empty(s):
+    return s and s.strip()
 
 if __name__ == '__main__':
     # data = str(input("请输入文本:"))
@@ -87,9 +89,9 @@ if __name__ == '__main__':
     str2 = '安庆市'
     print(str1.find(str2))
 
-    path = "/you_filed_algos/prod_kudu_data/123.txt"
-    content = read_file(path)
-    print(content)
+    # path = "/you_filed_algos/prod_kudu_data/123.txt"
+    # content = read_file(path)
+    # print(content)
 
     print('*' * 50)
 
@@ -133,3 +135,8 @@ if __name__ == '__main__':
     list_info = ['name zhangsan', 'age 10', 'sex man', 'name lisi', 'age 11', 'sex women', 'aaaa', 'bbb', 'ccc']
     ret = list_of_groups(list_info, 5)
     print(ret)
+
+    list2 = ['122', '2333', '3444', ' ', '422', ' ', '    ', '54', ' ', '', None, '   ']
+    print(list(filter(not_empty, list2)))  # ['122', '2333', '3444', '422', '54']
+
+
