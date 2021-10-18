@@ -266,20 +266,24 @@ def cal_commodityname_function(commodityname):
     """
     category_class = None
     if commodityname:
+        #print('**** 111 commodityname ==> ', commodityname, type(commodityname))
 
         if commodityname.find('*') > -1 and commodityname.find(',') > -1:
             commodityname_ls = commodityname.split(',')
             commodityname_ls = list(filter(not_empty, commodityname_ls))
-            first_category = commodityname_ls[0]
+            first_category = str(commodityname_ls[0]).strip()
 
             category_ls = first_category.split('*')
             category_ls = list(filter(not_empty, category_ls))
-            category_class = category_ls[0]
+            category_class = str(category_ls[0]).strip()
 
         elif commodityname.find('*') > -1:
             category_ls = commodityname.split('*')
             category_ls = list(filter(not_empty, category_ls))
-            category_class = category_ls[0]
+            category_class = str(category_ls[0]).strip()
+        # else:
+        #     category_class = commodityname
+        #     print('**** 222 category_class ==> ' , category_class)
 
     return category_class
 
@@ -287,4 +291,5 @@ def cal_commodityname_function(commodityname):
 if __name__ == "__main__":
     #main()
 
-    query_checkpoint_55_commoditynames()
+    records = query_checkpoint_55_commoditynames()
+    print(records)

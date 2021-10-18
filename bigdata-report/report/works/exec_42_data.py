@@ -51,7 +51,7 @@ def exec_42_data():
     print('* len==> ', len(rd_df))
     finance_travel_id_ls = rd_df['finance_travel_id'].tolist()
     print(finance_travel_id_ls[:5])
-    exec_sql(finance_travel_id_ls)
+    #exec_sql(finance_travel_id_ls)
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
@@ -83,6 +83,47 @@ def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls
 
     return flag
 
+import json
+
+def to_json2(df,orient='split'):
+    df_json = df.to_json(orient = orient, force_ascii = False)
+    return json.loads(df_json)
+
+def exec_42_filter_data(commodityname_ls):
+    """
+    对于增值税发票，关联发票号，识别和判断发票服务名称，检查是否存在服务名称与办公费不相关的情况，比如礼品、餐费、烟酒、服装等
+    :return:
+    """
+    columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
+    columns_str = ",".join(columns_ls)
+
+    sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null'
+    rd_df = query_kudu_data(sql, columns_ls)
+
+    # print(rd_df.head(5))
+    # print(rd_df.dtypes)
+    # print(len(rd_df))
+
+    rd_df['is_valid'] = rd_df.apply(lambda rd_df: complex_filter_function(rd_df['commodityname'], commodityname_ls), axis=1)
+
+    rd_df = rd_df[rd_df['is_valid'] == 1]
+    print(rd_df.head(50))
+    print('* len==> ', len(rd_df))
+
+    json_str = to_json2(rd_df)
+    print(json_str)
+
+def complex_filter_function(commodityname, commodityname_ls):
+
+    flag = 0 # 是匹配数据返回1， 是没有匹配数据返回0
+
+    if commodityname and commodityname_ls:
+        for filter_commodityname in commodityname_ls:
+            if commodityname.find(filter_commodityname) > -1:
+                flag = 1
+                break
+
+    return flag
 
 def exec_sql(finance_travel_id_ls):
     print('exec_sql ==> ',len(finance_travel_id_ls))
@@ -143,4 +184,6 @@ def exec_sql(finance_travel_id_ls):
 
 
 
-exec_42_data()
+#exec_42_data()
+ls = ["其他咨询服务",]
+exec_42_filter_data(ls)

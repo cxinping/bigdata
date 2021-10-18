@@ -323,7 +323,7 @@ def query_checkpoint_42_commoditynames():
     columns_ls = ['commodityname']
     columns_str = ",".join(columns_ls)
 
-    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill where commodityname is not null '
+    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null '
     rd_df = query_kudu_data(sql, columns_ls)
     #print(len(rd_df))
 
@@ -344,4 +344,7 @@ def query_checkpoint_42_commoditynames():
 
 if __name__ == "__main__":
    #main()
-   query_checkpoint_42_commoditynames()
+   records = query_checkpoint_42_commoditynames()
+   print(records)
+
+
