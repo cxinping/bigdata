@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
-import time
-import pandas as pd
 
 log = get_logger(__name__)
 

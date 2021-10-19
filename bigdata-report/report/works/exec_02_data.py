@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
-import time
-import os
-import json
-import pandas as pd
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from report.commons.tools import match_address
+
+import os
+import time
+
+from report.commons.connect_kudu import prod_execute_sql
+from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
+from report.commons.tools import match_address
 
 """
 

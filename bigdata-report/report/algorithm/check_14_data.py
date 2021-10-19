@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
-import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
 import os
 import pandas as pd
-from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+
+from report.commons.connect_kudu import prod_execute_sql
+from report.commons.logging import get_logger
 
 log = get_logger(__name__)
 

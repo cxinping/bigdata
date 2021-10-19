@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
+
 import time
 from datetime import datetime
+
 
 def spider(page):
     time.sleep(page)

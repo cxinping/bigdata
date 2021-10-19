@@ -3,8 +3,8 @@
 import jaydebeapi
 import jpype
 import os
-import traceback
 import pandas as pd
+import traceback
 
 
 def execute_sql(sql):

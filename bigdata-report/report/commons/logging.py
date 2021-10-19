@@ -7,11 +7,11 @@ Created on 2021-08-05
 @author: Wang Shuo
 """
 
-import logging
 import logging.config
 import os
-
 from flask import current_app as app
+
+import logging
 
 CFG_DEBUG = 'DEBUG'
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import asyncio, aiomysql
-import time
-from report.commons.logging import get_logger
+import asyncio
 import sys
+
+from report.commons.logging import get_logger
 
 sys.path.append("/usr/local/lib64/python3.6/site-packages")
 
@@ -10,8 +10,6 @@ import jaydebeapi
 import jpype
 import os
 import traceback
-import pandas as pd
-import time
 from report.commons.connect_kudu import prod_execute_sql, dis_connection
 
 log = get_logger(__name__)

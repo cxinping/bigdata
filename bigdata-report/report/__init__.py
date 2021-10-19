@@ -6,11 +6,14 @@ Created on 2021-08-02
 @author: WangShuo
 '''
 
+from http import HTTPStatus
+
 import os
 from flask import Flask, jsonify
-from http import HTTPStatus
+
 from .views.report import report_bp
 from .views.test import test_bp
+
 
 def create_app(config_object='config.default', config_map=None):
     # Create and configure the app

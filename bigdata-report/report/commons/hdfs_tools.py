@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import jaydebeapi
 import jpype
 import os
-import traceback
-import pandas as pd
-import time
-from jpype import JString
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
 import shutil
+import time
+import traceback
+from datetime import datetime
 
 
 class HDFSTools(object):

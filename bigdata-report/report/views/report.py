@@ -6,17 +6,18 @@ Created on 2021-08-02
 @author: WangShuo
 '''
 
-from flask import Blueprint, jsonify, render_template, request, make_response
-from flask import current_app as app
-from http import HTTPStatus
-import datetime, time
-import json
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql
-from report.commons.tools import transfer_content
 from concurrent.futures import ThreadPoolExecutor
-from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames
+
+import datetime
+import json
+from flask import Blueprint, jsonify, request, make_response
+
+from report.commons.connect_kudu import prod_execute_sql
+from report.commons.logging import get_logger
+from report.commons.tools import transfer_content
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames
+from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames
+
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
 

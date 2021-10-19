@@ -5,13 +5,14 @@
 @author: WangShuo
 """
 
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
-from report.commons.tools import match_address
-import time
+import csv
 import json
 import os
-import csv
+import time
+
+from report.commons.connect_kudu import prod_execute_sql, dis_connection
+from report.commons.logging import get_logger
+from report.commons.tools import match_address
 
 log = get_logger(__name__)
 

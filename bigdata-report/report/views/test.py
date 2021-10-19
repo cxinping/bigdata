@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
-from flask import Blueprint, jsonify, render_template, request
-from flask import current_app as app
-from http import HTTPStatus
-import datetime, time
-import json
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql
-from report.commons.tools import transfer_content
+from flask import Blueprint, jsonify, request
 
+from report.commons.connect_kudu import prod_execute_sql
+from report.commons.logging import get_logger
+from report.commons.tools import transfer_content
 
 log = get_logger(__name__)
 test_bp = Blueprint('test', __name__)

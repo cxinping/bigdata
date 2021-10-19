@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+import os
+import shutil
+import time
+from datetime import datetime
+
 from report.commons.hdfs_tools import HDFSTools as Prod_HDFSTools
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-import shutil, os, time
-from datetime import datetime
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 def main1():

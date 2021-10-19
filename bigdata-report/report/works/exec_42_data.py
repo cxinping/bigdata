@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
 import time
-import pandas as pd
+
+from report.commons.connect_kudu import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
+from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.commons.tools import not_empty
-
 
 log = get_logger(__name__)
 
 import sys
+
 sys.path.append('/you_filed_algos/app')
 
 
@@ -28,7 +28,7 @@ def exec_42_data():
     # print(rd_df.head(5))
     # print(rd_df.dtypes)
 
-    category_columns_ls = ['blacklist_category' , 'whitelist_category']
+    category_columns_ls = ['blacklist_category', 'whitelist_category']
     category_columns_str = ",".join(category_columns_ls)
     category_sql = f"select {category_columns_str} from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费'"
     category_df = query_kudu_data(category_sql, category_columns_ls)
@@ -44,24 +44,25 @@ def exec_42_data():
     # print(blacklist_category_ls)
     # print(whitelist_category_ls)
 
-    rd_df['is_blacklist'] = rd_df.apply(lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
+    rd_df['is_blacklist'] = rd_df.apply(
+        lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
 
     rd_df = rd_df[rd_df['is_blacklist'] == 1]
     print(rd_df.head(50))
     print('* len==> ', len(rd_df))
     finance_travel_id_ls = rd_df['finance_travel_id'].tolist()
     print(finance_travel_id_ls[:5])
-    #exec_sql(finance_travel_id_ls)
+    # exec_sql(finance_travel_id_ls)
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
     is_blacklist = False
     is_whitelist = False
-    flag = 0 # 是黑名单返回1， 是白名单返回0
+    flag = 0  # 是黑名单返回1， 是白名单返回0
 
     if blacklist_category_ls:
         for blacklist_category in blacklist_category_ls:
-            #print(blacklist_category)
+            # print(blacklist_category)
             if commodityname.find(blacklist_category) > -1:
                 is_blacklist = True
                 break
@@ -71,23 +72,26 @@ def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls
     else:
         if whitelist_category_ls:
             for whitelist_category in whitelist_category_ls:
-                #print(whitelist_category)
+                # print(whitelist_category)
                 if commodityname.find(whitelist_category) > -1:
                     is_whitelist = True
                     break
 
             if is_whitelist:
-                 flag = 0
+                flag = 0
             else:
                 flag = 1
 
     return flag
 
+
 import json
 
-def to_json2(df,orient='split'):
-    df_json = df.to_json(orient = orient, force_ascii = False)
+
+def to_json2(df, orient='split'):
+    df_json = df.to_json(orient=orient, force_ascii=False)
     return json.loads(df_json)
+
 
 def exec_42_filter_data(commodityname_ls):
     """
@@ -104,7 +108,8 @@ def exec_42_filter_data(commodityname_ls):
     # print(rd_df.dtypes)
     # print(len(rd_df))
 
-    rd_df['is_valid'] = rd_df.apply(lambda rd_df: complex_filter_function(rd_df['commodityname'], commodityname_ls), axis=1)
+    rd_df['is_valid'] = rd_df.apply(lambda rd_df: complex_filter_function(rd_df['commodityname'], commodityname_ls),
+                                    axis=1)
 
     rd_df = rd_df[rd_df['is_valid'] == 1]
     print(rd_df.head(50))
@@ -113,9 +118,9 @@ def exec_42_filter_data(commodityname_ls):
     json_str = to_json2(rd_df)
     print(json_str)
 
-def complex_filter_function(commodityname, commodityname_ls):
 
-    flag = 0 # 是匹配数据返回1， 是没有匹配数据返回0
+def complex_filter_function(commodityname, commodityname_ls):
+    flag = 0  # 是匹配数据返回1， 是没有匹配数据返回0
 
     if commodityname and commodityname_ls:
         for filter_commodityname in commodityname_ls:
@@ -125,24 +130,25 @@ def complex_filter_function(commodityname, commodityname_ls):
 
     return flag
 
+
 def exec_sql(finance_travel_id_ls):
-    print('exec_sql ==> ',len(finance_travel_id_ls))
+    print('exec_sql ==> ', len(finance_travel_id_ls))
 
     if finance_travel_id_ls and len(finance_travel_id_ls) > 0:
         group_ls = list_of_groups(finance_travel_id_ls, 1000)
-        #print(len(group_ls), group_ls)
+        # print(len(group_ls), group_ls)
 
         condition_sql = ''
         in_codition = 'finance_travel_id IN {temp}'
 
         for idx, group in enumerate(group_ls):
             temp = in_codition.format(temp=str(tuple(group)))
-            if idx == 0 :
+            if idx == 0:
                 condition_sql = temp
             else:
                 condition_sql = condition_sql + ' OR ' + temp
 
-    #print(condition_sql)
+    # print(condition_sql)
     sql = """
     UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
     select     
@@ -176,14 +182,13 @@ def exec_sql(finance_travel_id_ls):
     0 as meeting_amount from 01_datamart_layer_007_h_cw_df.finance_official_bill 
     WHERE {condition_sql}
     """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
-    #print(sql)
+    # print(sql)
     start_time = time.perf_counter()
     prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     print(f'*** 执行SQL耗时 {consumed_time} sec')
 
 
-
-#exec_42_data()
-ls = ["其他咨询服务",]
+# exec_42_data()
+ls = ["其他咨询服务", ]
 exec_42_filter_data(ls)

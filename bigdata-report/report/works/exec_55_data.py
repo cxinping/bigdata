@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
 import time
-import pandas as pd
+
+from report.commons.connect_kudu import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
+from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.commons.tools import not_empty
 

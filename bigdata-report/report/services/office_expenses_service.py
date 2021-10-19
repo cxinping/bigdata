@@ -5,17 +5,14 @@
 
 """
 
-from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
-from report.commons.tools import match_address
-import time
-import json
-import os
 import pandas as pd
+import time
+
+from report.commons.connect_kudu import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
+from report.commons.logging import get_logger
 from report.commons.tools import not_empty
 from report.services.vehicle_expense_service import cal_commodityname_function
-
 
 log = get_logger(__name__)
 

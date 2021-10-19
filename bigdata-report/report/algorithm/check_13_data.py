@@ -1,12 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
-import time
-import pandas as pd
-from report.commons.db_helper import query_kudu_data
-from report.commons.tools import list_of_groups
-
 
 log = get_logger(__name__)
 
@@ -25,10 +20,10 @@ def check_13_data():
         columns_str=columns_str)
 
     count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
-    log.info(count_sql)
+    print(count_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
     count_records = records[0][0]
-    log.info(f'* count_records ==> {count_records}')
+    print(f'* count_records ==> {count_records}')
 
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     print('len(records) ==> ', len(records))

@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor  # 线程池，进程池
-import threading, time
-from report.commons.connect_kudu import prod_execute_sql,  dis_connection
-from report.commons.logging import get_logger
-import sys
-import time
+from concurrent.futures import ThreadPoolExecutor  # 线程池，进程池
+
 from datetime import datetime
 
+from report.commons.connect_kudu import prod_execute_sql
+from report.commons.logging import get_logger
 
 log = get_logger(__name__)
 

@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+
+
 def list_generator(mean,dis,number):#封装一下这个函数，用来后面生成数据
     return np.random.normal(mean,dis*dis,number)#normal分布，输入的参数是均值、标准差以及生成的数量
 #我们生成四组数据用来做实验，我们都只生成100个数据
