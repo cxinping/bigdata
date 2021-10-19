@@ -88,7 +88,7 @@ def execute_02_data():
 
             for record in data:
                 sales_address = operate_reocrd(record)
-                #sales_address = split_str(str(sales_address))
+                sales_address = split_str(str(sales_address))
 
                 destin_name = str(record[0])
                 sales_name = str(record[1])
