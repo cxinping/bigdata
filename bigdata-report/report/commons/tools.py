@@ -12,6 +12,9 @@ def match_address(place, key):
     indexes2.insert(0, -1)
     address = []
 
+    if place.find('青岛') > -1:
+        return '青岛市'
+
     for i, x in enumerate(indexes2):
         if i == len(indexes2) - 1:
             continue
