@@ -2,6 +2,7 @@
 
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
+import os
 
 log = get_logger(__name__)
 
@@ -25,8 +26,8 @@ def check_13_data():
     count_records = records[0][0]
     print(f'* count_records ==> {count_records}')
 
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    print('len(records) ==> ', len(records))
+    # records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    # print('len(records) ==> ', len(records))
 
 
 check_13_data()

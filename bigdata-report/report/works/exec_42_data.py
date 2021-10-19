@@ -22,37 +22,47 @@ def exec_42_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
     columns_str = ",".join(columns_ls)
 
-    sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null'
+    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null'
     rd_df = query_kudu_data(sql, columns_ls)
 
     # print(rd_df.head(5))
     # print(rd_df.dtypes)
 
-    category_columns_ls = ['blacklist_category', 'whitelist_category']
-    category_columns_str = ",".join(category_columns_ls)
-    category_sql = f"select {category_columns_str} from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费'"
-    category_df = query_kudu_data(category_sql, category_columns_ls)
-
-    # 黑名单列表
-    blacklist_category_ls = category_df['blacklist_category'].tolist()
-    # 白名单列表
-    whitelist_category_ls = category_df['whitelist_category'].tolist()
-
-    blacklist_category_ls = list(filter(not_empty, blacklist_category_ls))
-    whitelist_category_ls = list(filter(not_empty, whitelist_category_ls))
+    # category_columns_ls = ['blacklist_category', 'whitelist_category']
+    # category_columns_str = ",".join(category_columns_ls)
+    # category_sql = f"select {category_columns_str} from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费'"
+    # category_df = query_kudu_data(category_sql, category_columns_ls)
+    #
+    # # 黑名单列表
+    # blacklist_category_ls = category_df['blacklist_category'].tolist()
+    # # 白名单列表
+    # whitelist_category_ls = category_df['whitelist_category'].tolist()
+    #
+    # blacklist_category_ls = list(filter(not_empty, blacklist_category_ls))
+    # whitelist_category_ls = list(filter(not_empty, whitelist_category_ls))
 
     # print(blacklist_category_ls)
     # print(whitelist_category_ls)
 
-    rd_df['is_blacklist'] = rd_df.apply(
-        lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
+    # rd_df['is_blacklist'] = rd_df.apply(
+    #     lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
 
-    rd_df = rd_df[rd_df['is_blacklist'] == 1]
-    print(rd_df.head(50))
+    #rd_df = rd_df[rd_df['is_blacklist'] == 1]
+    print(rd_df.head(5))
     print('* len==> ', len(rd_df))
-    finance_travel_id_ls = rd_df['finance_travel_id'].tolist()
-    print(finance_travel_id_ls[:5])
+    #finance_travel_id_ls = rd_df['finance_travel_id'].tolist()
+    #print(finance_travel_id_ls[:5])
     # exec_sql(finance_travel_id_ls)
+
+    dest_file = "/you_filed_algos/prod_kudu_data/check_42_data.txt"
+    for index, row in rd_df.iterrows():
+        finance_travel_id = row['finance_travel_id']
+        commodityname = row['commodityname']
+
+        record = f'{finance_travel_id},{commodityname}'
+        with open(dest_file, "a", encoding='utf-8') as file:
+            file.write(record)
+            file.write("\n")
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
@@ -101,7 +111,7 @@ def exec_42_filter_data(commodityname_ls):
     columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
     columns_str = ",".join(columns_ls)
 
-    sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null'
+    sql = f'select  distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null'
     rd_df = query_kudu_data(sql, columns_ls)
 
     # print(rd_df.head(5))
@@ -115,8 +125,8 @@ def exec_42_filter_data(commodityname_ls):
     print(rd_df.head(50))
     print('* len==> ', len(rd_df))
 
-    json_str = to_json2(rd_df)
-    print(json_str)
+    # json_str = to_json2(rd_df)
+    # print(json_str)
 
 
 def complex_filter_function(commodityname, commodityname_ls):
@@ -189,6 +199,6 @@ def exec_sql(finance_travel_id_ls):
     print(f'*** 执行SQL耗时 {consumed_time} sec')
 
 
-# exec_42_data()
-ls = ["其他咨询服务", ]
-exec_42_filter_data(ls)
+exec_42_data()
+#ls = ["其他咨询服务", ]
+#exec_42_filter_data(ls)

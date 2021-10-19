@@ -7,7 +7,7 @@ import time
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import match_address
+from report.commons.tools import match_address, split_str
 
 """
 
@@ -32,7 +32,6 @@ def execute_02_data():
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
-    
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -63,7 +62,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -85,14 +84,15 @@ def execute_02_data():
         data = future.result()
 
         if data and len(data) > 0:
-            print(len(data))
+            #print(len(data))
 
             for record in data:
                 sales_address = operate_reocrd(record)
-                # print()
+                #sales_address = split_str(str(sales_address))
 
                 destin_name = str(record[0])
                 sales_name = str(record[1])
+
                 sales_addressphone = str(record[2])
                 sales_bank = str(record[3])
                 finance_travel_id = str(record[4])
@@ -161,7 +161,7 @@ def main():
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

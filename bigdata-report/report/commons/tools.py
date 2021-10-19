@@ -72,6 +72,31 @@ def list_of_groups(list_info, per_list_len):
 def not_empty(s):
     return s and s.strip()
 
+
+def split_str(text):
+    """
+    过滤字符串
+    :param text:
+    :return:
+    """
+    result = None
+
+    if text.find('银行') > -1 and text.find('公司') > -1:
+        idx = text.find('公司')
+        result = text[idx + 2:]
+    elif text.find('银行') > -1:
+        idx = text.find('银行')
+        result = text[idx+2:]
+    elif text.find('局') > -1:
+        idx = text.find('局')
+        result = text[idx + 1:]
+    elif text.find('公司') > -1:
+        idx = text.find('公司')
+        result = text[idx + 2:]
+    else:
+        result = text
+    return result
+
 if __name__ == '__main__':
     # data = str(input("请输入文本:"))
     # data = "安徽安庆市大观区经三路3号 0556-5386666"
@@ -127,7 +152,7 @@ if __name__ == '__main__':
     WHERE bill_id IN ('1','2')
         """
 
-    print(transfer_content(sql))
+    #print(transfer_content(sql))
 
     list_info = ['name zhangsan', 'age 10', 'sex man', 'name lisi', 'age 11', 'sex women', 'aaaa', 'bbb', 'ccc']
     ret = list_of_groups(list_info, 5)
@@ -136,4 +161,7 @@ if __name__ == '__main__':
     list2 = ['122', '2333', '3444', ' ', '422', ' ', '    ', '54', ' ', '', None, '   ']
     print(list(filter(not_empty, list2)))  # ['122', '2333', '3444', '422', '54']
 
-
+    str1 = '中国建设银行股份有限公司南宁市'
+    print(str1)
+    r1 = split_str(str1)
+    print('r1 ==> ',r1)
