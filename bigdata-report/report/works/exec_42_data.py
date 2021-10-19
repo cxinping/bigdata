@@ -54,15 +54,15 @@ def exec_42_data():
     #print(finance_travel_id_ls[:5])
     # exec_sql(finance_travel_id_ls)
 
-    dest_file = "/you_filed_algos/prod_kudu_data/check_42_data.txt"
-    for index, row in rd_df.iterrows():
-        finance_travel_id = row['finance_travel_id']
-        commodityname = row['commodityname']
-
-        record = f'{finance_travel_id},{commodityname}'
-        with open(dest_file, "a", encoding='utf-8') as file:
-            file.write(record)
-            file.write("\n")
+    # dest_file = "/you_filed_algos/prod_kudu_data/check_42_data.txt"
+    # for index, row in rd_df.iterrows():
+    #     finance_travel_id = row['finance_travel_id']
+    #     commodityname = row['commodityname']
+    #
+    #     record = f'{finance_travel_id},{commodityname}'
+    #     with open(dest_file, "a", encoding='utf-8') as file:
+    #         file.write(record)
+    #         file.write("\n")
 
 
 def complex_function(commodityname, blacklist_category_ls, whitelist_category_ls):
