@@ -5,5 +5,8 @@ print(idx)
 print(str1[idx+2:])
 
 
+if 'a' in ['a' , 'b']:
+    print('ok')
+
 
 
