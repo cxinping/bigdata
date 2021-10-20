@@ -159,6 +159,7 @@ def get_cluster(tfidf_arr, k):
         fw.write(str(i) + '\t' + str(v) + '\n')
     fw.close()
 
+
 def cluster_text(clean_words):
     """
     获取分类文档
@@ -179,7 +180,8 @@ def cluster_text(clean_words):
     for index, line in enumerate(clean_words):
         for i in range(28):
             if str(index) == index_cluser[i][0]:
-                fw = open('/you_filed_algos/prod_kudu_data/cluster' + index_cluser[i][1] + '.txt', 'a+', encoding='utf-8')
+                fw = open('/you_filed_algos/prod_kudu_data/cluster' + index_cluser[i][1] + '.txt', 'a+',
+                          encoding='utf-8')
                 fw.write(line)
     fw.close()
 
@@ -207,13 +209,11 @@ def get_title(cluster):
             if len(x) > 1 and x != '\r\n':
                 c[x] += 1
 
-        print('主题' + str(i+1) + '\n词频统计结果：')
+        print('主题' + str(i + 1) + '\n词频统计结果：')
         # 输出词频最高的那个词，也可以输出多个高频词
         print('=================================')
         for (k, v) in c.most_common(1):
-            print(k,':',v,'\n')
-
-
+            print(k, ':', v, '\n')
 
 
 def main():
@@ -222,16 +222,16 @@ def main():
 
     jiebaword = get_jiebaword()
     stopword = get_custom_stopwords("/you_filed_algos/app/report/algorithm/stop_words.txt")
-    print('stopword => ',stopword)
+    print('stopword => ', stopword)
     clean_words = clean_stopword(jiebaword, stopword)
-    print('clean_words => ',clean_words)
+    print('clean_words => ', clean_words)
     tfidf_arr = get_tfidf(clean_words)
 
     # print(tfidf_arr)
     # print(tfidf_arr.shape)
 
     # 定义聚类的个数
-    # cluster = 3
+    # cluster = 5
     # # K-means聚类
     # get_cluster(tfidf_arr, cluster)
     #
@@ -240,9 +240,6 @@ def main():
     #
     # # 统计出主题词
     # get_title(cluster)
-
-
-
 
 
 main()
