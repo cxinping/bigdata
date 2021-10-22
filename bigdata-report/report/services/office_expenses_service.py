@@ -360,7 +360,7 @@ def get_office_bill_jiebaword():
 
         for commodityname in commodityname_ls:
             if record_str.find(commodityname) > -1:
-                record_str = record_str.replace('commodityname', '')
+                record_str = record_str.replace(commodityname, '')
 
         words.append(record_str)
 

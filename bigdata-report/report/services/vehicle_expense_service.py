@@ -308,7 +308,7 @@ def get_car_bill_jiebaword():
 
         for commodityname in commodityname_ls:
             if record_str.find(commodityname) > -1:
-                record_str = record_str.replace('commodityname', '')
+                record_str = record_str.replace(commodityname, '')
 
         words.append(record_str)
 
@@ -321,7 +321,7 @@ def get_car_bill_jiebaword():
 
     jieba.analyse.set_stop_words("/you_filed_algos/app/report/algorithm/stop_words.txt")
     jieba.analyse.set_idf_path("/you_filed_algos/app/report/algorithm/userdict.txt")
-    final_list = analyse.extract_tags(words4, topK=70, withWeight=False, allowPOS=())
+    final_list = analyse.extract_tags(words4, topK=80, withWeight=False, allowPOS=())
 
     return final_list
 
@@ -336,3 +336,6 @@ if __name__ == "__main__":
 
     for word in final_list:
         print(word)
+
+
+
