@@ -15,7 +15,7 @@ def match_address(place, key):
 
     # 27个省
     province_ls = ['河北', '山西', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西'
-        ,'山东', '河南', '湖北', '湖南', '广东', '海南', '四川', '贵州', '云南', '陕西', '甘肃', '青海', '台湾']
+        , '山东', '河南', '湖北', '湖南', '广东', '海南', '四川', '贵州', '云南', '陕西', '甘肃', '青海', '台湾']
 
     if place.find('青岛') > -1:
         return '青岛市'
@@ -77,6 +77,7 @@ def list_of_groups(list_info, per_list_len):
     end_list.append(list_info[-count:]) if count != 0 else end_list
     return end_list
 
+
 def not_empty(s):
     return s and s.strip()
 
@@ -94,7 +95,7 @@ def split_str(text):
         result = text[idx + 2:]
     elif text.find('银行') > -1:
         idx = text.find('银行')
-        result = text[idx+2:]
+        result = text[idx + 2:]
     elif text.find('局') > -1:
         idx = text.find('局')
         result = text[idx + 1:]
@@ -105,6 +106,7 @@ def split_str(text):
         result = text
     return result
 
+
 def query_province_city():
     select_sql = "select area_id,area_name,parent_id,grade from 01_datamart_layer_007_h_cw_df.finance_province_city where grade = '1'"
     # 查询省级地区
@@ -113,7 +115,12 @@ def query_province_city():
 
     # 查询市级地区
 
+
+
     # 查询县级地区
+
+
+
 
 
 
@@ -164,7 +171,7 @@ if __name__ == '__main__':
     WHERE bill_id IN ('1','2')
         """
 
-    #print(transfer_content(sql))
+    # print(transfer_content(sql))
 
     list_info = ['name zhangsan', 'age 10', 'sex man', 'name lisi', 'age 11', 'sex women', 'aaaa', 'bbb', 'ccc']
     ret = list_of_groups(list_info, 5)
@@ -173,24 +180,23 @@ if __name__ == '__main__':
     list2 = ['122', '2333', '3444', ' ', '422', ' ', '    ', '54', ' ', '', None, '   ']
     print(list(filter(not_empty, list2)))  # ['122', '2333', '3444', '422', '54']
 
-    #str1 = '中国建设银行股份有限公司南宁市'
-    str1 ='中国工商银行贵阳市'
+    # str1 = '中国建设银行股份有限公司南宁市'
+    str1 = '中国工商银行贵阳市'
     print(str1)
     r1 = split_str(str1)
-    print('r1 ==> ', r1 )
+    print('r1 ==> ', r1)
 
     # data = str(input("请输入文本:"))
     # data = "安徽安庆市大观区经三路3号 0556-5386666"
-    #data = '江苏省无锡市滨湖区环湖路188号0510'
+    # data = '江苏省无锡市滨湖区环湖路188号0510'
     data = '山东省东营市东营区北二路504号 0546-8718562'
     province = match_address(place=data, key='市')
     print(province)
     key = '无锡'
     print(province.find(key))
 
-    print('=======================================================================')
+    print('==================' * 10 )
     query_province_city()
-
 
 
 
