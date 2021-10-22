@@ -14,9 +14,13 @@ from report.commons.logging import get_logger
 from report.commons.tools import not_empty
 from report.services.vehicle_expense_service import cal_commodityname_function
 
+import jieba.analyse as analyse
+import jieba
+from string import punctuation
+from string import digits
+import re
+
 log = get_logger(__name__)
-
-
 
 
 def check_41_credit():
@@ -54,7 +58,7 @@ where billingdate is not null and substr(billingdate,1,4)<>cast(year(now()) as s
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_41_credit SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_43_consistent_amount():
@@ -91,7 +95,8 @@ def check_43_consistent_amount():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_43_consistent_amount SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
+
 
 def query_kudu_data(sql, columns):
     """
@@ -99,16 +104,16 @@ def query_kudu_data(sql, columns):
     :return:
     """
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    log.info('***' * 10 )
+    log.info('***' * 10)
     log.info('*** query_kudu_data=>' + str(len(records)))
-    log.info('***' * 10 )
+    log.info('***' * 10)
 
     dataFromKUDU = []
     for item in records:
         record = []
         if columns:
             for idx in range(len(columns)):
-                #print(item[idx], type(item[idx]))
+                # print(item[idx], type(item[idx]))
 
                 if str(item[idx]) == "None":
                     record.append(None)
@@ -127,7 +132,8 @@ def check_49_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill limit 5'.format(columns_str=columns_str)
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill limit 5'.format(
+        columns_str=columns_str)
     # count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     # log.info(count_sql)
     # records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
@@ -135,15 +141,15 @@ def check_49_data():
     # log.info(f'* count_records ==> {count_records}')
 
     start_time = time.perf_counter()
-    #records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    # records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     rd_df = query_kudu_data(sql, columns_ls)
     print(rd_df.head())
     print(rd_df.dtypes)
 
-    print('*' * 10 )
-    #rd_df['jzpz_2'] = rd_df[['jzpz']].sum(axis=1)
-    #temp = rd_df[["check_amount" ]]
-    #rd_df["avg"] = temp.mean(axis=1)
+    print('*' * 10)
+    # rd_df['jzpz_2'] = rd_df[['jzpz']].sum(axis=1)
+    # temp = rd_df[["check_amount" ]]
+    # rd_df["avg"] = temp.mean(axis=1)
     print(rd_df.describe())
 
     temp = rd_df.describe()[['check_amount']]
@@ -159,12 +165,6 @@ def check_49_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
     print('--- ok ---')
-
-
-
-
-
-
 
 
 def check_51_credit():
@@ -201,7 +201,7 @@ and cast(concat(substr(account_period,1,4),substr(account_period,6,2)) as int)> 
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_51_credit SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_52_reimburse():
@@ -246,7 +246,8 @@ standard_value from standard) as int)
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_51_credit SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
+
 
 def check_53_approve():
     start_time = time.perf_counter()
@@ -292,23 +293,24 @@ and
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_53_approve SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
+
 
 def main():
     # 需求41 done
-    #check_41_credit()
+    # check_41_credit()
 
     # 需求43 done
-    #check_43_consistent_amount()
+    # check_43_consistent_amount()
 
     # 需求 51 done, checked
-    #check_51_credit()
+    # check_51_credit()
 
     # 需求52 done, checked
-    #check_52_reimburse()
+    # check_52_reimburse()
 
     # 需求 53, done, checked
-    #check_53_approve()
+    # check_53_approve()
 
     # 算法49
     check_49_data()
@@ -322,10 +324,10 @@ def query_checkpoint_42_commoditynames():
 
     sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null '
     rd_df = query_kudu_data(sql, columns_ls)
-    #print(len(rd_df))
+    # print(len(rd_df))
 
     rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
-    #print(rd_df)
+    # print(rd_df)
 
     category_class_ls = rd_df['category_class'].tolist()
     category_class_ls = list(filter(not_empty, category_class_ls))
@@ -333,15 +335,55 @@ def query_checkpoint_42_commoditynames():
     # 去重
     category_class_ls = list(set(category_class_ls))
 
-    #print(len(category_class_ls))
-    #print(category_class_ls)
+    # print(len(category_class_ls))
+    # print(category_class_ls)
 
     return category_class_ls
 
 
+
+
+
+def get_office_bill_jiebaword():
+    """
+    jieba分词 精确模式
+    :return:
+    """
+
+    commodityname_ls = query_checkpoint_42_commoditynames()
+    sql = "select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null and commodityname !=''"
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    jiebaword = []
+    words = []
+    for record in records:
+        record_str = str(record[0])
+
+        for commodityname in commodityname_ls:
+            if record_str.find(commodityname) > -1:
+                record_str = record_str.replace('commodityname', '')
+
+        words.append(record_str)
+
+    words1 = ' '.join(words)
+    words2 = re.sub(r'[{}]+'.format(punctuation + digits), '', words1)
+    words3 = re.sub("[a-z]", "", words2)
+    words4 = re.sub("[A-Z]", "", words3)
+
+    # print(words4)
+
+    jieba.analyse.set_stop_words("/you_filed_algos/app/report/algorithm/stop_words.txt")
+    jieba.analyse.set_idf_path("/you_filed_algos/app/report/algorithm/userdict.txt")
+    final_list = analyse.extract_tags(words4, topK=50, withWeight=False, allowPOS=())
+
+    return final_list
+
+
 if __name__ == "__main__":
-   #main()
-   records = query_checkpoint_42_commoditynames()
-   print(records)
+    # main()
+    # records = query_checkpoint_42_commoditynames()
+    # print(records)
 
+    final_list = get_office_bill_jiebaword()
 
+    for word in final_list:
+        print(word)

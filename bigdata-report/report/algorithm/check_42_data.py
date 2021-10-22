@@ -47,9 +47,9 @@ def clustering(records_ls):
     vectorizer = CountVectorizer()
     X = vectorizer.fit_transform(records_ls)
     word = vectorizer.get_feature_names()
-    for n in range(len(word)):
-        print(word[n], end=" ")
-    print('')
+    # for n in range(len(word)):
+    #     print(word[n], end=" ")
+    # print('')
     # print(X.toarray())
 
     # 第二步 计算TF-IDF值
@@ -87,7 +87,7 @@ def clustering(records_ls):
     plt.show()
 
 
-def get_jiebaword():
+def get_car_bill_jiebaword():
     """
     jieba分词 精确模式
     :return:
@@ -220,12 +220,14 @@ def main():
     # records_ls = execute_sql()
     # clustering(records_ls)
 
-    jiebaword = get_jiebaword()
+    jiebaword = get_car_bill_jiebaword()
+    print('jiebaword => ', jiebaword)
+
     stopword = get_custom_stopwords("/you_filed_algos/app/report/algorithm/stop_words.txt")
-    print('stopword => ', stopword)
-    clean_words = clean_stopword(jiebaword, stopword)
-    print('clean_words => ', clean_words)
-    tfidf_arr = get_tfidf(clean_words)
+
+    # clean_words = clean_stopword(jiebaword, stopword)
+    # print('clean_words => ', clean_words)
+    # tfidf_arr = get_tfidf(clean_words)
 
     # print(tfidf_arr)
     # print(tfidf_arr.shape)
@@ -240,6 +242,8 @@ def main():
     #
     # # 统计出主题词
     # get_title(cluster)
+
+
 
 
 main()
