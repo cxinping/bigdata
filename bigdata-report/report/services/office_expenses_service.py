@@ -342,11 +342,9 @@ def query_checkpoint_42_commoditynames():
 
 
 
-
-
 def get_office_bill_jiebaword():
     """
-    jieba分词 精确模式
+    抽取办公费的关键字
     :return:
     """
 

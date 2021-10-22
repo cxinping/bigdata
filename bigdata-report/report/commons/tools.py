@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.commons.logging import get_logger
+from report.commons.connect_kudu import prod_execute_sql
 
 log = get_logger(__name__)
 
@@ -14,9 +15,7 @@ def match_address(place, key):
 
     # 27个省
     province_ls = ['河北', '山西', '辽宁', '吉林', '黑龙江', '江苏', '浙江', '安徽', '福建', '江西'
-        , '山东', '河南', '湖北', '湖南', '广东', '海南', '四川', '贵州', '云南', '陕西', '甘肃', '青海', '台湾']
-
-
+        ,'山东', '河南', '湖北', '湖南', '广东', '海南', '四川', '贵州', '云南', '陕西', '甘肃', '青海', '台湾']
 
     if place.find('青岛') > -1:
         return '青岛市'
@@ -106,17 +105,20 @@ def split_str(text):
         result = text
     return result
 
+def query_province_city():
+    select_sql = "select area_id,area_name,parent_id,grade from 01_datamart_layer_007_h_cw_df.finance_province_city where grade = '1'"
+    # 查询省级地区
+    finance_province_city_lev1 = prod_execute_sql(conn_type='test', sqltype='select', sql=select_sql)
+    print(finance_province_city_lev1)
+
+    # 查询市级地区
+
+    # 查询县级地区
+
+
+
 
 if __name__ == '__main__':
-    # data = str(input("请输入文本:"))
-    # data = "安徽安庆市大观区经三路3号 0556-5386666"
-    #data = '江苏省无锡市滨湖区环湖路188号0510'
-    data = '山东省东营市东营区北二路504号 0546-8718562'
-    province = match_address(place=data, key='市')
-    print(province)
-    key = '无锡'
-    print(province.find(key))
-
     str1 = '北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
     str2 = '安庆市'
     print(str1.find(str2))
@@ -177,8 +179,17 @@ if __name__ == '__main__':
     r1 = split_str(str1)
     print('r1 ==> ', r1 )
 
+    # data = str(input("请输入文本:"))
+    # data = "安徽安庆市大观区经三路3号 0556-5386666"
+    #data = '江苏省无锡市滨湖区环湖路188号0510'
+    data = '山东省东营市东营区北二路504号 0546-8718562'
+    province = match_address(place=data, key='市')
+    print(province)
+    key = '无锡'
+    print(province.find(key))
 
-
+    print('=======================================================================')
+    query_province_city()
 
 
 

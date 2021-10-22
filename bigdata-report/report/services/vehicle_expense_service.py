@@ -294,7 +294,7 @@ def cal_commodityname_function(commodityname):
 
 def get_car_bill_jiebaword():
     """
-    jieba分词 精确模式
+    抽取车辆使用费的关键字
     :return:
     """
 
