@@ -1,6 +1,46 @@
 需求1 SQL
 
-
+UPSERT into analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+SELECT  distinct
+bill_id,
+'01' as unusual_id,
+company_code,
+account_period,
+account_item,
+finance_number,
+cost_center,
+profit_center,
+'' as cart_head,
+bill_code,
+bill_beg_date,
+bill_end_date,
+origin_name   as  origin_city,
+destin_name  as destin_city,
+travel_beg_date  as beg_date,
+travel_end_date  as end_date,
+apply_emp_name,
+'' as emp_name,
+'' as emp_code,
+member_company_name as company_name,
+jour_amount,
+accomm_amount,
+subsidy_amount,
+other_amount,
+check_amount,
+jzpz,
+'差旅费',
+0 as meeting_amount,
+'' as exp_type_name,
+'' as next_bill_id,
+'' as last_bill_id,
+'' as appr_org_sfname,
+sales_address,
+'' as meet_addr,
+'' as sponsor
+FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+WHERE  account_period is not null and billingdate is not null and travel_beg_date is not null and travel_end_date  is not null
+and (unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') < unix_timestamp(travel_beg_date,'yyyyMMdd')
+or unix_timestamp(billingdate, 'yyyy-MM-dd HH:mm:ss') > unix_timestamp(travel_end_date,'yyyyMMdd'))
 
 
 

@@ -678,6 +678,7 @@ def finance_unusual_execute():
             daily_end_date = get_current_time()
 
 
+
         data = {
             'result': 'ok',
             'code': 200,
@@ -692,6 +693,9 @@ def finance_unusual_execute():
             'code': 500,
             'details': str(e)
         }
+
+        print(isalgorithm)
+
         response = jsonify(data)
         return response
 
@@ -699,9 +703,9 @@ def finance_unusual_execute():
 def execute_kudu_sql(unusual_shell):
     print('*** begin execute_kudu_sql unusual_shell=')
     print(unusual_shell)
-
+    daily_start_date = get_current_time()
     prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
-
+    daily_end_date = get_current_time()
     print('*** end execute_kudu_sql ***')
 
 
