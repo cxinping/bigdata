@@ -17,6 +17,8 @@ from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames
+from report.commons.tools import get_current_time
+from report.services.common_services import insert_finance_shell_daily
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
@@ -669,8 +671,12 @@ def finance_unusual_execute():
             # eval("print(1+2)")
             print(unusual_shell)
             exec("print('执行算法 shell 开始')")
+            daily_start_date = get_current_time()
+
             exec(unusual_shell,globals())
             exec("print('执行算法 shell 结束')")
+            daily_end_date = get_current_time()
+
 
         data = {
             'result': 'ok',

@@ -2,6 +2,8 @@
 from report.commons.logging import get_logger
 from report.commons.connect_kudu import prod_execute_sql
 import uuid
+import time
+from datetime import datetime, timezone, timedelta
 
 log = get_logger(__name__)
 
@@ -116,8 +118,6 @@ def query_province_city():
 
     # 查询市级地区
 
-
-
     # 查询县级地区
 
 
@@ -126,6 +126,11 @@ def create_uuid():
     suid = ''.join(uuid_str.split('-'))
     return suid
 
+
+def get_current_time():
+    get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
+    time_str = get_datetime.strftime('%Y-%m-%d %H:%M:%S')
+    return time_str
 
 
 if __name__ == '__main__':
@@ -198,11 +203,9 @@ if __name__ == '__main__':
     key = '无锡'
     print(province.find(key))
 
-    print('==================' * 10 )
-    #query_province_city()
+    print('==================' * 10)
+    # query_province_city()
 
     create_uuid()
 
-
-
-
+    get_current_time()
