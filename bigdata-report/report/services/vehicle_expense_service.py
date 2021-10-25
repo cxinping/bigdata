@@ -250,16 +250,15 @@ def query_checkpoint_55_commoditynames():
     rd_df = query_kudu_data(sql, columns_ls)
 
     rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
-    #print(rd_df)
+    # print(rd_df)
 
     category_class_ls = rd_df['category_class'].tolist()
     category_class_ls = list(filter(not_empty, category_class_ls))
     # 去重
 
     category_class_ls = list(set(category_class_ls))
-    #print(len(category_class_ls), category_class_ls)
+    # print(len(category_class_ls), category_class_ls)
     return category_class_ls
-
 
 
 def cal_commodityname_function(commodityname):
@@ -270,7 +269,7 @@ def cal_commodityname_function(commodityname):
     """
     category_class = None
     if commodityname:
-        #print('**** 111 commodityname ==> ', commodityname, type(commodityname))
+        # print('**** 111 commodityname ==> ', commodityname, type(commodityname))
 
         if commodityname.find('*') > -1 and commodityname.find(',') > -1:
             commodityname_ls = commodityname.split(',')
@@ -327,7 +326,7 @@ def get_car_bill_jiebaword():
 
 
 if __name__ == "__main__":
-    #main()
+    # main()
 
     # records = query_checkpoint_55_commoditynames()
     # print(records)

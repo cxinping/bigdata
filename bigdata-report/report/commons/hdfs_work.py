@@ -15,8 +15,9 @@ def main1():
     # 递归下载 HDFS 上的文件夹里的文件
     # /user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m hdfs:///user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/occw0101_m
     # hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_bill_expense_m
+    # /user/hive/warehouse/03_basal_layer_vms00.db/vms00_z_vms_invspecial_row_m
 
-    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_vms00.db/vms00_z_vms_invspecial_row_m'
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_travel_journey_m'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
     print('* part1 better ')
@@ -30,6 +31,8 @@ def main1():
 
     test_hdfs = Test_HDFSTools(conn_type='test')
 
+    print()
+    print('* part3 ')
     x_all = datetime.now()
     for index, hdfs_file_url in enumerate(hdfsFileUrl_ls):
         x = datetime.now()
@@ -63,6 +66,7 @@ def main2():
     # 递归下载 HDFS 上的文件夹里的文件
     # /user/hive/warehouse/03_basal_layer_vms00.db  hdfs:///user/hive/warehouse/03_basal_layer_vms00.db
     # /user/hive/warehouse/02_logical_layer_004_d_lf_cw.db/dccw0101_m hdfs:///user/hive/warehouse/02_logical_layer_004_d_lf_cw.db/dccw0101_m
+    # /user/hive/warehouse/03_basal_layer_vms00.db/vms00_z_vms_invspecial_row_m
     hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_vms00.db/vms00_z_vms_invspecial_row_m'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 

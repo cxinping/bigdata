@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from report.commons.logging import get_logger
 from report.commons.connect_kudu import prod_execute_sql
+import uuid
 
 log = get_logger(__name__)
 
@@ -120,8 +121,10 @@ def query_province_city():
     # 查询县级地区
 
 
-
-
+def create_uuid():
+    uuid_str = str(uuid.uuid4())
+    suid = ''.join(uuid_str.split('-'))
+    return suid
 
 
 
@@ -196,7 +199,10 @@ if __name__ == '__main__':
     print(province.find(key))
 
     print('==================' * 10 )
-    query_province_city()
+    #query_province_city()
+
+    create_uuid()
+
 
 
 

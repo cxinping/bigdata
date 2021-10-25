@@ -515,7 +515,7 @@ if __name__ == "__main__":
 
     # prod_demo1()
 
-    # test_demo1()
+    test_demo1()
 
     # main()
 

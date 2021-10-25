@@ -17,3 +17,5 @@ upload_hdfs_path = '/user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance
 
 test_hdfs = Test_HDFSTools(conn_type='test')
 test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
+

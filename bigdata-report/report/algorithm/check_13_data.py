@@ -3,6 +3,11 @@
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 import os
+from report.commons.db_helper import query_kudu_data
+import time
+import pandas as pd
+
+
 
 log = get_logger(__name__)
 
@@ -13,9 +18,12 @@ sys.path.append('/you_filed_algos/app')
 def check_13_data():
     """
     关注相同或临近期间，同一费用发生地，不同人员或企业的住宿费偏离平均值或者大多数人费用分布区间的情况。
+
+    住宿总金额 accomm_amount
+
     :return:
     """
-    columns_ls = ['bill_id', 'destin_name', 'check_amount']
+    columns_ls = ['bill_id', 'destin_name', 'accomm_amount']
     columns_str = ",".join(columns_ls)
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null'.format(
         columns_str=columns_str)
@@ -29,6 +37,51 @@ def check_13_data():
     # records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     # print('len(records) ==> ', len(records))
 
+dest_file = "/you_filed_algos/prod_kudu_data/checkpoint13/check_13_data.txt"
 
-check_13_data()
+def save_data():
+    columns_ls = ['bill_id','city_name', 'city_grade_name' , 'emp_name', 'hotel_amount/hotel_num' ]
+    columns_str = ",".join(columns_ls)
+    start_time = time.perf_counter()
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费" and hotel_num > 0 '.format(
+        columns_str=columns_str)
+
+    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+
+    for record in records:
+        #print(record)
+
+        bill_id = str(record[0])
+        city_name = str(record[1])
+        city_grade_name = str(record[2])
+        emp_name = str(record[3])
+        hotel_fee = float(record[4])
+
+        record = f'{bill_id},{city_name},{city_grade_name},{emp_name},{hotel_fee}'
+        print(record)
+
+        with open(dest_file, "a", encoding='utf-8') as file:
+            file.write(record)
+            file.write("\n")
+
+
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 查询耗时 {consumed_time} sec')
+
+def load_data():
+    rd_df = pd.read_csv(dest_file,sep=',',header=None)
+    print(rd_df.dtypes)
+    print(len(rd_df))
+
+
+#check_13_data()
+#save_data()
+
+load_data()
+
 print('--- ok ---')

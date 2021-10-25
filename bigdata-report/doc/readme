@@ -15,5 +15,15 @@ insert  into 01_datamart_layer_007_h_cw_df.finance_blacklist values (uuid(),'','
 
 select * from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费';
 
+checkpoint 13
+select  * from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费"
+
+select  count(bill_id) from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费"
+
+select  * from  01_datamart_layer_007_h_cw_df.finance_rma_travel_members
+
+select  * from 01_datamart_layer_007_h_cw_df.finance_hotel_standard
+
+
 
 
