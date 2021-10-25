@@ -246,7 +246,7 @@ def query_checkpoint_55_commoditynames():
     columns_ls = ['commodityname']
     columns_str = ",".join(columns_ls)
 
-    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill where commodityname is not null '
+    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill where commodityname is not null and commodityname !="" '
     rd_df = query_kudu_data(sql, columns_ls)
 
     rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
