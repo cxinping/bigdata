@@ -664,10 +664,12 @@ def finance_unusual_execute():
             response = jsonify(data)
             return response
 
+        ######### 执行算法 ############
         if isalgorithm == '1':
-            executor.submit(execute_kudu_sql, unusual_shell)
+            executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
 
         elif isalgorithm == '2':
+            ###### 执行 python 脚本  ############
             # eval("print(1+2)")
             print(unusual_shell)
             exec("print('执行算法 shell 开始')")
@@ -677,12 +679,12 @@ def finance_unusual_execute():
             exec("print('执行算法 shell 结束')")
             daily_end_date = get_current_time()
 
-
+            insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,daily_end_date=daily_end_date, unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor='')
 
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '检查点语句执行'
+            'details': f'执行检查点{unusual_id}的SQL或Python Shell'
         }
         response = jsonify(data)
         return response
@@ -694,19 +696,32 @@ def finance_unusual_execute():
             'details': str(e)
         }
 
-        print(isalgorithm)
+        daily_source = 'sql' if isalgorithm =='1' else 'python shell'
+        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
+                                   unusual_point=unusual_id, daily_source=daily_source , operate_desc='', unusual_infor=str(e))
 
         response = jsonify(data)
         return response
 
 
-def execute_kudu_sql(unusual_shell):
-    print('*** begin execute_kudu_sql unusual_shell=')
+def execute_kudu_sql(unusual_shell, unusual_id):
     print(unusual_shell)
-    daily_start_date = get_current_time()
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
-    daily_end_date = get_current_time()
-    print('*** end execute_kudu_sql ***')
+
+    try:
+        daily_start_date = get_current_time()
+        print('*** begin execute_kudu_sql ')
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
+        daily_end_date = get_current_time()
+        operate_desc = f'成功执行检查点{unusual_id}的SQL'
+        print('*** end execute_kudu_sql ***')
+
+        insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
+                                   unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc, unusual_infor='')
+    except Exception as e:
+        print(e)
+        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
+                                   unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e))
+
 
 
 
