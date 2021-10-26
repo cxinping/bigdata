@@ -18,7 +18,7 @@ from report.commons.tools import transfer_content
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword
 from report.commons.tools import get_current_time
-from report.services.common_services import insert_finance_shell_daily
+from report.services.common_services import insert_finance_shell_daily, update_finance_category_sign
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
@@ -735,6 +735,10 @@ def mk_utf8resp(js):
 # http://10.5.138.11:8004/report/query/commoditynames
 @report_bp.route('/query/commoditynames', methods=['GET', 'POST'])
 def query_commoditynames():
+    """
+    查询办公费和车辆使用费的大类名称
+    :return:
+    """
     log.info('---- query_commoditynames ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
@@ -745,23 +749,31 @@ def query_commoditynames():
         return response
 
     if unusual_id not in ['42' , '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500}
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id' : unusual_id}
         response = jsonify(data)
         return response
 
-    type = None
-    if unusual_id == '42':
-        type = '办公费'
-        data = query_checkpoint_55_commoditynames()
-    elif unusual_id == '55':
-        type = '车辆使用费'
-        data = query_checkpoint_42_commoditynames()
+    type_str = None
+    try:
+        if unusual_id == '42':
+            type_str = '办公费'
+            data = query_checkpoint_55_commoditynames()
+        elif unusual_id == '55':
+            type_str = '车辆使用费'
+            data = query_checkpoint_42_commoditynames()
 
-    result = {
-        'type': type,
-        'data': data,
-        'checkpoint': unusual_id
-    }
+        result = {
+            'type': type_str,
+            'data': data,
+            'unusual_id': unusual_id
+        }
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'unusual_id': unusual_id
+        }
 
     # response = jsonify(result)
     # return response, 200
@@ -785,23 +797,76 @@ def query_product_keywords():
         return response
 
     if unusual_id not in ['42' , '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500}
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id' : unusual_id}
         response = jsonify(data)
         return response
 
-    type,keywords = None, None
-    if unusual_id == '42':
-        type = '办公费'
-        keywords = get_car_bill_jiebaword()
-    elif unusual_id == '55':
-        type = '车辆使用费'
-        keywords = get_office_bill_jiebaword()
+    type_str ,keywords = None, None
 
-    result = {
-        'type': type,
-        'keywords': keywords,
-        'checkpoint': unusual_id
-    }
+    try:
+        if unusual_id == '42':
+            type_str = '办公费'
+            keywords = get_car_bill_jiebaword()
+        elif unusual_id == '55':
+            type_str = '车辆使用费'
+            keywords = get_office_bill_jiebaword()
+
+        result = {
+            'type': type_str,
+            'keywords': keywords,
+            'unusual_id': unusual_id
+        }
+    except Exception as e :
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'unusual_id': unusual_id
+        }
 
     return mk_utf8resp(result)
+
+
+# http://10.5.138.11:8004/report/set/category/sign
+@report_bp.route('/set/category/sign', methods=['POST', 'GET'])
+def set_finance_category_sign():
+    """
+    设置办公费和车辆使用费的大类的状态
+    :return:
+    """
+    log.info('---- set_finance_category_sign ----')
+
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_id not in ['42' , '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id' : unusual_id}
+        response = jsonify(data)
+        return response
+
+    category_names = request.form.getlist("category_names")
+
+    try:
+        update_finance_category_sign(unusual_id, category_names)
+
+        result = {
+            'status': 'ok',
+            'desc': f'成功修改检查点{unusual_id}选中的大类状态',
+            'unusual_id': unusual_id
+        }
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'unusual_id': unusual_id
+        }
+
+    return mk_utf8resp(result)
+
+
 
