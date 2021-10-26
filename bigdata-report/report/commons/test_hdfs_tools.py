@@ -121,8 +121,8 @@ class HDFSTools(object):
             file = File(localPath)
             fin = FileInputStream(file)
 
-            # print('localPath ==> ', localPath)
-            # print('upload file to HDFS ==> ', hdfsDirPath + str(file.getName()))
+            print('localPath ==> ', localPath)
+            print('upload file to HDFS ==> ', hdfsDirPath + str(file.getName()))
 
             fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
 

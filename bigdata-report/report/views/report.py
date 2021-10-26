@@ -15,8 +15,8 @@ from flask import Blueprint, jsonify, request, make_response
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
-from report.services.office_expenses_service import query_checkpoint_42_commoditynames
-from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames
+from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword
+from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword
 from report.commons.tools import get_current_time
 from report.services.common_services import insert_finance_shell_daily
 
@@ -723,12 +723,19 @@ def execute_kudu_sql(unusual_shell, unusual_id):
                                    unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e))
 
 
+def mk_utf8resp(js):
+    '''
+    传入一个字典，返回一个json格式的http回复。
+    '''
+    resp = make_response(json.dumps(js, ensure_ascii=False))
+    resp.headers['Content-Type'] = 'application/json'
+    return resp
 
 
 # http://10.5.138.11:8004/report/query/commoditynames
-@report_bp.route('/query/commoditynames/55', methods=['GET', 'POST'])
-def query_55_commoditynames():
-    log.info('---- query_55_commoditynames ----')
+@report_bp.route('/query/commoditynames', methods=['GET', 'POST'])
+def query_commoditynames():
+    log.info('---- query_commoditynames ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
 
@@ -760,27 +767,41 @@ def query_55_commoditynames():
     # return response, 200
     return mk_utf8resp(result)
 
-# http://10.5.138.11:8004/report/query/commoditynames/42
-@report_bp.route('/query/commoditynames/42', methods=['GET'])
-def query_42_commoditynames():
-    log.info('---- query_42_commoditynames -----')
 
-    data = query_checkpoint_42_commoditynames()
+# http://10.5.138.11:8004/report/query/product/keyswords
+@report_bp.route('/query/product/keyswords', methods=['POST', 'GET'])
+def query_product_keywords():
+    """
+    查询办公费和车辆使用费的商品关键字
+    :return:
+    """
+    log.info('---- query_productnames ----')
+
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_id not in ['42' , '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500}
+        response = jsonify(data)
+        return response
+
+    type,keywords = None, None
+    if unusual_id == '42':
+        type = '办公费'
+        keywords = get_car_bill_jiebaword()
+    elif unusual_id == '55':
+        type = '车辆使用费'
+        keywords = get_office_bill_jiebaword()
 
     result = {
-        'type': '办公费',
-        'data': data
+        'type': type,
+        'keywords': keywords,
+        'checkpoint': unusual_id
     }
 
-    # response = jsonify(result)
-    # return response, 200
     return mk_utf8resp(result)
 
-
-def mk_utf8resp(js):
-    '''
-    传入一个字典，返回一个json格式的http回复。
-    '''
-    resp = make_response(json.dumps(js, ensure_ascii=False))
-    resp.headers['Content-Type'] = 'application/json'
-    return resp
