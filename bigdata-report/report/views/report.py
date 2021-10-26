@@ -725,16 +725,35 @@ def execute_kudu_sql(unusual_shell, unusual_id):
 
 
 
-# http://10.5.138.11:8004/report/query/commoditynames/55
+# http://10.5.138.11:8004/report/query/commoditynames
 @report_bp.route('/query/commoditynames/55', methods=['GET', 'POST'])
 def query_55_commoditynames():
     log.info('---- query_55_commoditynames ----')
 
-    data = query_checkpoint_55_commoditynames()
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_id not in ['42' , '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500}
+        response = jsonify(data)
+        return response
+
+    type = None
+    if unusual_id == '42':
+        type = '办公费'
+        data = query_checkpoint_55_commoditynames()
+    elif unusual_id == '55':
+        type = '车辆使用费'
+        data = query_checkpoint_42_commoditynames()
 
     result = {
-        'type': '车辆使用费',
-        'data': data
+        'type': type,
+        'data': data,
+        'checkpoint': unusual_id
     }
 
     # response = jsonify(result)
