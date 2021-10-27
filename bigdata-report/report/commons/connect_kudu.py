@@ -115,7 +115,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
         # 生产集群使用KUDU
         url = "jdbc:hive2://hadoop-pro-017:7180/default;ssl=true;sslTrustStore=/you_filed_algos/prod-cm-auto-global_truststore.jks;principal=impala/hadoop-pro-017@BYHW.HADOOP.COM"
     elif conn_type == TEST:
-        # 测试集群使用KUDU
+        # 开发集群使用KUDU
         # jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/home/user/java/keytab/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM
         url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore_kaifa.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
 

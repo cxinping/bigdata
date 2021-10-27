@@ -71,7 +71,7 @@ if __name__ == "__main__":
 
     # insert_finance_shell_daily(daily_status, daily_start_date,daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor)
 
-    unusual_id = '2'
+    unusual_id = '42'
     category_names = ['f', 'd', 'e']  # ['a' , 'b']
     #update_finance_category_sign(unusual_id, category_names)
 
