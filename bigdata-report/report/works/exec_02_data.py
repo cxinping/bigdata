@@ -89,24 +89,27 @@ def execute_02_data():
         if data and len(data) > 0:
             # print(len(data))
 
-            for record in data:
-                sales_address = operate_reocrd(record)
-                #sales_address = split_str(str(sales_address))
+            for idx, record in enumerate(data):
+                sales_address = operate_reocrd(record)                      # 发票开票地(市)
                 sales_address = sales_address if sales_address else 'null'
 
-                destin_name = str(record[0]) if record[0] else None
-                sales_name = str(record[1]) if record[1] else None
-
-                sales_addressphone = str(record[2]) if record[2] else None
-                sales_bank = str(record[3]) if record[3] else None
+                destin_name = str(record[0]) if record[0] else None         # 行程目的地
+                sales_name = str(record[1]) if record[1] else None          # 开票公司
+                sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+                sales_bank = str(record[3]) if record[3] else None          # 发票开户行
                 finance_travel_id = str(record[4]) if record[4] else None
-                origin_name = str(record[5]) if record[5] else 'null'  # 行程出发地(市)
-                invo_code = str(record[6]) if record[6] else 'null'    # 发票代码
+                origin_name = str(record[5]) if record[5] else 'null'       # 行程出发地(市)
+                invo_code = str(record[6]) if record[6] else 'null'         # 发票代码
+
                 # origin_province = match_area.query_belong_province(origin_name)     # 行程出发地(省)
                 # origin_province = origin_province if origin_province else 'null'
 
-                destin_province = match_area.query_destin_province(invo_code=invo_code, destin_name=destin_name) # 行程目的地(省)
+                start_time = time.perf_counter()
+                destin_province = match_area.query_destin_province(invo_code=invo_code, destin_name=destin_name)  # 行程目的地(省)
                 destin_province = destin_province if destin_province else 'null'
+
+                consumed_time = round(time.perf_counter() - start_time)
+                log.info(f'* consumed_time {consumed_time} sec, idx={idx}')
 
                 origin_province = 'null'
                 #destin_province = 'null'
@@ -121,8 +124,6 @@ def execute_02_data():
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
-
-
 
 
 def operate_reocrd(record):

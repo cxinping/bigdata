@@ -228,7 +228,7 @@ class MatchArea:
         if invo_code is None :
             if destin_name and destin_name.find(',') != -1:
                 province = self.query_belong_province(destin_name)
-            return None
+
         else:
             invo_code = invo_code[0:2]
             province = self.query_province_from_invoice_code(invo_code)
