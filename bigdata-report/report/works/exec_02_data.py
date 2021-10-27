@@ -7,7 +7,7 @@ import time
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import match_address, split_str
+from report.commons.tools import match_address, split_str, MatchArea
 
 """
 
@@ -26,12 +26,13 @@ def init_file():
 
 
 def execute_02_data():
-    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id']
+    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id' , 'origin_name' ]
     extra_columns_ls = ['bill_id']
     columns_ls.extend(extra_columns_ls)
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
+     limit 20
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -62,7 +63,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 500".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -84,7 +85,7 @@ def execute_02_data():
         data = future.result()
 
         if data and len(data) > 0:
-            #print(len(data))
+            # print(len(data))
 
             for record in data:
                 sales_address = operate_reocrd(record)
@@ -96,8 +97,9 @@ def execute_02_data():
                 sales_addressphone = str(record[2])
                 sales_bank = str(record[3])
                 finance_travel_id = str(record[4])
+                origin_name = str(record[5])
 
-                record = f'{finance_travel_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
+                record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
                 print(record)
 
                 with open(dest_file, "a", encoding='utf-8') as file:
@@ -109,43 +111,45 @@ def execute_02_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
+match_area = MatchArea()
+
 def operate_reocrd(record):
     destin_name = str(record[0])
-    sales_name = str(record[1])
-    sales_addressphone = str(record[2])
-    sales_bank = str(record[3])
+    sales_name = str(record[1])  # 开票公司
+    sales_addressphone = str(record[2])  # 开票地址及电话
+    sales_bank = str(record[3])  # 发票开户行
 
     # print('destin_name=',destin_name)
     # print('sales_name=', sales_name)
     # print('sales_addressphone=', sales_addressphone)
     # print('sales_bank=', sales_bank)
 
-    if sales_name != 'None' and sales_addressphone != 'None' and sales_bank != 'None':
+    area_name1, area_name2, area_name3 = None, None, None
+    if sales_name != 'None' :
+        area_name1 = match_area.fit_area(area=sales_name)
 
-        # 只匹配市和县
-        if sales_name != 'None':
-            sales_name_city = match_address(place=sales_name, key='市') if match_address(place=sales_name,
-                                                                                        key='市') else match_address(
-                place=sales_name, key='县')
+    if sales_addressphone != 'None' :
+        area_name2 = match_area.fit_area(area=sales_addressphone)
 
-            if sales_name_city:
-                # print('sales_address=', sales_name_city)
-                return sales_name_city
+    if sales_bank != 'None':
+        area_name3 = match_area.fit_area(area=sales_bank)
 
-        if sales_addressphone != 'None':
-            sales_addressphone_city = match_address(place=sales_addressphone, key='市') if match_address(
-                place=sales_addressphone, key='市') else match_address(place=sales_addressphone, key='县')
-            if sales_addressphone_city:
-                # print('sales_address=', sales_addressphone_city)
-                return sales_addressphone_city
+    area_names = []
+    if area_name1[0]:
+        area_names.append(area_name1)
 
-        if sales_bank != 'None':
-            sales_bank_city = match_address(place=sales_bank, key='市') if match_address(place=sales_bank,
-                                                                                        key='市') else match_address(
-                place=sales_bank, key='县')
-            if sales_bank_city:
-                # print('sales_address=', sales_bank_city)
-                return sales_bank_city
+    if area_name2[0]:
+        area_names.append(area_name2)
+
+    if area_name3[0]:
+        area_names.append(area_name3)
+
+    result_area = match_area.opera_areas(area_names)
+
+    # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
+    # print(show_str)
+
+    return result_area
 
 
 def exec_task(sql):
@@ -161,7 +165,7 @@ def main():
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
