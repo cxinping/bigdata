@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 import os
 import time
-
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import match_address, split_str, MatchArea
+from report.commons.tools import MatchArea
 
 """
 
@@ -64,7 +62,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 10000 ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null  ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -104,12 +102,12 @@ def execute_02_data():
                 # origin_province = match_area.query_belong_province(origin_name)     # 行程出发地(省)
                 # origin_province = origin_province if origin_province else 'null'
 
-                start_time = time.perf_counter()
+                start_time1 = time.perf_counter()
                 destin_province = match_area.query_destin_province(invo_code=invo_code, destin_name=destin_name)  # 行程目的地(省)
                 destin_province = destin_province if destin_province else 'null'
 
-                consumed_time = round(time.perf_counter() - start_time)
-                log.info(f'* consumed_time {consumed_time} sec, idx={idx}')
+                consumed_time2 = round(time.perf_counter() - start_time1)
+                log.info(f'* consumed_time2 {consumed_time2} sec, idx={idx}')
 
                 origin_province = 'null'
                 #destin_province = 'null'

@@ -14,7 +14,7 @@ def main():
     threadPool = ThreadPoolExecutor(max_workers=15)
     obj_list = []
     x = datetime.now()
-    for page in range(1, 5):
+    for page in range(1, 15):
         obj = threadPool.submit(spider, page)
         obj_list.append(obj)
 
