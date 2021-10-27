@@ -8,5 +8,9 @@ print(str1[idx+2:])
 if 'a' in ['a' , 'b']:
     print('ok')
 
+print('*******' * 30)
+
+s1 ='3700191130'
+print(s1[:2])
 
 

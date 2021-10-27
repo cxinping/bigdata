@@ -19,6 +19,7 @@ log = get_logger(__name__)
 dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
 upload_hdfs_path = '/user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/'
 
+match_area = MatchArea()
 
 def init_file():
     if os.path.exists(dest_file):
@@ -26,7 +27,7 @@ def init_file():
 
 
 def execute_02_data():
-    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id' , 'origin_name' ]
+    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id' , 'origin_name', 'invo_code' ]
     extra_columns_ls = ['bill_id']
     columns_ls.extend(extra_columns_ls)
     columns_str = ",".join(columns_ls)
@@ -63,7 +64,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 500".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 700".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -91,15 +92,21 @@ def execute_02_data():
                 sales_address = operate_reocrd(record)
                 sales_address = split_str(str(sales_address))
 
-                destin_name = str(record[0])
-                sales_name = str(record[1])
+                destin_name = str(record[0]) if record[0] else None
+                sales_name = str(record[1]) if record[1] else None
 
-                sales_addressphone = str(record[2])
-                sales_bank = str(record[3])
-                finance_travel_id = str(record[4])
-                origin_name = str(record[5])
+                sales_addressphone = str(record[2]) if record[2] else None
+                sales_bank = str(record[3]) if record[3] else None
+                finance_travel_id = str(record[4]) if record[4] else None
+                origin_name = str(record[5]) if record[5] else 'null'  # 行程出发地(市)
+                invo_code = str(record[6]) if record[6] else 'null'    # 发票代码
+                origin_province = match_area.query_belong_province(origin_name)     # 行程出发地(省)
+                origin_province = origin_province if origin_province else 'null'
 
-                record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
+                destin_province = match_area.query_destin_province(invo_code=invo_code, destin_name=destin_name) # 行程目的地(省)
+                destin_province = destin_province if destin_province else 'null'
+
+                record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{origin_province},{destin_province}'
                 print(record)
 
                 with open(dest_file, "a", encoding='utf-8') as file:
@@ -111,13 +118,13 @@ def execute_02_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-match_area = MatchArea()
+
 
 def operate_reocrd(record):
-    destin_name = str(record[0])
-    sales_name = str(record[1])  # 开票公司
-    sales_addressphone = str(record[2])  # 开票地址及电话
-    sales_bank = str(record[3])  # 发票开户行
+    destin_name = str(record[0]) if record[0] else None
+    sales_name = str(record[1]) if record[1] else None          # 开票公司
+    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+    sales_bank = str(record[3]) if record[3] else None          # 发票开户行
 
     # print('destin_name=',destin_name)
     # print('sales_name=', sales_name)
@@ -125,13 +132,13 @@ def operate_reocrd(record):
     # print('sales_bank=', sales_bank)
 
     area_name1, area_name2, area_name3 = None, None, None
-    if sales_name != 'None' :
+    if sales_name != 'None' or sales_name is not None :
         area_name1 = match_area.fit_area(area=sales_name)
 
-    if sales_addressphone != 'None' :
+    if sales_addressphone != 'None' or sales_addressphone is not None :
         area_name2 = match_area.fit_area(area=sales_addressphone)
 
-    if sales_bank != 'None':
+    if sales_bank != 'None' or sales_bank is not None:
         area_name3 = match_area.fit_area(area=sales_bank)
 
     area_names = []

@@ -141,6 +141,12 @@ def get_current_time():
 
 class MatchArea:
     def match_address(self, place, key):
+
+        if place is None:
+            return None
+
+        place = place.replace('市区', '市')
+
         ssxq = ['省', '市', '县', '区', '乡']
         indexes0 = [place.find(x) for x in ssxq]
         indexes = [x for x in indexes0 if x > 0]
@@ -213,12 +219,31 @@ class MatchArea:
 
         return None, -1
 
+    def query_destin_province(self, invo_code, destin_name):
+        """
+        根据发票代码前两位找行程目的地所属省，若是没有发票，再根据行程目的地找所属省
+        """
+
+        province = None
+        if invo_code is None :
+            if destin_name and destin_name.find() != -1:
+                province = self.query_belong_province(destin_name)
+            return None
+        else:
+            invo_code = invo_code[0:2]
+            province = self.query_province_from_invoice_code(invo_code)
+
+        return province
+
     def query_belong_province(self, keyword):
         """
         查找关键词所在的省
         :param keyword:
         :return:
         """
+
+        if keyword is None:
+            return None
 
         area_id, area_name, parent_id, grade = self._query_province(keyword)
         #print(area_id, area_name, parent_id, grade)
@@ -233,7 +258,6 @@ class MatchArea:
                     return area_name
         else:
             return area_name
-
 
     def _query_previous_province(self, area_id):
         sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_id = '{area_id}'"
@@ -360,8 +384,8 @@ if __name__ == '__main__':
     # area = match_area.match_address(place=data, key='区')
     # print(area)
 
-    # area_name = match_area.query_belong_province('尧都区')
-    # print('***1 area_name ==> ', area_name)
+    area_name = match_area.query_belong_province('抚州市')
+    print('***1 area_name ==> ', area_name)
 
     area1 = '杭州华辰凤庭大酒店有限公司'
     area_name1 = match_area.fit_area(area=area1)
@@ -374,7 +398,6 @@ if __name__ == '__main__':
     area3 = '洋浦凯丰城市广场商务大厦22层 0898-36988168/0898-36988888'
     area_name3 = match_area.fit_area(area=area3)
     print('area_name3 ==> ', area_name3, area3)
-
 
     area_names = []
     if area_name1[0]:
