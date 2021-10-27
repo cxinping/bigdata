@@ -33,6 +33,7 @@ def execute_02_data():
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
+
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -63,7 +64,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 10000 ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -90,7 +91,8 @@ def execute_02_data():
 
             for record in data:
                 sales_address = operate_reocrd(record)
-                sales_address = split_str(str(sales_address))
+                #sales_address = split_str(str(sales_address))
+                sales_address = sales_address if sales_address else 'null'
 
                 destin_name = str(record[0]) if record[0] else None
                 sales_name = str(record[1]) if record[1] else None
@@ -100,11 +102,14 @@ def execute_02_data():
                 finance_travel_id = str(record[4]) if record[4] else None
                 origin_name = str(record[5]) if record[5] else 'null'  # 行程出发地(市)
                 invo_code = str(record[6]) if record[6] else 'null'    # 发票代码
-                origin_province = match_area.query_belong_province(origin_name)     # 行程出发地(省)
-                origin_province = origin_province if origin_province else 'null'
+                # origin_province = match_area.query_belong_province(origin_name)     # 行程出发地(省)
+                # origin_province = origin_province if origin_province else 'null'
 
                 destin_province = match_area.query_destin_province(invo_code=invo_code, destin_name=destin_name) # 行程目的地(省)
                 destin_province = destin_province if destin_province else 'null'
+
+                origin_province = 'null'
+                #destin_province = 'null'
 
                 record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{origin_province},{destin_province}'
                 print(record)

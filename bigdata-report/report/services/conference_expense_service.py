@@ -11,6 +11,14 @@ import time
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import match_address
+from report.commons.db_helper import query_kudu_data
+from report.services.vehicle_expense_service import cal_commodityname_function
+from report.commons.tools import not_empty
+import jieba.analyse as analyse
+import jieba
+from string import punctuation
+from string import digits
+import re
 
 log = get_logger(__name__)
 
@@ -51,7 +59,7 @@ def check_24_invoice():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_24_invoice SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_25_meeting_address():
@@ -168,7 +176,7 @@ def check_25_meeting_address():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行 SQL 耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_27_consistent_amount():
@@ -205,7 +213,7 @@ def check_27_consistent_amount():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_27_consistent_amount SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_28_meeting():
@@ -247,7 +255,7 @@ where a.meet_addr is not null and b.scenery_name_details like concat('%', a.meet
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_28_meeting SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_29_cost():
@@ -302,7 +310,7 @@ def check_29_cost():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_29_cost SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_30_apply_data():
@@ -340,7 +348,7 @@ def check_30_apply_data():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_30_apply_data SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_33_meeting_level():
@@ -393,7 +401,7 @@ def check_33_meeting_level():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_33_meeting_level SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_38_credit():
@@ -435,7 +443,7 @@ def check_38_credit():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_38_credit SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
 
 
 def check_37_ticket():
@@ -477,10 +485,7 @@ def check_37_ticket():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_37_ticket SQL耗时 {consumed_time} sec')
-    #dis_connection()
-
-
-
+    # dis_connection()
 
 
 def check_39_reimburse():
@@ -526,7 +531,64 @@ def check_39_reimburse():
     prod_execute_sql(sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_39_reimburse SQL耗时 {consumed_time} sec')
-    #dis_connection()
+    # dis_connection()
+
+
+def query_checkpoint_26_commoditynames():
+    columns_ls = ['commodityname']
+    columns_str = ",".join(columns_ls)
+
+    sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_meeting_bill where commodityname is not null and commodityname != "" '
+    rd_df = query_kudu_data(sql, columns_ls)
+    # print(len(rd_df))
+
+    rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
+    # print(rd_df)
+
+    category_class_ls = rd_df['category_class'].tolist()
+    category_class_ls = list(filter(not_empty, category_class_ls))
+
+    # 去重
+    category_class_ls = list(set(category_class_ls))
+
+    # print(len(category_class_ls))
+    # print(category_class_ls)
+
+    return category_class_ls
+
+
+def get_conference_bill_jiebaword():
+    """
+    抽取 会议费的关键字
+    :return:
+    """
+
+    commodityname_ls = query_checkpoint_26_commoditynames()
+    sql = "select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_meeting_bill where commodityname is not null and commodityname !=''"
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    jiebaword = []
+    words = []
+    for record in records:
+        record_str = str(record[0])
+
+        for commodityname in commodityname_ls:
+            if record_str.find(commodityname) > -1:
+                record_str = record_str.replace(commodityname, '')
+
+        words.append(record_str)
+
+    words1 = ' '.join(words)
+    words2 = re.sub(r'[{}]+'.format(punctuation + digits), '', words1)
+    words3 = re.sub("[a-z]", "", words2)
+    words4 = re.sub("[A-Z]", "", words3)
+
+    # print(words4)
+
+    jieba.analyse.set_stop_words("/you_filed_algos/app/report/algorithm/stop_words.txt")
+    jieba.analyse.set_idf_path("/you_filed_algos/app/report/algorithm/userdict.txt")
+    final_list = analyse.extract_tags(words4, topK=50, withWeight=False, allowPOS=())
+
+    return final_list
 
 
 def main():
@@ -534,10 +596,10 @@ def main():
     check_24_invoice()
 
     # 需求25 done
-    #check_25_meeting_address()
+    # check_25_meeting_address()
 
     # 需求 27 done
-    check_27_consistent_amount()
+    # check_27_consistent_amount()
 
     # 需求 28 done 未测试 ......
     # check_28_meeting()
@@ -561,4 +623,13 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+
+    records = query_checkpoint_26_commoditynames()
+    print(records)
+
+    final_list = get_conference_bill_jiebaword()
+    for word in final_list:
+        print(word)
+
+
