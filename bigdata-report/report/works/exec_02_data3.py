@@ -42,7 +42,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 10000
+    limit_size = 2000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')

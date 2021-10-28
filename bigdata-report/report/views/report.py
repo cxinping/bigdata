@@ -18,7 +18,8 @@ from report.commons.tools import transfer_content
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword
 from report.commons.tools import get_current_time
-from report.services.common_services import insert_finance_shell_daily, update_finance_category_sign
+from report.services.common_services import insert_finance_shell_daily, update_finance_category_sign, \
+    query_finance_category_sign
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
@@ -376,7 +377,6 @@ def finance_person_add():
         response = jsonify(data)
         return response
 
-
     try:
         sql = f"""
         insert into 01_datamart_layer_007_h_cw_df.finance_person(person_id, company_code, inner_code, sum_person, pesiod )
@@ -556,7 +556,7 @@ def finance_unusual_update():
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
     log.info('* unusual_content *')
-    #log.info(f'unusual_shell={unusual_shell}')
+    # log.info(f'unusual_shell={unusual_shell}')
 
     unusual_shell = transfer_content(unusual_shell)
     print(unusual_shell)
@@ -569,7 +569,7 @@ def finance_unusual_update():
     sql = f"""
     update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell="{unusual_shell}"
     where unusual_id='{unusual_id}'
-    """ #.replace('\n', '').replace('\r', '').strip()
+    """  # .replace('\n', '').replace('\r', '').strip()
 
     print(sql)
 
@@ -675,11 +675,13 @@ def finance_unusual_execute():
             exec("print('执行算法 shell 开始')")
             daily_start_date = get_current_time()
 
-            exec(unusual_shell,globals())
+            exec(unusual_shell, globals())
             exec("print('执行算法 shell 结束')")
             daily_end_date = get_current_time()
 
-            insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,daily_end_date=daily_end_date, unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor='')
+            insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
+                                       daily_end_date=daily_end_date, unusual_point=unusual_id, daily_source='sql',
+                                       operate_desc='', unusual_infor='')
 
         data = {
             'result': 'ok',
@@ -696,9 +698,11 @@ def finance_unusual_execute():
             'details': str(e)
         }
 
-        daily_source = 'sql' if isalgorithm =='1' else 'python shell'
-        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
-                                   unusual_point=unusual_id, daily_source=daily_source , operate_desc='', unusual_infor=str(e))
+        daily_source = 'sql' if isalgorithm == '1' else 'python shell'
+        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
+                                   daily_end_date=daily_end_date,
+                                   unusual_point=unusual_id, daily_source=daily_source, operate_desc='',
+                                   unusual_infor=str(e))
 
         response = jsonify(data)
         return response
@@ -716,10 +720,12 @@ def execute_kudu_sql(unusual_shell, unusual_id):
         print('*** end execute_kudu_sql ***')
 
         insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
-                                   unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc, unusual_infor='')
+                                   unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc,
+                                   unusual_infor='')
     except Exception as e:
         print(e)
-        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
+        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
+                                   daily_end_date=daily_end_date,
                                    unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e))
 
 
@@ -748,8 +754,8 @@ def query_commoditynames():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42' , '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id' : unusual_id}
+    if unusual_id not in ['42', '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
@@ -796,27 +802,27 @@ def query_product_keywords():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42' , '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id' : unusual_id}
+    if unusual_id not in ['42', '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
-    type_str ,keywords = None, None
+    type_str, keywords = None, None
 
     try:
         if unusual_id == '42':
             type_str = '办公费'
-            keywords = get_car_bill_jiebaword()
+            keywords = get_office_bill_jiebaword()
         elif unusual_id == '55':
             type_str = '车辆使用费'
-            keywords = get_office_bill_jiebaword()
+            keywords = get_car_bill_jiebaword()
 
         result = {
             'type': type_str,
             'keywords': keywords,
             'unusual_id': unusual_id
         }
-    except Exception as e :
+    except Exception as e:
         print(e)
         result = {
             'status': 'error',
@@ -837,26 +843,38 @@ def set_finance_category_sign():
     log.info('---- set_finance_category_sign ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42' , '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id' : unusual_id}
+    if unusual_id not in ['42', '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
+        response = jsonify(data)
+        return response
+
+    if category_classify is None:
+        data = {"result": "error", "details": "输入的 category_classify 不能为空", "code": 500}
         response = jsonify(data)
         return response
 
     category_names = request.form.getlist("category_names")
 
     try:
-        update_finance_category_sign(unusual_id, category_names)
+        update_finance_category_sign(unusual_id, category_names, category_classify)
+
+        if unusual_id == '42':
+            type_str = '办公费'
+        elif unusual_id == '55':
+            type_str = '车辆使用费'
 
         result = {
             'status': 'ok',
             'desc': f'成功修改检查点{unusual_id}选中的大类状态',
-            'unusual_id': unusual_id
+            'unusual_id': unusual_id,
+            'type': type_str
         }
     except Exception as e:
         print(e)
@@ -868,5 +886,86 @@ def set_finance_category_sign():
 
     return mk_utf8resp(result)
 
+
+# http://10.5.138.11:8004/report/query/category/sign
+@report_bp.route('/query/category/sign', methods=['POST', 'GET'])
+def query_finance_category_signs():
+    """
+    设置办公费和车辆使用费的大类的状态
+    :return:
+    """
+    log.info('---- query_finance_category_sign ----')
+
+    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_id not in ['42', '55']:
+        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
+        response = jsonify(data)
+        return response
+
+    if category_classify is None:
+        data = {"result": "error", "details": "输入的 category_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        # category_classify 类别, 1 代表商品大类，2 代表商品关键字
+        checked_data = query_finance_category_sign(unusual_id, category_classify)
+
+        type_str , records = None, None
+        if unusual_id == '42' and category_classify == '1':
+            # 商品大类
+            type_str = '办公费'
+            records = query_checkpoint_55_commoditynames()
+        elif unusual_id == '55' and category_classify == '1':
+            # 商品大类
+            type_str = '车辆使用费'
+            records = query_checkpoint_42_commoditynames()
+        elif unusual_id == '42' and category_classify == '2':
+            # 商品关键字
+            type_str = '办公费'
+            records = query_checkpoint_42_commoditynames()
+        elif unusual_id == '55' and category_classify == '2':
+            # 商品关键字
+            type_str = '车辆使用费'
+            records = get_car_bill_jiebaword()
+
+        checked_record_ls = []
+        for record in records:
+            temp = {}
+            temp['name'] = record
+            temp['status'] = 0
+
+            for checked_record in checked_data:
+                if record == checked_record:
+                    temp['status'] = 1
+                    break
+
+            checked_record_ls.append(temp)
+
+            #print(record)
+
+        result = {
+            'status': 'ok',
+            'category_classify': category_classify,
+            'unusual_id': unusual_id,
+            'type': type_str,
+            'data': checked_record_ls
+        }
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'unusual_id': unusual_id
+        }
+
+    return mk_utf8resp(result)
 
 

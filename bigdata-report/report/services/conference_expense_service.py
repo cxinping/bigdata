@@ -14,6 +14,7 @@ from report.commons.tools import match_address
 from report.commons.db_helper import query_kudu_data
 from report.services.vehicle_expense_service import cal_commodityname_function
 from report.commons.tools import not_empty
+from report.commons.db_helper import Pagination, db_fetch_to_dict
 import jieba.analyse as analyse
 import jieba
 from string import punctuation
@@ -591,6 +592,50 @@ def get_conference_bill_jiebaword():
     return final_list
 
 
+def pagination_conference_records(categorys, good_keywords):
+    """
+    分页查询会议费的记录
+    :param categorys: 商品分类列表
+    :param good_keywords: 商品关键字列表
+    :return:
+    """
+    columns_ls = ['bill_id', 'commodityname', 'bill_type_name']
+    columns_str = ",".join(columns_ls)
+    sql = f"select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_meeting_bill  limit 1 "
+
+    records = db_fetch_to_dict(sql, columns=columns_ls)
+    print(records)
+
+    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    print('* count_records => ',count_records)
+
+    ###### 拼装查询SQL
+    where_sql = 'WHERE '
+    condition_sql = ''
+    if len(categorys) == 1:
+        where_sql = where_sql + f'commodityname LIKE "%{categorys[0]}%"'
+    elif len(categorys) > 1:
+        for idx, category in enumerate(categorys):
+            tmp_sql = f'commodityname LIKE "%{category}%"'
+
+            if idx != len(categorys) - 1:
+                condition_sql = condition_sql + tmp_sql + ' OR '
+            else:
+                condition_sql = condition_sql + tmp_sql
+
+        where_sql = where_sql + condition_sql
+
+    if len(good_keywords) == 1:
+        where_sql = where_sql + f' OR commodityname LIKE "%{good_keywords[0]}%"'
+    
+    print(where_sql)
+
+
+
+
 def main():
     # 需求 24 done
     check_24_invoice()
@@ -623,13 +668,17 @@ def main():
 
 
 if __name__ == "__main__":
+    pass
+
     # main()
 
-    records = query_checkpoint_26_commoditynames()
-    print(records)
+    # records = query_checkpoint_26_commoditynames()
+    # print(records)
+    #
+    # final_list = get_conference_bill_jiebaword()
+    # for word in final_list:
+    #     print(word)
 
-    final_list = get_conference_bill_jiebaword()
-    for word in final_list:
-        print(word)
-
-
+    categorys = ['运输服务' ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
+    good_keywords = ['手册' ]  #  ['手册', '会议费', '荣誉证书']
+    pagination_conference_records(categorys, good_keywords)
