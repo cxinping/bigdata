@@ -13,4 +13,5 @@ print('*******' * 30)
 s1 ='3700191130'
 print(s1[:2])
 
-
+str = "abcdef"
+print(str.lower())

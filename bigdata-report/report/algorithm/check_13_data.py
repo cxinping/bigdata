@@ -6,7 +6,7 @@ import os
 from report.commons.db_helper import query_kudu_data
 import time
 import pandas as pd
-
+import os
 
 
 log = get_logger(__name__)
@@ -38,6 +38,14 @@ def check_13_data():
     # print('len(records) ==> ', len(records))
 
 dest_file = "/you_filed_algos/prod_kudu_data/checkpoint13/check_13_data.txt"
+
+def init_file():
+    dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint13'
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    if os.path.exists(dest_file):
+        os.remove(dest_file)
 
 def save_data():
     columns_ls = ['bill_id','city_name', 'city_grade_name' , 'emp_name', 'hotel_amount/hotel_num' ]
@@ -79,6 +87,7 @@ def load_data():
     print(len(rd_df))
 
 
+init_file()
 #check_13_data()
 #save_data()
 
