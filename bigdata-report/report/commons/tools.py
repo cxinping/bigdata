@@ -5,13 +5,11 @@ import uuid
 import time
 from datetime import datetime, timezone, timedelta
 
-
 log = get_logger(__name__)
 
 
-
 def match_address(place, key):
-    ssxq = ['省', '市', '县', '区' , '乡']
+    ssxq = ['省', '市', '县', '区', '乡']
     indexes0 = [place.find(x) for x in ssxq]
     indexes = [x for x in indexes0 if x > 0]
     indexes2 = sorted(indexes)
@@ -116,17 +114,6 @@ def split_str(text):
     return result
 
 
-def query_province_city():
-    select_sql = "select area_id,area_name,parent_id,grade from 01_datamart_layer_007_h_cw_df.finance_province_city where grade = '1'"
-    # 查询省级地区
-    finance_province_city_lev1 = prod_execute_sql(conn_type='test', sqltype='select', sql=select_sql)
-    print(finance_province_city_lev1)
-
-    # 查询市级地区
-
-    # 查询县级地区
-
-
 def create_uuid():
     uuid_str = str(uuid.uuid4())
     suid = ''.join(uuid_str.split('-'))
@@ -166,7 +153,6 @@ class MatchArea:
         return None
 
     def opera_areas(self, ares):
-
         max_level_area, result_area_name = 0, None
         for idx, area in enumerate(ares):
             area_name, area_level = area[0], area[1]
@@ -178,7 +164,7 @@ class MatchArea:
                 max_level_area = area_level
                 result_area_name = area_name
 
-        #print('*** result_area_name ==> ', result_area_name, max_level_area )
+        # print('*** result_area_name ==> ', result_area_name, max_level_area )
         return result_area_name
 
     def fit_area(self, area):
@@ -187,15 +173,20 @@ class MatchArea:
 
         """
 
+        if area is None or area == 'None':
+            return None, -1
+
         # 县, 区
-        county = self.match_address(place=area, key='县') if self.match_address(place=area, key='县') else self.match_address(place=area, key='区')
+        county = self.match_address(place=area, key='县') if self.match_address(place=area,
+                                                                               key='县') else self.match_address(
+            place=area, key='区')
 
         if county:
             area_id, area_name, parent_id, grade = self._query_province(county)
-            #print('&&&&& county==> ' , county, area, grade)
+            # print('&&&&& county==> ' , county, area, grade)
 
             if grade is None:
-                return county, 3
+                return None, -1
 
             return county, int(grade)
         else:
@@ -204,10 +195,10 @@ class MatchArea:
             if city:
                 area_id, area_name, parent_id, grade = self._query_province(city)
 
-                #print('&&&&& city==> ' , city, area, grade)
+                # print('&&&&& city==> ' , city, area, grade)
 
                 if len(city) > 5 or grade is None:
-                    return county, 2
+                    return None, -1
 
                 return city, int(grade)
             else:
@@ -225,7 +216,7 @@ class MatchArea:
         """
 
         province = None
-        if invo_code is None :
+        if invo_code is None:
             if destin_name and destin_name.find(',') != -1:
                 province = self.query_belong_province(destin_name)
 
@@ -246,13 +237,19 @@ class MatchArea:
             return None
 
         area_id, area_name, parent_id, grade = self._query_province(keyword)
-        #print(area_id, area_name, parent_id, grade)
+        # print(area_id, area_name, parent_id, grade)
 
-        if area_name is None:
+        if area_name is None or area_name == 'None':
             return ''
 
-        if grade != '1':
+        if grade and grade != '1':
+            idx = 0
             while grade != '1':
+                idx = idx + 1
+
+                if idx >= 10:
+                    return ''
+
                 area_id, area_name, parent_id, grade = self._query_previous_province(area_id=parent_id)
                 if grade == '1':
                     return area_name
@@ -260,34 +257,41 @@ class MatchArea:
             return area_name
 
     def _query_previous_province(self, area_id):
-        sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_id = '{area_id}'"
-        #print(sel_sql)
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
-        #print(records)
+        try:
+            sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_id = '{area_id}'"
+            # print(sel_sql)
+            records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
 
-        if len(records) > 0:
-            record = records[0]
-            area_id = str(record[0])
-            area_name = str(record[1])
-            parent_id = str(record[2])
-            grade = str(record[3])
+            if len(records) > 0:
+                record = records[0]
+                area_id = str(record[0]) if record[0] else None
+                area_name = str(record[1]) if record[1] else None
+                parent_id = str(record[2]) if record[2] else None
+                grade = str(record[3]) if record[3] else None
 
-            return area_id, area_name, parent_id, grade
+                return area_id, area_name, parent_id, grade
 
-        return None, None, None, None
+            return None, None, None, None
+        except Exception as e:
+            print(e)
 
     def _query_province(self, keyword):
-        sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%{keyword}%'"
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
 
-        if len(records) > 0:
-            record = records[0]
-            area_id = str(record[0])
-            area_name = str(record[1])
-            parent_id = str(record[2])
-            grade = str(record[3])
-            return area_id, area_name, parent_id, grade
-        return None, None, None, None
+        try:
+            sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%{keyword}%'"
+            records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
+
+            if len(records) > 0:
+                record = records[0]
+                area_id = str(record[0]) if record[0] else None
+                area_name = str(record[1]) if record[1] else None
+                parent_id = str(record[2]) if record[2] else None
+                grade = str(record[3]) if record[3] else None
+
+                return area_id, area_name, parent_id, grade
+            return None, None, None, None
+        except Exception as e:
+            print(e)
 
     def query_province_from_invoice_code(self, invo_code_2_letter):
         """
@@ -367,16 +371,12 @@ class MatchArea:
         return province
 
 
-
 if __name__ == '__main__':
     """
     1，优先找最细的行政单位
     2，加两列，所属省
        出发地所在省份， 目的地所在省份
-        
-    origin_province          string        comment "行程出发地(省)",
-    destin_province          string        comment "行程目的地(省)",
-  
+          
     """
 
     match_area = MatchArea()
@@ -412,8 +412,7 @@ if __name__ == '__main__':
     print(area_names)
 
     result_area = match_area.opera_areas(area_names)
-    print('*** result_area => ' , result_area)
+    print('*** result_area => ', result_area)
 
     # area = match_area.query_province_from_invoice_code('41')
     # print(area)
-

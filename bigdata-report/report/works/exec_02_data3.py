@@ -14,7 +14,7 @@ from report.commons.tools import MatchArea
 
 log = get_logger(__name__)
 
-dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data2.txt"
 upload_hdfs_path = '/user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/'
 
 match_area = MatchArea()
@@ -33,7 +33,6 @@ def execute_02_data():
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
-    limit 10000
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -43,7 +42,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 100000
+    limit_size = 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -64,7 +63,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 50000 ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null  ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -72,58 +71,14 @@ def execute_02_data():
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
     obj_list = []
-    threadPool = ThreadPoolExecutor(max_workers=25)
+    threadPool = ThreadPoolExecutor(max_workers=60)
     start_time = time.perf_counter()
 
     init_file()
 
     for sel_sql in select_sql_ls:
         log.info(sel_sql)
-        obj = threadPool.submit(exec_task, sel_sql)
-        if obj:
-            obj_list.append(obj)
-
-    for future in as_completed(obj_list, timeout=60):
-
-        data = future.result()
-
-        if data and len(data) > 0:
-            # print(len(data))
-
-            for idx, record in enumerate(data):
-                sales_address = operate_reocrd(record)  # 发票开票地(市)
-                sales_address = sales_address if sales_address else 'null'
-
-                destin_name = str(record[0]) if record[0] else None         # 行程目的地
-                sales_name = str(record[1]) if record[1] else None          # 开票公司
-                sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-                sales_bank = str(record[3]) if record[3] else None          # 发票开户行
-                finance_travel_id = str(record[4]) if record[4] else None
-                origin_name = str(record[5]) if record[5] else 'null'       # 行程出发地(市)
-                invo_code = str(record[6]) if record[6] else 'null'         # 发票代码
-
-                start_time2 = time.perf_counter()
-                origin_province = match_area.query_belong_province(origin_name)              # 行程出发地(省)
-                origin_province = origin_province if origin_province else 'null'
-                print('111 origin_province => ' , origin_province)
-
-                destin_province = match_area.query_destin_province(invo_code=invo_code,
-                                                                   destin_name=destin_name)  # 行程目的地(省)
-                destin_province = destin_province if destin_province else 'null'
-                print('222 destin_province => ', destin_province)
-
-                # origin_province = 'null'
-                # destin_province = 'null'
-
-                record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{origin_province},{destin_province}'
-                print(record)
-                consumed_time2 = round(time.perf_counter() - start_time2)
-                log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}')
-                print('')
-
-                with open(dest_file, "a", encoding='utf-8') as file:
-                    file.write(record)
-                    file.write("\n")
+        threadPool.submit(exec_task, sel_sql)
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
@@ -131,10 +86,10 @@ def execute_02_data():
 
 
 def operate_reocrd(record):
-    #destin_name = str(record[0]) if record[0] else None
-    sales_name = str(record[1]) if record[1] else None          # 开票公司
+    # destin_name = str(record[0]) if record[0] else None
+    sales_name = str(record[1]) if record[1] else None  # 开票公司
     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
 
     # print('destin_name=',destin_name)
     # print('sales_name=', sales_name)
@@ -164,7 +119,7 @@ def operate_reocrd(record):
     result_area = match_area.opera_areas(area_names)
 
     show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
-    print('### operate_reocrd show_str ==> ',show_str)
+    print('### operate_reocrd show_str ==> ', show_str)
 
     return result_area
 
@@ -172,9 +127,46 @@ def operate_reocrd(record):
 def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:
-        return records
-    else:
-        return None
+        for idx, record in enumerate(records):
+            sales_address = operate_reocrd(record)  # 发票开票地(市)
+            sales_address = sales_address if sales_address else 'null'
+
+            destin_name = str(record[0]) if record[0] else None  # 行程目的地
+            sales_name = str(record[1]) if record[1] else None  # 开票公司
+            sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+            finance_travel_id = str(record[4]) if record[4] else None
+            origin_name = str(record[5]) if record[5] else 'null'  # 行程出发地(市)
+            invo_code = str(record[6]) if record[6] else 'null'  # 发票代码
+
+            start_time2 = time.perf_counter()
+            origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
+            origin_province = origin_province if origin_province else 'null'
+            print('111 origin_province => ', origin_province)
+
+            destin_province = match_area.query_destin_province(invo_code=invo_code,
+                                                               destin_name=destin_name)  # 行程目的地(省)
+            destin_province = destin_province if destin_province else 'null'
+            print('222 destin_province => ', destin_province)
+
+            # origin_province = 'null'
+            # destin_province = 'null'
+
+            record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{origin_province},{destin_province}'
+            print(record)
+            consumed_time2 = round(time.perf_counter() - start_time2)
+            log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}')
+            print('')
+
+            with open(dest_file, "a", encoding='utf-8') as file:
+                file.write(record)
+                file.write("\n")
+
+
+def stop_process_pool(executor):
+    for pid, process in executor._processes.items():
+        process.terminate()
+    executor.shutdown()
 
 
 def main():
