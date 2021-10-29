@@ -134,8 +134,8 @@ def exec_task(sql):
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
             sales_bank = str(record[3]) if record[3] else None          # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None       # 行程出发地(市)
-            invo_code = str(record[6]) if record[6] else None         # 发票代码
+            origin_name = str(record[5]) if record[5] else None         # 行程出发地(市)
+            invo_code = str(record[6]) if record[6] else None           # 发票代码
 
             start_time1 = time.perf_counter()
             origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)

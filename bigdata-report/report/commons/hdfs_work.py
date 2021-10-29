@@ -18,7 +18,8 @@ def main1():
 
     # /user/hive/warehouse/03_basal_layer_hp3clnt200.db/ZTRPT_DWZD
     # /user/hive/warehouse/03_basal_layer_hp9clnt200.db/ZTRPT_DWZD
-    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_hp9clnt200.db/ZTRPT_DWZD'
+    # /user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_travel_journey_m
+    hdfsDirUrl = 'hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_travel_journey_m'
     localDirUrl = '/my_filed_algos/prod_kudu_data/'
 
     print('* part1 better ')

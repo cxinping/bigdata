@@ -260,6 +260,10 @@ class MatchArea:
         return None
 
     def _query_previous_province(self, area_id):
+
+        if area_id is None:
+            return None, None, None, None
+
         try:
             sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_id = '{area_id}'"
             # print(sel_sql)
