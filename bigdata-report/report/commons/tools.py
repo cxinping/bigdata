@@ -240,21 +240,24 @@ class MatchArea:
         # print(area_id, area_name, parent_id, grade)
 
         if area_name is None or area_name == 'None':
-            return ''
+            return None
 
         if grade and grade != '1':
             idx = 0
             while grade != '1':
                 idx = idx + 1
 
-                if idx >= 10:
-                    return ''
+                if idx >= 3:
+                    return None
 
                 area_id, area_name, parent_id, grade = self._query_previous_province(area_id=parent_id)
                 if grade == '1':
                     return area_name
-        else:
+
+        elif grade and grade == '1':
             return area_name
+
+        return None
 
     def _query_previous_province(self, area_id):
         try:
@@ -274,8 +277,12 @@ class MatchArea:
             return None, None, None, None
         except Exception as e:
             print(e)
+            return None, None, None, None
 
     def _query_province(self, keyword):
+
+        if keyword is None or keyword == 'None':
+            return None, None, None, None
 
         try:
             sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%{keyword}%'"
@@ -292,6 +299,7 @@ class MatchArea:
             return None, None, None, None
         except Exception as e:
             print(e)
+            return None, None, None, None
 
     def query_province_from_invoice_code(self, invo_code_2_letter):
         """

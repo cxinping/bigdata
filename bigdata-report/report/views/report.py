@@ -1017,6 +1017,7 @@ def check_scope():
 
     unusual_id = str(request.form.get('unusual_id')) if request.form.get('unusual_id') else None
     current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+    page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
 
     if current_page is None:
         data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
@@ -1030,6 +1031,11 @@ def check_scope():
 
     if unusual_id not in ['26', '42', '55']:
         data = {"result": "error", "details": "只能查询检查点 26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
+        response = jsonify(data)
+        return response
+
+    if page_size is None:
+        data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
         response = jsonify(data)
         return response
 
@@ -1048,20 +1054,20 @@ def check_scope():
                                                                            good_keywords=good_keywords)
             # log.info(count_records, sql, columns_ls)
 
-            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
             records = page_obj.exec_sql(sql, columns_ls)
         elif unusual_id == '42':
             count_records, sql, columns_ls = pagination_office_records(categorys=category_names,
                                                                        good_keywords=good_keywords)
             # log.info(count_records, sql, columns_ls)
-            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
             records = page_obj.exec_sql(sql, columns_ls)
 
         elif unusual_id == '55':
             count_records, sql, columns_ls = pagination_car_records(categorys=category_names,
                                                                     good_keywords=good_keywords)
             # print(count_records, sql, columns_ls)
-            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
             records = page_obj.exec_sql(sql, columns_ls)
 
         result = {
