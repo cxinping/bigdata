@@ -607,7 +607,7 @@ def pagination_conference_records(categorys, good_keywords):
     log.info(count_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
     count_records = records[0][0]
-    print('* count_records => ', count_records)
+    # print('* count_records => ', count_records)
 
     ###### 拼装查询SQL
     where_sql = 'WHERE '
@@ -638,8 +638,6 @@ def pagination_conference_records(categorys, good_keywords):
     sql = sql + where_sql + order_sql
 
     return count_records, sql, columns_ls
-
-
 
 
 def main():
@@ -685,8 +683,8 @@ if __name__ == "__main__":
     # for word in final_list:
     #     print(word)
 
-    categorys = ['运输服务', '包装饮用水',  ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
-    good_keywords =  ['手册' ]  # ['手册', '会议费', '荣誉证书']
+    categorys = ['运输服务', '包装饮用水', ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
+    good_keywords = ['手册']  # ['手册', '会议费', '荣誉证书']
     count_records, sql, columns_ls = pagination_conference_records(categorys, good_keywords)
     print(count_records, sql, columns_ls)
 
@@ -694,5 +692,3 @@ if __name__ == "__main__":
     page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
     records = page_obj.exec_sql(sql, columns_ls)
     print(records)
-
-

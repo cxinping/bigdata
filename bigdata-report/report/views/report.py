@@ -15,12 +15,15 @@ from flask import Blueprint, jsonify, request, make_response
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
-from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, pagination_office_records
-from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, pagination_car_records
+from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, \
+    pagination_office_records
+from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
+    pagination_car_records
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_category_sign,
-    query_finance_category_sign)
-from report.services.conference_expense_service import pagination_conference_records
+                                             query_finance_category_sign)
+from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
+    pagination_conference_records, query_checkpoint_26_commoditynames
 from report.commons.db_helper import Pagination
 
 log = get_logger(__name__)
@@ -778,8 +781,8 @@ def query_commoditynames():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42', '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
+    if unusual_id not in ['26', '42', '55']:
+        data = {"result": "error", "details": "只能查询检查点26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
@@ -791,7 +794,9 @@ def query_commoditynames():
         elif unusual_id == '55':
             type_str = '车辆使用费'
             data = query_checkpoint_42_commoditynames()
-
+        elif unusual_id == '26':
+            type_str = '会议费'
+            data = query_checkpoint_26_commoditynames()
         result = {
             'type': type_str,
             'data': data,
@@ -826,8 +831,8 @@ def query_product_keywords():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42', '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
+    if unusual_id not in ['26 ', '42', '55']:
+        data = {"result": "error", "details": "只能查询检查点26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
@@ -840,7 +845,9 @@ def query_product_keywords():
         elif unusual_id == '55':
             type_str = '车辆使用费'
             keywords = get_car_bill_jiebaword()
-
+        elif unusual_id == '26':
+            type_str = '会议费'
+            keywords = get_conference_bill_jiebaword()
         result = {
             'type': type_str,
             'keywords': keywords,
@@ -874,8 +881,8 @@ def set_finance_category_sign():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42', '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
+    if unusual_id not in ['26', '42', '55']:
+        data = {"result": "error", "details": "只能查询检查点26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
@@ -893,6 +900,8 @@ def set_finance_category_sign():
             type_str = '办公费'
         elif unusual_id == '55':
             type_str = '车辆使用费'
+        elif unusual_id == '26':
+            type_str = '会议费'
 
         result = {
             'status': 'ok',
@@ -928,7 +937,7 @@ def query_finance_category_signs():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['42', '55']:
+    if unusual_id not in ['26', '42', '55']:
         data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
@@ -942,7 +951,7 @@ def query_finance_category_signs():
         # category_classify 类别, 1 代表商品大类，2 代表商品关键字
         checked_data = query_finance_category_sign(unusual_id, category_classify)
 
-        type_str , records = None, None
+        type_str, records = None, None
         if unusual_id == '42' and category_classify == '1':
             # 商品大类
             type_str = '办公费'
@@ -951,14 +960,22 @@ def query_finance_category_signs():
             # 商品大类
             type_str = '车辆使用费'
             records = query_checkpoint_42_commoditynames()
+        elif unusual_id == '26' and category_classify == '1':
+            # 商品大类
+            type_str = '会议费'
+            records = query_checkpoint_26_commoditynames()
         elif unusual_id == '42' and category_classify == '2':
             # 商品关键字
             type_str = '办公费'
-            records = query_checkpoint_42_commoditynames()
+            records = get_office_bill_jiebaword()
         elif unusual_id == '55' and category_classify == '2':
             # 商品关键字
             type_str = '车辆使用费'
             records = get_car_bill_jiebaword()
+        elif unusual_id == '26' and category_classify == '2':
+            # 商品关键字
+            type_str = '会议费'
+            records = get_conference_bill_jiebaword()
 
         checked_record_ls = []
         for record in records:
@@ -973,7 +990,7 @@ def query_finance_category_signs():
 
             checked_record_ls.append(temp)
 
-            #print(record)
+            # print(record)
 
         result = {
             'status': 'ok',
@@ -991,7 +1008,6 @@ def query_finance_category_signs():
         }
 
     return mk_utf8resp(result)
-
 
 
 # http://10.5.138.11:8004/report/check/scope
@@ -1022,37 +1038,37 @@ def check_scope():
     # 商品关键字
     good_keywords = request.form.getlist("good_keywords")
 
-    print(unusual_id)
-    print(category_names)
-    print(good_keywords)
+    log.info(unusual_id)
+    log.info(category_names)
+    log.info(good_keywords)
 
     try:
         if unusual_id == '26':
             count_records, sql, columns_ls = pagination_conference_records(categorys=category_names,
                                                                            good_keywords=good_keywords)
-            print(count_records, sql, columns_ls)
+            # log.info(count_records, sql, columns_ls)
 
             page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
             records = page_obj.exec_sql(sql, columns_ls)
         elif unusual_id == '42':
             count_records, sql, columns_ls = pagination_office_records(categorys=category_names,
-                                                                           good_keywords=good_keywords)
-            print(count_records, sql, columns_ls)
+                                                                       good_keywords=good_keywords)
+            # log.info(count_records, sql, columns_ls)
             page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
             records = page_obj.exec_sql(sql, columns_ls)
 
         elif unusual_id == '55':
             count_records, sql, columns_ls = pagination_car_records(categorys=category_names,
-                                                                           good_keywords=good_keywords)
-            print(count_records, sql, columns_ls)
+                                                                    good_keywords=good_keywords)
+            # print(count_records, sql, columns_ls)
             page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
             records = page_obj.exec_sql(sql, columns_ls)
 
         result = {
             'status': 'ok',
-            'current_page' : current_page,
-            'all_count' : count_records,
-            'records' : records
+            'current_page': current_page,
+            'all_count': count_records,
+            'records': records
         }
 
     except Exception as e:
@@ -1064,10 +1080,3 @@ def check_scope():
         }
 
     return mk_utf8resp(result)
-
-
-
-
-
-
-
