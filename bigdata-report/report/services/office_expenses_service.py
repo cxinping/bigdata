@@ -375,6 +375,52 @@ def get_office_bill_jiebaword():
 
     return final_list
 
+def pagination_office_records(categorys, good_keywords):
+    """
+    分页查询办公费的记录
+    :param categorys: 商品分类列表
+    :param good_keywords: 商品关键字列表
+    :return:
+    """
+    columns_ls = ['bill_id', 'commodityname', 'bill_type_name']
+    columns_str = ",".join(columns_ls)
+    sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_official_bill "
+
+    count_sql = 'SELECT count(a.bill_id) FROM ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    print('* count_records => ', count_records)
+
+    ###### 拼装查询SQL
+    where_sql = 'WHERE '
+    condition_sql = ''
+
+    if categorys:
+        if good_keywords:
+            categorys.extend(good_keywords)
+    else:
+        categorys = []
+        if good_keywords:
+            categorys.extend(good_keywords)
+
+    if len(categorys) == 1:
+        where_sql = where_sql + f'commodityname LIKE "%{categorys[0]}%"'
+    elif len(categorys) > 1:
+        for idx, category in enumerate(categorys):
+            tmp_sql = f'commodityname LIKE "%{category}%"'
+
+            if idx != len(categorys) - 1:
+                condition_sql = condition_sql + tmp_sql + ' OR '
+            else:
+                condition_sql = condition_sql + tmp_sql
+
+        where_sql = where_sql + condition_sql
+
+    order_sql = ' ORDER BY bill_id ASC '
+    sql = sql + where_sql + order_sql
+
+    return count_records, sql, columns_ls
 
 if __name__ == "__main__":
     # main()

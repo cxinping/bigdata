@@ -601,20 +601,26 @@ def pagination_conference_records(categorys, good_keywords):
     """
     columns_ls = ['bill_id', 'commodityname', 'bill_type_name']
     columns_str = ",".join(columns_ls)
-    sql = f"select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_meeting_bill  limit 1 "
+    sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_meeting_bill "
 
-    records = db_fetch_to_dict(sql, columns=columns_ls)
-    print(records)
-
-    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    count_sql = 'SELECT count(a.bill_id) FROM ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
     count_records = records[0][0]
-    print('* count_records => ',count_records)
+    print('* count_records => ', count_records)
 
     ###### 拼装查询SQL
     where_sql = 'WHERE '
     condition_sql = ''
+
+    if categorys:
+        if good_keywords:
+            categorys.extend(good_keywords)
+    else:
+        categorys = []
+        if good_keywords:
+            categorys.extend(good_keywords)
+
     if len(categorys) == 1:
         where_sql = where_sql + f'commodityname LIKE "%{categorys[0]}%"'
     elif len(categorys) > 1:
@@ -628,10 +634,10 @@ def pagination_conference_records(categorys, good_keywords):
 
         where_sql = where_sql + condition_sql
 
-    if len(good_keywords) == 1:
-        where_sql = where_sql + f' OR commodityname LIKE "%{good_keywords[0]}%"'
-    
-    print(where_sql)
+    order_sql = ' ORDER BY bill_id ASC '
+    sql = sql + where_sql + order_sql
+
+    return count_records, sql, columns_ls
 
 
 
@@ -679,6 +685,14 @@ if __name__ == "__main__":
     # for word in final_list:
     #     print(word)
 
-    categorys = ['运输服务' ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
-    good_keywords = ['手册' ]  #  ['手册', '会议费', '荣誉证书']
-    pagination_conference_records(categorys, good_keywords)
+    categorys = ['运输服务', '包装饮用水',  ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
+    good_keywords =  ['手册' ]  # ['手册', '会议费', '荣誉证书']
+    count_records, sql, columns_ls = pagination_conference_records(categorys, good_keywords)
+    print(count_records, sql, columns_ls)
+
+    current_page = 1
+    page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+    records = page_obj.exec_sql(sql, columns_ls)
+    print(records)
+
+

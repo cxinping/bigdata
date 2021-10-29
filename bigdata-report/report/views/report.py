@@ -15,11 +15,13 @@ from flask import Blueprint, jsonify, request, make_response
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
-from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword
-from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword
+from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, pagination_office_records
+from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, pagination_car_records
 from report.commons.tools import get_current_time
-from report.services.common_services import insert_finance_shell_daily, update_finance_category_sign, \
-    query_finance_category_sign
+from report.services.common_services import (insert_finance_shell_daily, update_finance_category_sign,
+    query_finance_category_sign)
+from report.services.conference_expense_service import pagination_conference_records
+from report.commons.db_helper import Pagination
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
@@ -552,6 +554,8 @@ def finance_unusual_update():
     unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
+    # 1为sql类2为算法类
+    isalgorithm = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
@@ -566,8 +570,28 @@ def finance_unusual_update():
         response = jsonify(data)
         return response
 
+    if unusual_point is None:
+        data = {"result": "error", "details": "输入的 unusual_point 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_content is None:
+        data = {"result": "error", "details": "输入的 unusual_content 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_shell is None:
+        data = {"result": "error", "details": "输入的 unusual_shell 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if isalgorithm is None:
+        data = {"result": "error", "details": "输入的 isalgorithm 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
     sql = f"""
-    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell="{unusual_shell}"
+    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell="{unusual_shell}", isalgorithm="{isalgorithm}"
     where unusual_id='{unusual_id}'
     """  # .replace('\n', '').replace('\r', '').strip()
 
@@ -664,12 +688,12 @@ def finance_unusual_execute():
             response = jsonify(data)
             return response
 
-        ######### 执行算法 ############
+        ######### 执行 SQL ############
         if isalgorithm == '1':
             executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
 
         elif isalgorithm == '2':
-            ###### 执行 python 脚本  ############
+            ###### 执行算法 python 脚本  ############
             # eval("print(1+2)")
             print(unusual_shell)
             exec("print('执行算法 shell 开始')")
@@ -967,5 +991,83 @@ def query_finance_category_signs():
         }
 
     return mk_utf8resp(result)
+
+
+
+# http://10.5.138.11:8004/report/check/scope
+@report_bp.route('/check/scope', methods=['POST', 'GET'])
+def check_scope():
+    log.info('---- check_scope ----')
+
+    unusual_id = str(request.form.get('unusual_id')) if request.form.get('unusual_id') else None
+    current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+
+    if current_page is None:
+        data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_id is None:
+        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if unusual_id not in ['26', '42', '55']:
+        data = {"result": "error", "details": "只能查询检查点 26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
+        response = jsonify(data)
+        return response
+
+    # 商品大类
+    category_names = request.form.getlist("category_names")
+    # 商品关键字
+    good_keywords = request.form.getlist("good_keywords")
+
+    print(unusual_id)
+    print(category_names)
+    print(good_keywords)
+
+    try:
+        if unusual_id == '26':
+            count_records, sql, columns_ls = pagination_conference_records(categorys=category_names,
+                                                                           good_keywords=good_keywords)
+            print(count_records, sql, columns_ls)
+
+            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+            records = page_obj.exec_sql(sql, columns_ls)
+        elif unusual_id == '42':
+            count_records, sql, columns_ls = pagination_office_records(categorys=category_names,
+                                                                           good_keywords=good_keywords)
+            print(count_records, sql, columns_ls)
+            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+            records = page_obj.exec_sql(sql, columns_ls)
+
+        elif unusual_id == '55':
+            count_records, sql, columns_ls = pagination_car_records(categorys=category_names,
+                                                                           good_keywords=good_keywords)
+            print(count_records, sql, columns_ls)
+            page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+            records = page_obj.exec_sql(sql, columns_ls)
+
+        result = {
+            'status': 'ok',
+            'current_page' : current_page,
+            'all_count' : count_records,
+            'records' : records
+        }
+
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'unusual_id': unusual_id
+        }
+
+    return mk_utf8resp(result)
+
+
+
+
+
 
 

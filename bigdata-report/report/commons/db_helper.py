@@ -42,19 +42,40 @@ def query_kudu_data(sql, columns):
 def db_fetch_to_dict(sql, columns=[]):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     result = []
+
     if len(records) == 1:
         result_row = dict(zip(columns, records[0]))
+        for key in result_row.keys():
+            if str(result_row[key]) == "None":
+                result_row[key] = None
+            elif str(type(result_row[key])) == "<java class 'JDouble'>":
+                result_row[key] = float(result_row[key])
+            elif str(type(result_row[key])) == "<java class 'java.lang.Long'>":
+                result_row[key] = str(result_row[key])
+            else:
+                result_row[key] = str(result_row[key])
+
         result.append(result_row)
     else:
         for record in records:
             result_row = dict(zip(columns, record))
+            for key in result_row.keys():
+                if str(result_row[key]) == "None":
+                    result_row[key] = None
+                elif str(type(result_row[key])) == "<java class 'JDouble'>":
+                    result_row[key] = float(result_row[key])
+                elif str(type(result_row[key])) == "<java class 'java.lang.Long'>":
+                    result_row[key] = str(result_row[key])
+                else:
+                    result_row[key] = str(result_row[key])
+
             result.append(result_row)
 
     return result
 
 
 class Pagination(object):
-    def __init__(self, current_page, all_count, per_page_num=2, pager_count=11):
+    def __init__(self, current_page=1, all_count=100, per_page_num=10, pager_count=11):
         """
         封装分页相关数据
         :param current_page: 当前页
@@ -84,8 +105,18 @@ class Pagination(object):
         self.pager_count = pager_count
         self.pager_count_half = int((pager_count - 1) / 2)
 
+    def exec_sql(self, sql, columns=[]):
+        page_sql = sql + f' limit {self.per_page_num} offset {self.start}'
+        log.info(page_sql)
+        records = db_fetch_to_dict(page_sql, columns)
+        return records
+
     @property
     def get_all_pager(self):
+        """
+        总页码
+        :return:
+        """
         return self.all_pager
 
     @property
@@ -100,10 +131,31 @@ class Pagination(object):
 if __name__ == '__main__':
     book_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26]
 
-    current_page = 1
+    current_page = 2
     all_count = len(book_list)
     page_obj = Pagination(current_page=current_page, all_count=all_count, per_page_num=10)
     page_queryset = book_list[page_obj.start:page_obj.end]
     print(page_queryset)
     print(page_obj.start, page_obj.end)
     print(page_obj.get_all_pager)
+
+    sql = 'select unusual_id,cost_project from 01_datamart_layer_007_h_cw_df.finance_unusual order by unusual_id asc'
+    columns = ['unusual_id', 'cost_project']
+    page_obj.exec_sql(sql, columns)
+
+    print('*' * 50 )
+    columns_ls = ['bill_id', 'commodityname', 'bill_type_name']
+    columns_str = ",".join(columns_ls)
+    sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_meeting_bill limit 1"
+    db_fetch_to_dict(sql,columns_ls)
+
+
+
+
+
+
+
+
+
+
+
