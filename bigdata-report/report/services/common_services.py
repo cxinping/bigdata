@@ -43,7 +43,7 @@ def update_finance_category_sign(unusual_id, category_names, category_classify):
                 values_sql = values_sql + ','
 
     insert_sql = insert_sql + values_sql
-    #print(insert_sql)
+    # print(insert_sql)
     prod_execute_sql(conn_type='test', sqltype='insert', sql=insert_sql)
 
 
@@ -65,6 +65,73 @@ def query_finance_category_sign(unusual_id, category_classify):
     return category_name_ls
 
 
+class ProvinceService:
+
+    def __init__(self):
+        sel_all_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city "
+        self.province_records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_all_sql)
+
+    def query_previous_province(self, query_area_id):
+        if query_area_id is None:
+            return None, None, None, None
+
+        for record in self.province_records:
+            area_id = str(record[0]) if record[0] else None
+
+            # print(area_id, area_name, parent_id, grade)
+            if area_id and query_area_id == area_id:
+                area_name = str(record[1]) if record[1] else None
+                parent_id = str(record[2]) if record[2] else None
+                grade = str(record[3]) if record[3] else None
+
+                return area_id, area_name, parent_id, grade
+
+        return None, None, None, None
+
+    def query_province(self, query_area_name):
+        if query_area_name is None:
+            return None, None, None, None
+
+        for record in self.province_records:
+            area_name = str(record[1]) if record[1] else None
+
+            # print(area_id, area_name, parent_id, grade)
+            if query_area_name == area_name:
+                area_id = str(record[0]) if record[0] else None
+                parent_id = str(record[2]) if record[2] else None
+                grade = str(record[3]) if record[3] else None
+
+                return area_id, area_name, parent_id, grade
+
+        return None, None, None, None
+
+    def query_belong_province(self, area_name):
+        if area_name is None:
+            return None
+
+        area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)
+        if area_name is None or area_name == 'None':
+            return None
+
+        idx = 0
+        if grade and grade != '1':
+
+            while grade and grade != '1':
+                idx = idx + 1
+
+                if idx > 3:
+                    return None
+
+                area_id, area_name, parent_id, grade = self.query_previous_province(query_area_id=parent_id)
+                if grade and grade == '1':
+                    return area_name
+
+        elif grade and grade == '1':
+            return area_name
+
+        return None
+
+
 if __name__ == "__main__":
     daily_status = 'ok'
     daily_start_date = '2021-10-25 17:05'
@@ -79,14 +146,20 @@ if __name__ == "__main__":
     unusual_id = '42'
     category_names = ['d']  # ['a' , 'b']
     category_classify = '001'
-    #update_finance_category_sign(unusual_id, category_names, category_classify)
+    # update_finance_category_sign(unusual_id, category_names, category_classify)
 
-    category_classify = '2'
-    records = query_finance_category_sign(unusual_id=unusual_id, category_classify=category_classify)
-    print(records)
+    # category_classify = '2'
+    # records = query_finance_category_sign(unusual_id=unusual_id, category_classify=category_classify)
+    # print(records)
+
+    province_service = ProvinceService()
+    #area_name = '金湖县'
+    # province_service.query_province(area_name)
+    # area_id = '510000'
+    # area_id, area_name, parent_id, grade = province_service.query_previous_province(query_area_id=area_id)
+    # print(area_id, area_name, parent_id, grade)
+    area_name = '金湖县'
+    province_name = province_service.query_belong_province(area_name)
+    print(province_name)
 
     print('--- ok ---')
-
-
-
-

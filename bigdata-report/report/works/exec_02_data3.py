@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
+from report.services.common_services import ProvinceService
 
 """
 
@@ -18,6 +19,7 @@ dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
 upload_hdfs_path = '/user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/'
 
 match_area = MatchArea()
+province_service = ProvinceService()
 
 
 def init_file():
@@ -42,7 +44,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 5000
+    limit_size = 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -71,12 +73,15 @@ def execute_02_data():
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
     init_file()
 
-    threadPool = ThreadPoolExecutor(max_workers=50)
+    threadPool = ThreadPoolExecutor(max_workers=20)
     start_time = time.perf_counter()
 
-    for sel_sql in select_sql_ls:
-        log.info(sel_sql)
-        threadPool.submit(exec_task, sel_sql)
+    # for sel_sql in select_sql_ls:
+    #     log.info(sel_sql)
+    #     threadPool.submit(exec_task, sel_sql)
+
+    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+    wait(all_task, return_when=ALL_COMPLETED)
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
@@ -116,8 +121,8 @@ def operate_reocrd(record):
 
     result_area = match_area.opera_areas(area_names)
 
-    show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
-    print('### operate_reocrd show_str ==> ', show_str)
+    # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
+    # print('### operate_reocrd show_str ==> ', show_str)
 
     return result_area
 
@@ -126,32 +131,37 @@ def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
-            sales_address = operate_reocrd(record)   # 发票开票地(市)
-            sales_address = sales_address if sales_address else 'null'
-
-            destin_name = str(record[0]) if record[0] else None         # 行程目的地
-            sales_name = str(record[1]) if record[1] else None          # 开票公司
+            sales_address = operate_reocrd(record)  # 发票开票地(市)
+            destin_name = str(record[0]) if record[0] else None  # 行程目的地
+            sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None         # 行程出发地(市)
-            invo_code = str(record[6]) if record[6] else None           # 发票代码
+            origin_name = str(record[5]) if record[5] else None  # 行程出发地(市)
+            invo_code = str(record[6]) if record[6] else None  # 发票代码
 
             start_time1 = time.perf_counter()
-            origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
-            origin_province = origin_province if origin_province else 'null'
-            #print('111 origin_province => ', origin_province)
+            # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
+            origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
+
+            # print('111 origin_province => ', origin_province)
             consumed_time1 = round(time.perf_counter() - start_time1)
-            log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}' )
+            log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}')
 
             start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
-            destin_province = destin_province if destin_province else 'null'
-            #print('222 destin_province => ', destin_province)
+            # print('222 destin_province => ', destin_province)
             consumed_time2 = round(time.perf_counter() - start_time2)
             log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}')
 
+            origin_name = origin_name if origin_name else 'null'
+            sales_name = sales_name if sales_name else 'null'
+            sales_addressphone = sales_addressphone if sales_addressphone else 'null'
+            sales_bank = sales_bank if sales_bank else 'null'
+            sales_address = sales_address if sales_address else 'null'
+            origin_province = origin_province if origin_province else 'null'
+            destin_province = destin_province if destin_province else 'null'
             record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{origin_province},{destin_province}'
             print(record)
             print('')
@@ -168,7 +178,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()
+    execute_02_data()  # 487580
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
