@@ -5,8 +5,9 @@ import time
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import MatchArea
+from report.commons.tools import MatchArea,save_file
 from report.services.common_services import ProvinceService
+import threading
 
 """
 
@@ -73,12 +74,13 @@ def execute_02_data():
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
     init_file()
 
-    threadPool = ThreadPoolExecutor(max_workers=20)
+    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
     #     log.info(sel_sql)
-    #     threadPool.submit(exec_task, sel_sql)
+        #threadPool.submit(exec_task, sel_sql)
+
 
     all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
     wait(all_task, return_when=ALL_COMPLETED)
@@ -131,7 +133,11 @@ def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
+            start_time0 = time.perf_counter()
             sales_address = operate_reocrd(record)  # 发票开票地(市)
+            consumed_time0 = round(time.perf_counter() - start_time0)
+            log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
+
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
             sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
@@ -143,8 +149,7 @@ def exec_task(sql):
             start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
-
-            # print('111 origin_province => ', origin_province)
+            log.info(f" {threading.current_thread().name} is doing ")
             consumed_time1 = round(time.perf_counter() - start_time1)
             log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}')
 
@@ -166,9 +171,12 @@ def exec_task(sql):
             print(record)
             print('')
 
-            with open(dest_file, "a", encoding='utf-8') as file:
-                file.write(record)
-                file.write("\n")
+            with open(dest_file, "a+", encoding='utf-8') as file:
+                file.write(record + "\n")
+
+        #     save_file(output_file=dest_file, line=record, clear_buff=False)
+        #
+        # save_file(output_file=dest_file, line=None, clear_buff=True)
 
 
 def stop_process_pool(executor):

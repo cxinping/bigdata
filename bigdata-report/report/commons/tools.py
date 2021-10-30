@@ -290,7 +290,7 @@ class MatchArea:
             return None, None, None, None
 
         try:
-            #sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%{keyword}%'"
+            # sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%{keyword}%'"
             sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name = '{keyword}'"
             records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
 
@@ -386,6 +386,21 @@ class MatchArea:
         return province
 
 
+result = []
+def save_file(output_file, line, buff_size=1000, clear_buff=False):
+    global result
+
+    if line:
+        result.append(line)
+
+    if len(result) >= buff_size or clear_buff:
+        with open(output_file, "a+") as fp:
+            fp.write("\n".join(result))
+            fp.write("\n")
+        result = []
+
+
+
 if __name__ == '__main__':
     """
     1，优先找最细的行政单位
@@ -426,8 +441,12 @@ if __name__ == '__main__':
 
     print(area_names)
 
-    result_area = match_area.opera_areas(area_names)
-    print('*** result_area => ', result_area)
+    # result_area = match_area.opera_areas(area_names)
+    # print('*** result_area => ', result_area)
 
     # area = match_area.query_province_from_invoice_code('41')
     # print(area)
+
+    line = '111'
+    output_file = r'/you_filed_algos/prod_kudu_data/abc.txt'
+    save_file(output_file, line, clear_buff=True)

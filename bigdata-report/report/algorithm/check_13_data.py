@@ -6,7 +6,9 @@ from report.commons.db_helper import query_kudu_data
 import time
 import pandas as pd
 import os
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
+import threading
+
 
 log = get_logger(__name__)
 
@@ -115,9 +117,8 @@ def demo1(select_sql_ls):
             record = f'{bill_id},{city_name},{city_grade_name},{emp_name},{hotel_fee}'
             print(record)
 
-            with open(dest_file, "a", encoding='utf-8') as file:
-                file.write(record)
-                file.write("\n")
+            with open(dest_file, "a+", encoding='utf-8') as file:
+                file.write(record+"\n")
 
 
 def exec_task(sql):
@@ -133,9 +134,8 @@ def exec_task(sql):
             record = f'{bill_id},{city_name},{city_grade_name},{emp_name},{hotel_fee}'
             #print(record)
 
-            with open(dest_file, "a", encoding='utf-8') as file:
-                file.write(record)
-                file.write("\n")
+            with open(dest_file, "a+", encoding='utf-8') as file:
+                file.write(record + "\n")
 
 
 def load_data():
