@@ -51,7 +51,6 @@ def init_file():
 def save_data():
     init_file
 
-
     columns_ls = ['bill_id', 'city_name', 'city_grade_name', 'emp_name', 'hotel_amount/hotel_num']
     columns_str = ",".join(columns_ls)
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费" and hotel_num > 0 '.format(
@@ -64,7 +63,7 @@ def save_data():
     print(f'* count_records ==> {count_records}')
 
     max_size = 10 * 10000
-    limit_size = 10000
+    limit_size = 1000
     select_sql_ls = []
     if count_records >= max_size:
         offset_size = 0
@@ -86,7 +85,7 @@ def save_data():
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name='差旅费' and hotel_num > 0 ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
-        print('*** tmp_sql => ', tmp_sql)
+        #print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
     threadPool = ThreadPoolExecutor(max_workers=30)
@@ -134,7 +133,7 @@ def exec_task(sql):
             hotel_fee = float(record[4])
 
             record = f'{bill_id},{city_name},{city_grade_name},{emp_name},{hotel_fee}'
-            #print(record)
+            print(record)
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record + "\n")

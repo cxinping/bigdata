@@ -24,8 +24,29 @@ select  * from  01_datamart_layer_007_h_cw_df.finance_rma_travel_members
 
 select  * from 01_datamart_layer_007_h_cw_df.finance_hotel_standard
 
-
 describe 01_datamart_layer_007_h_cw_df.finance_category_sign
+
+# check 12
+
+
+
+
+# check 13
+
+人员信息表
+select * from 01_datamart_layer_007_h_cw_df.finance_rma_travel_members
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
