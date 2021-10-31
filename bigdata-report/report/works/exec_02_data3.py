@@ -81,7 +81,6 @@ def execute_02_data():
     #     log.info(sel_sql)
         #threadPool.submit(exec_task, sel_sql)
 
-
     all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
     wait(all_task, return_when=ALL_COMPLETED)
 
@@ -186,11 +185,11 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 487580
-    print('--- created txt file ---')
+    #execute_02_data()  # 487580
+    #print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
