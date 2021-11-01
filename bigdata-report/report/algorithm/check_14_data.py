@@ -10,8 +10,8 @@ from report.commons.logging import get_logger
 
 log = get_logger(__name__)
 
-
 import sys
+
 sys.path.append('/you_filed_algos/app')
 
 
@@ -64,7 +64,7 @@ def check_14_data():
     count_records = records[0][0]
 
     max_size = 1 * 1000000
-    limit_size = 100000
+    limit_size = 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')

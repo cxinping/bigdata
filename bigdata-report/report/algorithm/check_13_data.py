@@ -16,7 +16,8 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
-dest_file = "/you_filed_algos/prod_kudu_data/checkpoint13/check_13_data2.txt"
+dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint13'
+dest_file = dest_dir + '/check_13_data2.txt'
 
 
 def check_13_data():
@@ -40,7 +41,7 @@ def check_13_data():
 
 
 def init_file():
-    dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint13'
+
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
@@ -49,7 +50,7 @@ def init_file():
 
 
 def save_data():
-    init_file
+    init_file()
 
     columns_ls = ['bill_id', 'city_name', 'city_grade_name', 'emp_name', 'hotel_amount/hotel_num']
     columns_str = ",".join(columns_ls)
