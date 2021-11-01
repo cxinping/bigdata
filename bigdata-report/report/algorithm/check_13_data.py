@@ -103,26 +103,6 @@ def save_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-def demo1(select_sql_ls):
-    for sel_sql in select_sql_ls:
-        log.info(sel_sql)
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
-
-        for record in records:
-            # print(record)
-            bill_id = str(record[0])
-            city_name = str(record[1])
-            city_grade_name = str(record[2])
-            emp_name = str(record[3])
-            hotel_fee = float(record[4])
-
-            record = f'{bill_id},{city_name},{city_grade_name},{emp_name},{hotel_fee}'
-            print(record)
-
-            with open(dest_file, "a+", encoding='utf-8') as file:
-                file.write(record+"\n")
-
-
 def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:

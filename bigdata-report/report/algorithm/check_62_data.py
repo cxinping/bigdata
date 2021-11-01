@@ -5,6 +5,7 @@ from report.commons.logging import get_logger
 log = get_logger(__name__)
 
 import sys
+
 sys.path.append('/you_filed_algos/app')
 
 
@@ -20,10 +21,6 @@ def check_62_data():
     sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill  '
     rd_df = query_kudu_data(sql, columns_ls)
     print(rd_df.head(5))
-
-
-
-
 
 
 check_62_data()
