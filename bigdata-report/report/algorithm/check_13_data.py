@@ -16,7 +16,7 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
-dest_file = "/you_filed_algos/prod_kudu_data/checkpoint13/check_13_data.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/checkpoint13/check_13_data2.txt"
 
 
 def check_13_data():
@@ -63,7 +63,7 @@ def save_data():
     print(f'* count_records ==> {count_records}')
 
     max_size = 10 * 10000
-    limit_size = 1000
+    limit_size = 10000
     select_sql_ls = []
     if count_records >= max_size:
         offset_size = 0
@@ -148,7 +148,10 @@ def load_data():
 if __name__ == "__main__":
     #check_13_data()     # 12798130
 
-    save_data()
-    # load_data()
+    #save_data()
+    load_data()
 
     print('--- ok ---')
+
+
+

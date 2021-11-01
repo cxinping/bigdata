@@ -237,7 +237,7 @@ class HDFSTools(object):
                 file_dir.mkdirs()
 
             status = self.fs.getFileStatus(path)
-            # print(status)
+            print(status)
 
             if status is not None and status.isFile():
                 # print('*** it is a file')
@@ -301,20 +301,24 @@ class HDFSTools(object):
                 print(f'2_2 dirs {file_dir_str} exists')
 
             print('3_1 path => ', path)
-            #status = self.fs.getFileStatus(path)
-            #print('3_2 status => ',status)
+            # status = self.fs.getFileStatus(path)
+            # print('3_2 status => ',status, type(status))
 
             #if status is not None and status.isFile():
             fin = self.fs.open(path)
-            print('4 fin=' , fin)
+            print('4 fin=', fin)
 
             fout = FileOutputStream(localUrl)
-            print('5 fout=', fout)
+            #print('5 fout=', fout)
 
-            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 250, jpype.java.lang.Boolean(False) )  # 带缓冲的下载文件，hdfs文件最大 250M
+            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 100, jpype.java.lang.Boolean(False) )  # 带缓冲的下载文件，hdfs文件最大 250M
 
-            print('6_1 fin=', fin)
-            print('6_2 fout=', fout)
+            # print('6_1 fin=', fin)
+            # print('6_2 fout=', fout)
+
+            if fout:
+                print('download file form HDFS')
+                fout.flush()
 
             IOUtils.closeStream(fin)
             IOUtils.closeStream(fout)
@@ -436,18 +440,29 @@ def prod_demo2():
     # hdfs.ls(url=hdfsDirPath)
 
     # 下载 HDFS 上的单个文件
-    # hdfs.downLoadFile(hdfsUrl='hdfs:///user/hive/warehouse/02_logical_layer_003_z_lf_cw.db/zccw0101_m/importdate=20210921/000000_0',
-    #                   localUrl='/my_filed_algos/prod_kudu_data/000000_0')
+    hdfs.downLoadFile(hdfsUrl='hdfs:///user/hive/warehouse/02_logical_layer_003_z_lf_cw.db/zccw0101_m/importdate=20210921/000000_0',
+                      localUrl='/my_filed_algos/prod_kudu_data/000000_0')
 
     # 递归下载 HDFS 上的文件夹里的文件
-    hdfsFileUrl_ls = hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db',
-                                                localDirUrl='/my_filed_algos/prod_kudu_data/')
-
-    for hdfs_file_url in hdfsFileUrl_ls:
-        print(hdfs_file_url)
+    # hdfsFileUrl_ls = hdfs.downLoadDir_recursion(hdfsDirUrl='hdfs:///user/hive/warehouse/03_basal_layer_zfybxers00.db',
+    #                                             localDirUrl='/my_filed_algos/prod_kudu_data/')
+    #
+    # for hdfs_file_url in hdfsFileUrl_ls:
+    #     print(hdfs_file_url)
 
     hdfs.shutdownJVM()
     print('--- ok , completed work ---')
+
+
+def prod_demo3():
+    hdfs = HDFSTools(conn_type='prod')
+    # 下载 HDFS 上的单个文件
+    hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_travel_journey_m/importdate=20211031/000104_0',
+                      localUrl='/my_filed_algos/prod_kudu_data/000104_0')
+
+    hdfs.shutdownJVM()
+    print('--- ok , completed work ---')
+
 
 
 def test_demo1():
@@ -568,7 +583,9 @@ if __name__ == "__main__":
 
     #prod_demo1()
 
-    test_demo1()
+    #test_demo1()
+
+    prod_demo3()
 
     # main()
 

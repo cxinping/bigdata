@@ -15,7 +15,7 @@ insert  into 01_datamart_layer_007_h_cw_df.finance_blacklist values (uuid(),'','
 
 select * from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费';
 
-checkpoint 13
+############################### checkpoint 13 ###############################
 select  * from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费"
 
 select  count(bill_id) from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费"
@@ -26,15 +26,73 @@ select  * from 01_datamart_layer_007_h_cw_df.finance_hotel_standard
 
 describe 01_datamart_layer_007_h_cw_df.finance_category_sign
 
-# check 12
+############################### check 12    ###############################
 
 
 
 
-# check 13
+############################### check 13     ###############################
+
+差旅费明细表
+select  * from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
 
 人员信息表
-select * from 01_datamart_layer_007_h_cw_df.finance_rma_travel_members
+select  * from  01_datamart_layer_007_h_cw_df.finance_rma_travel_members
+
+住宿标准
+select  * from 01_datamart_layer_007_h_cw_df.finance_hotel_standard
+
+宽表 差旅费
+select  * from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+
+select bill_id, city_name, city_grade_name, emp_name, hotel_amount/hotel_num from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name='差旅费' and hotel_num > 0
+
+
+01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm   住宿
+01_datamart_layer_007_h_cw_df.finance_rma_travel_journey  行程
+01_datamart_layer_007_h_cw_df.finance_rma_travel_members  人员
+01_datamart_layer_007_h_cw_df.finance_hotel_standard      住宿标准
+
+宽表 差旅费
+01_datamart_layer_007_h_cw_df.finance_travel_bill
+
+select a.bill_id, a.city_name, a.city_grade_name, a.emp_name, a.hotel_amount/a.hotel_num, b.member_level_name from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm a, 01_datamart_layer_007_h_cw_df.finance_travel_bill b
+where a.exp_type_name="差旅费" and a.hotel_num > 0 and a.bill_id =b.bill_id
+
+
+
+
+select distinct
+a.bill_id, a.city_name, a.city_grade_name, a.emp_name,
+a.hotel_amount/a.hotel_num as hotel_amount_day,
+b.member_level_name,
+b.account_period_y
+from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm a,
+(
+select distinct
+bill_id,member_level_name, substr(cast(account_period as string),1,4) as account_period_y
+from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+where substr(cast(account_period as string),1,4)='2021' )  b
+where a.exp_type_name="差旅费" and a.hotel_num > 0 and
+      a.bill_id =b.bill_id
+
+---------------------------------
+
+
+select distinct
+a.bill_id, a.city_name, a.city_grade_name, a.emp_name,
+a.hotel_amount/a.hotel_num as hotel_amount_day,
+b.member_level_id, b.member_level_name,
+b.account_period_y
+from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm a,
+(
+select distinct
+bill_id,member_level_id,member_level_name, substr(cast(account_period as string),1,4) as account_period_y
+from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+where substr(cast(account_period as string),1,4)='2021' )  b
+where a.exp_type_name="差旅费" and a.hotel_num > 0 and
+      a.bill_id =b.bill_id
+
 
 
 

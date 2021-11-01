@@ -121,12 +121,20 @@ class HDFSTools(object):
             file = File(localPath)
             fin = FileInputStream(file)
 
-            # print('localPath ==> ', localPath)
+            print('localPath ==> ', localPath)
+            print('upload file hdfsDirPath ==> ', hdfsDirPath)
+            # print('upload file str(file.getName()) ==> ', str(file.getName()))
             # print('upload file to HDFS ==> ', hdfsDirPath + str(file.getName()))
 
-            fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
+            #fout = self.fs.create(Path(hdfsDirPath + str(file.getName())))
+            fout = self.fs.create(Path(hdfsDirPath ))
 
-            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 300, jpype.java.lang.Boolean(False) )  # 带缓冲的下载上传文件，hdfs文件最大 250M
+            IOUtils.copyBytes(fin, fout, 1024 * 1024 * 100, jpype.java.lang.Boolean(False) )  # 带缓冲的下载上传文件，hdfs文件最大 250M
+
+            if fout:
+                print('upload file form HDFS')
+                fout.flush()
+
             IOUtils.closeStream(fin)
             IOUtils.closeStream(fout)
             print('* end uploadFile2 *')
@@ -513,7 +521,7 @@ def exec_task(prod_hdfs, test_hdfs, hdfs_file_url, local_file_name):
 
 if __name__ == "__main__":
 
-    # prod_demo1()
+    #prod_demo1()
 
     test_demo1()
 
