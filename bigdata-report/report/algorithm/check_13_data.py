@@ -127,12 +127,19 @@ def load_data():
 
 
 if __name__ == "__main__":
-    #check_13_data()     # 12798130
+    #check_13_data()
 
-    #save_data()
+    #save_data()   # 12798130
     load_data()
 
     print('--- ok ---')
+
+
+
+
+
+
+
 
 
 

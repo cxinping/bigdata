@@ -174,10 +174,6 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record + "\n")
 
-        #     save_file(output_file=dest_file, line=record, clear_buff=False)
-        #
-        # save_file(output_file=dest_file, line=None, clear_buff=True)
-
 
 def stop_process_pool(executor):
     for pid, process in executor._processes.items():
