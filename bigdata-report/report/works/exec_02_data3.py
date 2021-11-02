@@ -168,8 +168,8 @@ def exec_task(sql):
             sales_address = sales_address if sales_address else 'null'  # 发票开票地(市)
             origin_province = origin_province if origin_province else 'null'  # 行程出发地(省)
             destin_province = destin_province if destin_province else 'null'  # 行程目的地(省)
-            record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province}'
-            print(record)
+            record_str = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province}'
+            print(record_str)
             print('')
 
             if origin_province.find('区') > -1 and origin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区',
@@ -179,13 +179,13 @@ def exec_task(sql):
                 print('============ abnormal data ==============')
                 print('============ abnormal data ==============')
                 print('============ abnormal data ==============')
-                print(record)
+                print(record_str)
 
                 with open(error_file, "a+", encoding='utf-8') as file:
-                    file.write(record + "\n")
+                    file.write(record_str + "\n")
 
             with open(dest_file, "a+", encoding='utf-8') as file:
-                file.write(record + "\n")
+                file.write(record_str + "\n")
 
 
 def stop_process_pool(executor):

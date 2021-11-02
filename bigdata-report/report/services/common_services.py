@@ -96,7 +96,8 @@ class ProvinceService:
             area_name = str(record[1]) if record[1] else None
 
             # print(area_id, area_name, parent_id, grade)
-            if query_area_name == area_name:
+            #if query_area_name == area_name:
+            if area_name.find(query_area_name) > -1:
                 area_id = str(record[0]) if record[0] else None
                 parent_id = str(record[2]) if record[2] else None
                 grade = str(record[3]) if record[3] else None
@@ -158,13 +159,19 @@ if __name__ == "__main__":
     # area_id = '510000'
     # area_id, area_name, parent_id, grade = province_service.query_previous_province(query_area_id=area_id)
     # print(area_id, area_name, parent_id, grade)
-    area_name = '南岸区'
+    area_name = '东营市'
     province_name = province_service.query_belong_province(area_name)
     print(province_name)
 
-    print('--- ok ---')
+    # print('--- ok ---')
+    # print('中原区'.find('中'))
 
-    #print( '中原区'.find('1'))
+
+
+
+
+
+
 
 
 

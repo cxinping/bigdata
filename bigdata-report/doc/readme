@@ -162,6 +162,15 @@ and destin_province != 'null'
 group by destin_province
 
 
+select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis where  origin_province  like '%区%'
+
+truncate table 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
+
+select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
+
+refresh  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
+
+
 upsert into table  01_datamart_layer_007_h_cw_df.finance_travel_bill (finance_travel_id,sales_address,origin_province,destin_province)
 select
     finance_travel_id,
