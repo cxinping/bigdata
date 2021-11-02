@@ -271,16 +271,17 @@ class Check13Service():
         records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
         if records and len(records) > 0:
             for idx, record in enumerate(records):
-                bill_id = str(record[0])
-                city_name = str(record[1])
-                city_grade_name = str(record[2])
-                emp_name = str(record[3])
-                stand_amount_perday = float(record[4])
-                hotel_amount_perday = float(record[5])
-                # self.province_service
-                province = self.province_service.query_belong_province(city_name)
+                bill_id = str(record[0])                # bill_id
+                city_name = str(record[1])              # 出差城市名称
+                city_grade_name = str(record[2])        # 出差城市等级
+                emp_name = str(record[3])               # 员工名字
+                stand_amount_perday = float(record[4])  # 每天标准住宿费用
+                hotel_amount_perday = float(record[5])  # 每天实际花费的住宿费用
 
-                record_str = f'{bill_id},{city_name},{city_grade_name},{province},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
+                province = self.province_service.query_belong_province(city_name)  # 出差城市所属的省
+                province = province if province else '******'
+
+                record_str = f'{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
                 log.info(f" {threading.current_thread().name} is doing ")
                 log.info(record_str)
                 print()
