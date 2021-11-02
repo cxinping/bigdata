@@ -45,7 +45,8 @@ select  * from 01_datamart_layer_007_h_cw_df.finance_hotel_standard
 宽表 差旅费
 select  * from 01_datamart_layer_007_h_cw_df.finance_travel_bill
 
-select bill_id, city_name, city_grade_name, emp_name, hotel_amount/hotel_num from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name='差旅费' and hotel_num > 0
+select bill_id, city_name, city_grade_name, emp_name, hotel_amount/hotel_num from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+where exp_type_name='差旅费' and hotel_num > 0
 
 
 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm   住宿
@@ -78,7 +79,6 @@ where a.exp_type_name="差旅费" and a.hotel_num > 0 and
 
 ---------------------------------
 
-
 select distinct
 a.bill_id, a.city_name, a.city_grade_name, a.emp_name,
 a.hotel_amount/a.hotel_num as hotel_amount_day,
@@ -89,11 +89,11 @@ from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm a,
 select distinct
 bill_id,member_level_id,member_level_name, substr(cast(account_period as string),1,4) as account_period_y
 from 01_datamart_layer_007_h_cw_df.finance_travel_bill
-where substr(cast(account_period as string),1,4)='2021' )  b
+where substr(cast(account_period as string),1,4)='2021' and member_level_id is not null )  b
 where a.exp_type_name="差旅费" and a.hotel_num > 0 and
       a.bill_id =b.bill_id
 
-
+查询2021年的员工住宿费用的记录总数
 select count(*) from (
 select distinct
 a.bill_id, a.city_name, a.city_grade_name, a.emp_name,
@@ -111,8 +111,38 @@ where a.exp_type_name="差旅费" and a.hotel_num > 0 and
       ) zzz
 
 
-############################### check 2     ###############################
 
+
+SELECT DISTINCT
+a.bill_id, a.city_name, a.city_grade_name, a.emp_name,ROUND(a.stand_amount, 2) as stand_amount_perday,
+ROUND(a.hotel_amount/a.hotel_num , 2) as hotel_amount_perday
+FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm a
+WHERE a.exp_type_name="差旅费" AND a.hotel_num > 0
+AND ROUND(a.hotel_amount/a.hotel_num , 2)  > ROUND(a.stand_amount, 2)
+
+查询超过标准报销费用的住宿费记录
+SELECT a.bill_id, a.city_name, a.city_grade_name, a.emp_name,a.stand_amount_perday, a.hotel_amount_perday
+FROM (
+SELECT DISTINCT
+bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,
+ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
+FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+WHERE exp_type_name="差旅费" AND hotel_num > 0
+)as a
+WHERE a.hotel_amount_perday  > a.stand_amount_perday
+
+查询地区
+SELECT  a.city_name, a.city_grade_name
+FROM (
+SELECT DISTINCT
+ city_name, city_grade_name
+ FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+WHERE exp_type_name="差旅费" AND hotel_num > 0
+)as a
+ORDER BY a.city_grade_name ASC
+
+
+############################### check 2     ###############################
 
 select origin_province from 01_datamart_layer_007_h_cw_df.finance_travel_bill
 where origin_province not like '%银行%'
@@ -143,7 +173,15 @@ from
 
 truncate table 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
 
+refresh  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
+
 load data inpath '/user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_cost_detail_m/importdate=20210923' into table 03_basal_layer_zfybxers00.zfybxers00_z_rma_cost_detail_m  partition (importdate="20210923")
+
+
+
+
+
+
 
 
 

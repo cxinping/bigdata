@@ -16,7 +16,7 @@ import sys
 sys.path.append('/you_filed_algos/app')
 
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint13'
-dest_file = dest_dir + '/check_13_data2.txt'
+dest_file = dest_dir + '/check_13_data.txt'
 
 
 def check_13_data():
@@ -32,7 +32,23 @@ def check_13_data():
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where destin_name is not null'.format(
         columns_str=columns_str)
 
-    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    count_sql = """
+    select count(*) from (
+        select distinct
+        a.bill_id, a.city_name, a.city_grade_name, a.emp_name,
+        a.hotel_amount/a.hotel_num as hotel_amount_day,
+        b.member_level_id, b.member_level_name,
+        b.account_period_y
+        from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm a,
+        (
+        select distinct
+        bill_id,member_level_id,member_level_name, substr(cast(account_period as string),1,4) as account_period_y
+        from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+        where substr(cast(account_period as string),1,4)='2021' )  b
+        where a.exp_type_name="差旅费" and a.hotel_num > 0 and
+              a.bill_id =b.bill_id
+              ) zzz    
+    """
     print(count_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
     count_records = records[0][0]
@@ -125,9 +141,9 @@ def load_data():
 
 
 if __name__ == "__main__":
-    # check_13_data()
+    check_13_data()
 
-    # save_data()   # 12798130
-    load_data()
+    #save_data()   # 12798130
+    #load_data()
 
     print('--- ok ---')
