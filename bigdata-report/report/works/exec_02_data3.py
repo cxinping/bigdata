@@ -5,7 +5,7 @@ import time
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import MatchArea,save_file
+from report.commons.tools import MatchArea, save_file
 from report.services.common_services import ProvinceService
 import threading
 
@@ -16,8 +16,9 @@ import threading
 
 log = get_logger(__name__)
 
-dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data2.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_02_trip_data2.txt'
+error_file = "/you_filed_algos/prod_kudu_data/error_data.txt"
 
 match_area = MatchArea()
 province_service = ProvinceService()
@@ -79,7 +80,7 @@ def execute_02_data():
 
     # for sel_sql in select_sql_ls:
     #     log.info(sel_sql)
-        #threadPool.submit(exec_task, sel_sql)
+    # threadPool.submit(exec_task, sel_sql)
 
     all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
     wait(all_task, return_when=ALL_COMPLETED)
@@ -137,13 +138,13 @@ def exec_task(sql):
             consumed_time0 = round(time.perf_counter() - start_time0)
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
-            destin_name = str(record[0]) if record[0] else None         # 行程目的地
-            sales_name = str(record[1]) if record[1] else None          # 开票公司
+            destin_name = str(record[0]) if record[0] else None  # 行程目的地
+            sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None         # 行程出发地(市)
-            invo_code = str(record[6]) if record[6] else None           # 发票代码
+            origin_name = str(record[5]) if record[5] else None  # 行程出发地(市)
+            invo_code = str(record[6]) if record[6] else None  # 发票代码
 
             start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
@@ -159,17 +160,29 @@ def exec_task(sql):
             consumed_time2 = round(time.perf_counter() - start_time2)
             log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}')
 
-            origin_name = origin_name if origin_name else 'null'
-            sales_name = sales_name if sales_name else 'null'
-            sales_addressphone = sales_addressphone if sales_addressphone else 'null'
-            sales_bank = sales_bank if sales_bank else 'null'
-            invo_code = invo_code if invo_code else 'null'
-            sales_address = sales_address if sales_address else 'null'
-            origin_province = origin_province if origin_province else 'null'
-            destin_province = destin_province if destin_province else 'null'
+            origin_name = origin_name.replace(',', ' ') if origin_name else 'null'  # 行程出发地(市)
+            sales_name = sales_name.replace(',', ' ') if sales_name else 'null'  # 开票公司
+            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else 'null'  # 开票地址及电话
+            sales_bank = sales_bank.replace(',', ' ') if sales_bank else 'null'  # 发票开户行
+            invo_code = invo_code if invo_code else 'null'  # 发票代码
+            sales_address = sales_address if sales_address else 'null'  # 发票开票地(市)
+            origin_province = origin_province if origin_province else 'null'  # 行程出发地(省)
+            destin_province = destin_province if destin_province else 'null'  # 行程目的地(省)
             record = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province}'
             print(record)
             print('')
+
+            if origin_province.find('区') > -1 and origin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区',
+                                                                          '西藏自治区'] and destin_province.find(
+                    '区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
+                print('============ abnormal data ==============')
+                print('============ abnormal data ==============')
+                print('============ abnormal data ==============')
+                print('============ abnormal data ==============')
+                print(record)
+
+                with open(error_file, "a+", encoding='utf-8') as file:
+                    file.write(record + "\n")
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record + "\n")
@@ -186,7 +199,7 @@ def main():
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

@@ -450,3 +450,8 @@ if __name__ == '__main__':
     line = '111'
     output_file = r'/you_filed_algos/prod_kudu_data/abc.txt'
     save_file(output_file, line, clear_buff=True)
+
+    content = '四川省成都市锦江区三槐树路3号1层,4至9层'
+    content_trans = transfer_content(content)
+    print(content_trans)
+    print(content.replace(',',' '))

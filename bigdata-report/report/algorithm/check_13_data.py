@@ -9,7 +9,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import threading
 
-
 log = get_logger(__name__)
 
 import sys
@@ -41,7 +40,6 @@ def check_13_data():
 
 
 def init_file():
-
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
@@ -86,7 +84,7 @@ def save_data():
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name='差旅费' and hotel_num > 0 ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
-        #print('*** tmp_sql => ', tmp_sql)
+        # print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
     threadPool = ThreadPoolExecutor(max_workers=30)
@@ -127,19 +125,9 @@ def load_data():
 
 
 if __name__ == "__main__":
-    #check_13_data()
+    # check_13_data()
 
-    #save_data()   # 12798130
+    # save_data()   # 12798130
     load_data()
 
     print('--- ok ---')
-
-
-
-
-
-
-
-
-
-
