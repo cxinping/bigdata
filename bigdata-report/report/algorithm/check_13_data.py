@@ -9,7 +9,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import threading
 from report.services.common_services import ProvinceService
-
+from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 
 log = get_logger(__name__)
 
@@ -19,6 +19,9 @@ sys.path.append('/you_filed_algos/app')
 
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint13'
 dest_file = dest_dir + '/check_13_data.txt'
+
+
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_13_data.txt'
 
 
 def check_13_data():
@@ -297,7 +300,10 @@ if __name__ == "__main__":
     # load_data()
 
     check13_service = Check13Service()
-    # check13_service.query_areas()
-    check13_service.query_abnormal_fee()   # 292812
+    #check13_service.query_abnormal_fee()   # 292812
+
+    test_hdfs = Test_HDFSTools(conn_type='test')
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
 
     print('--- ok ---')

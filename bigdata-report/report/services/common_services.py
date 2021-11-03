@@ -159,7 +159,7 @@ if __name__ == "__main__":
     # area_id = '510000'
     # area_id, area_name, parent_id, grade = province_service.query_previous_province(query_area_id=area_id)
     # print(area_id, area_name, parent_id, grade)
-    area_name = '东营市'
+    area_name = '南川区'
     province_name = province_service.query_belong_province(area_name)
     print(province_name)
 

@@ -16,8 +16,9 @@ import threading
 
 log = get_logger(__name__)
 
+
 dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_02_trip_data2.txt'
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_02_trip_data.txt'
 error_file = "/you_filed_algos/prod_kudu_data/error_data.txt"
 
 match_area = MatchArea()
