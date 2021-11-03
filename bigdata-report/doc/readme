@@ -144,6 +144,8 @@ ORDER BY a.city_grade_name ASC
 
 ############################### checkpoint 14     ###############################
 
+SELECT bill_id, origin_name, destin_name, jour_amount FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+WHERE jour_amount > 0
 
 ############################### checkpoint 2     ###############################
 

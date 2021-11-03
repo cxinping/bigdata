@@ -178,12 +178,12 @@ class Check13Service():
         print(len(rd_df))
         #print(rd_df.head(5))
 
-        print('*' * 50)
-
         # 过滤查询
         query_province = '江苏省'
         rd_df = rd_df[rd_df['province'] == query_province]
         print(rd_df.head(5))
+
+        print('*' * 50)
 
         grouped_df = rd_df.groupby('city_grade_name')
 

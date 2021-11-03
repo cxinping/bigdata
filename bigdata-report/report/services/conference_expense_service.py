@@ -633,6 +633,8 @@ def pagination_conference_records(categorys, good_keywords):
                 condition_sql = condition_sql + tmp_sql
 
         where_sql = where_sql + condition_sql
+    elif len(categorys) == 0:
+        where_sql = where_sql + ' 1=1'
 
     order_sql = ' ORDER BY bill_id ASC '
     sql = sql + where_sql + order_sql
