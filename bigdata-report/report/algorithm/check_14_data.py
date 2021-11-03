@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import pandas as pd
 import time
-
+import threading
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 
@@ -13,6 +13,9 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
+dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
+dest_file = dest_dir + '/check_14_data.txt'
+
 
 def check_14_data():
     """
@@ -21,9 +24,6 @@ def check_14_data():
     columns_ls = ['bill_id', 'origin_name', 'destin_name', 'jour_amount']
     columns_str = ",".join(columns_ls)
 
-    # 44745309
-    # 1745309 67
-    # 2745309 118
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0'.format(
         columns_str=columns_str)
 
@@ -61,7 +61,7 @@ def check_14_data():
     log.info('* 开始分页查询')
 
     obj_list = []
-    threadPool = ThreadPoolExecutor(max_workers=20)
+    threadPool = ThreadPoolExecutor(max_workers=30)
     start_time = time.perf_counter()
 
     for sel_sql in select_sql_ls:
@@ -83,8 +83,30 @@ def check_14_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-def exec_task(sql, columns_ls):
-    pass
+def exec_task(sql):
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    if records and len(records) > 0:
+        for idx, record in enumerate(records):
+            bill_id = str(record[0])  # bill_id
+            origin_name = str(record[1])  # 出发地
+            destin_name = str(record[2])  # 目的地
+            jour_amount = str(record[3])  # 交通费
+
+            record_str = f'{bill_id},{origin_name},{destin_name},{jour_amount}'
+            log.info(f" {threading.current_thread().name} is doing ")
+            log.info(record_str)
+            print()
+
+            with open(dest_file, "a+", encoding='utf-8') as file:
+                file.write(record_str + "\n")
+
+
+def init_file():
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
+    if os.path.exists(dest_file):
+        os.remove(dest_file)
 
 
 def calculate_data(rd_df):
@@ -101,13 +123,13 @@ def calculate_data(rd_df):
     print(result)
 
     bill_id_ls = result['bill_id'].tolist()
-    exec_sql(bill_id_ls)
 
 
-def exec_sql(bill_id_ls):
-    print(len(bill_id_ls))
+def main():
+    init_file()
+    check_14_data()  # 3108210   1391728
+    print('--- ok ---')
+    os._exit(0)  # 无错误退出
 
 
-check_14_data()
-print('--- ok ---')
-os._exit(0)  # 无错误退出
+main()

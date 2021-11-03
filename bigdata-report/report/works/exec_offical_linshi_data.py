@@ -127,7 +127,7 @@ def exec_task(sql):
 
             log.info(f" {threading.current_thread().name} is doing ")
 
-            record_str = f'{finance_meeting_id},{meet_addr},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
+            record_str = f'{finance_meeting_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
             print(record_str)
             print('')
 
@@ -173,10 +173,10 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_linshi_office_data()
+    check_linshi_office_data()
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
