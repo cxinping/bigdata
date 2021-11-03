@@ -9,16 +9,13 @@ from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
 
-"""
 
-把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
-"""
 
 log = get_logger(__name__)
 
-dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint25'
-dest_file = dest_dir + "/check_25_meeting_data.txt"
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_meeting_linshi_analysis/check_25_meeting_data.txt'
+dest_dir = '/you_filed_algos/prod_kudu_data/temp'
+dest_file = dest_dir + "/check_meeting_data.txt"
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_meeting_linshi_analysis/check_meeting_data.txt'
 
 match_area = MatchArea()
 province_service = ProvinceService()
@@ -32,7 +29,7 @@ def init_file():
         os.remove(dest_file)
 
 
-def check_25_data():
+def check_meeting_data():
     init_file()
 
     columns_ls = ['finance_meeting_id', 'meet_addr', 'sales_name', 'sales_addressphone', 'sales_bank']
@@ -55,11 +52,11 @@ def check_25_data():
             sales_bank = str(record[4])  # 发票开会行
             sales_address = operate_reocrd(record)  # 发票开票地(市)
 
-            meet_addr = meet_addr.replace(',', ' ') if meet_addr else 'null'
-            sales_name = sales_name.replace(',', ' ') if sales_name else 'null'
-            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else 'null'
-            sales_bank = sales_bank.replace(',', ' ') if sales_bank else 'null'
-            sales_address = sales_address.replace(',', ' ') if sales_address else 'null'
+            meet_addr = meet_addr.replace(',', ' ') if meet_addr else '无'
+            sales_name = sales_name.replace(',', ' ') if sales_name else '无'
+            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
+            sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
+            sales_address = sales_address.replace(',', ' ') if sales_address else '无'
 
             record_str = f'{finance_meeting_id},{meet_addr},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
             print(record_str)
@@ -109,12 +106,12 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_25_data()
+    check_meeting_data()
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    # os._exit(0)  # 无错误退出
+    os._exit(0)  # 无错误退出
 
 
 main()

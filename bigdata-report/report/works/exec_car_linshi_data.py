@@ -109,10 +109,10 @@ def exec_task(sql):
             sales_bank = str(record[3])  # 发票开会行
             sales_address = operate_reocrd(record)  # 发票开票地(市)
 
-            sales_name = sales_name.replace(',', ' ') if sales_name else 'null'
-            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else 'null'
-            sales_bank = sales_bank.replace(',', ' ') if sales_bank else 'null'
-            sales_address = sales_address.replace(',', ' ') if sales_address else 'null'
+            sales_name = sales_name.replace(',', ' ') if sales_name else '无'
+            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
+            sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
+            sales_address = sales_address.replace(',', ' ') if sales_address else '无'
 
             log.info(f" {threading.current_thread().name} is doing ")
             record_str = f'{finance_car_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
@@ -160,10 +160,10 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_car_linshi_data()
+    check_car_linshi_data()
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

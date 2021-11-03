@@ -36,7 +36,7 @@ def check_linshi_office_data():
 
     sql = """
         select {columns_str}
-    from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+    from 01_datamart_layer_007_h_cw_df.finance_official_bill 
     where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
         """.format(
         columns_str=columns_str)
@@ -60,7 +60,7 @@ def check_linshi_office_data():
 
                 tmp_sql = """
                     select {columns_str}
-                from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+                from 01_datamart_layer_007_h_cw_df.finance_official_bill 
                 where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
                 order by finance_meeting_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
@@ -70,7 +70,7 @@ def check_linshi_office_data():
             else:
                 tmp_sql = """
                     select {columns_str}
-                from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+                from 01_datamart_layer_007_h_cw_df.finance_official_bill 
                 where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
                 order by finance_meeting_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
@@ -81,7 +81,7 @@ def check_linshi_office_data():
     else:
         tmp_sql = """
             select {columns_str}
-            from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+            from 01_datamart_layer_007_h_cw_df.finance_official_bill 
             where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null)
             """.format(columns_str=columns_str)
 
@@ -119,14 +119,13 @@ def exec_task(sql):
             sales_bank = str(record[4])             # 发票开会行
             sales_address = operate_reocrd(record)  # 发票开票地(市)
 
-            meet_addr = meet_addr.replace(',', ' ') if meet_addr else 'null'
-            sales_name = sales_name.replace(',', ' ') if sales_name else 'null'
-            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else 'null'
-            sales_bank = sales_bank.replace(',', ' ') if sales_bank else 'null'
-            sales_address = sales_address.replace(',', ' ') if sales_address else 'null'
+            meet_addr = meet_addr.replace(',', ' ') if meet_addr else '无'
+            sales_name = sales_name.replace(',', ' ') if sales_name else '无'
+            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
+            sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
+            sales_address = sales_address.replace(',', ' ') if sales_address else '无'
 
             log.info(f" {threading.current_thread().name} is doing ")
-
             record_str = f'{finance_meeting_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
             print(record_str)
             print('')
@@ -175,7 +174,7 @@ def operate_reocrd(record):
 def main():
     check_linshi_office_data()
 
-    test_hdfs = Test_HDFSTools(conn_type='test')
+    #test_hdfs = Test_HDFSTools(conn_type='test')
     #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
