@@ -9,10 +9,7 @@ from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
 
-"""
 
-把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
-"""
 
 log = get_logger(__name__)
 
@@ -103,9 +100,7 @@ def check_linshi_office_data():
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
 
-    log.inf('** 关闭线程池')
-    stop_process_pool(threadPool)
-
+    log.info('** 关闭线程池')
 
 def stop_process_pool(executor):
     for pid, process in executor._processes.items():
@@ -141,12 +136,10 @@ def exec_task(sql):
 
 
 def operate_reocrd(record):
-    # destin_name = str(record[0]) if record[0] else None
     sales_name = str(record[1]) if record[1] else None  # 开票公司
     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
     sales_bank = str(record[3]) if record[3] else None  # 发票开户行
 
-    # print('destin_name=',destin_name)
     # print('sales_name=', sales_name)
     # print('sales_addressphone=', sales_addressphone)
     # print('sales_bank=', sales_bank)
@@ -180,12 +173,12 @@ def operate_reocrd(record):
 
 
 def main():
-    check_linshi_office_data()
+    #check_linshi_office_data()
 
-    # test_hdfs = Test_HDFSTools(conn_type='test')
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs = Test_HDFSTools(conn_type='test')
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    # os._exit(0)  # 无错误退出
+    os._exit(0)  # 无错误退出
 
 
 main()
