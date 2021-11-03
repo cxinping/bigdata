@@ -22,6 +22,7 @@ dest_file = dest_dir + '/check_13_data.txt'
 
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_13_data.txt'
 
+
 class Check13Service():
 
     def __init__(self):
@@ -170,9 +171,29 @@ class Check13Service():
                     file.write(record_str + "\n")
 
     def analyze_data_data(self):
-        rd_df = pd.read_csv(dest_file, sep=',', header=None)
-        print(rd_df.dtypes)
+        rd_df = pd.read_csv(dest_file, sep=',', header=None,
+                            names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
+                                   'stand_amount_perday', 'hotel_amount_perday'])
+        #print(rd_df.dtypes)
         print(len(rd_df))
+        #print(rd_df.head(5))
+
+        print('*' * 50)
+
+        # 过滤查询
+        query_province = '江苏省'
+        rd_df = rd_df[rd_df['province'] == query_province]
+        print(rd_df.head(5))
+
+        grouped_df = rd_df.groupby('city_grade_name')
+
+        for name, group in grouped_df:
+            print(group.head(5))
+            temp = group.describe()[['hotel_amount_perday']]
+            std_val = temp.at['std', 'hotel_amount_perday']  # 方差
+            print(f'{query_province} {name} 方差 => {std_val}')
+            print('')
+
 
 if __name__ == "__main__":
     # check_13_data()
@@ -184,8 +205,7 @@ if __name__ == "__main__":
     # check13_service.query_abnormal_fee()   # 292812
     check13_service.analyze_data_data()
 
-
-    #test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    # test_hdfs = Test_HDFSTools(conn_type='test')
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     print('--- ok ---')
