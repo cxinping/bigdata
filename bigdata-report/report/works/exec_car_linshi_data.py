@@ -96,7 +96,7 @@ def check_car_linshi_data():
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
-    log.inf('** 关闭线程池')
+    log.info('** 关闭线程池')
 
 
 def exec_task(sql):
@@ -160,10 +160,10 @@ def operate_reocrd(record):
 
 
 def main():
-    check_car_linshi_data()
+    #check_car_linshi_data()
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

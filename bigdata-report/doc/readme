@@ -15,7 +15,15 @@ insert  into 01_datamart_layer_007_h_cw_df.finance_blacklist values (uuid(),'','
 
 select * from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费';
 
-############################### checkpoint 13 ###############################
+
+############################### checkpoint 12    ###############################
+
+
+
+
+
+############################### checkpoint 13     ###############################
+
 select  * from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费"
 
 select  count(bill_id) from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm where exp_type_name="差旅费"
@@ -25,13 +33,6 @@ select  * from  01_datamart_layer_007_h_cw_df.finance_rma_travel_members
 select  * from 01_datamart_layer_007_h_cw_df.finance_hotel_standard
 
 describe 01_datamart_layer_007_h_cw_df.finance_category_sign
-
-############################### check 12    ###############################
-
-
-
-
-############################### check 13     ###############################
 
 差旅费明细表
 select  * from   01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
@@ -141,8 +142,10 @@ WHERE exp_type_name="差旅费" AND hotel_num > 0
 )as a
 ORDER BY a.city_grade_name ASC
 
+############################### checkpoint 14     ###############################
 
-############################### check 2     ###############################
+
+############################### checkpoint 2     ###############################
 
 select origin_province from 01_datamart_layer_007_h_cw_df.finance_travel_bill
 where origin_province not like '%银行%'
