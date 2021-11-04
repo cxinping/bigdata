@@ -12,8 +12,8 @@ import threading
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-dest_file = dest_dir + "/finance_car_linshi_analysis.txt"
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_car_linshi_analysis/finance_car_linshi_analysis.txt'
+dest_file = dest_dir + "/car_data.txt"
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_car_linshi_analysis/car_data.txt'
 
 match_area = MatchArea()
 
@@ -160,10 +160,10 @@ def operate_reocrd(record):
 
 
 def main():
-    check_car_linshi_data()
+    #check_car_linshi_data()  # 25124
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

@@ -14,8 +14,8 @@ import threading
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-dest_file = dest_dir + "/check_meeting_data.txt"
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_meeting_linshi_analysis/check_meeting_data.txt'
+dest_file = dest_dir + "/meeting_data.txt"
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_meeting_linshi_analysis/meeting_data.txt'
 
 match_area = MatchArea()
 province_service = ProvinceService()

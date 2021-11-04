@@ -149,6 +149,10 @@ WHERE jour_amount > 0
 
 ############################### checkpoint 2     ###############################
 
+select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%房山%'
+
+
+
 select origin_province from 01_datamart_layer_007_h_cw_df.finance_travel_bill
 where origin_province not like '%银行%'
 --and origin_province  like '%区%'
