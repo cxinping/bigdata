@@ -96,7 +96,7 @@ class ProvinceService:
             area_name = str(record[1]) if record[1] else None
 
             # print(area_id, area_name, parent_id, grade)
-            #if query_area_name == area_name:
+            # if query_area_name == area_name:
             if area_name.find(query_area_name) > -1:
                 area_id = str(record[0]) if record[0] else None
                 parent_id = str(record[2]) if record[2] else None
@@ -132,6 +132,41 @@ class ProvinceService:
 
         return None
 
+    def query_receipt_city(self, area_name):
+        """
+        查询发票开票所在市
+        :param area_name:
+        :return:
+        """
+
+        if area_name is None:
+            return None
+
+        area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)
+        if area_name is None or area_name == 'None':
+            return None
+
+        if grade and grade == '1':
+            return area_name
+
+        idx = 0
+        if grade and grade != '2':
+
+            while grade and grade != '2':
+                idx = idx + 1
+
+                if idx > 3:
+                    return None
+
+                area_id, area_name, parent_id, grade = self.query_previous_province(query_area_id=parent_id)
+                if grade and grade == '2':
+                    return area_name
+
+        elif grade and grade == '2':
+            return area_name
+
+        return None
+
 
 if __name__ == "__main__":
     daily_status = 'ok'
@@ -154,26 +189,17 @@ if __name__ == "__main__":
     # print(records)
 
     province_service = ProvinceService()
-    #area_name = '金湖县'
+    # area_name = '金湖县'
     # province_service.query_province(area_name)
     # area_id = '510000'
     # area_id, area_name, parent_id, grade = province_service.query_previous_province(query_area_id=area_id)
     # print(area_id, area_name, parent_id, grade)
     area_name = '南川区'
-    province_name = province_service.query_belong_province(area_name)
-    print(province_name)
+    # province_name = province_service.query_belong_province(area_name)
+    # print('province_name=',province_name)
+
+    city_name = province_service.query_receipt_city(area_name='余姚市')
+    print(f'city_name={city_name}')
 
     # print('--- ok ---')
     # print('中原区'.find('中'))
-
-
-
-
-
-
-
-
-
-
-
-

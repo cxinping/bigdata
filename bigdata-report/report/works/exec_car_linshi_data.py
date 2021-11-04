@@ -16,7 +16,7 @@ dest_file = dest_dir + "/car_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_car_linshi_analysis/car_data.txt'
 
 match_area = MatchArea()
-
+province_service = ProvinceService()
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -104,18 +104,20 @@ def exec_task(sql):
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_car_id = str(record[0])
-            sales_name = str(record[1])  # 开票公司
-            sales_addressphone = str(record[2])  # 开票地址及电话
-            sales_bank = str(record[3])  # 发票开会行
-            sales_address = operate_reocrd(record)  # 发票开票地(市)
+            sales_name = str(record[1])                                         # 开票公司
+            sales_addressphone = str(record[2])                                 # 开票地址及电话
+            sales_bank = str(record[3])                                         # 发票开会行
+            sales_address = operate_reocrd(record)                              # 发票开票地(最小行政)
+            receipt_city = province_service.query_receipt_city(sales_address)   # 发票开票所在市
 
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'
             sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
             sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
             sales_address = sales_address.replace(',', ' ') if sales_address else '无'
+            receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
 
             log.info(f" {threading.current_thread().name} is doing ")
-            record_str = f'{finance_car_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address}'
+            record_str = f'{finance_car_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
             print(record_str)
             print('')
 
@@ -160,10 +162,10 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_car_linshi_data()  #  27673
+    check_car_linshi_data()  #  32347
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

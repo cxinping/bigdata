@@ -17,8 +17,8 @@ import threading
 log = get_logger(__name__)
 
 
-dest_file = "/you_filed_algos/prod_kudu_data/temp/trip_data.txt"
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/trip_data.txt'
+dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
 error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
 
 match_area = MatchArea()
@@ -135,17 +135,18 @@ def exec_task(sql):
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             start_time0 = time.perf_counter()
-            sales_address = operate_reocrd(record)  # 发票开票地(市)
+            sales_address = operate_reocrd(record)                      # 发票开票地(最小行政)
             consumed_time0 = round(time.perf_counter() - start_time0)
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
-            destin_name = str(record[0]) if record[0] else None  # 行程目的地
-            sales_name = str(record[1]) if record[1] else None  # 开票公司
+            destin_name = str(record[0]) if record[0] else None         # 行程目的地
+            sales_name = str(record[1]) if record[1] else None          # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None          # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None  # 行程出发地(市)
-            invo_code = str(record[6]) if record[6] else None  # 发票代码
+            origin_name = str(record[5]) if record[5] else None         # 行程出发地(市)
+            invo_code = str(record[6]) if record[6] else None           # 发票代码
+            receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
             start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
@@ -169,15 +170,15 @@ def exec_task(sql):
             sales_address = sales_address if sales_address else '无'  # 发票开票地(市)
             origin_province = origin_province if origin_province else '无'  # 行程出发地(省)
             destin_province = destin_province if destin_province else '无'  # 行程目的地(省)
-            record_str = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province}'
+            receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
+
+            record_str = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
             print(record_str)
             print('')
 
             if origin_province.find('区') > -1 and origin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区',
                                                                           '西藏自治区'] and destin_province.find(
                     '区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
-                print('============ abnormal data ==============')
-                print('============ abnormal data ==============')
                 print('============ abnormal data ==============')
                 print('============ abnormal data ==============')
                 print(record_str)
