@@ -17,9 +17,9 @@ import threading
 log = get_logger(__name__)
 
 
-dest_file = "/you_filed_algos/prod_kudu_data/check_02_trip_data.txt"
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_02_trip_data.txt'
-error_file = "/you_filed_algos/prod_kudu_data/error_data.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/temp/trip_data.txt"
+upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/trip_data.txt'
+error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
 
 match_area = MatchArea()
 province_service = ProvinceService()
@@ -161,14 +161,14 @@ def exec_task(sql):
             consumed_time2 = round(time.perf_counter() - start_time2)
             log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}')
 
-            origin_name = origin_name.replace(',', ' ') if origin_name else 'null'  # 行程出发地(市)
-            sales_name = sales_name.replace(',', ' ') if sales_name else 'null'  # 开票公司
-            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else 'null'  # 开票地址及电话
-            sales_bank = sales_bank.replace(',', ' ') if sales_bank else 'null'  # 发票开户行
-            invo_code = invo_code if invo_code else 'null'  # 发票代码
-            sales_address = sales_address if sales_address else 'null'  # 发票开票地(市)
-            origin_province = origin_province if origin_province else 'null'  # 行程出发地(省)
-            destin_province = destin_province if destin_province else 'null'  # 行程目的地(省)
+            origin_name = origin_name.replace(',', ' ') if origin_name else '无'  # 行程出发地(市)
+            sales_name = sales_name.replace(',', ' ') if sales_name else '无'  # 开票公司
+            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'  # 开票地址及电话
+            sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'  # 发票开户行
+            invo_code = invo_code if invo_code else '无'  # 发票代码
+            sales_address = sales_address if sales_address else '无'  # 发票开票地(市)
+            origin_province = origin_province if origin_province else '无'  # 行程出发地(省)
+            destin_province = destin_province if destin_province else '无'  # 行程目的地(省)
             record_str = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province}'
             print(record_str)
             print('')

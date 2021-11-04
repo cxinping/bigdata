@@ -1,3 +1,21 @@
+计算距离需要安装模块
+Geopy
+
+调用高德API查找地区的经纬度
+https://lbs.amap.com/api/webservice/guide/tools/flowlevel
+
+高德控制台
+https://console.amap.com/dev/flow/manage/0e540c9f3f92b59a54529966d3e13e27
+
+高德 key
+d812403e36c2f01eb70d10b8b50e7e96
+
+/root/anaconda3/bin/python -u /you_filed_algos/app/report/works/exec_02_data3.py
+
+查询经纬度
+https://jingweidu.bmcx.com/
+
+
 select * from 01_datamart_layer_007_h_cw_df.finance_standard
 
 select * from 01_datamart_layer_007_h_cw_df.finance_scenery

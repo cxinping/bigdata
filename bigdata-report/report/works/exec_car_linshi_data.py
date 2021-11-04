@@ -160,7 +160,7 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_car_linshi_data()  # 25124
+    #check_car_linshi_data()  #  27673
 
     test_hdfs = Test_HDFSTools(conn_type='test')
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
