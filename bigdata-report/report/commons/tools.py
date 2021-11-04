@@ -261,6 +261,11 @@ class MatchArea:
         return None
 
     def _query_previous_province(self, area_id):
+        """
+        查找上一级的行政区域
+        :param area_id:
+        :return:
+        """
 
         if area_id is None:
             return None, None, None, None
