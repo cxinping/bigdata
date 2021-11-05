@@ -215,9 +215,18 @@ load data inpath '/user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z
 
 
 
+############################### checkpoint 14     ###############################
 
 
-
+        SELECT a.bill_id, a.city_name, a.city_grade_name, a.emp_name,a.stand_amount_perday, a.hotel_amount_perday
+            FROM (
+            SELECT DISTINCT
+            bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,
+            ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
+            FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+            WHERE exp_type_name="差旅费" AND hotel_num > 0
+            )as a
+        WHERE a.hotel_amount_perday < a.stand_amount_perday
 
 
 

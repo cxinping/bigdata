@@ -57,7 +57,7 @@ class Check13Service():
         if os.path.exists(dest_file):
             os.remove(dest_file)
 
-    def query_abnormal_fee(self):
+    def save_fee_data(self):
         """
         查询超过标准报销费用的住宿费记录
         :return:
@@ -71,9 +71,8 @@ class Check13Service():
             bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,
             ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
-            WHERE exp_type_name="差旅费" AND hotel_num > 0
-            )as a
-        WHERE a.hotel_amount_perday  > a.stand_amount_perday
+            WHERE exp_type_name="差旅费" AND hotel_num > 0 
+            )as a        
         """
 
         count_sql = 'select count(b.bill_id) from ({sql}) b'.format(sql=sql)
@@ -98,8 +97,7 @@ class Check13Service():
                             ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
                             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
                             WHERE exp_type_name="差旅费" AND hotel_num > 0
-                            )as a
-                        WHERE a.hotel_amount_perday  > a.stand_amount_perday
+                            )as a                       
                         order by bill_id limit {limit_size} offset {offset_size}
                     """.format(limit_size=limit_size, offset_size=offset_size)
 
@@ -114,8 +112,7 @@ class Check13Service():
                                ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
                                FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
                                WHERE exp_type_name="差旅费" AND hotel_num > 0
-                               )as a
-                           WHERE a.hotel_amount_perday  > a.stand_amount_perday
+                               )as a                           
                            order by bill_id limit {limit_size} offset {offset_size}
                            """.format(limit_size=limit_size, offset_size=offset_size)
 
@@ -129,8 +126,7 @@ class Check13Service():
             SELECT DISTINCT
             bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,
             ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
-            FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
-            WHERE exp_type_name="差旅费" AND hotel_num > 0
+            FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm            
             )as a
         WHERE a.hotel_amount_perday  > a.stand_amount_perday
         """
@@ -152,10 +148,10 @@ class Check13Service():
         records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
         if records and len(records) > 0:
             for idx, record in enumerate(records):
-                bill_id = str(record[0])  # bill_id
-                city_name = str(record[1])  # 出差城市名称
-                city_grade_name = str(record[2])  # 出差城市等级
-                emp_name = str(record[3])  # 员工名字
+                bill_id = str(record[0])                # bill_id
+                city_name = str(record[1])              # 出差城市名称
+                city_grade_name = str(record[2])        # 出差城市等级
+                emp_name = str(record[3])               # 员工名字
                 stand_amount_perday = float(record[4])  # 每天标准住宿费用
                 hotel_amount_perday = float(record[5])  # 每天实际花费的住宿费用
 
@@ -175,24 +171,25 @@ class Check13Service():
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])
         #print(rd_df.dtypes)
-        print(len(rd_df))
-        #print(rd_df.head(5))
+        print('before filter ',len(rd_df))
+        print(rd_df.head(5))
 
         # 过滤查询
         query_province = '江苏省'
-        rd_df = rd_df[rd_df['province'] == query_province]
-        print(rd_df.head(5))
+        rd_df = rd_df[ (rd_df['province'] == query_province) & (rd_df['stand_amount_perday'] >= rd_df['hotel_amount_perday']) ]
+        print('after filter ',len(rd_df))
+        print(rd_df.head(10))
 
-        print('*' * 50)
+        temp = rd_df.describe()[['check_amount']]
+        std_val = temp.at['std', 'check_amount']  # 方差
 
-        grouped_df = rd_df.groupby('city_grade_name')
+        print(f'{query_province} 方差 => {std_val}')
 
-        for name, group in grouped_df:
-            print(group.head(5))
-            temp = group.describe()[['hotel_amount_perday']]
-            std_val = temp.at['std', 'hotel_amount_perday']  # 方差
-            print(f'{query_province} {name} 方差 => {std_val}')
-            print('')
+
+
+
+
+
 
 
 if __name__ == "__main__":
@@ -202,8 +199,9 @@ if __name__ == "__main__":
     # load_data()
 
     check13_service = Check13Service()
-    # check13_service.query_abnormal_fee()   # 292812
-    check13_service.analyze_data_data()
+    check13_service.save_fee_data()   # 5776561
+
+    #check13_service.analyze_data_data()
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

@@ -87,7 +87,7 @@ def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
-            bill_id = str(record[0])  # bill_id
+            bill_id = str(record[0])      # bill_id
             origin_name = str(record[1])  # 出发地
             destin_name = str(record[2])  # 目的地
             jour_amount = str(record[3])  # 交通费
@@ -124,10 +124,20 @@ def calculate_data(rd_df):
 
     bill_id_ls = result['bill_id'].tolist()
 
+def analyze_data_data():
+    rd_df = pd.read_csv(dest_file, sep=',', header=None,
+                        names=['bill_id', 'origin_name', 'destin_name', 'jour_amount'])
+    # print(rd_df.dtypes)
+    print('before filter ', len(rd_df))
+    print(rd_df.head(20))
+    print(len(rd_df))
 
 def main():
-    init_file()
-    check_14_data()  # 3108210   1391728
+    #init_file()
+    #check_14_data()  # 3108210   1391728
+
+    analyze_data_data()
+
     print('--- ok ---')
     os._exit(0)  # 无错误退出
 
