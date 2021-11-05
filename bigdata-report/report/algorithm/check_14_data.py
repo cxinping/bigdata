@@ -117,60 +117,50 @@ def init_file():
         os.remove(dest_file)
 
 
-def calculate_data(rd_df):
-    print(rd_df.head())
-    print(rd_df.dtypes)
-    print('*' * 50)
-    print(rd_df.describe())
+def analyze_data_data(coefficient=2):
+    """
 
-    temp = rd_df.describe()[['check_amount']]
-    mean_val = temp.at['mean', 'check_amount']  # 平均值
-    std_val = temp.at['std', 'check_amount']  # 方差
+    排除飞机票后, 取其他所有的差旅费
 
-    result = rd_df[rd_df['check_amount'] > mean_val]
-    print(result)
-
-    bill_id_ls = result['bill_id'].tolist()
-
-def analyze_data_data():
+    :param coefficient: 系数，默认值为2
+    :return:
+    """
     rd_df = pd.read_csv(dest_file, sep=',', header=None,
                         names=['bill_id', 'origin_name', 'destin_name', 'jour_amount'])
     # print(rd_df.dtypes)
     print('before filter ', len(rd_df))
-    #print(rd_df.head(20))
+    # print(rd_df.head(20))
     print(len(rd_df))
 
     print('*' * 50)
 
-    rd_df = rd_df[:200]
+    rd_df = rd_df[:300]
     print(rd_df)
-    grouped_df = rd_df.groupby(['origin_name','destin_name'])
+    grouped_df = rd_df.groupby(['origin_name', 'destin_name'])
 
     for name, group_df in grouped_df:
         origin_name, destin_name = name
         temp = group_df.describe()[['jour_amount']]
         std_val = temp.at['std', 'jour_amount']  # 标准差
         mean_val = temp.at['mean', 'jour_amount']  # 平均值
-        # 数据的正常范围为 【mean-2 × std，mean+2 × std】
-        max_val = mean_val + 2 * std_val
-        min_val = mean_val - 2 * std_val
 
-        if std_val == 0  or np.isnan(std_val):
+        if std_val == 0 or np.isnan(std_val):
             std_val = 0
+
+        # 数据的正常范围为 【mean - 2 × std , mean + 2 × std】
+        max_val = mean_val + coefficient * std_val
+        min_val = mean_val - coefficient * std_val
 
         print(f'origin_name={origin_name}, destin_name={destin_name}, 每组数={len(group_df)}，标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}')
         print(group_df)
         print('')
 
 
-
-
-
 def main():
-    #init_file()
-    #check_14_data()  # 3108210   1391728
+    # init_file()
+    # check_14_data()  # 3108210   1391728
 
-    analyze_data_data()
+    analyze_data_data(coefficient=2)
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出
