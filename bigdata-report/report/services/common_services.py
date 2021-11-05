@@ -143,6 +143,8 @@ class ProvinceService:
             return None
 
         area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)
+        #print(area_id, area_name, parent_id, grade )
+
         if area_name is None or area_name == 'None':
             return None
 
@@ -159,7 +161,9 @@ class ProvinceService:
                     return None
 
                 area_id, area_name, parent_id, grade = self.query_previous_province(query_area_id=parent_id)
-                if grade and grade == '2':
+                #print('222 ', area_id, area_name, parent_id, grade)
+
+                if grade and (grade == '2' or grade == '1'):
                     return area_name
 
         elif grade and grade == '2':
@@ -198,7 +202,7 @@ if __name__ == "__main__":
     # province_name = province_service.query_belong_province(area_name)
     # print('province_name=',province_name)
 
-    city_name = province_service.query_receipt_city(area_name='漳浦县')
+    city_name = province_service.query_receipt_city(area_name='房山区')
     print(f'city_name={city_name}')
 
     # print('--- ok ---')
