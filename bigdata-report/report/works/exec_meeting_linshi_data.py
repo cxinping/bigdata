@@ -9,8 +9,6 @@ from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
 
-
-
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
@@ -39,17 +37,77 @@ def check_meeting_data():
         select {columns_str}
     from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
     where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
-        """.format(
-        columns_str=columns_str)
+        """.format(columns_str=columns_str)
 
+    log.info(sql)
+    count_sql = 'select count(a.finance_meeting_id) from ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    log.info(f'* count_records ==> {count_records}')
+
+    max_size = 1 * 1000
+    limit_size = 1000
+    select_sql_ls = []
+
+    if count_records >= max_size:
+        offset_size = 0
+        while offset_size <= count_records:
+            if offset_size + limit_size > count_records:
+                limit_size = count_records - offset_size
+
+                tmp_sql = """
+            select {columns_str}
+            from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+            where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
+                order by finance_meeting_id limit {limit_size} offset {offset_size}
+                    """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
+
+                select_sql_ls.append(tmp_sql)
+                break
+            else:
+                tmp_sql = """
+            select {columns_str}
+            from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+            where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
+                order by finance_meeting_id limit {limit_size} offset {offset_size}
+                    """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
+
+                select_sql_ls.append(tmp_sql)
+
+            offset_size = offset_size + limit_size
+    else:
+        tmp_sql = """
+            select {columns_str}
+            from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+            where meet_addr is not null and (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
+            """.format(columns_str=columns_str)
+
+        select_sql_ls.append(tmp_sql)
+        print('*** tmp_sql => ', tmp_sql)
+
+    log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
+
+    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+    start_time = time.perf_counter()
+
+    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+    wait(all_task, return_when=ALL_COMPLETED)
+
+    threadPool.shutdown(wait=True)
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 查询耗时 {consumed_time} sec')
+
+
+def exec_task(sql):
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_meeting_id = str(record[0])
-            meet_addr = str(record[1])              # 会议地址
-            sales_name = str(record[2])             # 开票公司
-            sales_addressphone = str(record[3])     # 开票地址及电话
-            sales_bank = str(record[4])             # 发票开会行
+            meet_addr = str(record[1])  # 会议地址
+            sales_name = str(record[2])  # 开票公司
+            sales_addressphone = str(record[3])  # 开票地址及电话
+            sales_bank = str(record[4])  # 发票开会行
             sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
             receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
@@ -60,6 +118,7 @@ def check_meeting_data():
             sales_address = sales_address.replace(',', ' ') if sales_address else '无'
             receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
 
+            log.info(f" {threading.current_thread().name} is doing ")
             record_str = f'{finance_meeting_id},{meet_addr},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
             print(record_str)
             print('')
@@ -111,10 +170,9 @@ def main():
     check_meeting_data()
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
 
 main()
-

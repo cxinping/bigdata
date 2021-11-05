@@ -198,7 +198,7 @@ if __name__ == "__main__":
     # province_name = province_service.query_belong_province(area_name)
     # print('province_name=',province_name)
 
-    city_name = province_service.query_receipt_city(area_name='余姚市')
+    city_name = province_service.query_receipt_city(area_name='漳浦县')
     print(f'city_name={city_name}')
 
     # print('--- ok ---')
