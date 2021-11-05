@@ -13,6 +13,11 @@ from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 
 log = get_logger(__name__)
 
+"""
+异常值：一组测定值中与平均值的偏差超过两倍标准差的测定值
+
+"""
+
 import sys
 
 sys.path.append('/you_filed_algos/app')

@@ -2,12 +2,20 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import pandas as pd
+import numpy as np
 import time
 import threading
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 
 log = get_logger(__name__)
+
+"""
+https://blog.csdn.net/lzx159951/article/details/104357909
+
+异常值：一组测定值中与平均值的偏差超过两倍标准差的测定值
+
+"""
 
 import sys
 
@@ -129,8 +137,34 @@ def analyze_data_data():
                         names=['bill_id', 'origin_name', 'destin_name', 'jour_amount'])
     # print(rd_df.dtypes)
     print('before filter ', len(rd_df))
-    print(rd_df.head(20))
+    #print(rd_df.head(20))
     print(len(rd_df))
+
+    print('*' * 50)
+
+    rd_df = rd_df[:200]
+    print(rd_df)
+    grouped_df = rd_df.groupby(['origin_name','destin_name'])
+
+    for name, group_df in grouped_df:
+        origin_name, destin_name = name
+        temp = group_df.describe()[['jour_amount']]
+        std_val = temp.at['std', 'jour_amount']  # 标准差
+        mean_val = temp.at['mean', 'jour_amount']  # 平均值
+        # 数据的正常范围为 【mean-2 × std，mean+2 × std】
+        max_val = mean_val + 2 * std_val
+        min_val = mean_val - 2 * std_val
+
+        if std_val == 0  or np.isnan(std_val):
+            std_val = 0
+
+        print(f'origin_name={origin_name}, destin_name={destin_name}, 每组数={len(group_df)}，标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}')
+        print(group_df)
+        print('')
+
+
+
+
 
 def main():
     #init_file()
