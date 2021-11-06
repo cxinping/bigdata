@@ -22,6 +22,11 @@ import re
 
 log = get_logger(__name__)
 
+"""
+办公费
+01_datamart_layer_007_h_cw_df.finance_official_bill
+
+"""
 
 def check_41_credit():
     start_time = time.perf_counter()

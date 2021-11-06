@@ -17,6 +17,12 @@ from report.commons.tools import match_address
 log = get_logger(__name__)
 
 
+"""
+差旅费
+01_datamart_layer_007_h_cw_df.finance_travel_bill   
+
+"""
+
 def demo():
     # del_sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_all_targets  where unusual_id="10" '
     # prod_execute_sql(sqltype='insert', sql=del_sql)

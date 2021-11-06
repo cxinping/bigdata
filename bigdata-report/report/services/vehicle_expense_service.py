@@ -20,6 +20,10 @@ import re
 
 log = get_logger(__name__)
 
+"""
+车辆使用费
+01_datamart_layer_007_h_cw_df.finance_car_bill 
+"""
 
 def check_54_invoice():
     start_time = time.perf_counter()

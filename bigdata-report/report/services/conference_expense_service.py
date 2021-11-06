@@ -23,6 +23,11 @@ import re
 
 log = get_logger(__name__)
 
+"""
+会议费
+01_datamart_layer_007_h_cw_df.finance_meeting_bill  
+
+"""
 
 def check_24_invoice():
     start_time = time.perf_counter()
