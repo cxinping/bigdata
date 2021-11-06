@@ -197,7 +197,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 751727  596054
+    execute_02_data()  # 751727  700021
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')

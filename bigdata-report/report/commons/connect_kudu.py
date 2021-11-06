@@ -16,7 +16,6 @@ Created on 2021-08-05
 
 @author: Wang Shuo
 
-
 """
 
 pd.set_option('display.max_columns', None)  # 显示完整的列

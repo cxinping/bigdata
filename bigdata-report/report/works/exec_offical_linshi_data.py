@@ -180,7 +180,8 @@ def main():
     os._exit(0)  # 无错误退出
 
 
-main()
+if __name__ == "__main__":
+    main()
 
 
 
