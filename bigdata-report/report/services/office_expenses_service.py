@@ -28,6 +28,7 @@ log = get_logger(__name__)
 
 """
 
+
 def check_41_credit():
     start_time = time.perf_counter()
     sql = """
@@ -346,7 +347,6 @@ def query_checkpoint_42_commoditynames():
     return category_class_ls
 
 
-
 def get_office_bill_jiebaword():
     """
     抽取办公费的关键字
@@ -379,6 +379,7 @@ def get_office_bill_jiebaword():
     final_list = analyse.extract_tags(words4, topK=50, withWeight=False, allowPOS=())
 
     return final_list
+
 
 def pagination_office_records(categorys, good_keywords):
     """
@@ -429,6 +430,7 @@ def pagination_office_records(categorys, good_keywords):
 
     return count_records, sql, columns_ls
 
+
 if __name__ == "__main__":
     # main()
     # records = query_checkpoint_42_commoditynames()
@@ -438,6 +440,3 @@ if __name__ == "__main__":
 
     for word in final_list:
         print(word)
-
-
-

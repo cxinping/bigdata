@@ -20,6 +20,16 @@ docker
 > http://192.168.11.130:8004/report/test/abc
 
 
+```
+
+create table areas(
+   id INT (12) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
+   area_name    VARCHAR (200)     comment "区域名称",
+   city         VARCHAR (200)    comment "区域所在市",
+   province     VARCHAR (200)     comment "区域所在省",
+   primary key(id)
+) ENGINE = INNODB DEFAULT CHARSET = utf8;
+```
 
 
 

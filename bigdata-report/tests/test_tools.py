@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from report.commons.tools import *
-
+import asyncio, aiomysql
 
 def demo1():
     str1 = '北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
