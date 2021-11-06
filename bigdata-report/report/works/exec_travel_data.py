@@ -16,7 +16,7 @@ import threading
 
 log = get_logger(__name__)
 
-
+dest_dir = '/you_filed_algos/prod_kudu_data/temp'
 dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
 error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
@@ -26,11 +26,16 @@ province_service = ProvinceService()
 
 
 def init_file():
+    if not os.path.exists(dest_dir):
+        os.makedirs(dest_dir)
+
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
 
 def execute_02_data():
+    init_file()
+
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code']
     extra_columns_ls = ['bill_id']
@@ -74,7 +79,6 @@ def execute_02_data():
         print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
-    init_file()
 
     threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
     start_time = time.perf_counter()
