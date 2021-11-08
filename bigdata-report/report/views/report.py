@@ -21,7 +21,7 @@ from report.services.vehicle_expense_service import query_checkpoint_55_commodit
     pagination_car_records
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_category_sign,
-                                             query_finance_category_sign)
+                                             query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
 from report.commons.db_helper import Pagination
@@ -707,7 +707,7 @@ def finance_unusual_execute():
             daily_end_date = get_current_time()
 
             insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
-                                       daily_end_date=daily_end_date, unusual_point=unusual_id, daily_source='sql',
+                                       daily_end_date=daily_end_date, unusual_point=unusual_id, daily_source='python shell',
                                        operate_desc='', unusual_infor='')
 
         data = {
@@ -1086,3 +1086,55 @@ def check_scope():
         }
 
     return mk_utf8resp(result)
+
+# http://10.5.138.11:8004/report/finance_shell_daily/query
+@report_bp.route('/finance_shell_daily/query', methods=['POST', 'GET'])
+def query_finance_shell_daily():
+    log.info('---- query_finance_shell_daily ----')
+
+    unusual_point = str(request.form.get('unusual_point')) if request.form.get('unusual_point') else None
+    current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+    page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+
+    print(unusual_point)
+
+    if current_page is None:
+        data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if page_size is None:
+        data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+
+    try:
+        count_records, sql, columns_ls = pagination_finance_shell_daily_records(unusual_point=unusual_point)
+
+        # print('count_records => ', count_records)
+        # print('sql => ', sql)
+        # print('columns_ls => ', columns_ls)
+
+        page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
+        records = page_obj.exec_sql(sql, columns_ls)
+
+        #print('records => ', records)
+
+        result = {
+            'status': 'ok',
+            'current_page': current_page,
+            'all_count': count_records,
+            'records': records
+        }
+
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'unusual_point': unusual_point
+        }
+
+    return mk_utf8resp(result)
+

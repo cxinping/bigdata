@@ -143,7 +143,7 @@ class ProvinceService:
             return None
 
         area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)
-        #print(area_id, area_name, parent_id, grade )
+        # print(area_id, area_name, parent_id, grade )
 
         if area_name is None or area_name == 'None':
             return None
@@ -161,7 +161,7 @@ class ProvinceService:
                     return None
 
                 area_id, area_name, parent_id, grade = self.query_previous_province(query_area_id=parent_id)
-                #print('222 ', area_id, area_name, parent_id, grade)
+                # print('222 ', area_id, area_name, parent_id, grade)
 
                 if grade and (grade == '2' or grade == '1'):
                     return area_name
@@ -172,16 +172,56 @@ class ProvinceService:
         return None
 
 
-if __name__ == "__main__":
-    daily_status = 'ok'
-    daily_start_date = '2021-10-25 17:05'
-    daily_end_date = '2021-10-25 20:05'
-    unusual_point = '42'
-    daily_source = 'sql'
-    operate_desc = 'aaabbbccc'
-    unusual_infor = 'ggggggggggggg'
+def pagination_finance_shell_daily_records(unusual_point=None):
+    """
+       分页查询shell脚本日志表的记录
+       :param unusual_point: 检查点
+       :return:
+       """
 
-    # insert_finance_shell_daily(daily_status, daily_start_date,daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor)
+    columns_ls = ['daily_id','daily_status', 'daily_start_date', 'daily_end_date', 'unusual_point', 'daily_source', 'operate_desc' , 'unusual_infor']
+    columns_str = ",".join(columns_ls)
+
+    ###### 拼装查询SQL
+    where_sql = 'WHERE '
+
+    if unusual_point is None:
+        where_sql = where_sql + ' 1=1'
+    elif unusual_point:
+        where_sql = where_sql + f' unusual_point = "{unusual_point}" '
+
+    sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily "
+    order_sql = ' ORDER BY daily_id ASC '
+    sql = sql + where_sql + order_sql
+
+    count_sql = 'SELECT count(a.daily_status) FROM ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    print('* count_records => ', count_records)
+
+
+
+    print(sql)
+
+    return count_records, sql, columns_ls
+
+
+if __name__ == "__main__":
+
+    for i in range(15):
+        daily_status = 'ok'
+        daily_start_date = '2021-11-08 17:05'
+        daily_end_date = '2021-11-08 20:05'
+        unusual_point = '2'
+        daily_source = 'sql'
+        operate_desc = '1' + str(i)
+        unusual_infor = 'aaabbbccc'
+
+        # insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
+        #                            operate_desc, unusual_infor)
+
+    pagination_finance_shell_daily_records(unusual_point='1')
 
     unusual_id = '42'
     category_names = ['d']  # ['a' , 'b']
@@ -202,8 +242,8 @@ if __name__ == "__main__":
     # province_name = province_service.query_belong_province(area_name)
     # print('province_name=',province_name)
 
-    city_name = province_service.query_receipt_city(area_name='房山区')
-    print(f'city_name={city_name}')
+    # city_name = province_service.query_receipt_city(area_name='房山区')
+    # print(f'city_name={city_name}')
 
     # print('--- ok ---')
     # print('中原区'.find('中'))

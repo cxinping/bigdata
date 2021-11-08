@@ -699,3 +699,6 @@ if __name__ == "__main__":
     page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
     records = page_obj.exec_sql(sql, columns_ls)
     print(records)
+
+
+
