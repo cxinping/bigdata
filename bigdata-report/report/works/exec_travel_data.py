@@ -139,17 +139,17 @@ def exec_task(sql):
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             start_time0 = time.perf_counter()
-            sales_address = operate_reocrd(record)                      # 发票开票地(最小行政)
+            sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
             consumed_time0 = round(time.perf_counter() - start_time0)
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
-            destin_name = str(record[0]) if record[0] else None         # 行程目的地
-            sales_name = str(record[1]) if record[1] else None          # 开票公司
+            destin_name = str(record[0]) if record[0] else None  # 行程目的地
+            sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None         # 行程出发地(市)
-            invo_code = str(record[6]) if record[6] else None           # 发票代码
+            origin_name = str(record[5]) if record[5] else None  # 行程出发地(市)
+            invo_code = str(record[6]) if record[6] else None  # 发票代码
             receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
             start_time1 = time.perf_counter()
@@ -182,7 +182,7 @@ def exec_task(sql):
 
             if origin_province.find('区') > -1 and origin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区',
                                                                           '西藏自治区'] and destin_province.find(
-                    '区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
+                '区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
                 print('============ abnormal data ==============')
                 print('============ abnormal data ==============')
                 print(record_str)
@@ -201,11 +201,11 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 751727
+    execute_02_data()  # 755778   252409
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

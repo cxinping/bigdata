@@ -4,15 +4,13 @@ import asyncio, aiomysql
 
 from report.commons.logging import get_logger
 
-
 log = get_logger(__name__)
 
-
-DB_HOST = '192.168.11.130'
+DB_HOST = '10.5.138.11'
 DB_USER = 'root'
 DB_PASSWD = '123456'
 DB_NAME = 'report'
-DB_PORT = 3306
+DB_PORT = 13306
 DB_MINSIZE = 1
 DB_MAXSIZE = 100
 DB_COMMIT = True
@@ -43,6 +41,7 @@ class AsyncMysql(object):
         log.info('create_aiomysql_pool success')
 
     '''外面调用这个方法，传sql列表一次500-1000个sql即可'''
+
     async def exe_sql_task(self, sqltype='insert', sql_list=[]):
         if isinstance(sql_list, list):
             if sqltype == 'insert':
@@ -77,7 +76,7 @@ class AsyncMysql(object):
                 try:
                     if sqltype == 'insert':
                         await cur.execute(sql)
-                        await conn.commit() # ws
+                        await conn.commit()  # ws
                     elif sqltype == 'select':
                         await cur.execute(sql)
                         result = await cur.fetchall()
@@ -121,10 +120,11 @@ def insert_demo1():
     event_loop.run_until_complete(exec_insert(event_loop, sqltype='insert', sqllist=sqllist))
     event_loop.close()
 
+
 def select_demo1():
     from datetime import datetime
     log.info(' --- begin ---')
-    sqllist = ['select id, area_name, city,province  from ( select * from areas ) t ' ]
+    sqllist = ['select id, area_name, city,province  from ( select * from areas ) t ']
     x = datetime.now()
     event_loop = asyncio.get_event_loop()
     task = event_loop.create_task(exec_insert(event_loop, sqltype='select', sqllist=sqllist))
@@ -139,12 +139,11 @@ def select_demo1():
         for rs in results:
             print(rs)
 
+
 if __name__ == "__main__":
     pass
-    # insert_demo1()
-    #select_demo1()
 
-
-
+    #insert_demo1()
+    select_demo1()
 
 
