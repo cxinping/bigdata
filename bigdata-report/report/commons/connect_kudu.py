@@ -95,8 +95,8 @@ def execute_sql(sql):
 def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     """
     :param conn_type: 连接类型
-                    prod 生产环境
-                    test 测试环境
+                    prod 生产集群环境
+                    test 测试集群环境
     :param sqltype:
     :param sql:
     :return:

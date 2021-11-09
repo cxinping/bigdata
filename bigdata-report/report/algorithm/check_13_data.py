@@ -199,9 +199,8 @@ if __name__ == "__main__":
     # load_data()
 
     check13_service = Check13Service()
-    # check13_service.save_fee_data()   # 5776561
-
-    check13_service.analyze_data_data()
+    check13_service.save_fee_data()   # 5776561
+    #check13_service.analyze_data_data()
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
