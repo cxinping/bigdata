@@ -5,6 +5,7 @@ from report.commons.logging import get_logger
 
 log = get_logger(__name__)
 
+
 def select_demo1():
     from datetime import datetime
     log.info(' --- begin ---')
@@ -18,12 +19,12 @@ def select_demo1():
     log.info('共耗时' + str(datetime.now() - x))
 
     results = task.result()
-    count_num = -1
     if results:
         for rs in results:
             print(rs)
+            print('')
+
 
 
 
 select_demo1()
-

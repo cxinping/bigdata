@@ -179,7 +179,8 @@ def pagination_finance_shell_daily_records(unusual_point=None):
        :return:
        """
 
-    columns_ls = ['daily_id','daily_status', 'daily_start_date', 'daily_end_date', 'unusual_point', 'daily_source', 'operate_desc' , 'unusual_infor']
+    columns_ls = ['daily_id', 'daily_status', 'daily_start_date', 'daily_end_date', 'unusual_point', 'daily_source',
+                  'operate_desc', 'unusual_infor']
     columns_str = ",".join(columns_ls)
 
     ###### 拼装查询SQL
@@ -200,14 +201,54 @@ def pagination_finance_shell_daily_records(unusual_point=None):
     count_records = records[0][0]
     print('* count_records => ', count_records)
 
-
-
-    print(sql)
+    # print(sql)
 
     return count_records, sql, columns_ls
 
 
+from report.commons.mysql_pool import AsyncMysql, exec_insert
+import asyncio, aiomysql
+
+
+class MySQLService:
+
+    def __init__(self):
+        pass
+
+    def insert_update_area(self, id, area_name, city, province):
+        sql = f"""
+        INSERT INTO areas(id, area_name, city, province) VALUES('{id}' ,'{area_name}', '{city}' , '{province}' ) 
+        ON DUPLICATE KEY UPDATE area_name = '{area_name}', city= '{city}' , province =  '{province}'        
+        """
+
+        sqllist = []
+        sqllist.append(sql)
+        event_loop = asyncio.get_event_loop()
+        event_loop.run_until_complete(exec_insert(event_loop, sqltype='insert', sqllist=sqllist))
+        event_loop.close()
+
+    def query_area(self, area_name):
+        sql = f'select id, area_name, city,province from areas where area_name = "{area_name}" '
+        sqllist = []
+        sqllist.append(sql)
+
+        event_loop = asyncio.get_event_loop()
+        task = event_loop.create_task(exec_insert(event_loop, sqltype='select', sqllist=sqllist))
+        event_loop.run_until_complete(task)
+        event_loop.close()
+
+        results = task.result()
+        if results:
+            for rs in results:
+                print(type(rs), rs)
+                print('')
+
+
 if __name__ == "__main__":
+
+    mysql_service = MySQLService()
+    #mysql_service.insert_update_area(id='1', area_name='aaa', city='aaa', province='bbb')
+    mysql_service.query_area(area_name='aaa')
 
     for i in range(15):
         daily_status = 'ok'
@@ -221,7 +262,7 @@ if __name__ == "__main__":
         # insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
         #                            operate_desc, unusual_infor)
 
-    pagination_finance_shell_daily_records(unusual_point='1')
+    # pagination_finance_shell_daily_records(unusual_point='1')
 
     unusual_id = '42'
     category_names = ['d']  # ['a' , 'b']
@@ -245,5 +286,5 @@ if __name__ == "__main__":
     # city_name = province_service.query_receipt_city(area_name='房山区')
     # print(f'city_name={city_name}')
 
-    # print('--- ok ---')
+    print('--- ok ---')
     # print('中原区'.find('中'))

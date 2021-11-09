@@ -19,7 +19,9 @@ docker
 
 > http://192.168.11.130:8004/report/test/abc
 
+# MySQL 数据库
 
+区域表
 ```
 create database report default character set utf8 collate utf8_general_ci;
 
@@ -31,10 +33,26 @@ create table areas(
    province     VARCHAR (200)     comment "区域所在省",
    primary key(id)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+```  
+
+
+字符集乱码
+```
+SET CHARACTER_SET_RESULTS=utf8;
+
 ```
 
 
+插入操作或更新操作 on duplicate
+```
+insert into T_name (uid, app_id,createTime,modifyTime) 
+values(111, 1000000,'2017-03-07 10:19:12','2017-03-07 10:19:12') 
+on duplicate key update uid=111, app_id=1000000, createTime='2017-03-07 10:19:12',modifyTime='2017-05-07 10:19:12'
 
+INSERT INTO areas(area_name, city, province) on duplicate key update area_name= , city= , province=
+
+
+```
 
 
 

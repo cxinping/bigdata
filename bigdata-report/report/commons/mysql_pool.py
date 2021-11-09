@@ -124,7 +124,7 @@ def insert_demo1():
 def select_demo1():
     from datetime import datetime
     log.info(' --- begin ---')
-    sqllist = ['select id, area_name, city,province  from ( select * from areas ) t ']
+    sqllist = ['select id, area_name, city,province from areas ']
     x = datetime.now()
     event_loop = asyncio.get_event_loop()
     task = event_loop.create_task(exec_insert(event_loop, sqltype='select', sqllist=sqllist))
