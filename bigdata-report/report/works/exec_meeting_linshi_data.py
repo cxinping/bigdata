@@ -6,7 +6,7 @@ from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
-from report.services.common_services import ProvinceService
+from report.services.common_services import ProvinceService, MySQLService
 import threading
 
 log = get_logger(__name__)
@@ -17,6 +17,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 
 match_area = MatchArea()
 province_service = ProvinceService()
+mysql_service = MySQLService()
 
 
 def init_file():
@@ -167,12 +168,13 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_meeting_data()     # 3978
+    # check_meeting_data()     # 3978
 
     test_hdfs = Test_HDFSTools(conn_type='test')
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
+
 
 if __name__ == "__main__":
     main()

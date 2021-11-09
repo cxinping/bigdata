@@ -25,14 +25,16 @@ docker
 ```
 create database report default character set utf8 collate utf8_general_ci;
 
+drop table areas;
 
 create table areas(
-   id INT (12) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
-   area_name    VARCHAR (200)     comment "区域名称",
+   id VARCHAR (50) NOT NULL COMMENT '主键',
+   area_name    VARCHAR (200)    comment "区域名称",
    city         VARCHAR (200)    comment "区域所在市",
-   province     VARCHAR (200)     comment "区域所在省",
+   province     VARCHAR (200)    comment "区域所在省",
    primary key(id)
 ) ENGINE = INNODB DEFAULT CHARSET = utf8;
+
 ```  
 
 

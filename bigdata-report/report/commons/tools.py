@@ -392,6 +392,8 @@ class MatchArea:
 
 
 result = []
+
+
 def save_file(output_file, line, buff_size=1000, clear_buff=False):
     global result
 
@@ -403,7 +405,6 @@ def save_file(output_file, line, buff_size=1000, clear_buff=False):
             fp.write("\n".join(result))
             fp.write("\n")
         result = []
-
 
 
 if __name__ == '__main__':
@@ -459,4 +460,4 @@ if __name__ == '__main__':
     content = '四川省成都市锦江区三槐树路3号1层,4至9层'
     content_trans = transfer_content(content)
     print(content_trans)
-    print(content.replace(',',' '))
+    print(content.replace(',', ' '))
