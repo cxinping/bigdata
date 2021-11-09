@@ -15,3 +15,16 @@ print(s1[:2])
 
 str = "abcdef"
 print(str.lower())
+
+print('*******' * 10)
+
+ls1 = ['颜料', '计算机外部设备', '照相器材', '家用厨房电器具', '通信终端设备']
+print(ls1)
+rm_ls = ['计算机外部设备', '照相器材']
+for item in ls1[:]:
+    for rm_item in rm_ls:
+        if item == rm_item:
+            ls1.remove(item)
+            break
+
+print(ls1)

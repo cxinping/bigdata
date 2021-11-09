@@ -20,8 +20,11 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
     """.replace('\n', '').replace('\r', '').strip()
     prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
 
+def clean_finance_category_sign(unusual_id):
+    del_sql = f'DELETE FROM 01_datamart_layer_007_h_cw_df.finance_category_sign WHERE unusual_id="{unusual_id}"  '
+    prod_execute_sql(conn_type='test', sqltype='insert', sql=del_sql)
 
-def update_finance_category_sign(unusual_id, category_names, category_classify):
+def operate_finance_category_sign(unusual_id, category_names, category_classify, sign_status='1'):
     """
     改变商品的选中状态
     :param unusual_id:
@@ -29,18 +32,17 @@ def update_finance_category_sign(unusual_id, category_names, category_classify):
     :param category_classify: 类别, 1 代表商品大类，2 代表商品关键字
     :return:
     """
-    del_sql = f'delete from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" '
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=del_sql)
+
     insert_sql = """INSERT INTO 01_datamart_layer_007_h_cw_df.finance_category_sign(id, category_name, category_classify , sign_status, unusual_id) VALUES"""
     values_sql = ''
 
     if len(category_names) == 1:
         id = create_uuid()
-        values_sql = f'("{id}", "{category_names[0]}", "{category_classify}","1" , "{unusual_id}" )'
+        values_sql = f'("{id}", "{category_names[0]}", "{category_classify}","{sign_status}" , "{unusual_id}" )'
     elif len(category_names) > 1:
         for idx, category in enumerate(category_names):
             id = create_uuid()
-            values_sql = values_sql + f'("{id}", "{category}", "{category_classify}","1" , "{unusual_id}" )'
+            values_sql = values_sql + f'("{id}", "{category}", "{category_classify}","{sign_status}" , "{unusual_id}" )'
             if idx != len(category_names) - 1:
                 values_sql = values_sql + ','
 
@@ -213,11 +215,19 @@ class MySQLService:
     def __init__(self):
         pass
 
-    def check_area(self, area_name, city, province):
-        area = self.query_area(area_name)
-        print('area => ', area)
+    def check_area(self, area_name_val, city_val, province_val):
+        id, area_name, city, province = self.query_area_record(area_name_val)
+        print(id, area_name, city, province)
 
-    def insert_update_area(self, id, area_name, city, province):
+        if id:
+            self.insert_update_area(id=id, area_name=area_name_val, city=city_val, province=province_val)
+        else:
+            id = create_uuid()
+            print(area_name_val, city_val, province_val)
+            self.insert_update_area(id=id, area_name=area_name_val, city=city_val, province=province_val)
+
+
+    def insert_update_area(self, id, area_name, city, province=None):
         sqllist = []
 
         if city and province:
@@ -225,12 +235,14 @@ class MySQLService:
             INSERT INTO areas(id, area_name, city, province) VALUES('{id}' ,'{area_name}', '{city}' , '{province}' ) 
             ON DUPLICATE KEY UPDATE area_name = '{area_name}', city= '{city}' , province = '{province}'        
             """
+            print(sql)
             sqllist.append(sql)
         elif city and province is None:
             sql = f"""
             INSERT INTO areas(id, area_name, city) VALUES('{id}' ,'{area_name}', '{city}') 
             ON DUPLICATE KEY UPDATE area_name = '{area_name}', city= '{city}'    
             """
+            print(sql)
             sqllist.append(sql)
 
         if len(sqllist) > 0:
@@ -238,7 +250,7 @@ class MySQLService:
             event_loop.run_until_complete(exec_insert(event_loop, sqltype='insert', sqllist=sqllist))
             event_loop.close()
 
-    def query_area(self, area_name):
+    def query_area_record(self, area_name):
         sql = f'SELECT id, area_name, city, province FROM areas WHERE area_name = "{area_name}" '
         sqllist = []
         sqllist.append(sql)
@@ -253,9 +265,12 @@ class MySQLService:
             for rs in results:
                 if rs.result():
                     for item in rs.result():
-                        print(item)
-                        print('')
-                        return item
+                        id = item['id']
+                        area_name = item['area_name']
+                        city = item['city']
+                        province = item['area_name']
+                        return id, area_name, city, province
 
+        return None,None,None,None
 
 

@@ -20,7 +20,7 @@ from report.services.office_expenses_service import query_checkpoint_42_commodit
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
     pagination_car_records
 from report.commons.tools import get_current_time
-from report.services.common_services import (insert_finance_shell_daily, update_finance_category_sign,
+from report.services.common_services import (insert_finance_shell_daily, operate_finance_category_sign, clean_finance_category_sign,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
@@ -707,7 +707,8 @@ def finance_unusual_execute():
             daily_end_date = get_current_time()
 
             insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
-                                       daily_end_date=daily_end_date, unusual_point=unusual_id, daily_source='python shell',
+                                       daily_end_date=daily_end_date, unusual_point=unusual_id,
+                                       daily_source='python shell',
                                        operate_desc='', unusual_infor='')
 
         data = {
@@ -825,13 +826,14 @@ def query_product_keywords():
     log.info('---- query_productnames ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    # print(f' unusual_id={unusual_id}', type(unusual_id))
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['26 ', '42', '55']:
+    if unusual_id not in ['26', '42', '55']:
         data = {"result": "error", "details": "只能查询检查点26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
@@ -874,10 +876,22 @@ def set_finance_category_sign():
     log.info('---- set_finance_category_sign ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    # 类别, 区分大类和商品关键字， 01代表大类，02代表商品关键字
     category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
+    category_names = request.form.getlist("category_names")
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if category_classify is None:
+        data = {"result": "error", "details": "输入的 category_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if category_names is None or len(category_names)==0:
+        data = {"result": "error", "details": "输入的 category_names 不能为空 或者 没有传递值", "code": 500}
         response = jsonify(data)
         return response
 
@@ -891,17 +905,46 @@ def set_finance_category_sign():
         response = jsonify(data)
         return response
 
-    category_names = request.form.getlist("category_names")
-
     try:
-        update_finance_category_sign(unusual_id, category_names, category_classify)
+        type_str = None
+        available_category_name = None # 存在的的商品关键字或商品大类
 
-        if unusual_id == '42':
+        # category_classify 类别, 区分大类和商品关键字， 01代表大类，02代表商品关键字
+        if unusual_id == '42' and category_classify == '01':
             type_str = '办公费'
-        elif unusual_id == '55':
+            available_category_name = query_checkpoint_42_commoditynames()
+        elif unusual_id == '42' and category_classify == '02':
+            type_str = '办公费'
+            available_category_name = get_office_bill_jiebaword()
+        elif unusual_id == '55' and category_classify == '01':
             type_str = '车辆使用费'
-        elif unusual_id == '26':
+            available_category_name = query_checkpoint_55_commoditynames()
+        elif unusual_id == '55' and category_classify == '02':
+            type_str = '车辆使用费'
+            available_category_name = get_car_bill_jiebaword()
+        elif unusual_id == '26' and category_classify == '01':
             type_str = '会议费'
+            available_category_name = query_checkpoint_26_commoditynames()
+        elif unusual_id == '26' and category_classify == '02':
+            type_str = '会议费'
+            available_category_name = get_conference_bill_jiebaword()
+
+        print('* available_category_name => ', available_category_name)
+        print('* checked category_names => ', category_names)
+
+        for category_name_item in available_category_name[:]:
+            for checked_category_name in category_names:
+                if category_name_item == checked_category_name:
+                    available_category_name.remove(checked_category_name)
+                    break
+
+        print('* filter available_category_name => ', available_category_name)
+
+        clean_finance_category_sign(unusual_id)
+        operate_finance_category_sign(unusual_id=unusual_id, category_names=category_names,
+                                      category_classify=category_classify, sign_status='1')
+        operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
+                                      category_classify=category_classify, sign_status='0')
 
         result = {
             'status': 'ok',
@@ -909,6 +952,7 @@ def set_finance_category_sign():
             'unusual_id': unusual_id,
             'type': type_str
         }
+
     except Exception as e:
         print(e)
         result = {
@@ -955,11 +999,11 @@ def query_finance_category_signs():
         if unusual_id == '42' and category_classify == '1':
             # 商品大类
             type_str = '办公费'
-            records = query_checkpoint_55_commoditynames()
+            records = query_checkpoint_42_commoditynames()
         elif unusual_id == '55' and category_classify == '1':
             # 商品大类
             type_str = '车辆使用费'
-            records = query_checkpoint_42_commoditynames()
+            records = query_checkpoint_55_commoditynames()
         elif unusual_id == '26' and category_classify == '1':
             # 商品大类
             type_str = '会议费'
@@ -1087,6 +1131,7 @@ def check_scope():
 
     return mk_utf8resp(result)
 
+
 # http://10.5.138.11:8004/report/finance_shell_daily/query
 @report_bp.route('/finance_shell_daily/query', methods=['POST', 'GET'])
 def query_finance_shell_daily():
@@ -1108,7 +1153,6 @@ def query_finance_shell_daily():
         response = jsonify(data)
         return response
 
-
     try:
         count_records, sql, columns_ls = pagination_finance_shell_daily_records(unusual_point=unusual_point)
 
@@ -1119,7 +1163,7 @@ def query_finance_shell_daily():
         page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
         records = page_obj.exec_sql(sql, columns_ls)
 
-        #print('records => ', records)
+        # print('records => ', records)
 
         result = {
             'status': 'ok',
@@ -1137,4 +1181,3 @@ def query_finance_shell_daily():
         }
 
     return mk_utf8resp(result)
-

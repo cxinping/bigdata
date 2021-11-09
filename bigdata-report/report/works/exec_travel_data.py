@@ -199,17 +199,21 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 755778   748076
+    execute_02_data()  # 755778   755107
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
 
 
 

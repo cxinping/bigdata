@@ -47,11 +47,18 @@ def demo1():
 
 def demo2():
     mysql_service = MySQLService()
-    id = create_uuid()
-    # id = ''
-    # mysql_service.insert_update_area(id=id, area_name='盐山县', city='沧州市', province='广东省')
-    result = mysql_service.query_area(area_name='盐山县')
-    print(result)
+    #id = create_uuid()
+    #mysql_service.insert_update_area(id=id, area_name='盐山县', city='沧州市', province='广东省')
+
+    #id = create_uuid()
+    mysql_service.check_area( area_name_val='丰台区', city_val='北京市', province_val=None )
+
+    #id = 'fe5419f562bc4e4fa72b2b8482192614'
+    #mysql_service.insert_update_area(id=id, area_name='盐山县', city='111', province='2222')
+
+    # result = mysql_service.query_area_record(area_name='盐山县')
+    # print(result)
+
     print('--- ok ---')
 
 
