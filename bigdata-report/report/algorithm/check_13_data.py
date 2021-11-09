@@ -153,10 +153,10 @@ class Check13Service():
         records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
         if records and len(records) > 0:
             for idx, record in enumerate(records):
-                bill_id = str(record[0])                # bill_id
-                city_name = str(record[1])              # 出差城市名称
-                city_grade_name = str(record[2])        # 出差城市等级
-                emp_name = str(record[3])               # 员工名字
+                bill_id = str(record[0])  # bill_id
+                city_name = str(record[1])  # 出差城市名称
+                city_grade_name = str(record[2])  # 出差城市等级
+                emp_name = str(record[3])  # 员工名字
                 stand_amount_perday = float(record[4])  # 每天标准住宿费用
                 hotel_amount_perday = float(record[5])  # 每天实际花费的住宿费用
 
@@ -175,26 +175,21 @@ class Check13Service():
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])
-        #print(rd_df.dtypes)
-        print('before filter ',len(rd_df))
+        # print(rd_df.dtypes)
+        print('before filter ', len(rd_df))
         print(rd_df.head(5))
 
         # 过滤查询
         query_province = '江苏省'
-        rd_df = rd_df[ (rd_df['province'] == query_province) & (rd_df['stand_amount_perday'] >= rd_df['hotel_amount_perday']) ]
-        print('after filter ',len(rd_df))
+        rd_df = rd_df[
+            (rd_df['province'] == query_province) & (rd_df['stand_amount_perday'] >= rd_df['hotel_amount_perday'])]
+        print('after filter ', len(rd_df))
         print(rd_df.head(10))
 
         temp = rd_df.describe()[['check_amount']]
         std_val = temp.at['std', 'check_amount']  # 方差
 
         print(f'{query_province} 方差 => {std_val}')
-
-
-
-
-
-
 
 
 if __name__ == "__main__":
@@ -204,9 +199,9 @@ if __name__ == "__main__":
     # load_data()
 
     check13_service = Check13Service()
-    check13_service.save_fee_data()   # 5776561
+    # check13_service.save_fee_data()   # 5776561
 
-    #check13_service.analyze_data_data()
+    check13_service.analyze_data_data()
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

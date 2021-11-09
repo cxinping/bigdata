@@ -181,9 +181,7 @@ def exec_task(sql):
             print('')
 
             if origin_province.find('区') > -1 and origin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区',
-                                                                          '西藏自治区'] and destin_province.find(
-                '区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
-                print('============ abnormal data ==============')
+                                                                          '西藏自治区'] and destin_province.find('区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
                 print('============ abnormal data ==============')
                 print(record_str)
 
@@ -201,7 +199,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 755778   105449
+    execute_02_data()  # 755778   654555
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')

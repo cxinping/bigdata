@@ -111,39 +111,5 @@ async def exec_insert(event_loop, sqltype='insert', sqllist=[]):
     return results
 
 
-def insert_demo1():
-    sqllist = []
-    sql = 'insert into areas(area_name,city, province) values("朝阳" , "北京市", "北京市")'
-    sqllist.append(sql)
-
-    event_loop = asyncio.get_event_loop()
-    event_loop.run_until_complete(exec_insert(event_loop, sqltype='insert', sqllist=sqllist))
-    event_loop.close()
-
-
-def select_demo1():
-    from datetime import datetime
-    log.info(' --- begin ---')
-    sqllist = ['select id, area_name, city,province from areas ']
-    x = datetime.now()
-    event_loop = asyncio.get_event_loop()
-    task = event_loop.create_task(exec_insert(event_loop, sqltype='select', sqllist=sqllist))
-    event_loop.run_until_complete(task)
-
-    event_loop.close()
-    log.info('共耗时' + str(datetime.now() - x))
-
-    results = task.result()
-    count_num = -1
-    if results:
-        for rs in results:
-            print(rs)
-
-
-if __name__ == "__main__":
-    pass
-
-    #insert_demo1()
-    select_demo1()
 
 

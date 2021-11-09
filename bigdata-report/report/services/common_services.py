@@ -240,15 +240,18 @@ class MySQLService:
         results = task.result()
         if results:
             for rs in results:
-                print(type(rs), rs)
-                print('')
+                if rs.result():
+                    for item in rs.result():
+                        print(item)
+                        print('')
+                        return item
 
 
 if __name__ == "__main__":
 
     mysql_service = MySQLService()
-    #mysql_service.insert_update_area(id='1', area_name='aaa', city='aaa', province='bbb')
-    mysql_service.query_area(area_name='aaa')
+    #mysql_service.insert_update_area(id='1', area_name='盐山县', city='沧州市', province='广东省')
+    mysql_service.query_area(area_name='盐山县')
 
     for i in range(15):
         daily_status = 'ok'
@@ -273,13 +276,14 @@ if __name__ == "__main__":
     # records = query_finance_category_sign(unusual_id=unusual_id, category_classify=category_classify)
     # print(records)
 
-    province_service = ProvinceService()
+    # province_service = ProvinceService()
     # area_name = '金湖县'
     # province_service.query_province(area_name)
     # area_id = '510000'
     # area_id, area_name, parent_id, grade = province_service.query_previous_province(query_area_id=area_id)
     # print(area_id, area_name, parent_id, grade)
-    area_name = '南川区'
+
+    # area_name = '南川区'
     # province_name = province_service.query_belong_province(area_name)
     # print('province_name=',province_name)
 
