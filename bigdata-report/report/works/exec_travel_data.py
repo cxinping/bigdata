@@ -16,10 +16,10 @@ import threading
 
 log = get_logger(__name__)
 
-dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
+dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint2'
+dest_file = "/you_filed_algos/prod_kudu_data/checkpoint2/travel_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
-error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
+error_file = "/you_filed_algos/prod_kudu_data/checkpoint2/error_data.txt"
 
 match_area = MatchArea()
 province_service = ProvinceService()
@@ -199,7 +199,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 755778   85668
+    execute_02_data()  # 755778
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type='test')

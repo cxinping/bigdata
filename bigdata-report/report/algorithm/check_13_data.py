@@ -163,6 +163,9 @@ class Check13Service():
                 province = self.province_service.query_belong_province(city_name)  # 出差城市所属的省
                 province = province if province else '******'
 
+                city_name = city_name.replace(',', ' ')
+                emp_name = emp_name.replace(',', ' ')
+
                 record_str = f'{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
                 log.info(f" {threading.current_thread().name} is doing ")
                 log.info(record_str)
@@ -171,7 +174,7 @@ class Check13Service():
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def analyze_data_data(self):
+    def analyze_data_data(self, coefficient=2):
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])
@@ -186,21 +189,21 @@ class Check13Service():
         print('after filter ', len(rd_df))
         print(rd_df.head(10))
 
-        temp = rd_df.describe()[['check_amount']]
-        std_val = temp.at['std', 'check_amount']  # 方差
+        temp = rd_df.describe()[['hotel_amount_perday']]
+        std_val = temp.at['std', 'hotel_amount_perday']  # 标准差
+        mean_val = temp.at['mean', 'hotel_amount_perday']  # 平均值
 
-        print(f'{query_province} 方差 => {std_val}')
+        # 数据的正常范围为 【mean - 2 × std , mean + 2 × std】
+        max_val = mean_val + coefficient * std_val
+        min_val = mean_val - coefficient * std_val
+
+        print(f'{query_province} 方差 => {std_val}, 平均值 => {mean_val}, max_val => {max_val}, min_val => {min_val}')
 
 
 if __name__ == "__main__":
-    # check_13_data()
-
-    # save_data()
-    # load_data()
-
     check13_service = Check13Service()
-    check13_service.save_fee_data()   # 5776561
-    #check13_service.analyze_data_data()
+    check13_service.save_fee_data()   # 5776561   1386478
+    #check13_service.analyze_data_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
