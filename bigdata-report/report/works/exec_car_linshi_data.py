@@ -163,10 +163,10 @@ def operate_reocrd(record):
 
 
 def main():
-    check_car_linshi_data()  # 57350 50270
+    #check_car_linshi_data()  # 57350 50270
 
     test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

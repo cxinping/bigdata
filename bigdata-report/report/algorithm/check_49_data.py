@@ -13,10 +13,10 @@ import sys
 sys.path.append('/you_filed_algos/app')
 
 def check_49_data():
-    columns_ls = ['finance_travel_id', 'bill_id', 'check_amount']
+    columns_ls = ['finance_offical_id', 'bill_id', 'check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill limit 10000'.format(
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0  limit 10000'.format(
         columns_str=columns_str)
     start_time = time.perf_counter()
     rd_df = query_kudu_data(sql, columns_ls)
@@ -34,6 +34,7 @@ def check_49_data():
 
     bill_id_ls = result['bill_id'].tolist()
     exec_sql(bill_id_ls)
+    #print(bill_id_ls)
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')

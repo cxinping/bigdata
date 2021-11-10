@@ -803,6 +803,7 @@ def query_commoditynames():
             'data': data,
             'unusual_id': unusual_id
         }
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
@@ -813,7 +814,7 @@ def query_commoditynames():
 
     # response = jsonify(result)
     # return response, 200
-    return mk_utf8resp(result)
+        return mk_utf8resp(result)
 
 
 # http://10.5.138.11:8004/report/query/product/keyswords
@@ -855,6 +856,7 @@ def query_product_keywords():
             'keywords': keywords,
             'unusual_id': unusual_id
         }
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
@@ -863,7 +865,7 @@ def query_product_keywords():
             'unusual_id': unusual_id
         }
 
-    return mk_utf8resp(result)
+        return mk_utf8resp(result)
 
 
 # http://10.5.138.11:8004/report/set/category/sign
@@ -952,7 +954,7 @@ def set_finance_category_sign():
             'unusual_id': unusual_id,
             'type': type_str
         }
-
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
@@ -961,7 +963,7 @@ def set_finance_category_sign():
             'unusual_id': unusual_id
         }
 
-    return mk_utf8resp(result)
+        return mk_utf8resp(result)
 
 
 # http://10.5.138.11:8004/report/query/category/sign
@@ -1043,6 +1045,7 @@ def query_finance_category_signs():
             'type': type_str,
             'data': checked_record_ls
         }
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
@@ -1051,7 +1054,7 @@ def query_finance_category_signs():
             'unusual_id': unusual_id
         }
 
-    return mk_utf8resp(result)
+        return mk_utf8resp(result)
 
 
 # http://10.5.138.11:8004/report/check/scope
@@ -1120,7 +1123,7 @@ def check_scope():
             'all_count': count_records,
             'records': records
         }
-
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
@@ -1128,8 +1131,7 @@ def check_scope():
             'desc': str(e),
             'unusual_id': unusual_id
         }
-
-    return mk_utf8resp(result)
+        return mk_utf8resp(result)
 
 
 # http://10.5.138.11:8004/report/finance_shell_daily/query
@@ -1141,7 +1143,10 @@ def query_finance_shell_daily():
     current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
     page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
 
-    print(unusual_point)
+    if unusual_point is None or len(unusual_point) == 0:
+        unusual_point = None
+
+    log.info(f'*** current_page={current_page},page_size={page_size}, unusual_point => {unusual_point} , {type(unusual_point)}')
 
     if current_page is None:
         data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
@@ -1172,6 +1177,10 @@ def query_finance_shell_daily():
             'records': records
         }
 
+        print('==== show infos =========')
+        print(result)
+
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
@@ -1180,4 +1189,4 @@ def query_finance_shell_daily():
             'unusual_point': unusual_point
         }
 
-    return mk_utf8resp(result)
+        return mk_utf8resp(result)
