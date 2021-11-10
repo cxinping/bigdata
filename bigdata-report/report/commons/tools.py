@@ -161,7 +161,7 @@ class MatchArea:
                 return area_name
             elif area_level == 2:
                 return area_name
-            elif area_level == 3:
+            elif area_level == 1:
                 return area_name
 
         return result_area_name

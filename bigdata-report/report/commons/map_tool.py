@@ -56,10 +56,12 @@ if __name__ == '__main__':
     url = 'https://restapi.amap.com/v3/config/district?keywords={area}&subdistrict=0&key={key}&extensions=base'.format(
         key='0e540c9f3f92b59a54529966d3e13e27', area='北京')
     r1 = query_longitude_latitude(url)
-    # print(r1)
+    print(r1)
 
     r2 = distance(22.599578, 113.973129, 22.6986848, 114.3311032)
     print(f'两个经纬度相距 {r2} 公里')
+
+
 
 
 

@@ -106,9 +106,9 @@ def exec_task(sql):
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_car_id = str(record[0])
-            sales_name = str(record[1])  # 开票公司
-            sales_addressphone = str(record[2])  # 开票地址及电话
-            sales_bank = str(record[3])  # 发票开会行
+            sales_name = str(record[1])             # 开票公司
+            sales_addressphone = str(record[2])     # 开票地址及电话
+            sales_bank = str(record[3])             # 发票开会行
             sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
             receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
@@ -164,7 +164,7 @@ def operate_reocrd(record):
 
 
 def main():
-    check_car_linshi_data()  # 57350 50270
+    check_car_linshi_data()  # 57350 10682
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
     #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
