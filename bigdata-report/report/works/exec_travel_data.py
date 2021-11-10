@@ -24,6 +24,8 @@ error_file = "/you_filed_algos/prod_kudu_data/checkpoint2/error_data.txt"
 match_area = MatchArea()
 province_service = ProvinceService()
 
+conn_type = 'prod'
+
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -135,7 +137,7 @@ def operate_reocrd(record):
 
 
 def exec_task(sql):
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             start_time0 = time.perf_counter()
@@ -144,12 +146,12 @@ def exec_task(sql):
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
-            sales_name = str(record[1]) if record[1] else None   # 开票公司
+            sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None   # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
             origin_name = str(record[5]) if record[5] else None  # 行程出发地(市)
-            invo_code = str(record[6]) if record[6] else None    # 发票代码
+            invo_code = str(record[6]) if record[6] else None  # 发票代码
 
             receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
@@ -158,7 +160,8 @@ def exec_task(sql):
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
             log.info(f" {threading.current_thread().name} is doing ")
             consumed_time1 = round(time.perf_counter() - start_time1)
-            log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
+            log.info(
+                f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
             start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
@@ -181,16 +184,10 @@ def exec_task(sql):
             print(record_str)
             print('')
 
-            if origin_province.find('区') > -1 and origin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区',
-                                                                          '西藏自治区'] and destin_province.find('区') > -1 and destin_province not in ['新疆维吾尔自治区', '广西壮族自治区', '宁夏回族自治区', '内蒙古自治区', '西藏自治区']:
-                print('============ abnormal data ==============')
-                print(record_str)
-
-                with open(error_file, "a+", encoding='utf-8') as file:
-                    file.write(record_str + "\n")
-
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
+
+            time.sleep(0.1)
 
 
 def stop_process_pool(executor):
@@ -200,21 +197,14 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 755778
+    execute_02_data()  # 755778  11947
     print('--- created txt file ---')
 
-    test_hdfs = Test_HDFSTools(conn_type='test')
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
-
-

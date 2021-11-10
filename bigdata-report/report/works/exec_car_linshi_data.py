@@ -18,6 +18,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 
+conn_type = 'prod'
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -101,7 +102,7 @@ def check_car_linshi_data():
 
 
 def exec_task(sql):
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_car_id = str(record[0])
@@ -163,10 +164,10 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_car_linshi_data()  # 57350 50270
+    check_car_linshi_data()  # 57350 50270
 
-    test_hdfs = Test_HDFSTools(conn_type='test')
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

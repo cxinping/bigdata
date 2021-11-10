@@ -1120,8 +1120,8 @@ def check_scope():
         result = {
             'status': 'ok',
             'current_page': current_page,
-            'all_count': count_records,
-            'records': records
+            'total': count_records,
+            'data': records
         }
         return mk_utf8resp(result)
     except Exception as e:
@@ -1173,8 +1173,8 @@ def query_finance_shell_daily():
         result = {
             'status': 'ok',
             'current_page': current_page,
-            'all_count': count_records,
-            'records': records
+            'total': count_records,
+            'data': records
         }
 
         print('==== show infos =========')
