@@ -311,10 +311,10 @@ def analyze_plane_data_data(coefficient=2):
 
 
 def main():
-    check_14_no_plane_data()  # 4205254   807340
-    #analyze_no_plane_data_data(coefficient=2)
+    #check_14_no_plane_data()  # 4205254   3397028
+    analyze_no_plane_data_data(coefficient=2)
 
-    check_14_plane_data()  # 3493517   12076
+    check_14_plane_data()  # 3493517
     #analyze_plane_data_data(coefficient=2)
 
     print('--- ok ---')
@@ -322,4 +322,9 @@ def main():
 
 
 
+
+
 main()
+
+
+

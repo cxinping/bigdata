@@ -157,6 +157,20 @@ class MatchArea:
         for idx, area in enumerate(ares):
             area_name, area_level = area[0], area[1]
 
+            if area_level == 3:
+                return area_name
+            elif area_level == 2:
+                return area_name
+            elif area_level == 3:
+                return area_name
+
+        return result_area_name
+
+    def opera_areas2(self, ares):
+        max_level_area, result_area_name = 0, None
+        for idx, area in enumerate(ares):
+            area_name, area_level = area[0], area[1]
+
             if idx == 0:
                 max_level_area = area_level
                 result_area_name = area_name
@@ -416,22 +430,22 @@ if __name__ == '__main__':
     """
 
     match_area = MatchArea()
-    data = '山东省东营市东营区开萍乡北二路504号 0546-8718562'
+    #data = '山东省东营市东营区开萍乡北二路504号 0546-8718562'
     # area = match_area.match_address(place=data, key='区')
     # print(area)
 
-    area_name = match_area.query_belong_province('抚州市')
-    print('***1 area_name ==> ', area_name)
+   #area_name = match_area.query_belong_province('抚州市')
+   # print('***1 area_name ==> ', area_name)
 
-    area1 = '杭州华辰凤庭大酒店有限公司'
+    area1 = '巴州区维思宾馆'
     area_name1 = match_area.fit_area(area=area1)
     print('area_name1 ==> ', area_name1, area1)
 
-    area2 = '邯郸市丛台区人民东路108号万融大厦一层商业105号0310'
+    area2 = '四川省巴中市巴州区江北望王路东段4号0827-7700222'
     area_name2 = match_area.fit_area(area=area2)
     print('area_name2 ==> ', area_name2, area2)
 
-    area3 = '洋浦凯丰城市广场商务大厦22层 0898-36988168/0898-36988888'
+    area3 = '中国农业银行股份有限公司江北大道支行6228483859613217476'
     area_name3 = match_area.fit_area(area=area3)
     print('area_name3 ==> ', area_name3, area3)
 
@@ -447,17 +461,17 @@ if __name__ == '__main__':
 
     print(area_names)
 
-    # result_area = match_area.opera_areas(area_names)
-    # print('*** result_area => ', result_area)
+    result_area = match_area.opera_areas(area_names)
+    print('*** result_area => ', result_area)
 
     # area = match_area.query_province_from_invoice_code('41')
     # print(area)
 
-    line = '111'
-    output_file = r'/you_filed_algos/prod_kudu_data/abc.txt'
-    save_file(output_file, line, clear_buff=True)
-
-    content = '四川省成都市锦江区三槐树路3号1层,4至9层'
-    content_trans = transfer_content(content)
-    print(content_trans)
-    print(content.replace(',', ' '))
+    # line = '111'
+    # output_file = r'/you_filed_algos/prod_kudu_data/abc.txt'
+    # save_file(output_file, line, clear_buff=True)
+    #
+    # content = '四川省成都市锦江区三槐树路3号1层,4至9层'
+    # content_trans = transfer_content(content)
+    # print(content_trans)
+    # print(content.replace(',', ' '))
