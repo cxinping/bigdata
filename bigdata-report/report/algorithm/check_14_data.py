@@ -224,7 +224,7 @@ def init_file(dest_file):
         os.remove(dest_file)
 
 
-def analyze_no_plane_data_data(coefficient=2):
+def analyze_no_plane_data(coefficient=2):
     """
 
     排除飞机票后, 取其他所有的差旅费
@@ -233,7 +233,7 @@ def analyze_no_plane_data_data(coefficient=2):
     :return:
     """
 
-    print('==========  analyze_no_plane_data_data ===============')
+    print('==========  analyze_no_plane_data ===============')
 
     rd_df = pd.read_csv(no_plane_dest_file, sep=',', header=None,
                         # dtype={'finance_travel_id': str, 'origin_name' : str, 'destin_name' : str, 'jour_amount': np.float64},
@@ -274,7 +274,7 @@ def analyze_no_plane_data_data(coefficient=2):
             print('')
 
 
-def analyze_plane_data_data(coefficient=2):
+def analyze_plane_data(coefficient=2):
     """
     只包括飞机票费用
 
@@ -282,7 +282,7 @@ def analyze_plane_data_data(coefficient=2):
     :return:
     """
 
-    print('======= analyze_plane_data_data ===========')
+    print('======= analyze_plane_data ===========')
 
     rd_df = pd.read_csv(plane_dest_file, sep=',', header=None, encoding="utf-8",
                         dtype={'finance_travel_id': str, 'bill_id': str, 'plane_beg_date': str, 'plane_end_date': str,
@@ -386,13 +386,11 @@ def check_14_plane_data2():
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
     # check_14_no_plane_data()   # 4546085   1286011
-    # analyze_no_plane_data_data(coefficient=2)
+    # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
     # check_14_plane_data()  # 3493517
-    # analyze_plane_data_data(coefficient=2)
-
-    check_14_plane_data2()
+    analyze_plane_data_data(coefficient=2)
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出

@@ -174,7 +174,7 @@ class Check13Service():
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def analyze_data_data(self, coefficient=2):
+    def analyze_data(self, coefficient=2):
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])
@@ -208,7 +208,7 @@ class Check13Service():
 if __name__ == "__main__":
     check13_service = Check13Service()
     # check13_service.save_fee_data()   # 5776561   1386478
-    check13_service.analyze_data_data(coefficient=2)
+    check13_service.analyze_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

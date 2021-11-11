@@ -22,7 +22,8 @@ def query_kudu_data(sql, columns, conn_type='test'):
     for item in records:
         record = []
         if columns:
-            for idx in range(len(columns)):
+            #for idx in range(len(columns)):
+            for idx, _ in enumerate(columns):
                 # print(item[idx], type(item[idx]))
 
                 if str(item[idx]) == "None":
