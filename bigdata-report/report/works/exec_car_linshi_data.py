@@ -119,7 +119,7 @@ def exec_task(sql):
             sales_address = sales_address.replace(',', ' ') if sales_address else '无'
             receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
 
-            log.info(f" {threading.current_thread().name} is runing ")
+            log.info(f" {threading.current_thread().name} is running ")
             record_str = f'{finance_car_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
             print(record_str)
             print('')
@@ -167,10 +167,10 @@ def operate_reocrd(record):
 
 
 def main():
-    check_car_linshi_data()  # 57350 10296
+    #check_car_linshi_data()  # 57350     32401
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

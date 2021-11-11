@@ -740,7 +740,7 @@ def execute_py_shell(unusual_shell, unusual_id):
         insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
                                    daily_end_date=daily_end_date, unusual_point=unusual_id,
                                    daily_source='python shell',
-                                   operate_desc='', unusual_infor='')
+                                   operate_desc=f'成功执行检查点{unusual_id}的Python Shell', unusual_infor='')
     except Exception as e:
         print(e)
         insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,

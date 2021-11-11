@@ -54,7 +54,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 2 * 10000
+    limit_size = 3 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -161,7 +161,7 @@ def exec_task(sql):
             start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
-            log.info(f" {threading.current_thread().name} is runing ")
+            log.info(f" {threading.current_thread().name} is running ")
             consumed_time1 = round(time.perf_counter() - start_time1)
             log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
@@ -189,7 +189,7 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.1)
+            time.sleep(0.2)
 
 
 def stop_process_pool(executor):
@@ -199,7 +199,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 1013121
+    execute_02_data()  # 1013121   30006
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)

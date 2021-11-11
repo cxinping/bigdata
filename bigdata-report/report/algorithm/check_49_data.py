@@ -110,7 +110,8 @@ def exec_sql(bill_id_ls):
      receipt_city ,
      importdate ,
      commodityname ,
-     ' ' as category_name 
+     ' ' as category_name,
+    iscompany
     FROM 01_datamart_layer_007_h_cw_df.finance_official_bill
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()

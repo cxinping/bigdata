@@ -50,7 +50,7 @@ def check_14_plane_data():
     count_records = records[0][0]
 
     max_size = 1 * 100000
-    limit_size = 10000
+    limit_size = 2 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -315,14 +315,18 @@ def analyze_plane_data_data(coefficient=2):
 
 
 def main():
-    check_14_no_plane_data()  # 4205254   338370
+    #check_14_no_plane_data()  # 4205254   338370
     #analyze_no_plane_data_data(coefficient=2)
 
-    check_14_plane_data()     # 3493517
+    check_14_plane_data()     # 3493517    832590
     #analyze_plane_data_data(coefficient=2)
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出
+
+
+
+
 
 
 
