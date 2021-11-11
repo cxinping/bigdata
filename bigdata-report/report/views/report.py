@@ -798,9 +798,11 @@ def query_commoditynames():
         elif unusual_id == '26':
             type_str = '会议费'
             data = query_checkpoint_26_commoditynames()
+
         result = {
             'type': type_str,
             'data': data,
+            'total': len(data),
             'unusual_id': unusual_id
         }
         return mk_utf8resp(result)
@@ -851,9 +853,11 @@ def query_product_keywords():
         elif unusual_id == '26':
             type_str = '会议费'
             keywords = get_conference_bill_jiebaword()
+
         result = {
             'type': type_str,
             'keywords': keywords,
+            'total': len(keywords),
             'unusual_id': unusual_id
         }
         return mk_utf8resp(result)

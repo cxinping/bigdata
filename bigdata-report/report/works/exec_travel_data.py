@@ -16,8 +16,8 @@ import threading
 
 log = get_logger(__name__)
 
-dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint2'
-dest_file = "/you_filed_algos/prod_kudu_data/checkpoint2/travel_data.txt"
+dest_dir = '/you_filed_algos/prod_kudu_data/temp'
+dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
 error_file = "/you_filed_algos/prod_kudu_data/checkpoint2/error_data.txt"
 
@@ -54,7 +54,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 20000
+    limit_size = 10 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -138,6 +138,9 @@ def operate_reocrd(record):
 
 def exec_task(sql):
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+
+    time.sleep(0.01)
+
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             start_time0 = time.perf_counter()
@@ -187,7 +190,7 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.1)
+            time.sleep(0.01)
 
 
 def stop_process_pool(executor):
@@ -197,11 +200,11 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 755778  31830
+    execute_02_data()  # 1013121  53160
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

@@ -134,6 +134,8 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
+            time.sleep(0.1)
+
 
 def operate_reocrd(record):
     sales_name = str(record[1]) if record[1] else None  # 开票公司
@@ -173,10 +175,10 @@ def operate_reocrd(record):
 
 
 def main():
-    check_linshi_office_data()  # 35918   15699
+    #check_linshi_office_data()  # 35918   17324
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
