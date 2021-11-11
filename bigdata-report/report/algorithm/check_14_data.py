@@ -390,7 +390,9 @@ def main():
 
     # 需求2 交通方式为飞机的交通费用异常分析
     # check_14_plane_data()  # 3493517
-    analyze_plane_data_data(coefficient=2)
+    # analyze_plane_data(coefficient=2)
+
+    check_14_plane_data2()
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出
