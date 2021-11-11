@@ -105,12 +105,14 @@ def exec_plane_task(sql, dest_file):  # dest_file
             record_str = f'{finance_travel_id},{plane_beg_date},{plane_end_date},{plane_origin_name},{plane_destin_name},{plane_check_amount}'
 
             # log.info(f'dest_file = {dest_file}')
-            log.info(f" {threading.current_thread().name} is doing")
+            log.info(f" {threading.current_thread().name} is runing")
             log.info(record_str)
             print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
+
+            time.sleep(0.1)
 
 def check_14_no_plane_data():
     """
@@ -205,6 +207,8 @@ def exec_task(sql, dest_file):  # dest_file
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
+
+            time.sleep(0.1)
 
 
 def init_file(dest_file):
@@ -311,10 +315,10 @@ def analyze_plane_data_data(coefficient=2):
 
 
 def main():
-    #check_14_no_plane_data()  # 4205254   3397028
-    analyze_no_plane_data_data(coefficient=2)
+    check_14_no_plane_data()  # 4205254   338370
+    #analyze_no_plane_data_data(coefficient=2)
 
-    check_14_plane_data()  # 3493517
+    check_14_plane_data()     # 3493517
     #analyze_plane_data_data(coefficient=2)
 
     print('--- ok ---')

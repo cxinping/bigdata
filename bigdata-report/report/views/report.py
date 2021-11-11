@@ -20,7 +20,8 @@ from report.services.office_expenses_service import query_checkpoint_42_commodit
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
     pagination_car_records
 from report.commons.tools import get_current_time
-from report.services.common_services import (insert_finance_shell_daily, operate_finance_category_sign, clean_finance_category_sign,
+from report.services.common_services import (insert_finance_shell_daily, operate_finance_category_sign,
+                                             clean_finance_category_sign,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
@@ -691,30 +692,19 @@ def finance_unusual_execute():
             response = jsonify(data)
             return response
 
-        ######### 执行 SQL ############
         if isalgorithm == '1':
+            ######### 执行 SQL ############
             executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
 
         elif isalgorithm == '2':
             ###### 执行算法 python 脚本  ############
-            # eval("print(1+2)")
-            print(unusual_shell)
-            exec("print('执行算法 shell 开始')")
-            daily_start_date = get_current_time()
+            executor.submit(execute_py_shell, unusual_shell, unusual_id)
 
-            exec(unusual_shell, globals())
-            exec("print('执行算法 shell 结束')")
-            daily_end_date = get_current_time()
-
-            insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
-                                       daily_end_date=daily_end_date, unusual_point=unusual_id,
-                                       daily_source='python shell',
-                                       operate_desc='', unusual_infor='')
-
+        daily_source = 'SQL' if isalgorithm == '1' else 'Python Shell'
         data = {
             'result': 'ok',
             'code': 200,
-            'details': f'执行检查点{unusual_id}的SQL或Python Shell'
+            'details': f'执行检查点{unusual_id}的{daily_source}'
         }
         response = jsonify(data)
         return response
@@ -726,14 +716,37 @@ def finance_unusual_execute():
             'details': str(e)
         }
 
-        daily_source = 'sql' if isalgorithm == '1' else 'python shell'
-        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
-                                   daily_end_date=daily_end_date,
-                                   unusual_point=unusual_id, daily_source=daily_source, operate_desc='',
-                                   unusual_infor=str(e))
-
         response = jsonify(data)
         return response
+
+
+def execute_py_shell(unusual_shell, unusual_id):
+    """
+    执行检查点的 python shell 算法
+    :param unusual_shell:
+    :return:
+    """
+
+    try:
+        # eval("print(1+2)")
+        print(unusual_shell)
+        exec("print('执行算法 shell 开始')")
+        daily_start_date = get_current_time()
+
+        exec(unusual_shell, globals())
+        exec("print('执行算法 shell 结束')")
+        daily_end_date = get_current_time()
+
+        insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
+                                   daily_end_date=daily_end_date, unusual_point=unusual_id,
+                                   daily_source='python shell',
+                                   operate_desc='', unusual_infor='')
+    except Exception as e:
+        print(e)
+        insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
+                                   daily_end_date=daily_end_date,
+                                   unusual_point=unusual_id, daily_source='python shell', operate_desc='',
+                                   unusual_infor=str(e))
 
 
 def execute_kudu_sql(unusual_shell, unusual_id):
@@ -814,8 +827,8 @@ def query_commoditynames():
             'unusual_id': unusual_id
         }
 
-    # response = jsonify(result)
-    # return response, 200
+        # response = jsonify(result)
+        # return response, 200
         return mk_utf8resp(result)
 
 
@@ -896,7 +909,7 @@ def set_finance_category_sign():
         response = jsonify(data)
         return response
 
-    if category_names is None or len(category_names)==0:
+    if category_names is None or len(category_names) == 0:
         data = {"result": "error", "details": "输入的 category_names 不能为空 或者 没有传递值", "code": 500}
         response = jsonify(data)
         return response
@@ -913,7 +926,7 @@ def set_finance_category_sign():
 
     try:
         type_str = None
-        available_category_name = None # 存在的的商品关键字或商品大类
+        available_category_name = None  # 存在的的商品关键字或商品大类
 
         # category_classify 类别, 区分大类和商品关键字， 01代表大类，02代表商品关键字
         if unusual_id == '42' and category_classify == '01':
@@ -1150,7 +1163,8 @@ def query_finance_shell_daily():
     if unusual_point is None or len(unusual_point) == 0:
         unusual_point = None
 
-    log.info(f'*** current_page={current_page},page_size={page_size}, unusual_point => {unusual_point} , {type(unusual_point)}')
+    log.info(
+        f'*** current_page={current_page},page_size={page_size}, unusual_point => {unusual_point} , {type(unusual_point)}')
 
     if current_page is None:
         data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
@@ -1181,8 +1195,8 @@ def query_finance_shell_daily():
             'data': records
         }
 
-        print('==== show infos =========')
-        print(result)
+        # print('==== show infos =========')
+        # print(result)
 
         return mk_utf8resp(result)
     except Exception as e:

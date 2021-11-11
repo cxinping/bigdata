@@ -120,13 +120,15 @@ def exec_task(sql):
             sales_address = sales_address.replace(',', ' ') if sales_address else '无'
             receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
 
-            log.info(f" {threading.current_thread().name} is doing ")
+            log.info(f" {threading.current_thread().name} is runing ")
             record_str = f'{finance_meeting_id},{meet_addr},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
             print(record_str)
             print('')
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
+
+            time.sleep(0.1)
 
 
 def operate_reocrd(record):
@@ -169,7 +171,7 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_meeting_data()     # 3974
+    #check_meeting_data()     # 3974   460
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

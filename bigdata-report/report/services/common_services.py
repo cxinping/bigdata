@@ -196,7 +196,7 @@ def pagination_finance_shell_daily_records(unusual_point=None):
         where_sql = where_sql + f' unusual_point = "{unusual_point}" '
 
     sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily "
-    order_sql = ' ORDER BY daily_id ASC '
+    order_sql = ' ORDER BY daily_start_date DESC '
     sql = sql + where_sql + order_sql
 
     count_sql = 'SELECT count(a.daily_status) FROM ({sql}) a'.format(sql=sql)

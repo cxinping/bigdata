@@ -48,8 +48,8 @@ def check_linshi_office_data():
     count_records = records[0][0]
     log.info(f'* count_records ==> {count_records}')
 
-    max_size = 1 * 1000
-    limit_size = 1000
+    max_size = 1 * 10000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     if count_records >= max_size:
@@ -175,16 +175,20 @@ def operate_reocrd(record):
 
 
 def main():
-    #check_linshi_office_data()  # 35918   17324
+    check_linshi_office_data()  # 35918   2329
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
 
 if __name__ == "__main__":
     main()
+
+
+
+
 
 
 

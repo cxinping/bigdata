@@ -167,7 +167,7 @@ class Check13Service():
                 emp_name = emp_name.replace(',', ' ')
 
                 record_str = f'{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
-                log.info(f" {threading.current_thread().name} is doing ")
+                log.info(f" {threading.current_thread().name} is runing ")
                 log.info(record_str)
                 print()
 
@@ -209,3 +209,6 @@ if __name__ == "__main__":
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     print('--- ok ---')
+
+
+
