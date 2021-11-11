@@ -20,8 +20,9 @@ df2 = pd.DataFrame(inp2)
 df = df1.append(df2, ignore_index=True)
 
 print(df.shape)
+print(df)
 
-print('---------' * 3 )
+print('====' * 20 )
 inner_pd = pd.merge(df1, df2, on=['c1', 'c2'] ,how='inner')
 print(inner_pd)
 

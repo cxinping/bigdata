@@ -6,6 +6,7 @@ import numpy as np
 import time
 import threading
 from report.commons.connect_kudu import prod_execute_sql
+from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 
 log = get_logger(__name__)
@@ -93,12 +94,12 @@ def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
-            finance_travel_id = str(record[0])   # finance_travel_id
-            bill_id = str(record[1])             # bill_id
-            plane_beg_date = str(record[2])      # 飞机开始时间
-            plane_end_date = str(record[3])      # 飞机结束时间
-            plane_origin_name = str(record[4])   # 飞机出发地
-            plane_destin_name = str(record[5])   # 飞机目的地
+            finance_travel_id = str(record[0])  # finance_travel_id
+            bill_id = str(record[1])  # bill_id
+            plane_beg_date = str(record[2])  # 飞机开始时间
+            plane_end_date = str(record[3])  # 飞机结束时间
+            plane_origin_name = str(record[4])  # 飞机出发地
+            plane_destin_name = str(record[5])  # 飞机目的地
             plane_check_amount = str(record[6])  # 飞机票的费用
 
             plane_origin_name = plane_origin_name.replace(',', ' ')
@@ -195,10 +196,10 @@ def exec_no_plane_task(sql, dest_file):  # dest_file
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_travel_id = str(record[0])  # finance_travel_id
-            bill_id = str(record[1])            # bill_id
-            origin_name = str(record[2])        # 出发地
-            destin_name = str(record[3])        # 目的地
-            jour_amount = str(record[4])        # 交通费
+            bill_id = str(record[1])  # bill_id
+            origin_name = str(record[2])  # 出发地
+            destin_name = str(record[3])  # 目的地
+            jour_amount = str(record[4])  # 交通费
 
             origin_name = origin_name.replace(',', ' ')
             destin_name = destin_name.replace(',', ' ')
@@ -249,7 +250,7 @@ def analyze_no_plane_data_data(coefficient=2):
     rd_df = rd_df[:300]
     # print(rd_df.head(20))
     # print(len(rd_df))
-    #print('=' * 50)
+    # print('=' * 50)
 
     grouped_df = rd_df.groupby(['origin_name', 'destin_name'])
 
@@ -300,7 +301,7 @@ def analyze_plane_data_data(coefficient=2):
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_end_date', 'plane_origin_name', 'plane_destin_name'])
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
 
-    #print('=' * 60)
+    # print('=' * 60)
 
     for name, group_df in grouped_df:
         # print(name)
@@ -323,20 +324,75 @@ def analyze_plane_data_data(coefficient=2):
             print('')
 
 
-def demo1():
-    sql ='select finance_travel_id, bill_id, origin_name, destin_name, jour_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)'
-    start_time0 = time.perf_counter()
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    print(len(records))
+def check_14_plane_data2():
+    columns_ls = ['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
+                  'plane_destin_name',
+                  'plane_check_amount']
+    columns_str = ",".join(columns_ls)
+
+    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null)".format(
+        columns_str=columns_str)
+
+    count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+
+    log.info(f'* count_records ==> {count_records}')
+
+    max_size = 1 * 100000
+    limit_size = 1 * 10000
+    select_sql_ls = []
+
+    if count_records >= max_size:
+        offset_size = 0
+        while offset_size <= count_records:
+            if offset_size + limit_size > count_records:
+                limit_size = count_records - offset_size
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) ORDER BY finance_travel_id limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
+
+                select_sql_ls.append(tmp_sql)
+                break
+            else:
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) ORDER BY finance_travel_id limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
+                select_sql_ls.append(tmp_sql)
+
+            offset_size = offset_size + limit_size
+    else:
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) ".format(
+            columns_str=columns_str)
+        select_sql_ls.append(tmp_sql)
+
+    log.info(f'* 开始分页合并dataframe,一共 {len(select_sql_ls)} 页')
+
+    rt_df = None  # count 3467564 , page 347
+    start_time = time.perf_counter()
+    for idx, sel_sql in enumerate(select_sql_ls):
+        print(idx, sel_sql)
+
+        if idx == 0:
+            rt_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type='test')
+        else:
+            tmp_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type='test')
+            rt_df = rt_df.append(tmp_df, ignore_index=True)
+
+    consumed_time = round(time.perf_counter() - start_time)
+    print(f'consumed_time={consumed_time}')
+    print(len(rt_df))
+
 
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
-    check_14_no_plane_data()   # 4546085   1286011
-    #analyze_no_plane_data_data(coefficient=2)
+    # check_14_no_plane_data()   # 4546085   1286011
+    # analyze_no_plane_data_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    #check_14_plane_data()  # 3493517
-    #analyze_plane_data_data(coefficient=2)
+    # check_14_plane_data()  # 3493517
+    # analyze_plane_data_data(coefficient=2)
+
+    check_14_plane_data2()
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出

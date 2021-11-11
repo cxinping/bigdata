@@ -7,15 +7,16 @@ from report.commons.logging import get_logger
 log = get_logger(__name__)
 
 
-def query_kudu_data(sql, columns):
+def query_kudu_data(sql, columns, conn_type='test'):
     """
     发票日期异常检查
     :return:
     """
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    log.info('***' * 20)
-    log.info('*** query_kudu_data=>' + str(len(records)))
-    log.info('***' * 20)
+    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+    #log.info('***' * 20)
+    log.info('*** query_kudu_data => ' + str(len(records)))
+    #log.info('***' * 20)
+    print('')
 
     dataFromKUDU = []
     for item in records:
@@ -34,6 +35,8 @@ def query_kudu_data(sql, columns):
                     record.append(str(item[idx]))
 
         dataFromKUDU.append(record)
+
+    del records
 
     df = pd.DataFrame(data=dataFromKUDU, columns=columns)
     return df
