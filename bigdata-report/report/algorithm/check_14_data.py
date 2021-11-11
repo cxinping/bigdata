@@ -246,10 +246,10 @@ def analyze_no_plane_data_data(coefficient=2):
     #
     # print('*' * 50)
 
-    rd_df = rd_df[:200]
+    rd_df = rd_df[:300]
     # print(rd_df.head(20))
     # print(len(rd_df))
-    print('=' * 50)
+    #print('=' * 50)
 
     grouped_df = rd_df.groupby(['origin_name', 'destin_name'])
 
@@ -294,7 +294,7 @@ def analyze_plane_data_data(coefficient=2):
 
     # print(rd_df.dtypes)
 
-    rd_df = rd_df[:2000]
+    rd_df = rd_df[:1000]
     # print(rd_df)
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_end_date', 'plane_origin_name', 'plane_destin_name'])
@@ -323,12 +323,18 @@ def analyze_plane_data_data(coefficient=2):
             print('')
 
 
-def main():
-    # 需求1
-    #check_14_no_plane_data()   # 4546085   1286011
-    analyze_no_plane_data_data(coefficient=2)
+def demo1():
+    sql ='select finance_travel_id, bill_id, origin_name, destin_name, jour_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)'
+    start_time0 = time.perf_counter()
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    print(len(records))
 
-    # 需求2
+def main():
+    # 需求1 交通方式为非飞机的交通费用异常分析
+    check_14_no_plane_data()   # 4546085   1286011
+    #analyze_no_plane_data_data(coefficient=2)
+
+    # 需求2 交通方式为飞机的交通费用异常分析
     #check_14_plane_data()  # 3493517
     #analyze_plane_data_data(coefficient=2)
 

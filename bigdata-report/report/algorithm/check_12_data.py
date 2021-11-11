@@ -40,3 +40,6 @@ class Check12Service():
 
 if __name__ == "__main__":
     check12_service = Check12Service()
+    check12_service.save_data()
+
+

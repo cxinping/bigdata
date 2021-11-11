@@ -26,6 +26,7 @@ from report.services.common_services import (insert_finance_shell_daily, operate
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
 from report.commons.db_helper import Pagination
+import traceback
 
 log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
@@ -720,7 +721,7 @@ def finance_unusual_execute():
         return response
 
 
-def execute_py_shell(unusual_shell, unusual_id):
+def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
     """
     执行检查点的 python shell 算法
     :param unusual_shell:
@@ -729,11 +730,14 @@ def execute_py_shell(unusual_shell, unusual_id):
 
     try:
         # eval("print(1+2)")
-        print(unusual_shell)
+
+        #print(unusual_shell)
         exec("print('执行算法 shell 开始')")
         daily_start_date = get_current_time()
 
         exec(unusual_shell, globals())
+        #exec('1/0')
+
         exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()
 
@@ -741,12 +745,18 @@ def execute_py_shell(unusual_shell, unusual_id):
                                    daily_end_date=daily_end_date, unusual_point=unusual_id,
                                    daily_source='python shell',
                                    operate_desc=f'成功执行检查点{unusual_id}的Python Shell', unusual_infor='')
-    except Exception as e:
-        print(e)
+
+    except BaseException as e:
+        print('--- execute_py_shell throw exception 111 ---')
+        #print(e)
+        error_info = str(e)
+        traceback.print_exc()
+        daily_end_date = get_current_time()
+
         insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
                                    daily_end_date=daily_end_date,
                                    unusual_point=unusual_id, daily_source='python shell', operate_desc='',
-                                   unusual_infor=str(e))
+                                   unusual_infor=error_info)
 
 
 def execute_kudu_sql(unusual_shell, unusual_id):

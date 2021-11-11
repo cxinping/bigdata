@@ -7,6 +7,7 @@ import asyncio, aiomysql
 
 log = get_logger(__name__)
 
+conn_type = 'test'  # prod
 
 def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
                                operate_desc, unusual_infor):
@@ -14,11 +15,16 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
     保存执行脚本或SQL的状态
     """
     daily_id = create_uuid()
-    sql = f"""
-    insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor) 
-    values('{daily_id}', '{daily_status}', '{daily_start_date}', '{daily_end_date}' ,'{unusual_point}', '{daily_source}', '{operate_desc}', '{unusual_infor}' )
-    """.replace('\n', '').replace('\r', '').strip()
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+    try:
+        sql = f"""
+        insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor) 
+        values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}" )
+        """.replace('\n', '').replace('\r', '').strip()
+        #log.info(sql)
+        prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
+    except Exception as e:
+        print(e)
+
 
 def clean_finance_category_sign(unusual_id):
     del_sql = f'DELETE FROM 01_datamart_layer_007_h_cw_df.finance_category_sign WHERE unusual_id="{unusual_id}"  '
