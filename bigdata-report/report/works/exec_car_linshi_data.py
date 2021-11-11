@@ -9,6 +9,11 @@ from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
 
+"""
+
+把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_car_linshi_analysis 表里
+"""
+
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'

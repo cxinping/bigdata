@@ -139,7 +139,7 @@ class Check13Service():
             # print('*** tmp_sql => ', tmp_sql)
 
         log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
-        threadPool = ThreadPoolExecutor(max_workers=30)
+        threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
         all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
@@ -153,10 +153,10 @@ class Check13Service():
         records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
         if records and len(records) > 0:
             for idx, record in enumerate(records):
-                bill_id = str(record[0])  # bill_id
-                city_name = str(record[1])  # 出差城市名称
-                city_grade_name = str(record[2])  # 出差城市等级
-                emp_name = str(record[3])  # 员工名字
+                bill_id = str(record[0])                # bill_id
+                city_name = str(record[1])              # 出差城市名称
+                city_grade_name = str(record[2])        # 出差城市等级
+                emp_name = str(record[3])               # 员工名字
                 stand_amount_perday = float(record[4])  # 每天标准住宿费用
                 hotel_amount_perday = float(record[5])  # 每天实际花费的住宿费用
 
@@ -180,18 +180,23 @@ class Check13Service():
                                    'stand_amount_perday', 'hotel_amount_perday'])
         # print(rd_df.dtypes)
         print('before filter ', len(rd_df))
-        print(rd_df.head(5))
+
+        rd_df['consume_amount_perday'] = rd_df['stand_amount_perday'] - rd_df['hotel_amount_perday']
+
+        print(rd_df.head(10))
 
         # 过滤查询
         query_province = '江苏省'
-        rd_df = rd_df[
-            (rd_df['province'] == query_province) & (rd_df['stand_amount_perday'] >= rd_df['hotel_amount_perday'])]
+        rd_df = rd_df[(rd_df['province'] == query_province)
+                      & (rd_df['stand_amount_perday'] >= rd_df['hotel_amount_perday'])
+                      & (rd_df['consume_amount_perday'] > 0)
+                      ]
         print('after filter ', len(rd_df))
         print(rd_df.head(10))
 
-        temp = rd_df.describe()[['hotel_amount_perday']]
-        std_val = temp.at['std', 'hotel_amount_perday']  # 标准差
-        mean_val = temp.at['mean', 'hotel_amount_perday']  # 平均值
+        temp = rd_df.describe()[['consume_amount_perday']]
+        std_val = temp.at['std', 'consume_amount_perday']  # 标准差
+        mean_val = temp.at['mean', 'consume_amount_perday']  # 平均值
 
         # 数据的正常范围为 【mean - 2 × std , mean + 2 × std】
         max_val = mean_val + coefficient * std_val
@@ -202,13 +207,10 @@ class Check13Service():
 
 if __name__ == "__main__":
     check13_service = Check13Service()
-    check13_service.save_fee_data()   # 5776561   1386478
-    #check13_service.analyze_data_data(coefficient=2)
+    # check13_service.save_fee_data()   # 5776561   1386478
+    check13_service.analyze_data_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     print('--- ok ---')
-
-
-

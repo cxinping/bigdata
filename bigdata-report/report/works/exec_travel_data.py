@@ -54,7 +54,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 3 * 10000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -189,7 +189,7 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.2)
+            time.sleep(0.01)
 
 
 def stop_process_pool(executor):
@@ -199,7 +199,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 1013121   30006
+    execute_02_data()  # 1013121   3510
     print('--- created txt file ---')
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
