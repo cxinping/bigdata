@@ -457,8 +457,8 @@ def prod_demo2():
 def prod_demo3():
     hdfs = HDFSTools(conn_type='prod')
     # 下载 HDFS 上的单个文件
-    hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z_rma_travel_journey_m/importdate=20211031/000104_0',
-                      localUrl='/my_filed_algos/prod_kudu_data/000104_0')
+    hdfs.downLoadFile(hdfsUrl='hdfs://nameservice1/user/hive/warehouse/02_logical_layer_001_o_lf_cw.db/BIC/AOCCW01012/importdate=20211112/20211112184435=00001',
+                      localUrl='/my_filed_algos/prod_kudu_data/20211112184435=00001')
 
     hdfs.shutdownJVM()
     print('--- ok , completed work ---')

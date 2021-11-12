@@ -94,7 +94,7 @@ def execute_02_data():
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=80, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -148,7 +148,7 @@ def operate_reocrd(record):
 
 def exec_task(sql):
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
-    # time.sleep(0.01)
+    time.sleep(0.001)
 
     if records and len(records) > 0:
         for idx, record in enumerate(records):
@@ -167,20 +167,19 @@ def exec_task(sql):
 
             receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
-            start_time1 = time.perf_counter()
+            #start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
             log.info(f" {threading.current_thread().name} is running ")
-            consumed_time1 = round(time.perf_counter() - start_time1)
-            log.info(
-                f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
+            #consumed_time1 = round(time.perf_counter() - start_time1)
+            #log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
-            start_time2 = time.perf_counter()
+            #start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
             # print('222 destin_province => ', destin_province)
-            consumed_time2 = round(time.perf_counter() - start_time2)
-            log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}, destin_province={destin_province}')
+            #consumed_time2 = round(time.perf_counter() - start_time2)
+            #log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}, destin_province={destin_province}')
 
             origin_name = origin_name.replace(',', ' ') if origin_name else '无'  # 行程出发地(市)
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'  # 开票公司
@@ -193,13 +192,13 @@ def exec_task(sql):
             receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
 
             record_str = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
-            print(record_str)
+            #print(record_str)
             print('')
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.5)
+            #time.sleep(0.001)
 
 
 def stop_process_pool(executor):

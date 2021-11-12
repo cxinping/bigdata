@@ -15,8 +15,8 @@ from report.services.common_services import ProvinceService
 
 log = get_logger(__name__)
 
-dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint2'
-dest_file = "/you_filed_algos/prod_kudu_data/checkpoint2/travel_data.txt"
+dest_dir = '/you_filed_algos/prod_kudu_data/temp/'
+dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data2.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
 error_file = "/you_filed_algos/prod_kudu_data/checkpoint2/error_data.txt"
 
@@ -37,22 +37,23 @@ def execute_02_data():
 
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code']
-    extra_columns_ls = ['bill_id']
-    columns_ls.extend(extra_columns_ls)
+    # extra_columns_ls = ['bill_id']
+    # columns_ls.extend(extra_columns_ls)
+
     columns_str = ",".join(columns_ls)
     sql = """
        select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
        """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
-    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
     count_records = records[0][0]
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 10 * 10000
-    limit_size = 1 * 100000
+    limit_size = 1 * 1000
     select_sql_ls = []
 
     if count_records >= max_size:
@@ -157,7 +158,7 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            gevent.sleep(0.01)
+            #gevent.sleep(0.01)
 
 
 def operate_reocrd(record):
