@@ -53,7 +53,6 @@ on duplicate key update uid=111, app_id=1000000, createTime='2017-03-07 10:19:12
 
 INSERT INTO areas(area_name, city, province) on duplicate key update area_name= , city= , province=
 
-
 ```
 
 

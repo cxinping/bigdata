@@ -286,12 +286,9 @@ def analyze_plane_data(coefficient=2):
 
     rd_df = pd.read_csv(plane_dest_file, sep=',', header=None, encoding="utf-8",
                         dtype={'finance_travel_id': str, 'bill_id': str, 'plane_beg_date': str, 'plane_end_date': str,
-                               'plane_origin_name': str, 'plane_destin_name': str,
-                               'jour_amount': np.float64},
+                               'plane_origin_name': str, 'plane_destin_name': str, 'jour_amount': np.float64},
                         names=['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
-                               'plane_destin_name',
-
-                               'plane_check_amount'])
+                               'plane_destin_name', 'plane_check_amount'])
 
     # print(rd_df.dtypes)
 
@@ -300,7 +297,6 @@ def analyze_plane_data(coefficient=2):
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_end_date', 'plane_origin_name', 'plane_destin_name'])
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
-
     # print('=' * 60)
 
     for name, group_df in grouped_df:

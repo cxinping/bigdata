@@ -12,6 +12,11 @@ import threading
 """
 
 把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
+
+cd /you_filed_algos/app
+
+/root/anaconda3/bin/python -u /you_filed_algos/app/report/works/exec_travel_data.py
+
 """
 
 log = get_logger(__name__)
@@ -63,13 +68,13 @@ def execute_02_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by finance_travel_id limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by base_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by finance_travel_id limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by base_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
                 select_sql_ls.append(tmp_sql)
 
@@ -199,7 +204,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 1013121   11037
+    execute_02_data()  # 1013121   541684
     print('--- created txt file ---')
 
     #test_hdfs = Test_HDFSTools(conn_type=conn_type)

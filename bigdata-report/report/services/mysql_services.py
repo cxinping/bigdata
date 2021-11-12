@@ -3,6 +3,7 @@ import asyncio, aiomysql
 from report.commons.mysql_pool import AsyncMysql, exec_insert
 from report.commons.logging import get_logger
 
+
 log = get_logger(__name__)
 
 

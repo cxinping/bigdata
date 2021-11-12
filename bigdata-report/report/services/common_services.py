@@ -9,6 +9,7 @@ log = get_logger(__name__)
 
 conn_type = 'test'  # prod
 
+
 def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
                                operate_desc, unusual_infor):
     """
@@ -20,7 +21,7 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
         insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor) 
         values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}" )
         """.replace('\n', '').replace('\r', '').strip()
-        #log.info(sql)
+        # log.info(sql)
         prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
     except Exception as e:
         print(e)
@@ -29,6 +30,7 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
 def clean_finance_category_sign(unusual_id):
     del_sql = f'DELETE FROM 01_datamart_layer_007_h_cw_df.finance_category_sign WHERE unusual_id="{unusual_id}"  '
     prod_execute_sql(conn_type='test', sqltype='insert', sql=del_sql)
+
 
 def operate_finance_category_sign(unusual_id, category_names, category_classify, sign_status='1'):
     """
@@ -232,7 +234,6 @@ class MySQLService:
             print(area_name_val, city_val, province_val)
             self.insert_update_area(id=id, area_name=area_name_val, city=city_val, province=province_val)
 
-
     def insert_update_area(self, id, area_name, city, province=None):
         sqllist = []
 
@@ -277,6 +278,4 @@ class MySQLService:
                         province = item['area_name']
                         return id, area_name, city, province
 
-        return None,None,None,None
-
-
+        return None, None, None, None
