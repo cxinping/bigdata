@@ -8,6 +8,8 @@ from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
+import multiprocessing
+
 
 """
 
@@ -66,7 +68,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 5 * 1000
+    limit_size = 1 * 1000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -94,17 +96,18 @@ def execute_02_data():
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=80, thread_name_prefix="thr")
     start_time = time.perf_counter()
+    pool = multiprocessing.Pool(processes=3)
 
-    # for sel_sql in select_sql_ls:
-    #     log.info(sel_sql)
-    # threadPool.submit(exec_task, sel_sql)
+    for sel_sql in select_sql_ls:
+        pool.apply_async(exec_task, (sel_sql,))
 
-    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
-    wait(all_task, return_when=ALL_COMPLETED)
+    print("----start----")
+    pool.close()
+    pool.join()
+    print("-----end-----")
 
-    threadPool.shutdown(wait=True)
+
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
 
@@ -170,10 +173,9 @@ def exec_task(sql):
             start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
-            log.info(f" {threading.current_thread().name} is running ")
+            log.info(f" {os.getpid()} is running ")
             consumed_time1 = round(time.perf_counter() - start_time1)
-            log.info(
-                f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
+            log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
             start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
@@ -199,13 +201,8 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.5)
+            time.sleep(0.1)
 
-
-def stop_process_pool(executor):
-    for pid, process in executor._processes.items():
-        process.terminate()
-    executor.shutdown()
 
 
 def main():
