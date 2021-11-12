@@ -59,7 +59,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 1 * 10000
+    limit_size = 5 * 1000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -87,7 +87,7 @@ def execute_02_data():
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=40, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
