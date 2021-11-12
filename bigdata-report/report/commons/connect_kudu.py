@@ -161,7 +161,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
         # print("JVM path:"+ jpype.getDefaultJVMPath())
         # print('----- running jvm -------------')
     except Exception as e:
-        # print('====== throw error ======')
+        print('====== throw error ======')
         traceback.print_exc()
         raise RuntimeError(e)
 

@@ -52,7 +52,7 @@ def check_14_plane_data():
     count_records = records[0][0]
 
     max_size = 1 * 100000
-    limit_size = 2 * 10000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -79,7 +79,7 @@ def check_14_plane_data():
 
     log.info('* 开始分页查询')
 
-    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=20, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     all_task = [threadPool.submit(exec_plane_task, sel_sql, plane_dest_file) for sel_sql in select_sql_ls]
@@ -385,10 +385,10 @@ def main():
     # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    # check_14_plane_data()  # 3493517
-    # analyze_plane_data(coefficient=2)
+    check_14_plane_data()  # 3467564
+    #analyze_plane_data(coefficient=2)
 
-    check_14_plane_data2()
+    #check_14_plane_data2()
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出

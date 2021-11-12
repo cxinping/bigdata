@@ -60,8 +60,9 @@ def exec_sql(bill_id_ls):
         #print(condition_sql)
 
     sql = """
-    UPSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
-    SELECT bill_id ,
+    INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+    SELECT uuid() as finance_id,
+    bill_id ,
     '49' as unusual_id ,
      company_code ,
      account_period ,
@@ -79,7 +80,7 @@ def exec_sql(bill_id_ls):
      apply_emp_name ,
      ' ' as emp_name ,
      ' ' as emp_code ,
-     company_name ,
+     ' ' as company_name ,
      0 as jour_amount ,
      0 as accomm_amount ,
      0 as subsidy_amount ,
@@ -88,7 +89,7 @@ def exec_sql(bill_id_ls):
      jzpz ,
     '办公费' as target_classify ,
      0 as meeting_amount ,
-     exp_type_name ,
+     ' ' as exp_type_name ,
      ' ' as next_bill_id ,
      ' ' as last_bill_id ,
      appr_org_sfname ,
@@ -108,11 +109,13 @@ def exec_sql(bill_id_ls):
      0 as diff_met_date_avg ,
      tb_times ,
      receipt_city ,
-     importdate ,
      commodityname ,
      ' ' as category_name,
-    iscompany
-    FROM 01_datamart_layer_007_h_cw_df.finance_official_bill
+     iscompany,
+    origin_province,
+    destin_province,
+    importdate
+    FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
     print(sql)

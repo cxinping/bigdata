@@ -17,6 +17,9 @@ cd /you_filed_algos/app
 
 /root/anaconda3/bin/python -u /you_filed_algos/app/report/works/exec_travel_data.py
 
+/root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data.py
+
+
 """
 
 log = get_logger(__name__)
@@ -24,7 +27,7 @@ log = get_logger(__name__)
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
 dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
-error_file = "/you_filed_algos/prod_kudu_data/checkpoint2/error_data.txt"
+error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
 
 match_area = MatchArea()
 province_service = ProvinceService()
@@ -39,21 +42,25 @@ def init_file():
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
+    os.mknod(dest_file)
+
 
 def execute_02_data():
     init_file()
 
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code']
-    extra_columns_ls = ['bill_id']
-    columns_ls.extend(extra_columns_ls)
+
+    # extra_columns_ls = ['bill_id']
+    # columns_ls.extend(extra_columns_ls)
+
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
     """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
-    count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+    count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
     count_records = records[0][0]
@@ -87,7 +94,7 @@ def execute_02_data():
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -103,12 +110,10 @@ def execute_02_data():
 
 
 def operate_reocrd(record):
-    # destin_name = str(record[0]) if record[0] else None
-    sales_name = str(record[1]) if record[1] else None  # 开票公司
+    sales_name = str(record[1]) if record[1] else None          # 开票公司
     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+    sales_bank = str(record[3]) if record[3] else None          # 发票开户行
 
-    # print('destin_name=',destin_name)
     # print('sales_name=', sales_name)
     # print('sales_addressphone=', sales_addressphone)
     # print('sales_bank=', sales_bank)
@@ -135,16 +140,15 @@ def operate_reocrd(record):
 
     result_area = match_area.opera_areas(area_names)
 
-    show_str = f'### sales_name={sales_name}, sales_addressphone={sales_addressphone}, sales_bank={sales_bank}, sales_address={result_area}'
-    print(show_str)
+    # show_str = f'### sales_name={sales_name}, sales_addressphone={sales_addressphone}, sales_bank={sales_bank}, sales_address={result_area}'
+    # print(show_str)
 
     return result_area
 
 
 def exec_task(sql):
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
-
-    #time.sleep(0.01)
+    # time.sleep(0.01)
 
     if records and len(records) > 0:
         for idx, record in enumerate(records):
@@ -168,7 +172,8 @@ def exec_task(sql):
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
             log.info(f" {threading.current_thread().name} is running ")
             consumed_time1 = round(time.perf_counter() - start_time1)
-            log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
+            log.info(
+                f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
             start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
@@ -204,11 +209,11 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 1013121   541684
-    print('--- created txt file ---')
+    execute_02_data()  # 1013121
+    print(f'* created txt file dest_file={dest_file}')
 
-    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    # test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
