@@ -207,7 +207,7 @@ class Check13Service():
 
 if __name__ == "__main__":
     check13_service = Check13Service()
-    # check13_service.save_fee_data()   # 5776561   1386478
+    # check13_service.save_fee_data()   # 一共有数据 5776561 条， 花费时间  秒，
     check13_service.analyze_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')

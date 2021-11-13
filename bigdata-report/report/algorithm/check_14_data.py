@@ -385,10 +385,10 @@ def main():
     # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    check_14_plane_data()  # 3467564
+    check_14_plane_data()  # 共有数据3467564 ， 花费时间
     #analyze_plane_data(coefficient=2)
 
-    #check_14_plane_data2()   # 花费时间 3423 seconds
+    #check_14_plane_data2()   # 共有数据3467564 ， 花费时间 3423 seconds
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出
