@@ -122,8 +122,6 @@ def exec_plane_task(sql, dest_file):  # dest_file
                 file.write(record_str + "\n")
 
 
-
-
 def check_14_no_plane_data():
     """
     非飞机的交通费
@@ -293,25 +291,27 @@ def analyze_no_plane_data(coefficient=2):
     print(abnormal_bill_id_ls)
     del grouped_df
     del rd_df
+    #exec_sql(abnormal_bill_id_ls)
 
-def exec_no_plane_sql(bill_id_ls):
-    print('exec_sql ==> ',len(bill_id_ls))
+
+def exec_sql(bill_id_ls):
+    print('exec_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
-        #print(len(group_ls), group_ls)
+        # print(len(group_ls), group_ls)
 
         condition_sql = ''
         in_codition = 'bill_id IN {temp}'
 
         for idx, group in enumerate(group_ls):
             temp = in_codition.format(temp=str(tuple(group)))
-            if idx == 0 :
+            if idx == 0:
                 condition_sql = temp
             else:
                 condition_sql = condition_sql + ' OR ' + temp
 
-        #print(condition_sql)
+        # print(condition_sql)
 
     sql = """
     INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
@@ -372,7 +372,7 @@ def exec_no_plane_sql(bill_id_ls):
         FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
-    #print(sql)
+    # print(sql)
     try:
         start_time = time.perf_counter()
         prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
@@ -381,6 +381,7 @@ def exec_no_plane_sql(bill_id_ls):
     except Exception as e:
         print(e)
         raise RuntimeError(e)
+
 
 def analyze_plane_data(coefficient=2):
     """
@@ -399,17 +400,17 @@ def analyze_plane_data(coefficient=2):
                                'plane_destin_name', 'plane_check_amount'])
 
     # print(rd_df.dtypes)
-
-    rd_df = rd_df[:1000]
+    #rd_df = rd_df[:500]
     print(rd_df.head(10))
 
-    grouped_df = rd_df.groupby(['plane_beg_date', 'plane_end_date', 'plane_origin_name', 'plane_destin_name'])
+    grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'])
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
-    # print('=' * 60)
+    print('=' * 60)
 
+    bill_id_ls = []
     for name, group_df in grouped_df:
-        print(name)
-        plane_beg_date, plane_end_date, plane_origin_name, plane_destin_name = name
+        # print(name)
+        plane_beg_date, plane_origin_name, plane_destin_name = name
         temp = group_df.describe()[['plane_check_amount']]
         std_val = temp.at['std', 'plane_check_amount']  # 标准差
         mean_val = temp.at['mean', 'plane_check_amount']  # 平均值
@@ -417,15 +418,24 @@ def analyze_plane_data(coefficient=2):
         if std_val == 0 or np.isnan(std_val):
             std_val = 0
 
-        # # 数据的正常范围为 【mean - 2 × std , mean + 2 × std】
+        # 数据的正常范围为 【mean - 2 × std , mean + 2 × std】
         max_val = mean_val + coefficient * std_val
         min_val = mean_val - coefficient * std_val
 
         if len(group_df) >= 2:
-            str_val = f'plane_beg_date={plane_beg_date}, plane_end_date={plane_end_date}, 每组数据的数量={len(group_df)}, coefficient系数为 {coefficient}, 标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}'
-            print(str_val)
-            print(group_df)
-            print('')
+            # str_val = f'plane_beg_date={plane_beg_date}, plane_origin_name={plane_origin_name}, plane_destin_name={plane_destin_name}, 每组数据的数量={len(group_df)}, coefficient系数为 {coefficient}, 标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}'
+            # print(str_val)
+            # print(group_df)
+            # print('')
+
+            for index, row in group_df.iterrows():
+                plane_check_amount = row['plane_check_amount']
+                if plane_check_amount > max_val or plane_check_amount < min_val:
+                    bill_id = row['bill_id']
+                    bill_id_ls.append(bill_id)
+
+    print('---- shwo result ---')
+    print(bill_id_ls)
 
 
 def check_14_plane_data2():
@@ -490,11 +500,11 @@ def check_14_plane_data2():
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
     # check_14_no_plane_data()   # 共有数据 4546085 条
-    #analyze_no_plane_data(coefficient=2)
+    # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    check_14_plane_data()      # 共有数据 3467564 条, 花费时间 3779 seconds
-    #analyze_plane_data(coefficient=2)
+    # check_14_plane_data()      # 共有数据 3467564 条, 花费时间 3689 seconds
+    analyze_plane_data(coefficient=2)
 
     # check_14_plane_data2()    # 共有数据 3467564 条, 花费时间 3423 seconds
 
@@ -503,6 +513,3 @@ def main():
 
 
 main()
-
-
-
