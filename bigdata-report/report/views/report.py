@@ -735,8 +735,12 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         exec("print('执行算法 shell 开始')")
         daily_start_date = get_current_time()
 
-        exec(unusual_shell, globals())
+        rst_val = {'x': 1, 'y': 2}
+        exec(unusual_shell, globals(), rst_val)
         #exec('1/0')
+
+        print(rst_val)
+
 
         exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()

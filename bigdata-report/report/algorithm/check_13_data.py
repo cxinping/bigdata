@@ -175,7 +175,7 @@ class Check13Service():
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def analyze_data(self, coefficient=2,query_province=[]):
+    def analyze_data(self, coefficient=2, query_province=None):
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])

@@ -8,7 +8,7 @@ Created on 2021-08-03
 
 
 from report import init_app
-app = init_app(config_object='config.development')
+app = init_app(config_object='config.default')
 
 
 if __name__ == '__main__':

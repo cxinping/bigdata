@@ -179,7 +179,6 @@ def main_linshi():
 
     test_hdfs = Test_HDFSTools(conn_type='test')
 
-
     print('* part3 ')
     x_all = datetime.now()
     for index, hdfs_file_url in enumerate(hdfsFileUrl_ls):

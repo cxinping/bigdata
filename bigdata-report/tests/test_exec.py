@@ -21,7 +21,7 @@ print('=' * 50)
 r = 'print(x+y)'
 r1 = """
 result = x + y
-print(result)
+#print(result)
 """
 val = {'x' : 1, 'y':2}
 exec(r1,globals(), val)
