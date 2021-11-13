@@ -27,7 +27,7 @@ def create_new_thread(target):
 # 另开线程，防止主线程阻塞
 @create_new_thread
 def execute_task(unusual_shell, unusual_id):
-    pass
+    thr = threading.current_thread()
 
 
 def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
@@ -77,7 +77,7 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
 
 
 def execute_kudu_sql(unusual_shell, unusual_id):
-    #print(unusual_shell)
+    # print(unusual_shell)
 
     try:
         daily_start_date = get_current_time()
@@ -96,6 +96,3 @@ def execute_kudu_sql(unusual_shell, unusual_id):
                                    daily_end_date=daily_end_date,
                                    unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e),
                                    task_status='done')
-
-
-
