@@ -55,9 +55,16 @@ INSERT INTO areas(area_name, city, province) on duplicate key update area_name= 
 
 ```
 
+运行 Report 工程
 
+```
+cd /you_filed_algos/app
 
+/root/anaconda3/bin/python /you_filed_algos/app/run.py
 
+nohup /root/anaconda3/bin/python /you_filed_algos/app/run.py &
+
+```
 
 
 

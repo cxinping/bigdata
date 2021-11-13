@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import threading
 from report.services.common_services import ProvinceService
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
+from report.commons.tools import list_of_groups
 
 log = get_logger(__name__)
 
@@ -174,7 +175,7 @@ class Check13Service():
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def analyze_data(self, coefficient=2):
+    def analyze_data(self, coefficient=2,query_province=[]):
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])
@@ -185,16 +186,16 @@ class Check13Service():
 
         print(rd_df.head(10))
 
-        # 过滤查询
+        # part1 过滤查询
         query_province = '江苏省'
-        rd_df = rd_df[(rd_df['province'] == query_province)
+        abnormal_rd_df1 = rd_df[(rd_df['province'] == query_province)
                       & (rd_df['stand_amount_perday'] >= rd_df['hotel_amount_perday'])
                       & (rd_df['consume_amount_perday'] > 0)
                       ]
-        print('after filter ', len(rd_df))
-        print(rd_df.head(10))
+        print('after filter abnormal_rd_df1 ', len(abnormal_rd_df1))
+        print(abnormal_rd_df1.head(10))
 
-        temp = rd_df.describe()[['consume_amount_perday']]
+        temp = abnormal_rd_df1.describe()[['consume_amount_perday']]
         std_val = temp.at['std', 'consume_amount_perday']  # 标准差
         mean_val = temp.at['mean', 'consume_amount_perday']  # 平均值
 
@@ -204,6 +205,118 @@ class Check13Service():
 
         print(f'{query_province} 方差 => {std_val}, 平均值 => {mean_val}, max_val => {max_val}, min_val => {min_val}')
 
+        bill_id_ls1 = []
+        for index, row in abnormal_rd_df1.iterrows():
+
+            hotel_amount_perday = row['hotel_amount_perday']
+            #print('hotel_amount_perday=', hotel_amount_perday)
+
+            if hotel_amount_perday > max_val or hotel_amount_perday < min_val:
+                bill_id = row['bill_id']
+                bill_id_ls1.append(bill_id)
+
+        print('*** abnormal_rd_df2 ')
+
+        # part2 过滤查询
+        abnormal_rd_df2 = rd_df[(rd_df['province'] == query_province) & (rd_df['stand_amount_perday'] < rd_df['hotel_amount_perday']) ]
+        #print(abnormal_rd_df2.head(10))
+        #print('len(abnormal_rd_df2)=',len(abnormal_rd_df2))
+        bill_id_ls2 = abnormal_rd_df2['bill_id'].tolist()
+        bill_id_ls1.extend(bill_id_ls2)
+        print('len(bill_id_ls1)=',len(bill_id_ls1))
+        #exec_sql(bill_id_ls1)
+
+
+def exec_sql(bill_id_ls):
+    print('exec_sql ==> ',len(bill_id_ls))
+
+    if bill_id_ls and len(bill_id_ls) > 0:
+        group_ls = list_of_groups(bill_id_ls, 1000)
+        #print(len(group_ls), group_ls)
+
+        condition_sql = ''
+        in_codition = 'bill_id IN {temp}'
+
+        for idx, group in enumerate(group_ls):
+            temp = in_codition.format(temp=str(tuple(group)))
+            if idx == 0 :
+                condition_sql = temp
+            else:
+                condition_sql = condition_sql + ' OR ' + temp
+
+        #print(condition_sql)
+
+    sql = """
+    INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+        SELECT uuid() as finance_id,
+        bill_id ,
+        '13' as unusual_id ,
+         ' ' as company_code ,
+         ' ' as account_period ,
+         ' ' as finance_number ,
+         ' ' as cost_center ,
+         ' ' as profit_center ,
+         ' ' as cart_head ,
+         ' ' as bill_code ,
+         ' ' as bill_beg_date ,
+         ' ' as bill_end_date ,
+         ' ' as origin_city ,
+         ' ' as destin_city ,
+         ' ' as beg_date ,
+         ' ' as end_date ,
+         ' ' as apply_emp_name ,
+         ' ' as emp_name ,
+         ' ' as emp_code ,
+         ' ' as company_name ,
+         0 as jour_amount ,
+         0 as accomm_amount ,
+         0 as subsidy_amount ,
+         0 as other_amount ,
+         0 as check_amount ,
+         0 as jzpz ,
+        '差旅费' as target_classify ,
+         0 as meeting_amount ,
+         exp_type_name ,
+         ' ' as next_bill_id ,
+         ' ' as last_bill_id ,
+         ' ' as appr_org_sfname ,
+         ' ' as sales_address ,
+         ' ' as meet_addr ,
+         ' ' as sponsor ,
+         0 as jzpz_tax ,
+         ' ' as billingdate ,
+         ' ' as remarks ,
+         0 as hotel_amount ,
+         0 as total_amount ,
+         ' ' as apply_id ,
+         ' ' as base_apply_date ,
+         ' ' as scenery_name_details ,
+         ' ' as meet_num ,
+         0 as diff_met_date ,
+         0 as diff_met_date_avg ,
+         ' ' as tb_times ,
+         ' ' as receipt_city ,
+         ' ' as commodityname ,
+         ' ' as category_name,
+         ' ' as iscompany,
+         ' ' as origin_province,
+         ' ' as destin_province,
+        importdate
+        FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+    WHERE {condition_sql}
+        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+    #print(sql)
+    try:
+        start_time = time.perf_counter()
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        consumed_time = round(time.perf_counter() - start_time)
+        print(f'*** 执行SQL耗时 {consumed_time} sec')
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+def test_exec():
+    print()
 
 if __name__ == "__main__":
     check13_service = Check13Service()
