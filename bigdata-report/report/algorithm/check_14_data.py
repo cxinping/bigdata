@@ -8,6 +8,7 @@ import threading
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
+from report.commons.tools import list_of_groups
 
 log = get_logger(__name__)
 
@@ -25,6 +26,8 @@ sys.path.append('/you_filed_algos/app')
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
 no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
+
+conn_type = 'test'
 
 
 def check_14_plane_data():
@@ -92,6 +95,9 @@ def check_14_plane_data():
 
 def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+
+    time.sleep(0.01)
+
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_travel_id = str(record[0])  # finance_travel_id
@@ -115,7 +121,7 @@ def exec_plane_task(sql, dest_file):  # dest_file
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.01)
+
 
 
 def check_14_no_plane_data():
@@ -247,13 +253,15 @@ def analyze_no_plane_data(coefficient=2):
     #
     # print('*' * 50)
 
-    rd_df = rd_df[:300]
+    rd_df = rd_df[:500]
+
     # print(rd_df.head(20))
-    # print(len(rd_df))
-    # print('=' * 50)
+    print(len(rd_df))
+    print('=' * 50)
 
     grouped_df = rd_df.groupby(['origin_name', 'destin_name'])
 
+    abnormal_bill_id_ls = []
     for name, group_df in grouped_df:
         origin_name, destin_name = name
         temp = group_df.describe()[['jour_amount']]
@@ -268,11 +276,111 @@ def analyze_no_plane_data(coefficient=2):
         min_val = mean_val - coefficient * std_val
 
         if len(group_df) >= 2:
-            print(
-                f'origin_name={origin_name}, destin_name={destin_name}, 每组数据的数量={len(group_df)}, coefficient系数为 {coefficient}, 标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}')
-            print(group_df)
-            print('')
+            # print(f'origin_name={origin_name}, destin_name={destin_name}, 每组数据的数量={len(group_df)}, coefficient系数为 {coefficient}, 标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}')
+            # print(group_df)
+            # print('')
 
+            for index, row in group_df.iterrows():
+                jour_amount = row['jour_amount']
+                # print('jour_amount=', jour_amount)
+
+                if jour_amount > max_val or jour_amount < min_val:
+                    bill_id = row['bill_id']
+                    abnormal_bill_id_ls.append(bill_id)
+            # print('')
+
+    print('----  show result ----')
+    print(abnormal_bill_id_ls)
+    del grouped_df
+    del rd_df
+
+def exec_no_plane_sql(bill_id_ls):
+    print('exec_sql ==> ',len(bill_id_ls))
+
+    if bill_id_ls and len(bill_id_ls) > 0:
+        group_ls = list_of_groups(bill_id_ls, 1000)
+        #print(len(group_ls), group_ls)
+
+        condition_sql = ''
+        in_codition = 'bill_id IN {temp}'
+
+        for idx, group in enumerate(group_ls):
+            temp = in_codition.format(temp=str(tuple(group)))
+            if idx == 0 :
+                condition_sql = temp
+            else:
+                condition_sql = condition_sql + ' OR ' + temp
+
+        #print(condition_sql)
+
+    sql = """
+    INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+        SELECT uuid() as finance_id,
+        bill_id ,
+        '13' as unusual_id ,
+         ' ' as company_code ,
+         ' ' as account_period ,
+         ' ' as finance_number ,
+         ' ' as cost_center ,
+         ' ' as profit_center ,
+         ' ' as cart_head ,
+         ' ' as bill_code ,
+         ' ' as bill_beg_date ,
+         ' ' as bill_end_date ,
+         ' ' as origin_city ,
+         ' ' as destin_city ,
+         ' ' as beg_date ,
+         ' ' as end_date ,
+         ' ' as apply_emp_name ,
+         ' ' as emp_name ,
+         ' ' as emp_code ,
+         ' ' as company_name ,
+         0 as jour_amount ,
+         0 as accomm_amount ,
+         0 as subsidy_amount ,
+         0 as other_amount ,
+         0 as check_amount ,
+         0 as jzpz ,
+        '差旅费' as target_classify ,
+         0 as meeting_amount ,
+         exp_type_name ,
+         ' ' as next_bill_id ,
+         ' ' as last_bill_id ,
+         ' ' as appr_org_sfname ,
+         ' ' as sales_address ,
+         ' ' as meet_addr ,
+         ' ' as sponsor ,
+         0 as jzpz_tax ,
+         ' ' as billingdate ,
+         ' ' as remarks ,
+         0 as hotel_amount ,
+         0 as total_amount ,
+         ' ' as apply_id ,
+         ' ' as base_apply_date ,
+         ' ' as scenery_name_details ,
+         ' ' as meet_num ,
+         0 as diff_met_date ,
+         0 as diff_met_date_avg ,
+         ' ' as tb_times ,
+         ' ' as receipt_city ,
+         ' ' as commodityname ,
+         ' ' as category_name,
+         ' ' as iscompany,
+         ' ' as origin_province,
+         ' ' as destin_province,
+        importdate
+        FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+    WHERE {condition_sql}
+        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+    #print(sql)
+    try:
+        start_time = time.perf_counter()
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        consumed_time = round(time.perf_counter() - start_time)
+        print(f'*** 执行SQL耗时 {consumed_time} sec')
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
 
 def analyze_plane_data(coefficient=2):
     """
@@ -293,14 +401,14 @@ def analyze_plane_data(coefficient=2):
     # print(rd_df.dtypes)
 
     rd_df = rd_df[:1000]
-    # print(rd_df)
+    print(rd_df.head(10))
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_end_date', 'plane_origin_name', 'plane_destin_name'])
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
     # print('=' * 60)
 
     for name, group_df in grouped_df:
-        # print(name)
+        print(name)
         plane_beg_date, plane_end_date, plane_origin_name, plane_destin_name = name
         temp = group_df.describe()[['plane_check_amount']]
         std_val = temp.at['std', 'plane_check_amount']  # 标准差
@@ -382,13 +490,13 @@ def check_14_plane_data2():
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
     # check_14_no_plane_data()   # 共有数据 4546085 条
-    # analyze_no_plane_data(coefficient=2)
+    #analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    check_14_plane_data()      # 共有数据 3467564 条, 花费时间  seconds
+    check_14_plane_data()      # 共有数据 3467564 条, 花费时间 3779 seconds
     #analyze_plane_data(coefficient=2)
 
-    #check_14_plane_data2()    # 共有数据3467564 条, 花费时间 3423 seconds
+    # check_14_plane_data2()    # 共有数据 3467564 条, 花费时间 3423 seconds
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出

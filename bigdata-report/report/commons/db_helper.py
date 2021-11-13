@@ -13,16 +13,16 @@ def query_kudu_data(sql, columns, conn_type='test'):
     :return:
     """
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
-    #log.info('***' * 20)
+    # log.info('***' * 20)
     log.info('*** query_kudu_data => ' + str(len(records)))
-    #log.info('***' * 20)
+    # log.info('***' * 20)
     print('')
 
     dataFromKUDU = []
     for item in records:
         record = []
         if columns:
-            #for idx in range(len(columns)):
+            # for idx in range(len(columns)):
             for idx, _ in enumerate(columns):
                 # print(item[idx], type(item[idx]))
 
@@ -147,19 +147,8 @@ if __name__ == '__main__':
     columns = ['unusual_id', 'cost_project']
     page_obj.exec_sql(sql, columns)
 
-    print('*' * 50 )
+    print('*' * 50)
     columns_ls = ['bill_id', 'commodityname', 'bill_type_name']
     columns_str = ",".join(columns_ls)
     sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_meeting_bill limit 1"
-    db_fetch_to_dict(sql,columns_ls)
-
-
-
-
-
-
-
-
-
-
-
+    db_fetch_to_dict(sql, columns_ls)

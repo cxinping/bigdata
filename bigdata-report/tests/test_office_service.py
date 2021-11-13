@@ -6,3 +6,16 @@ if __name__ == "__main__":
     final_list = get_office_bill_jiebaword()
 
     print(len(final_list))
+
+
+
+
+
+
+
+
+
+
+
+
+

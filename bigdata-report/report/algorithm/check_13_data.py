@@ -181,7 +181,6 @@ class Check13Service():
                                    'stand_amount_perday', 'hotel_amount_perday'])
         # print(rd_df.dtypes)
         print('before filter ', len(rd_df))
-
         rd_df['consume_amount_perday'] = rd_df['stand_amount_perday'] - rd_df['hotel_amount_perday']
 
         print(rd_df.head(10))
@@ -315,8 +314,6 @@ def exec_sql(bill_id_ls):
         print(e)
         raise RuntimeError(e)
 
-def test_exec():
-    print()
 
 if __name__ == "__main__":
     check13_service = Check13Service()
