@@ -172,13 +172,14 @@ def main_linshi():
                                                      localDirUrl=localDirUrl)
     print('* part2 ')
     print('*** 需要处理HDFS文件数 ==> ', len(hdfsFileUrl_ls))
+    print('')
 
     if os.path.exists(localDirUrl + 'user'):
         shutil.rmtree(localDirUrl + 'user')
 
     test_hdfs = Test_HDFSTools(conn_type='test')
 
-    print()
+
     print('* part3 ')
     x_all = datetime.now()
     for index, hdfs_file_url in enumerate(hdfsFileUrl_ls):

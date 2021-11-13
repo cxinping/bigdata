@@ -388,7 +388,7 @@ def main():
     check_14_plane_data()  # 3467564
     #analyze_plane_data(coefficient=2)
 
-    #check_14_plane_data2()
+    #check_14_plane_data2()   # 花费时间 3423 seconds
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出
