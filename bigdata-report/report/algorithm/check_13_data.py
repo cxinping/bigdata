@@ -29,32 +29,10 @@ dest_file = dest_dir + '/check_13_data.txt'
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_13_data.txt'
 
 
-class Check13Service():
+class Check13Service:
 
     def __init__(self):
         self.province_service = ProvinceService()
-
-    def query_areas(self):
-        columns_ls = ['city_name', 'city_grade_name']
-        columns_str = ",".join(columns_ls)
-        sql = """
-        SELECT  {columns_str}
-            FROM (
-            SELECT DISTINCT
-             city_name, city_grade_name
-             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
-            WHERE exp_type_name="差旅费" AND hotel_num > 0
-            )as a
-            ORDER BY a.city_grade_name ASC
-        """.format(
-            columns_str=columns_str)
-
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-
-        log.info(len(records))
-
-        for record in records:
-            print(record)
 
     def init_file(self):
         if not os.path.exists(dest_dir):
@@ -104,7 +82,7 @@ class Check13Service():
                             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
                             WHERE exp_type_name="差旅费" AND hotel_num > 0
                             )as a                       
-                        order by bill_id limit {limit_size} offset {offset_size}
+                        order by stand_amount_perday limit {limit_size} offset {offset_size}
                     """.format(limit_size=limit_size, offset_size=offset_size)
 
                     select_sql_ls.append(tmp_sql)
@@ -119,7 +97,7 @@ class Check13Service():
                                FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
                                WHERE exp_type_name="差旅费" AND hotel_num > 0
                                )as a                           
-                           order by bill_id limit {limit_size} offset {offset_size}
+                           order by stand_amount_perday limit {limit_size} offset {offset_size}
                            """.format(limit_size=limit_size, offset_size=offset_size)
 
                     select_sql_ls.append(tmp_sql)
@@ -317,8 +295,8 @@ def exec_sql(bill_id_ls):
 
 if __name__ == "__main__":
     check13_service = Check13Service()
-    # check13_service.save_fee_data()   # 一共有数据 5776561 条， 花费时间  秒，
-    check13_service.analyze_data(coefficient=2)
+    check13_service.save_fee_data()   # 一共有数据 5776561 条， 花费时间  秒，
+    #check13_service.analyze_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

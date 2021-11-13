@@ -1,20 +1,23 @@
 # -*- coding: utf-8 -*-
-from report.services.common_services import MySQLService
+from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily
 from report.commons.tools import create_uuid
 
 
 def demo1():
-    # for i in range(15):
-    #     daily_status = 'ok'
-    #     daily_start_date = '2021-11-08 17:05'
-    #     daily_end_date = '2021-11-08 20:05'
-    #     unusual_point = '2'
-    #     daily_source = 'sql'
-    #     operate_desc = '1' + str(i)
-    #     unusual_infor = 'aaabbbccc'
+    for i in range(1):
+        daily_status = 'ok'
+        daily_start_date = '2021-11-08 17:05'
+        daily_end_date = '2021-11-08 20:05'
+        unusual_point = '2'
+        daily_source = 'sql'
+        operate_desc = '1' + str(i)
+        unusual_infor = 'aaabbbccc'
+        task_status = 'done'
 
-    # insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
-    #                            operate_desc, unusual_infor)
+        daily_id = insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
+                                   operate_desc, unusual_infor,task_status)
+        print(daily_id)
+        update_finance_shell_daily(daily_id, task_status='done 222333', daily_end_date='aaaaa')
 
     # pagination_finance_shell_daily_records(unusual_point='1')
 
@@ -63,7 +66,9 @@ def demo2():
 
 
 if __name__ == "__main__":
-    demo2()
+    demo1()
+
+    #demo2()
 
 
 

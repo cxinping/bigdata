@@ -11,18 +11,31 @@ conn_type = 'test'  # prod
 
 
 def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
-                               operate_desc, unusual_infor):
+                               operate_desc, unusual_infor, task_status='doing'):
     """
     保存执行脚本或SQL的状态
     """
     daily_id = create_uuid()
     try:
         sql = f"""
-        insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor) 
-        values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}" )
+        insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor,task_status) 
+        values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}", "{task_status}" )
         """.replace('\n', '').replace('\r', '').strip()
-        # log.info(sql)
+        log.info(sql)
         prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
+        return daily_id
+    except Exception as e:
+        print(e)
+
+
+def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done'):
+    try:
+        sql = f"""
+        UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="{task_status}", daily_end_date="{daily_end_date}" WHERE daily_id="{daily_id}"
+        """.replace('\n', '').replace('\r', '').strip()
+        log.info(sql)
+        prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
+        return daily_id
     except Exception as e:
         print(e)
 

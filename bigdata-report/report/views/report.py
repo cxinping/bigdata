@@ -20,8 +20,8 @@ from report.services.office_expenses_service import query_checkpoint_42_commodit
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
     pagination_car_records
 from report.commons.tools import get_current_time
-from report.services.common_services import (insert_finance_shell_daily, operate_finance_category_sign,
-                                             clean_finance_category_sign,
+from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
+                                             operate_finance_category_sign,clean_finance_category_sign,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
@@ -736,6 +736,12 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
 
         daily_start_date = get_current_time()
 
+        daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
+                                   daily_end_date='', unusual_point=unusual_id,
+                                   daily_source='python shell',
+                                   operate_desc=f'成功执行检查点{unusual_id}的Python Shell', unusual_infor='',
+                                   task_status='doing')
+
         if unusual_id in ['13', '14']:
             # 检查点13,14 测试
             rst_val = {'x': 1, 'y': 2}
@@ -746,11 +752,8 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
 
         #exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()
+        update_finance_shell_daily(daily_id, daily_end_date,task_status='done')
 
-        insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
-                                   daily_end_date=daily_end_date, unusual_point=unusual_id,
-                                   daily_source='python shell',
-                                   operate_desc=f'成功执行检查点{unusual_id}的Python Shell', unusual_infor='')
     except BaseException as e:
         print('--- execute_py_shell throw exception ---')
         #print(e)
@@ -761,7 +764,7 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
                                    daily_end_date=daily_end_date,
                                    unusual_point=unusual_id, daily_source='python shell', operate_desc='',
-                                   unusual_infor=error_info)
+                                   unusual_infor=error_info, task_status='doing')
 
 
 def execute_kudu_sql(unusual_shell, unusual_id):
@@ -777,12 +780,12 @@ def execute_kudu_sql(unusual_shell, unusual_id):
 
         insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
                                    unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc,
-                                   unusual_infor='')
+                                   unusual_infor='', task_status='done')
     except Exception as e:
         print(e)
         insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
                                    daily_end_date=daily_end_date,
-                                   unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e))
+                                   unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e), task_status='done')
 
 
 def mk_utf8resp(js):
