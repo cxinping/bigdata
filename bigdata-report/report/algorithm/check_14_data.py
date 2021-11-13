@@ -381,14 +381,14 @@ def check_14_plane_data2():
 
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
-    # check_14_no_plane_data()   # 4546085   1286011
+    # check_14_no_plane_data()   # 共有数据 4546085 条
     # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    check_14_plane_data()  # 共有数据3467564 ， 花费时间
+    check_14_plane_data()      # 共有数据 3467564 条, 花费时间  seconds
     #analyze_plane_data(coefficient=2)
 
-    #check_14_plane_data2()   # 共有数据3467564 ， 花费时间 3423 seconds
+    #check_14_plane_data2()    # 共有数据3467564 条, 花费时间 3423 seconds
 
     print('--- ok ---')
     os._exit(0)  # 无错误退出

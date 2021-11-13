@@ -730,28 +730,29 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
 
     try:
         # eval("print(1+2)")
-
+        # exec('1/0')
         #print(unusual_shell)
-        exec("print('执行算法 shell 开始')")
+        #exec("print('执行算法 shell 开始')")
+
         daily_start_date = get_current_time()
 
-        rst_val = {'x': 1, 'y': 2}
-        exec(unusual_shell, globals(), rst_val)
-        #exec('1/0')
+        if unusual_id in ['13', '14']:
+            # 检查点13,14 测试
+            rst_val = {'x': 1, 'y': 2}
+            exec(unusual_shell, globals(), rst_val)
+            print(f'* rst_val={rst_val}')
+        else:
+            exec(unusual_shell, globals())
 
-        print(rst_val)
-
-
-        exec("print('执行算法 shell 结束')")
+        #exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()
 
         insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
                                    daily_end_date=daily_end_date, unusual_point=unusual_id,
                                    daily_source='python shell',
                                    operate_desc=f'成功执行检查点{unusual_id}的Python Shell', unusual_infor='')
-
     except BaseException as e:
-        print('--- execute_py_shell throw exception 111 ---')
+        print('--- execute_py_shell throw exception ---')
         #print(e)
         error_info = str(e)
         traceback.print_exc()

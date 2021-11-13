@@ -118,7 +118,7 @@ def exec_sql(bill_id_ls):
     FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
-    print(sql)
+    #print(sql)
     try:
         start_time = time.perf_counter()
         prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
