@@ -8,7 +8,7 @@ import threading
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
-from report.commons.tools import list_of_groups
+from report.commons.tools import (list_of_groups, kill_pid)
 
 log = get_logger(__name__)
 
@@ -29,6 +29,8 @@ plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
 conn_type = 'test'
 
+plane_parent_pid = 0
+no_plane_parent_pid = 0
 
 def check_14_plane_data():
     """
@@ -93,10 +95,13 @@ def check_14_plane_data():
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
 
+    kill_pid(plane_parent_pid)
+
 
 def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-
+    global plane_parent_pid
+    plane_parent_pid = os.getpid()
     time.sleep(0.01)
 
     if records and len(records) > 0:
@@ -292,7 +297,7 @@ def analyze_no_plane_data(coefficient=2):
     print(abnormal_bill_id_ls)
     del grouped_df
     del rd_df
-    #exec_sql(abnormal_bill_id_ls)
+    # exec_sql(abnormal_bill_id_ls)
 
 
 def exec_sql(bill_id_ls):
@@ -318,7 +323,7 @@ def exec_sql(bill_id_ls):
     INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
         SELECT uuid() as finance_id,
         bill_id ,
-        '13' as unusual_id ,
+        '14' as unusual_id ,
          ' ' as company_code ,
          ' ' as account_period ,
          ' ' as finance_number ,
@@ -373,7 +378,8 @@ def exec_sql(bill_id_ls):
         FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
-    # print(sql)
+
+    print(sql)
     try:
         start_time = time.perf_counter()
         prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
@@ -401,7 +407,7 @@ def analyze_plane_data(coefficient=2):
                                'plane_destin_name', 'plane_check_amount'])
 
     # print(rd_df.dtypes)
-    #rd_df = rd_df[:500]
+    # rd_df = rd_df[:500]
     print(rd_df.head(10))
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'])
@@ -435,9 +441,9 @@ def analyze_plane_data(coefficient=2):
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
-    print('---- shwo result ---')
-    print(bill_id_ls)
-
+    #print('---- shwo result ---')
+    #print(bill_id_ls)
+    exec_sql(bill_id_ls)
 
 def check_14_plane_data2():
     columns_ls = ['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
@@ -485,7 +491,7 @@ def check_14_plane_data2():
     rt_df = None  # count 3467564 , page 347
     start_time = time.perf_counter()
     for idx, sel_sql in enumerate(select_sql_ls):
-        print(idx, sel_sql)
+        #print(idx, sel_sql)
 
         if idx == 0:
             rt_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type='test')
@@ -504,13 +510,12 @@ def main():
     # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    check_14_plane_data()      # 共有数据 3415489 条, 花费时间 3532 seconds
-    #analyze_plane_data(coefficient=2)
+    check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
+    analyze_plane_data(coefficient=2)
 
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
 
     print('--- ok ---')
-
 
 
 main()

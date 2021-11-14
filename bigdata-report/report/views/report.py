@@ -709,9 +709,11 @@ def finance_unusual_execute():
         if isalgorithm == '1':
             ######### 执行 SQL ############
             executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
+            pass
         elif isalgorithm == '2':
             ###### 执行算法 python 脚本  ############
             executor.submit(execute_py_shell, unusual_shell, unusual_id)
+            pass
 
         #execute_task(isalgorithm=isalgorithm,unusual_shell=unusual_shell, unusual_id=unusual_id)
 

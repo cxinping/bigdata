@@ -4,9 +4,15 @@ from report.commons.connect_kudu import prod_execute_sql
 import uuid
 import time
 from datetime import datetime, timezone, timedelta
+import psutil
 
 log = get_logger(__name__)
 
+def kill_pid(parent_pid):
+    parent = psutil.Process(parent_pid)
+    for child in parent.children(recursive=True):  # or parent.children() for recursive=False
+        child.kill()
+    parent.kill()
 
 def match_address(place, key):
     ssxq = ['省', '市', '县', '区', '乡']

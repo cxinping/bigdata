@@ -5,6 +5,7 @@ from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily)
 import traceback
 from report.commons.connect_kudu import prod_execute_sql
+from multiprocessing import Process
 
 log = get_logger(__name__)
 
@@ -20,6 +21,17 @@ def create_new_thread(target):
         t = threading.Thread(target=target, args=args, kwargs=kwargs)
         threads.append(t)
         t.start()
+
+    return wrapper
+
+def create_new_process(target):
+    def wrapper(*args, **kwargs):
+        #max_threads.acquire()
+        t = threading.Thread(target=target, args=args, kwargs=kwargs)
+        #threads.append(t)
+        #t.start()
+        p = Process(target=target, args=args, kwargs=kwargs)
+        p.start()
 
     return wrapper
 
@@ -65,6 +77,7 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
             print(f'* rst_val={rst_val}')
         else:
             exec(unusual_shell, globals())
+            pass
 
         # exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()
