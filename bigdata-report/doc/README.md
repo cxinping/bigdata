@@ -71,6 +71,12 @@ nohup /root/anaconda3/bin/python /you_filed_algos/app/run.py &
 ps -eLf | grep python
 ```
 
+jieba 词典
+```
+https://github.com/fxsjy/jieba
+```
+
+
 
 
 
