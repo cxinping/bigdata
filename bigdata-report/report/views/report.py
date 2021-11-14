@@ -21,7 +21,7 @@ from report.services.vehicle_expense_service import query_checkpoint_55_commodit
     pagination_car_records
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
-                                             operate_finance_category_sign, clean_finance_category_sign,
+                                             operate_finance_category_sign, clean_finance_category_sign,query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
@@ -30,6 +30,7 @@ import traceback
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 
 log = get_logger(__name__)
+
 report_bp = Blueprint('report', __name__)
 
 
@@ -696,14 +697,14 @@ def finance_unusual_execute():
 
         if isalgorithm == '1':
             ######### 执行 SQL ############
-            #executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
+            executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
             pass
         elif isalgorithm == '2':
             ###### 执行算法 python 脚本  ############
-            #executor.submit(execute_py_shell, unusual_shell, unusual_id)
+            executor.submit(execute_py_shell, unusual_shell, unusual_id)
             pass
 
-        execute_task(isalgorithm=isalgorithm,unusual_shell=unusual_shell, unusual_id=unusual_id)
+        #execute_task(isalgorithm=isalgorithm,unusual_shell=unusual_shell, unusual_id=unusual_id)
 
         daily_source = 'SQL' if isalgorithm == '1' else 'Python Shell'
         data = {
@@ -852,7 +853,9 @@ def set_finance_category_sign():
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
     # 类别, 区分大类和商品关键字， 01代表大类，02代表商品关键字
     category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
-    category_names = request.form.getlist("category_names")
+    category_names = request.form.get('category_names') if request.form.get('category_names') else None
+
+    #category_names = request.form.getlist("category_names")
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -903,6 +906,9 @@ def set_finance_category_sign():
             type_str = '会议费'
             available_category_name = get_conference_bill_jiebaword()
 
+        category_names = str(category_names).split(',')
+
+        print(f'* unusual_id={unusual_id}, category_classify={category_classify} ' )
         print('* available_category_name => ', available_category_name)
         print('* checked category_names => ', category_names)
 
@@ -940,7 +946,7 @@ def set_finance_category_sign():
 
 # http://10.5.138.11:8004/report/query/category/sign
 @report_bp.route('/query/category/sign', methods=['POST', 'GET'])
-def query_finance_category_signs():
+def query_all_finance_category_sign():
     """
     设置办公费和车辆使用费的大类的状态
     :return:
@@ -948,6 +954,7 @@ def query_finance_category_signs():
     log.info('---- query_finance_category_sign ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    # category_classify 类别, 1 代表商品大类，2 代表商品关键字
     category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
 
     if unusual_id is None:
@@ -966,47 +973,51 @@ def query_finance_category_signs():
         return response
 
     try:
-        # category_classify 类别, 1 代表商品大类，2 代表商品关键字
-        checked_data = query_finance_category_sign(unusual_id, category_classify)
+        log.info(f'unusual_id={unusual_id}, category_classify={category_classify}')
 
+        # checked_data = query_finance_category_sign(unusual_id, category_classify)
+        #
         type_str, records = None, None
-        if unusual_id == '42' and category_classify == '1':
+        if unusual_id == '42' and category_classify == '01':
             # 商品大类
             type_str = '办公费'
-            records = query_checkpoint_42_commoditynames()
-        elif unusual_id == '55' and category_classify == '1':
+            #records = query_checkpoint_42_commoditynames()
+        elif unusual_id == '55' and category_classify == '01':
             # 商品大类
             type_str = '车辆使用费'
-            records = query_checkpoint_55_commoditynames()
-        elif unusual_id == '26' and category_classify == '1':
+            #records = query_checkpoint_55_commoditynames()
+        elif unusual_id == '26' and category_classify == '01':
             # 商品大类
             type_str = '会议费'
-            records = query_checkpoint_26_commoditynames()
-        elif unusual_id == '42' and category_classify == '2':
+            #records = query_checkpoint_26_commoditynames()
+        elif unusual_id == '42' and category_classify == '02':
             # 商品关键字
             type_str = '办公费'
-            records = get_office_bill_jiebaword()
-        elif unusual_id == '55' and category_classify == '2':
+            #records = get_office_bill_jiebaword()
+        elif unusual_id == '55' and category_classify == '02':
             # 商品关键字
             type_str = '车辆使用费'
-            records = get_car_bill_jiebaword()
-        elif unusual_id == '26' and category_classify == '2':
+            #records = get_car_bill_jiebaword()
+        elif unusual_id == '26' and category_classify == '02':
             # 商品关键字
             type_str = '会议费'
-            records = get_conference_bill_jiebaword()
+            #records = get_conference_bill_jiebaword()
 
-        checked_record_ls = []
-        for record in records:
-            temp = {}
-            temp['name'] = record
-            temp['status'] = 0
+        checked_datas = query_finance_category_signs(unusual_id, category_classify)
+        #log.info(checked_datas)
 
-            for checked_record in checked_data:
-                if record == checked_record:
-                    temp['status'] = 1
-                    break
-
-            checked_record_ls.append(temp)
+        # checked_record_ls = []
+        # for record in records:
+        #     temp = {}
+        #     temp['name'] = record
+        #     temp['status'] = 0
+        #
+        #     for checked_record in checked_data:
+        #         if record == checked_record:
+        #             temp['status'] = 1
+        #             break
+        #
+        #     checked_record_ls.append(temp)
 
             # print(record)
 
@@ -1015,7 +1026,7 @@ def query_finance_category_signs():
             'category_classify': category_classify,
             'unusual_id': unusual_id,
             'type': type_str,
-            'data': checked_record_ls
+            'data': checked_datas
         }
         return mk_utf8resp(result)
     except Exception as e:

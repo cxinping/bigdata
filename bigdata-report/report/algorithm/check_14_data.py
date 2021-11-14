@@ -37,6 +37,7 @@ def check_14_plane_data():
 
      select finance_travel_id,bill_id,plane_beg_date, plane_end_date,plane_origin_name, plane_destin_name, plane_check_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill
      WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null)
+     AND (plane_beg_date is not null AND plane_beg_date !='')
 
     """
     init_file(plane_dest_file)
@@ -46,7 +47,7 @@ def check_14_plane_data():
                   'plane_check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null)".format(
+    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='')".format(
         columns_str=columns_str)
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -64,19 +65,19 @@ def check_14_plane_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='')".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
 
@@ -503,13 +504,13 @@ def main():
     # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    # check_14_plane_data()      # 共有数据 3467564 条, 花费时间 3689 seconds
-    analyze_plane_data(coefficient=2)
+    check_14_plane_data()      # 共有数据 3467564 条, 花费时间 3532 seconds
+    #analyze_plane_data(coefficient=2)
 
     # check_14_plane_data2()    # 共有数据 3467564 条, 花费时间 3423 seconds
 
     print('--- ok ---')
-    os._exit(0)  # 无错误退出
+
 
 
 main()

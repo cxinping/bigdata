@@ -98,10 +98,11 @@ def check_14_plane_data():
         for future in as_completed(all_task):
             threadPool.shutdown()
 
-    kill_pid()
     print('* 222 All tasks complete')
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
+    kill_pid()
+
 
 parent_pid = 0
 
@@ -148,7 +149,6 @@ def exec_plane_task(sql, dest_file):  # dest_file
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-            #os.kill(os.getpid(), signal.SIGHUP)
         return True
     except Exception as e:
         print(e)
@@ -166,7 +166,5 @@ def init_file(dest_file):
 check_14_plane_data()  # 共有数据 3467564 条, 花费时间 3689 seconds
 print('--- ok --')
 
-dis_connection()
-
 print('1--- dis_connection --')
-# os._exit(0)
+

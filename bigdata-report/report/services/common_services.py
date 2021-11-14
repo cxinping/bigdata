@@ -3,6 +3,7 @@ from report.commons.tools import create_uuid
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.mysql_pool import AsyncMysql, exec_insert
+from report.commons.db_helper import db_fetch_to_dict
 import asyncio, aiomysql
 
 log = get_logger(__name__)
@@ -76,7 +77,7 @@ def query_finance_category_sign(unusual_id, category_classify):
     """
     查询选中状态的商品
     :param unusual_id:
-    :param category_classify: 类别, 1 代表商品大类，2 代表商品关键字
+    :param category_classify: 类别, 01 代表商品大类，02 代表商品关键字
     :return:
     """
     sel_sql = f'select category_name from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" '
@@ -88,6 +89,24 @@ def query_finance_category_sign(unusual_id, category_classify):
         category_name_ls.append(str(category_name))
 
     return category_name_ls
+
+def query_finance_category_signs(unusual_id, category_classify):
+    """
+    查询选中状态的商品
+    :param unusual_id:
+    :param category_classify: 类别, 01 代表商品大类，02 代表商品关键字
+    :return:
+    """
+
+    columns_ls = ['category_name',  'sign_status']
+    columns_str = ",".join(columns_ls)
+    sel_sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" '
+    records = db_fetch_to_dict(sql=sel_sql, columns=columns_ls)
+
+    for record in records:
+        record['sign_status'] = int(record['sign_status'])
+
+    return records
 
 
 class ProvinceService:
@@ -205,7 +224,7 @@ def pagination_finance_shell_daily_records(unusual_point=None):
        """
 
     columns_ls = ['daily_id', 'daily_status', 'daily_start_date', 'daily_end_date', 'unusual_point', 'daily_source',
-                  'operate_desc', 'unusual_infor']
+                  'operate_desc', 'unusual_infor', 'task_status']
     columns_str = ",".join(columns_ls)
 
     ###### 拼装查询SQL
