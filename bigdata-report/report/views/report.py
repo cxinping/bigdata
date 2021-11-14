@@ -20,7 +20,7 @@ from report.services.office_expenses_service import query_checkpoint_42_commodit
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
     pagination_car_records
 from report.commons.tools import get_current_time
-from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
+from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily, query_finance_shell_daily_status,
                                              operate_finance_category_sign, clean_finance_category_sign,query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
@@ -695,14 +695,23 @@ def finance_unusual_execute():
             response = jsonify(data)
             return response
 
+        record = query_finance_shell_daily_status(unusual_point=unusual_id,task_status='doing')
+        if record:
+            task_str = None
+            if isalgorithm == '1':
+                task_str = 'SQL'
+            elif isalgorithm == '2':
+                task_str = 'Python Shell脚本'
+            data = {"result": "error", "details": f"正在运行检查点{unusual_id}的{task_str}，请稍后执行", "code": 500}
+            response = jsonify(data)
+            return response
+
         if isalgorithm == '1':
             ######### 执行 SQL ############
             executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
-            pass
         elif isalgorithm == '2':
             ###### 执行算法 python 脚本  ############
             executor.submit(execute_py_shell, unusual_shell, unusual_id)
-            pass
 
         #execute_task(isalgorithm=isalgorithm,unusual_shell=unusual_shell, unusual_id=unusual_id)
 

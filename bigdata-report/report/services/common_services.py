@@ -41,7 +41,7 @@ def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done'):
         print(e)
 
 
-def query_finance_shell_daily(unusual_point,task_status='doing'):
+def query_finance_shell_daily_status(unusual_point,task_status='doing'):
     try:
         sql = f"""
         SELECT unusual_point, task_status FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily WHERE unusual_point="{unusual_point}" AND task_status="{task_status}" 
