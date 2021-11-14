@@ -51,7 +51,7 @@ def operate_finance_category_sign(unusual_id, category_names, category_classify,
     改变商品的选中状态
     :param unusual_id:
     :param category_names:  商品大类或商品关键字
-    :param category_classify: 类别, 1 代表商品大类，2 代表商品关键字
+    :param category_classify: 类别, 01 代表商品大类，02 代表商品关键字
     :return:
     """
 
@@ -100,7 +100,7 @@ def query_finance_category_signs(unusual_id, category_classify):
 
     columns_ls = ['category_name',  'sign_status']
     columns_str = ",".join(columns_ls)
-    sel_sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" '
+    sel_sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" ORDER BY sign_status DESC ,category_name DESC'
     records = db_fetch_to_dict(sql=sel_sql, columns=columns_ls)
 
     for record in records:
