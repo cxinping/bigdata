@@ -80,7 +80,7 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
                                    daily_end_date=daily_end_date,
                                    unusual_point=unusual_id, daily_source='python shell', operate_desc='',
-                                   unusual_infor=error_info, task_status='doing')
+                                   unusual_infor=error_info, task_status='done')
 
 
 def execute_kudu_sql(unusual_shell, unusual_id):

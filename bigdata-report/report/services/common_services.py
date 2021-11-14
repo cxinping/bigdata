@@ -41,6 +41,23 @@ def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done'):
         print(e)
 
 
+def query_finance_shell_daily(unusual_point,task_status='doing'):
+    try:
+        sql = f"""
+        SELECT unusual_point, task_status FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily WHERE unusual_point="{unusual_point}" AND task_status="{task_status}" 
+        """.replace('\n', '').replace('\r', '').strip()
+        log.info(sql)
+        records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+        #print(records)
+
+        if records and len(records) > 0:
+            return records[0]
+        return None
+
+    except Exception as e:
+        print(e)
+
+
 def clean_finance_category_sign(unusual_id):
     del_sql = f'DELETE FROM 01_datamart_layer_007_h_cw_df.finance_category_sign WHERE unusual_id="{unusual_id}"  '
     prod_execute_sql(conn_type='test', sqltype='insert', sql=del_sql)
@@ -90,6 +107,7 @@ def query_finance_category_sign(unusual_id, category_classify):
 
     return category_name_ls
 
+
 def query_finance_category_signs(unusual_id, category_classify):
     """
     查询选中状态的商品
@@ -98,7 +116,7 @@ def query_finance_category_signs(unusual_id, category_classify):
     :return:
     """
 
-    columns_ls = ['category_name',  'sign_status']
+    columns_ls = ['category_name', 'sign_status']
     columns_str = ",".join(columns_ls)
     sel_sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" ORDER BY sign_status DESC ,category_name DESC'
     records = db_fetch_to_dict(sql=sel_sql, columns=columns_ls)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily, \
-    query_finance_category_signs
+    query_finance_category_signs,query_finance_shell_daily
 from report.commons.tools import create_uuid
 
 
@@ -68,8 +68,9 @@ def demo2():
 
 
 def demo3():
-    query_finance_category_signs(unusual_id='26', category_classify='01')
+    #query_finance_category_signs(unusual_id='26', category_classify='01')
 
+    record = query_finance_shell_daily(unusual_point='13',task_status='doing')
 
 if __name__ == "__main__":
     # demo1()
