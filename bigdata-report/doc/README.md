@@ -66,7 +66,10 @@ nohup /root/anaconda3/bin/python /you_filed_algos/app/run.py &
 
 ```
 
-
+查看多线程的状态
+```
+ps -eLf | grep python
+```
 
 
 

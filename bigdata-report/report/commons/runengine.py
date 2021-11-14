@@ -26,8 +26,14 @@ def create_new_thread(target):
 
 # 另开线程，防止主线程阻塞
 @create_new_thread
-def execute_task(unusual_shell, unusual_id):
+def execute_task(isalgorithm, unusual_shell, unusual_id):
     thr = threading.current_thread()
+    log.info('Start executing task with new thread ' + thr.getName())
+
+    if isalgorithm == '1':
+        execute_kudu_sql(unusual_shell, unusual_id)
+    elif isalgorithm == '2':
+        execute_py_shell( unusual_shell, unusual_id)
 
 
 def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
