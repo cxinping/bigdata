@@ -215,9 +215,16 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
 
 
 def dis_connection():
-    if jpype.isJVMStarted():
-        # print('=== shutdown JVM===')
-        jpype.shutdownJVM()
+    try:
+        #print(f'* jpype.isJVMStarted()= > {jpype.isJVMStarted()}')
+        if jpype.isJVMStarted():
+            print('=== shutdown JVM===')
+            jpype.shutdownJVM()
+    except Exception as ex:
+        print(ex)
+        traceback.print_exc()
+        raise RuntimeError(ex)
+
 
 
 def getKUDUdata(sql):

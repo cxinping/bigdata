@@ -60,7 +60,8 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         if unusual_id in ['13', '14']:
             # 检查点13,14 测试
             rst_val = {'x': 1, 'y': 2}
-            exec(unusual_shell, globals(), rst_val)
+            #exec(unusual_shell, globals(), rst_val)
+            exec(unusual_shell, globals())
             print(f'* rst_val={rst_val}')
         else:
             exec(unusual_shell, globals())
