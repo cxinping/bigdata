@@ -23,14 +23,14 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
+
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
 no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
 conn_type = 'test'
+test_limit_cond = 'LIMIT 100001'  # 'LIMIT 100001'
 
-plane_parent_pid = 0
-no_plane_parent_pid = 0
 
 def check_14_plane_data():
     """
@@ -49,8 +49,8 @@ def check_14_plane_data():
                   'plane_check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='')".format(
-        columns_str=columns_str)
+    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond} ".format(
+        columns_str=columns_str,test_limit_cond=test_limit_cond)
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
@@ -79,8 +79,8 @@ def check_14_plane_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='')".format(
-            columns_str=columns_str)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond}".format(
+            columns_str=columns_str,test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
     log.info('* 开始分页查询')
@@ -95,13 +95,8 @@ def check_14_plane_data():
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
 
-    kill_pid(plane_parent_pid)
-
-
 def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
-    global plane_parent_pid
-    plane_parent_pid = os.getpid()
     time.sleep(0.01)
 
     if records and len(records) > 0:
@@ -140,8 +135,8 @@ def check_14_no_plane_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'origin_name', 'destin_name', 'jour_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL) '.format(
-        columns_str=columns_str)
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL) {test_limit_cond}'.format(
+        columns_str=columns_str,test_limit_cond=test_limit_cond)
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
@@ -170,8 +165,8 @@ def check_14_no_plane_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill  WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)  ".format(
-            columns_str=columns_str)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill  WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)  {test_limit_cond} ".format(
+            columns_str=columns_str,test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
     log.info('* 开始分页查询')
@@ -297,10 +292,10 @@ def analyze_no_plane_data(coefficient=2):
     print(abnormal_bill_id_ls)
     del grouped_df
     del rd_df
-    # exec_sql(abnormal_bill_id_ls)
+    exec_no_plane_sql(abnormal_bill_id_ls)
 
 
-def exec_sql(bill_id_ls):
+def exec_plane_sql(bill_id_ls):
     print('exec_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
@@ -389,6 +384,67 @@ def exec_sql(bill_id_ls):
         print(e)
         raise RuntimeError(e)
 
+def exec_no_plane_sql(bill_id_ls):
+    print('exec_sql ==> ', len(bill_id_ls))
+
+    if bill_id_ls and len(bill_id_ls) > 0:
+        group_ls = list_of_groups(bill_id_ls, 1000)
+        # print(len(group_ls), group_ls)
+
+        condition_sql = ''
+        in_codition = 'bill_id IN {temp}'
+
+        for idx, group in enumerate(group_ls):
+            temp = in_codition.format(temp=str(tuple(group)))
+            if idx == 0:
+                condition_sql = temp
+            else:
+                condition_sql = condition_sql + ' OR ' + temp
+
+        # print(condition_sql)
+
+    sql = """
+    INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets       
+        SELECT uuid() as finance_id,        bill_id ,       
+        '14' as unusual_id ,         ' ' as company_code ,        
+        ' ' as account_period ,         ' ' as finance_number ,     
+        ' ' as cost_center ,         ' ' as profit_center ,      
+        ' ' as cart_head ,         ' ' as bill_code ,       
+        ' ' as bill_beg_date ,         ' ' as bill_end_date ,     
+        ' ' as origin_city ,         ' ' as destin_city ,    
+        ' ' as beg_date ,         ' ' as end_date ,       
+        ' ' as apply_emp_name ,         ' ' as emp_name ,    
+        ' ' as emp_code ,         ' ' as company_name ,     
+        0 as jour_amount ,         0 as accomm_amount ,       
+        0 as subsidy_amount ,         0 as other_amount ,       
+        0 as check_amount ,         0 as jzpz ,       
+        '差旅费' as target_classify ,         0 as meeting_amount ,  
+        ' ' as exp_type_name  ,         ' ' as next_bill_id ,        
+        ' ' as last_bill_id ,         ' ' as appr_org_sfname ,   
+        ' ' as sales_address ,         ' ' as meet_addr ,     
+        ' ' as sponsor ,         0 as jzpz_tax ,       
+        ' ' as billingdate ,         ' ' as remarks ,    
+        0 as hotel_amount ,         0 as total_amount ,    
+        ' ' as apply_id ,         ' ' as base_apply_date ,    
+        ' ' as scenery_name_details ,         ' ' as meet_num ,    
+        0 as diff_met_date ,         0 as diff_met_date_avg ,     
+        ' ' as tb_times ,         ' ' as receipt_city ,     
+        ' ' as commodityname ,         ' ' as category_name,     
+        ' ' as iscompany,         ' ' as origin_province,      
+        ' ' as destin_province,        importdate   
+        FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
+    WHERE {condition_sql}
+        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+
+    print(sql)
+    try:
+        start_time = time.perf_counter()
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        consumed_time = round(time.perf_counter() - start_time)
+        print(f'*** 执行SQL耗时 {consumed_time} sec')
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
 
 def analyze_plane_data(coefficient=2):
     """
@@ -443,7 +499,7 @@ def analyze_plane_data(coefficient=2):
 
     #print('---- shwo result ---')
     #print(bill_id_ls)
-    exec_sql(bill_id_ls)
+    exec_plane_sql(bill_id_ls)
 
 def check_14_plane_data2():
     columns_ls = ['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
@@ -506,8 +562,8 @@ def check_14_plane_data2():
 
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
-    # check_14_no_plane_data()   # 共有数据 4546085 条
-    # analyze_no_plane_data(coefficient=2)
+    #check_14_no_plane_data()   # 共有数据 4546085 条
+    #analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
     check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
