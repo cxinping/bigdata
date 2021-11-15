@@ -11,6 +11,24 @@ log = get_logger(__name__)
 conn_type = 'test'  # prod
 
 
+def query_billds_finance_all_targets(unusual_id):
+    bill_ids = []
+    try:
+        sql = f'select distinct bill_id from analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets where unusual_id="{unusual_id}" '
+        records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+        #print(len(records))
+
+        for idx, record in enumerate(records):
+            #print(record)
+            bill_id = record[0]
+            bill_ids.append(bill_id)
+
+        return bill_ids
+    except Exception as e:
+        print(e)
+        return []
+
+
 def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
                                operate_desc, unusual_infor, task_status='doing'):
     """
@@ -41,14 +59,14 @@ def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done'):
         print(e)
 
 
-def query_finance_shell_daily_status(unusual_point,task_status='doing'):
+def query_finance_shell_daily_status(unusual_point, task_status='doing'):
     try:
         sql = f"""
         SELECT unusual_point, task_status FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily WHERE unusual_point="{unusual_point}" AND task_status="{task_status}" 
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
-        #print(records)
+        # print(records)
 
         if records and len(records) > 0:
             return records[0]
@@ -132,6 +150,17 @@ class ProvinceService:
     def __init__(self):
         sel_all_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city "
         self.province_records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_all_sql)
+
+    def query_province_names(self, grade='1'):
+        sel_sql = f'select area_name from 01_datamart_layer_007_h_cw_df.finance_province_city where grade="{grade}" '
+        #print(sel_sql)
+        province_names=[]
+        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
+        for record in records:
+            #print(record)
+            province_names.append(record[0])
+
+        return province_names
 
     def query_previous_province(self, query_area_id):
         if query_area_id is None:

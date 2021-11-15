@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily, \
-    query_finance_category_signs,query_finance_shell_daily
+    query_finance_category_signs,query_finance_shell_daily_status, query_billds_finance_all_targets,ProvinceService
 from report.commons.tools import create_uuid
 
 
@@ -70,7 +70,15 @@ def demo2():
 def demo3():
     #query_finance_category_signs(unusual_id='26', category_classify='01')
 
-    record = query_finance_shell_daily(unusual_point='13',task_status='doing')
+    #record = query_finance_shell_daily(unusual_point='13',task_status='doing')
+
+    # records = query_billds_finance_all_targets(unusual_id='14')
+    # print(records)
+
+    province_service = ProvinceService()
+    records = province_service.query_province_names(grade='1')
+    print(records)
+
 
 if __name__ == "__main__":
     # demo1()

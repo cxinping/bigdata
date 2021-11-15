@@ -24,12 +24,13 @@ def create_new_thread(target):
 
     return wrapper
 
+
 def create_new_process(target):
     def wrapper(*args, **kwargs):
-        #max_threads.acquire()
+        # max_threads.acquire()
         t = threading.Thread(target=target, args=args, kwargs=kwargs)
-        #threads.append(t)
-        #t.start()
+        # threads.append(t)
+        # t.start()
         p = Process(target=target, args=args, kwargs=kwargs)
         p.start()
 
@@ -45,7 +46,7 @@ def execute_task(isalgorithm, unusual_shell, unusual_id):
     if isalgorithm == '1':
         execute_kudu_sql(unusual_shell, unusual_id)
     elif isalgorithm == '2':
-        execute_py_shell( unusual_shell, unusual_id)
+        execute_py_shell(unusual_shell, unusual_id)
 
 
 def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
@@ -72,9 +73,9 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         if unusual_id in ['13', '14']:
             # 检查点13,14 测试
             rst_val = {'x': 1, 'y': 2}
-            #exec(unusual_shell, globals(), rst_val)
+            # exec(unusual_shell, globals(), rst_val)
             exec(unusual_shell, globals())
-            print(f'* rst_val={rst_val}')
+            #print(f'* rst_val={rst_val}')
         else:
             exec(unusual_shell, globals())
             pass
