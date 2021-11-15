@@ -28,3 +28,7 @@ for item in ls1[:]:
             break
 
 print(ls1)
+print('*******' * 10)
+
+ls1 = ['B438C03D9AD1F950E053AC6DF60ADB05']
+print(tuple(ls1))

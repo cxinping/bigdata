@@ -9,6 +9,7 @@ from report.commons.connect_kudu import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import (list_of_groups, kill_pid)
+from report.services.common_services import query_billds_finance_all_targets
 
 log = get_logger(__name__)
 
@@ -23,13 +24,12 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
-
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
 no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
 conn_type = 'test'
-test_limit_cond = 'LIMIT 100001'  # 'LIMIT 100001'
+test_limit_cond = 'LIMIT 10000'  # 'LIMIT 1000'
 
 
 def check_14_plane_data():
@@ -50,7 +50,7 @@ def check_14_plane_data():
     columns_str = ",".join(columns_ls)
 
     sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond} ".format(
-        columns_str=columns_str,test_limit_cond=test_limit_cond)
+        columns_str=columns_str, test_limit_cond=test_limit_cond)
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
@@ -80,7 +80,7 @@ def check_14_plane_data():
             offset_size = offset_size + limit_size
     else:
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond}".format(
-            columns_str=columns_str,test_limit_cond=test_limit_cond)
+            columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
     log.info('* 开始分页查询')
@@ -94,6 +94,7 @@ def check_14_plane_data():
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
+
 
 def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
@@ -115,8 +116,8 @@ def exec_plane_task(sql, dest_file):  # dest_file
             record_str = f'{finance_travel_id},{bill_id},{plane_beg_date},{plane_end_date},{plane_origin_name},{plane_destin_name},{plane_check_amount}'
 
             # log.info(f'dest_file = {dest_file}')
-            log.info(f" {threading.current_thread().name} is running")
-            log.info(record_str)
+            log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
+            # log.info(record_str)
             print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
@@ -136,7 +137,7 @@ def check_14_no_plane_data():
     columns_str = ",".join(columns_ls)
 
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL) {test_limit_cond}'.format(
-        columns_str=columns_str,test_limit_cond=test_limit_cond)
+        columns_str=columns_str, test_limit_cond=test_limit_cond)
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
@@ -166,7 +167,7 @@ def check_14_no_plane_data():
             offset_size = offset_size + limit_size
     else:
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill  WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)  {test_limit_cond} ".format(
-            columns_str=columns_str,test_limit_cond=test_limit_cond)
+            columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
     log.info('* 开始分页查询')
@@ -211,7 +212,7 @@ def exec_no_plane_task(sql, dest_file):  # dest_file
 
             record_str = f'{finance_travel_id},{bill_id},{origin_name},{destin_name},{jour_amount}'
             # log.info(f'dest_file = {dest_file}')
-            log.info(f" {threading.current_thread().name} is running")
+            log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
             log.info(record_str)
             print()
 
@@ -251,12 +252,10 @@ def analyze_no_plane_data(coefficient=2):
     # print(len(rd_df))
     #
     # print('*' * 50)
-
-    rd_df = rd_df[:500]
-
+    # rd_df = rd_df[:500]
     # print(rd_df.head(20))
-    print(len(rd_df))
-    print('=' * 50)
+    # print(len(rd_df))
+    # print('=' * 50)
 
     grouped_df = rd_df.groupby(['origin_name', 'destin_name'])
 
@@ -289,10 +288,16 @@ def analyze_no_plane_data(coefficient=2):
             # print('')
 
     print('----  show result ----')
-    print(abnormal_bill_id_ls)
+    # print(abnormal_bill_id_ls)
     del grouped_df
     del rd_df
-    exec_no_plane_sql(abnormal_bill_id_ls)
+
+    targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='14')
+    abnormal_bill_id_ls = [x for x in abnormal_bill_id_ls if x not in targes_bill_id_ls]
+
+    # print(len(abnormal_bill_id_ls))
+
+    exec_no_plane_sql(abnormal_bill_id_ls)  # 449975
 
 
 def exec_plane_sql(bill_id_ls):
@@ -306,83 +311,88 @@ def exec_plane_sql(bill_id_ls):
         in_codition = 'bill_id IN {temp}'
 
         for idx, group in enumerate(group_ls):
-            temp = in_codition.format(temp=str(tuple(group)))
+            if len(group) == 1:
+                temp = in_codition.format(temp=str('("' + group[0] + '")'))
+            else:
+                temp = in_codition.format(temp=str(tuple(group)))
+
             if idx == 0:
                 condition_sql = temp
             else:
                 condition_sql = condition_sql + ' OR ' + temp
 
-        # print(condition_sql)
+        print(condition_sql)
 
-    sql = """
-    INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
-        SELECT uuid() as finance_id,
-        bill_id ,
-        '14' as unusual_id ,
-         ' ' as company_code ,
-         ' ' as account_period ,
-         ' ' as finance_number ,
-         ' ' as cost_center ,
-         ' ' as profit_center ,
-         ' ' as cart_head ,
-         ' ' as bill_code ,
-         ' ' as bill_beg_date ,
-         ' ' as bill_end_date ,
-         ' ' as origin_city ,
-         ' ' as destin_city ,
-         ' ' as beg_date ,
-         ' ' as end_date ,
-         ' ' as apply_emp_name ,
-         ' ' as emp_name ,
-         ' ' as emp_code ,
-         ' ' as company_name ,
-         0 as jour_amount ,
-         0 as accomm_amount ,
-         0 as subsidy_amount ,
-         0 as other_amount ,
-         0 as check_amount ,
-         0 as jzpz ,
-        '差旅费' as target_classify ,
-         0 as meeting_amount ,
-         exp_type_name ,
-         ' ' as next_bill_id ,
-         ' ' as last_bill_id ,
-         ' ' as appr_org_sfname ,
-         ' ' as sales_address ,
-         ' ' as meet_addr ,
-         ' ' as sponsor ,
-         0 as jzpz_tax ,
-         ' ' as billingdate ,
-         ' ' as remarks ,
-         0 as hotel_amount ,
-         0 as total_amount ,
-         ' ' as apply_id ,
-         ' ' as base_apply_date ,
-         ' ' as scenery_name_details ,
-         ' ' as meet_num ,
-         0 as diff_met_date ,
-         0 as diff_met_date_avg ,
-         ' ' as tb_times ,
-         ' ' as receipt_city ,
-         ' ' as commodityname ,
-         ' ' as category_name,
-         ' ' as iscompany,
-         ' ' as origin_province,
-         ' ' as destin_province,
-        importdate
-        FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
-    WHERE {condition_sql}
-        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+        sql = """
+        INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+            SELECT uuid() as finance_id,
+            bill_id ,
+            '14' as unusual_id ,
+             ' ' as company_code ,
+             ' ' as account_period ,
+             ' ' as finance_number ,
+             ' ' as cost_center ,
+             ' ' as profit_center ,
+             ' ' as cart_head ,
+             ' ' as bill_code ,
+             ' ' as bill_beg_date ,
+             ' ' as bill_end_date ,
+             ' ' as origin_city ,
+             ' ' as destin_city ,
+             ' ' as beg_date ,
+             ' ' as end_date ,
+             ' ' as apply_emp_name ,
+             ' ' as emp_name ,
+             ' ' as emp_code ,
+             ' ' as company_name ,
+             0 as jour_amount ,
+             0 as accomm_amount ,
+             0 as subsidy_amount ,
+             0 as other_amount ,
+             0 as check_amount ,
+             0 as jzpz ,
+            '差旅费' as target_classify ,
+             0 as meeting_amount ,
+             exp_type_name ,
+             ' ' as next_bill_id ,
+             ' ' as last_bill_id ,
+             ' ' as appr_org_sfname ,
+             ' ' as sales_address ,
+             ' ' as meet_addr ,
+             ' ' as sponsor ,
+             0 as jzpz_tax ,
+             ' ' as billingdate ,
+             ' ' as remarks ,
+             0 as hotel_amount ,
+             0 as total_amount ,
+             ' ' as apply_id ,
+             ' ' as base_apply_date ,
+             ' ' as scenery_name_details ,
+             ' ' as meet_num ,
+             0 as diff_met_date ,
+             0 as diff_met_date_avg ,
+             ' ' as tb_times ,
+             ' ' as receipt_city ,
+             ' ' as commodityname ,
+             ' ' as category_name,
+             ' ' as iscompany,
+             ' ' as origin_province,
+             ' ' as destin_province,
+            importdate
+            FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+        WHERE {condition_sql}
+            """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
 
-    print(sql)
-    try:
-        start_time = time.perf_counter()
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
-        consumed_time = round(time.perf_counter() - start_time)
-        print(f'*** 执行SQL耗时 {consumed_time} sec')
-    except Exception as e:
-        print(e)
-        raise RuntimeError(e)
+        print(sql)
+        try:
+            start_time = time.perf_counter()
+            prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+            consumed_time = round(time.perf_counter() - start_time)
+            print(f'*** 执行SQL耗时 {consumed_time} sec')
+        except Exception as e:
+            print(e)
+            raise RuntimeError(e)
+
 
 def exec_no_plane_sql(bill_id_ls):
     print('exec_sql ==> ', len(bill_id_ls))
@@ -395,7 +405,11 @@ def exec_no_plane_sql(bill_id_ls):
         in_codition = 'bill_id IN {temp}'
 
         for idx, group in enumerate(group_ls):
-            temp = in_codition.format(temp=str(tuple(group)))
+            if len(group) == 1:
+                temp = in_codition.format(temp=str('("' + group[0] + '")'))
+            else:
+                temp = in_codition.format(temp=str(tuple(group)))
+
             if idx == 0:
                 condition_sql = temp
             else:
@@ -403,48 +417,50 @@ def exec_no_plane_sql(bill_id_ls):
 
         # print(condition_sql)
 
-    sql = """
-    INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets       
-        SELECT uuid() as finance_id,        bill_id ,       
-        '14' as unusual_id ,         ' ' as company_code ,        
-        ' ' as account_period ,         ' ' as finance_number ,     
-        ' ' as cost_center ,         ' ' as profit_center ,      
-        ' ' as cart_head ,         ' ' as bill_code ,       
-        ' ' as bill_beg_date ,         ' ' as bill_end_date ,     
-        ' ' as origin_city ,         ' ' as destin_city ,    
-        ' ' as beg_date ,         ' ' as end_date ,       
-        ' ' as apply_emp_name ,         ' ' as emp_name ,    
-        ' ' as emp_code ,         ' ' as company_name ,     
-        0 as jour_amount ,         0 as accomm_amount ,       
-        0 as subsidy_amount ,         0 as other_amount ,       
-        0 as check_amount ,         0 as jzpz ,       
-        '差旅费' as target_classify ,         0 as meeting_amount ,  
-        ' ' as exp_type_name  ,         ' ' as next_bill_id ,        
-        ' ' as last_bill_id ,         ' ' as appr_org_sfname ,   
-        ' ' as sales_address ,         ' ' as meet_addr ,     
-        ' ' as sponsor ,         0 as jzpz_tax ,       
-        ' ' as billingdate ,         ' ' as remarks ,    
-        0 as hotel_amount ,         0 as total_amount ,    
-        ' ' as apply_id ,         ' ' as base_apply_date ,    
-        ' ' as scenery_name_details ,         ' ' as meet_num ,    
-        0 as diff_met_date ,         0 as diff_met_date_avg ,     
-        ' ' as tb_times ,         ' ' as receipt_city ,     
-        ' ' as commodityname ,         ' ' as category_name,     
-        ' ' as iscompany,         ' ' as origin_province,      
-        ' ' as destin_province,        importdate   
-        FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-    WHERE {condition_sql}
-        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+        sql = """
+        INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets       
+            SELECT uuid() as finance_id,        bill_id ,       
+            '14' as unusual_id ,         ' ' as company_code ,        
+            ' ' as account_period ,         ' ' as finance_number ,     
+            ' ' as cost_center ,         ' ' as profit_center ,      
+            ' ' as cart_head ,         ' ' as bill_code ,       
+            ' ' as bill_beg_date ,         ' ' as bill_end_date ,     
+            ' ' as origin_city ,         ' ' as destin_city ,    
+            ' ' as beg_date ,         ' ' as end_date ,       
+            ' ' as apply_emp_name ,         ' ' as emp_name ,    
+            ' ' as emp_code ,         ' ' as company_name ,     
+            0 as jour_amount ,         0 as accomm_amount ,       
+            0 as subsidy_amount ,         0 as other_amount ,       
+            0 as check_amount ,         0 as jzpz ,       
+            '差旅费' as target_classify ,         0 as meeting_amount ,  
+            ' ' as exp_type_name  ,         ' ' as next_bill_id ,        
+            ' ' as last_bill_id ,         ' ' as appr_org_sfname ,   
+            ' ' as sales_address ,         ' ' as meet_addr ,     
+            ' ' as sponsor ,         0 as jzpz_tax ,       
+            ' ' as billingdate ,         ' ' as remarks ,    
+            0 as hotel_amount ,         0 as total_amount ,    
+            ' ' as apply_id ,         ' ' as base_apply_date ,    
+            ' ' as scenery_name_details ,         ' ' as meet_num ,    
+            0 as diff_met_date ,         0 as diff_met_date_avg ,     
+            ' ' as tb_times ,         ' ' as receipt_city ,     
+            ' ' as commodityname ,         ' ' as category_name,     
+            ' ' as iscompany,         ' ' as origin_province,      
+            ' ' as destin_province,        importdate   
+            FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
+        WHERE {condition_sql}
+            """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
 
-    print(sql)
-    try:
-        start_time = time.perf_counter()
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
-        consumed_time = round(time.perf_counter() - start_time)
-        print(f'*** 执行SQL耗时 {consumed_time} sec')
-    except Exception as e:
-        print(e)
-        raise RuntimeError(e)
+        # print(sql)
+
+        try:
+            start_time = time.perf_counter()
+            prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+            consumed_time = round(time.perf_counter() - start_time)
+            print(f'*** 执行SQL耗时 {consumed_time} sec')
+        except Exception as e:
+            print(e)
+            raise RuntimeError(e)
+
 
 def analyze_plane_data(coefficient=2):
     """
@@ -497,9 +513,14 @@ def analyze_plane_data(coefficient=2):
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
-    #print('---- shwo result ---')
-    #print(bill_id_ls)
+    # print('---- shwo result ---')
+    # print(bill_id_ls)
+
+    targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='14')
+    bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
+
     exec_plane_sql(bill_id_ls)
+
 
 def check_14_plane_data2():
     columns_ls = ['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
@@ -547,7 +568,7 @@ def check_14_plane_data2():
     rt_df = None  # count 3467564 , page 347
     start_time = time.perf_counter()
     for idx, sel_sql in enumerate(select_sql_ls):
-        #print(idx, sel_sql)
+        # print(idx, sel_sql)
 
         if idx == 0:
             rt_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type='test')
@@ -562,12 +583,15 @@ def check_14_plane_data2():
 
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
-    #check_14_no_plane_data()   # 共有数据 4546085 条
-    #analyze_no_plane_data(coefficient=2)
+    # check_14_no_plane_data()   # 共有数据 4546085 条
+    # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
+    # check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
     analyze_plane_data(coefficient=2)
+
+    # bill_id_ls = ['B438C03D9AD1F950E053AC6DF60ADB05']
+    # exec_plane_sql(bill_id_ls)
 
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
 
