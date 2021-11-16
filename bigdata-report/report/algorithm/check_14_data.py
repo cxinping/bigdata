@@ -37,7 +37,8 @@ def check_14_plane_data():
     是飞机的交通费
     通过对比出发地与目的地相同或相近的报销项目，关注交通费偏离平均值或大多数人费用分布的较大情况。
 
-     select finance_travel_id,bill_id,plane_beg_date, plane_end_date,plane_origin_name, plane_destin_name, plane_check_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+     SELECT finance_travel_id,bill_id,plane_beg_date, plane_end_date,plane_origin_name, plane_destin_name, plane_check_amount
+     FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
      WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null)
      AND (plane_beg_date is not null AND plane_beg_date !='')
 
@@ -45,8 +46,7 @@ def check_14_plane_data():
     init_file(plane_dest_file)
 
     columns_ls = ['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
-                  'plane_destin_name',
-                  'plane_check_amount']
+                  'plane_destin_name', 'plane_check_amount']
     columns_str = ",".join(columns_ls)
 
     sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond} ".format(
@@ -239,7 +239,7 @@ def analyze_no_plane_data(coefficient=2):
     :return:
     """
 
-    print('==========  analyze_no_plane_data ===============')
+    log.info('==========  analyze_no_plane_data ===============')
 
     rd_df = pd.read_csv(no_plane_dest_file, sep=',', header=None,
                         # dtype={'finance_travel_id': str, 'origin_name' : str, 'destin_name' : str, 'jour_amount': np.float64},
@@ -247,10 +247,10 @@ def analyze_no_plane_data(coefficient=2):
                                'jour_amount': np.float64},
                         encoding="utf-8",
                         names=['finance_travel_id', 'bill_id', 'origin_name', 'destin_name', 'jour_amount'])
+
     # print(rd_df.dtypes)
     # print(rd_df.head(20))
     # print(len(rd_df))
-    #
     # print('*' * 50)
     # rd_df = rd_df[:500]
     # print(rd_df.head(20))
@@ -287,7 +287,7 @@ def analyze_no_plane_data(coefficient=2):
                     abnormal_bill_id_ls.append(bill_id)
             # print('')
 
-    print('----  show result ----')
+    #print('----  show result ----')
     # print(abnormal_bill_id_ls)
     del grouped_df
     del rd_df
@@ -301,7 +301,7 @@ def analyze_no_plane_data(coefficient=2):
 
 
 def exec_plane_sql(bill_id_ls):
-    print('exec_sql ==> ', len(bill_id_ls))
+    print('exec_plane_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
@@ -395,7 +395,7 @@ def exec_plane_sql(bill_id_ls):
 
 
 def exec_no_plane_sql(bill_id_ls):
-    print('exec_sql ==> ', len(bill_id_ls))
+    print('exec_no_plane_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
@@ -470,7 +470,7 @@ def analyze_plane_data(coefficient=2):
     :return:
     """
 
-    print('======= analyze_plane_data ===========')
+    log.info('======= analyze_plane_data ===========')
 
     rd_df = pd.read_csv(plane_dest_file, sep=',', header=None, encoding="utf-8",
                         dtype={'finance_travel_id': str, 'bill_id': str, 'plane_beg_date': str, 'plane_end_date': str,
@@ -480,11 +480,11 @@ def analyze_plane_data(coefficient=2):
 
     # print(rd_df.dtypes)
     # rd_df = rd_df[:500]
-    print(rd_df.head(10))
+    #print(rd_df.head(10))
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'])
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
-    print('=' * 60)
+    #print('=' * 60)
 
     bill_id_ls = []
     for name, group_df in grouped_df:
@@ -515,6 +515,9 @@ def analyze_plane_data(coefficient=2):
 
     # print('---- shwo result ---')
     # print(bill_id_ls)
+
+    del grouped_df
+    del rd_df
 
     targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='14')
     bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
@@ -582,16 +585,18 @@ def check_14_plane_data2():
 
 
 def main():
+    start_time = time.perf_counter()
+
     # 需求1 交通方式为非飞机的交通费用异常分析
     #check_14_no_plane_data()   # 共有数据 4546085 条
-    analyze_no_plane_data(coefficient=2)
+    #analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
     #check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
-    #analyze_plane_data(coefficient=2)
+    analyze_plane_data(coefficient=2)
 
-    # bill_id_ls = ['B438C03D9AD1F950E053AC6DF60ADB05']
-    # exec_plane_sql(bill_id_ls)
+    consumed_time = round(time.perf_counter() - start_time)
+    print(f'****** 任务耗时 {consumed_time} sec')
 
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
 

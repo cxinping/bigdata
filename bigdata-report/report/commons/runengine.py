@@ -59,8 +59,8 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
     try:
         # eval("print(1+2)")
         # exec('1/0')
-        # print(unusual_shell)
-        # exec("print('执行算法 shell 开始')")
+        print(unusual_shell)
+        exec("print('执行算法 shell 开始')")
 
         daily_start_date = get_current_time()
 
@@ -73,14 +73,14 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         if unusual_id in ['13', '14']:
             # 检查点13,14 测试
             rst_val = {'x': 1, 'y': 2}
-            # exec(unusual_shell, globals(), rst_val)
+            #exec(unusual_shell, globals(), rst_val)
             exec(unusual_shell, globals())
             #print(f'* rst_val={rst_val}')
         else:
             exec(unusual_shell, globals())
             pass
 
-        # exec("print('执行算法 shell 结束')")
+        exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()
         update_finance_shell_daily(daily_id, daily_end_date, task_status='done')
 
@@ -103,7 +103,9 @@ def execute_kudu_sql(unusual_shell, unusual_id):
     try:
         daily_start_date = get_current_time()
         print('*** begin execute_kudu_sql ')
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
+        log.info(unusual_shell)
+
+        prod_execute_sql(conn_type='prod', sqltype='insert', sql=unusual_shell)
         daily_end_date = get_current_time()
         operate_desc = f'成功执行检查点{unusual_id}的SQL'
         print('*** end execute_kudu_sql ***')

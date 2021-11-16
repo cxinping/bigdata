@@ -13,6 +13,7 @@ from flask import Flask, jsonify
 
 from .views.report import report_bp
 from .views.test import test_bp
+from report.services.common_services import update_finance_shell_daily_doing_status
 
 
 def create_app(config_object='config.default', config_map=None):
@@ -34,9 +35,8 @@ def create_app(config_object='config.default', config_map=None):
     app.config.from_pyfile('config.py', silent=True)
 
     app.logger.debug('app.config=%s', app.config)
-    
-    # Put configurations into os environment
 
+    # Put configurations into os environment
 
     # Create logger after app initiated to avoid recursive dependency
     app.logger.debug('os.environ=%s', os.environ)
@@ -47,16 +47,18 @@ def create_app(config_object='config.default', config_map=None):
         result = {'report_service_status': HTTPStatus.OK}
         result['version'] = '1.0'
 
-        #TODO: test email server connection
-        
+        # TODO: test email server connection
+
         status = HTTPStatus.INTERNAL_SERVER_ERROR if HTTPStatus.INTERNAL_SERVER_ERROR in result.values() else HTTPStatus.OK
-        
+
         return jsonify(result), status
 
     return app
 
+
 def init_app(config_object='config.default'):
     app = create_app(config_object)
 
-    return app
+    update_finance_shell_daily_doing_status()
 
+    return app

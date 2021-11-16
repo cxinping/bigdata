@@ -19,6 +19,7 @@ upload_hdfs_path = '/user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance
 
 match_area = MatchArea()
 
+test_limit_cond = ' LIMIT 10000 '  # 'LIMIT 10000'
 
 def init_file():
     if os.path.exists(dest_file):
@@ -33,8 +34,8 @@ def execute_02_data():
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
-    limit 10000
-    """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
+    {test_limit_cond}}
+    """.format(columns_str=columns_str,test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
@@ -64,7 +65,7 @@ def execute_02_data():
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null limit 50000 ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null {test_limit_cond} ".format(
             columns_str=columns_str)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)

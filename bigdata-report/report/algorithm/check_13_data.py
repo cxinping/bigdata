@@ -220,7 +220,7 @@ class Check13Service:
 
 
 def exec_sql(bill_id_ls):
-    print('exec_sql ==> ', len(bill_id_ls))
+    print('checkpoint_13 exec_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
@@ -316,8 +316,8 @@ def exec_sql(bill_id_ls):
 
 if __name__ == "__main__":
     check13_service = Check13Service()
-    check13_service.save_fee_data()  # 一共有数据 5776561 条， 花费时间  秒，
-    #check13_service.analyze_data(coefficient=2)
+    # check13_service.save_fee_data()  # 一共有数据 5776561 条， 花费时间  秒，
+    check13_service.analyze_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

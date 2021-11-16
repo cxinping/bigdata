@@ -16,10 +16,10 @@ def query_billds_finance_all_targets(unusual_id):
     try:
         sql = f'select distinct bill_id from analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets where unusual_id="{unusual_id}" '
         records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
-        #print(len(records))
+        # print(len(records))
 
         for idx, record in enumerate(records):
-            #print(record)
+            # print(record)
             bill_id = record[0]
             bill_ids.append(bill_id)
 
@@ -55,6 +55,18 @@ def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done'):
         log.info(sql)
         prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
         return daily_id
+    except Exception as e:
+        print(e)
+
+
+def update_finance_shell_daily_doing_status():
+    # print('--- update_finance_shell_daily_doing_status ----')
+    try:
+        sql = f"""
+        UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="cancel", unusual_infor="系统重启，取消正在执行的执行检查点任务" WHERE task_status="doing" 
+        """.replace('\n', '').replace('\r', '').strip()
+        log.info(sql)
+        prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
     except Exception as e:
         print(e)
 
@@ -153,11 +165,11 @@ class ProvinceService:
 
     def query_province_names(self, grade='1'):
         sel_sql = f'select area_name from 01_datamart_layer_007_h_cw_df.finance_province_city where grade="{grade}" '
-        #print(sel_sql)
-        province_names=[]
+        # print(sel_sql)
+        province_names = []
         records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
         for record in records:
-            #print(record)
+            # print(record)
             province_names.append(record[0])
 
         return province_names

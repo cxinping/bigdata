@@ -16,7 +16,7 @@ sys.path.append('/you_filed_algos/app')
 
 
 def check_49_data():
-    columns_ls = ['finance_offical_id', 'bill_id', 'check_amount']
+    columns_ls = ['finance_offical_id', 'bill_id', 'check_amount']  # 日期字段 account_period
     columns_str = ",".join(columns_ls)
 
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0  '.format(
