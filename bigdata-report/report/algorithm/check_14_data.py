@@ -29,7 +29,7 @@ no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
 conn_type = 'test'
-test_limit_cond = 'LIMIT 10000'  # 'LIMIT 1000'
+test_limit_cond = ' '  # 'LIMIT 1000'``
 
 
 def check_14_plane_data():
@@ -321,7 +321,7 @@ def exec_plane_sql(bill_id_ls):
             else:
                 condition_sql = condition_sql + ' OR ' + temp
 
-        print(condition_sql)
+        #print(condition_sql)
 
         sql = """
         INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
@@ -583,12 +583,12 @@ def check_14_plane_data2():
 
 def main():
     # 需求1 交通方式为非飞机的交通费用异常分析
-    # check_14_no_plane_data()   # 共有数据 4546085 条
-    # analyze_no_plane_data(coefficient=2)
+    #check_14_no_plane_data()   # 共有数据 4546085 条
+    analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    # check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
-    analyze_plane_data(coefficient=2)
+    #check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
+    #analyze_plane_data(coefficient=2)
 
     # bill_id_ls = ['B438C03D9AD1F950E053AC6DF60ADB05']
     # exec_plane_sql(bill_id_ls)
