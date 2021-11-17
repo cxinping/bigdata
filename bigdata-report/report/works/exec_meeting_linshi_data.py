@@ -8,6 +8,8 @@ from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService, MySQLService
 import threading
+from report.commons.settings import CONN_TYPE
+
 
 """
 

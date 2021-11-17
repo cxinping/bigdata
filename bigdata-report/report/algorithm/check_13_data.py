@@ -12,6 +12,7 @@ from report.services.common_services import ProvinceService
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import list_of_groups
 from report.services.common_services import query_billds_finance_all_targets
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 
@@ -140,7 +141,7 @@ class Check13Service:
 
     def exec_task(self, sql):
         log.info(sql)
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         if records and len(records) > 0:
             for idx, record in enumerate(records):
                 bill_id = str(record[0])  # bill_id
@@ -312,7 +313,7 @@ def exec_sql(bill_id_ls):
 
         try:
             start_time = time.perf_counter()
-            prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             consumed_time = round(time.perf_counter() - start_time)
             print(f'*** 执行SQL耗时 {consumed_time} sec')
         except Exception as e:

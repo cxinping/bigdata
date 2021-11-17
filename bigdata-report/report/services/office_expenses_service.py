@@ -13,12 +13,12 @@ from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import not_empty
 from report.services.vehicle_expense_service import cal_commodityname_function
-
 import jieba.analyse as analyse
 import jieba
 from string import punctuation
 from string import digits
 import re
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 

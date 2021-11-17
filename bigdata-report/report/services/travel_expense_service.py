@@ -13,6 +13,8 @@ import time
 from report.commons.connect_kudu import prod_execute_sql, dis_connection
 from report.commons.logging import get_logger
 from report.commons.tools import match_address
+from report.commons.settings import CONN_TYPE
+
 
 log = get_logger(__name__)
 

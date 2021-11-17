@@ -10,12 +10,12 @@ import pandas as pd
 from report.commons.connect_kudu import prod_execute_sql
 from report.commons.tools import (list_of_groups, kill_pid)
 from report.services.common_services import query_billds_finance_all_targets
+from report.commons.settings import CONN_TYPE
 
 """
 
 SELECT bill_id, emp_name, origin_name, destin_name, beg_date, end_date, traf_name, 出差城市
 FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey
-
 
 
 """
@@ -62,6 +62,13 @@ class Check12Service:
         max_size = 1 * 100000
         limit_size = 2 * 10000
         select_sql_ls = []
+
+
+
+
+
+        log.info('* 开始分页查询')
+
 
     def analyze_data_data(self):
         pass

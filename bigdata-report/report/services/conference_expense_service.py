@@ -20,6 +20,7 @@ import jieba
 from string import punctuation
 from string import digits
 import re
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 

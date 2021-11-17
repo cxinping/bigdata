@@ -6,6 +6,8 @@ from report.services.common_services import (insert_finance_shell_daily, update_
 import traceback
 from report.commons.connect_kudu import prod_execute_sql
 from multiprocessing import Process
+from report.commons.settings import CONN_TYPE
+
 
 log = get_logger(__name__)
 
@@ -112,7 +114,7 @@ def execute_kudu_sql(unusual_shell, unusual_id):
                                               operate_desc=f'正在执行检查点{unusual_id}的SQL', unusual_infor='',
                                               task_status='doing')
 
-        prod_execute_sql(conn_type='prod', sqltype='insert', sql=unusual_shell)
+        prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
         daily_end_date = get_current_time()
         operate_desc = f'成功执行检查点{unusual_id}的SQL'
         print('*** end execute_kudu_sql ***')

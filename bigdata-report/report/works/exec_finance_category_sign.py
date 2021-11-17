@@ -6,6 +6,8 @@ from report.services.common_services import (insert_finance_shell_daily, update_
                                              operate_finance_category_sign, clean_finance_category_sign,
                                              query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
+from report.commons.settings import CONN_TYPE
+
 
 log = get_logger(__name__)
 

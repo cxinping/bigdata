@@ -7,6 +7,7 @@ from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.services.common_services import query_billds_finance_all_targets
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 
