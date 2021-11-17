@@ -47,10 +47,10 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
         print(e)
 
 
-def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done'):
+def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done', operate_desc=''):
     try:
         sql = f"""
-        UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="{task_status}", daily_end_date="{daily_end_date}" WHERE daily_id="{daily_id}"
+        UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="{task_status}", daily_end_date="{daily_end_date}",operate_desc="{operate_desc}" WHERE daily_id="{daily_id}"
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)

@@ -23,7 +23,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 
-conn_type = 'prod'
+conn_type = 'test'
 
 
 def init_file():
@@ -115,8 +115,18 @@ def exec_task(sql):
             sales_name = str(record[1])  # 开票公司
             sales_addressphone = str(record[2])  # 开票地址及电话
             sales_bank = str(record[3])  # 发票开会行
-            sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
-            receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+            #sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
+
+            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+
+            #receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+
+            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)
+            if receipt_city is None:
+                receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+
 
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'
             sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
@@ -132,52 +142,52 @@ def exec_task(sql):
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.1)
+            time.sleep(0.01)
 
 
-def operate_reocrd(record):
-    sales_name = str(record[1]) if record[1] else None  # 开票公司
-    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
-
-    # print('sales_name=', sales_name)
-    # print('sales_addressphone=', sales_addressphone)
-    # print('sales_bank=', sales_bank)
-
-    area_name1, area_name2, area_name3 = None, None, None
-    if sales_name != 'None' or sales_name is not None:
-        area_name1 = match_area.fit_area(area=sales_name)
-
-    if sales_addressphone != 'None' or sales_addressphone is not None:
-        area_name2 = match_area.fit_area(area=sales_addressphone)
-
-    if sales_bank != 'None' or sales_bank is not None:
-        area_name3 = match_area.fit_area(area=sales_bank)
-
-    area_names = []
-    if area_name1[0]:
-        area_names.append(area_name1)
-
-    if area_name2[0]:
-        area_names.append(area_name2)
-
-    if area_name3[0]:
-        area_names.append(area_name3)
-
-    result_area = match_area.opera_areas(area_names)
-    # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
-    # print('### operate_reocrd show_str ==> ', show_str)
-
-    return result_area
+# def operate_reocrd(record):
+#     sales_name = str(record[1]) if record[1] else None  # 开票公司
+#     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+#     sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+#
+#     # print('sales_name=', sales_name)
+#     # print('sales_addressphone=', sales_addressphone)
+#     # print('sales_bank=', sales_bank)
+#
+#     area_name1, area_name2, area_name3 = None, None, None
+#     if sales_name != 'None' or sales_name is not None:
+#         area_name1 = match_area.fit_area(area=sales_name)
+#
+#     if sales_addressphone != 'None' or sales_addressphone is not None:
+#         area_name2 = match_area.fit_area(area=sales_addressphone)
+#
+#     if sales_bank != 'None' or sales_bank is not None:
+#         area_name3 = match_area.fit_area(area=sales_bank)
+#
+#     area_names = []
+#     if area_name1[0]:
+#         area_names.append(area_name1)
+#
+#     if area_name2[0]:
+#         area_names.append(area_name2)
+#
+#     if area_name3[0]:
+#         area_names.append(area_name3)
+#
+#     result_area = match_area.opera_areas(area_names)
+#     # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
+#     # print('### operate_reocrd show_str ==> ', show_str)
+#
+#     return result_area
 
 
 def main():
-    #check_car_linshi_data()  # 57350     32401
+    check_car_linshi_data()  # 57350     14898
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    os._exit(0)  # 无错误退出
+    #os._exit(0)  # 无错误退出
 
 
 if __name__ == "__main__":

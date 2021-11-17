@@ -24,7 +24,7 @@ match_area = MatchArea()
 province_service = ProvinceService()
 mysql_service = MySQLService()
 
-conn_type = 'prod'
+conn_type = 'test'
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -115,8 +115,14 @@ def exec_task(sql):
             sales_name = str(record[2])             # 开票公司
             sales_addressphone = str(record[3])     # 开票地址及电话
             sales_bank = str(record[4])             # 发票开会行
-            sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
-            receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+            #sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
+            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+
+            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)
+            if receipt_city is None:
+                receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
 
             meet_addr = meet_addr.replace(',', ' ') if meet_addr else '无'
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'
@@ -136,43 +142,43 @@ def exec_task(sql):
             time.sleep(0.1)
 
 
-def operate_reocrd(record):
-    # destin_name = str(record[0]) if record[0] else None
-    sales_name = str(record[1]) if record[1] else None  # 开票公司
-    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
-
-    # print('destin_name=',destin_name)
-    # print('sales_name=', sales_name)
-    # print('sales_addressphone=', sales_addressphone)
-    # print('sales_bank=', sales_bank)
-
-    area_name1, area_name2, area_name3 = None, None, None
-    if sales_name != 'None' or sales_name is not None:
-        area_name1 = match_area.fit_area(area=sales_name)
-
-    if sales_addressphone != 'None' or sales_addressphone is not None:
-        area_name2 = match_area.fit_area(area=sales_addressphone)
-
-    if sales_bank != 'None' or sales_bank is not None:
-        area_name3 = match_area.fit_area(area=sales_bank)
-
-    area_names = []
-    if area_name1[0]:
-        area_names.append(area_name1)
-
-    if area_name2[0]:
-        area_names.append(area_name2)
-
-    if area_name3[0]:
-        area_names.append(area_name3)
-
-    result_area = match_area.opera_areas(area_names)
-
-    # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
-    # print('### operate_reocrd show_str ==> ', show_str)
-
-    return result_area
+# def operate_reocrd(record):
+#     # destin_name = str(record[0]) if record[0] else None
+#     sales_name = str(record[1]) if record[1] else None  # 开票公司
+#     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+#     sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+#
+#     # print('destin_name=',destin_name)
+#     # print('sales_name=', sales_name)
+#     # print('sales_addressphone=', sales_addressphone)
+#     # print('sales_bank=', sales_bank)
+#
+#     area_name1, area_name2, area_name3 = None, None, None
+#     if sales_name != 'None' or sales_name is not None:
+#         area_name1 = match_area.fit_area(area=sales_name)
+#
+#     if sales_addressphone != 'None' or sales_addressphone is not None:
+#         area_name2 = match_area.fit_area(area=sales_addressphone)
+#
+#     if sales_bank != 'None' or sales_bank is not None:
+#         area_name3 = match_area.fit_area(area=sales_bank)
+#
+#     area_names = []
+#     if area_name1[0]:
+#         area_names.append(area_name1)
+#
+#     if area_name2[0]:
+#         area_names.append(area_name2)
+#
+#     if area_name3[0]:
+#         area_names.append(area_name3)
+#
+#     result_area = match_area.opera_areas(area_names)
+#
+#     # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
+#     # print('### operate_reocrd show_str ==> ', show_str)
+#
+#     return result_area
 
 
 def main():

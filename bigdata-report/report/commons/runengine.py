@@ -67,7 +67,7 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
         daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
                                               daily_end_date='', unusual_point=unusual_id,
                                               daily_source='python shell',
-                                              operate_desc=f'成功执行检查点{unusual_id}的Python Shell', unusual_infor='',
+                                              operate_desc=f'正在执行检查点{unusual_id}的Python Shell', unusual_infor='',
                                               task_status='doing')
 
         if unusual_id in ['13', '14']:
@@ -82,7 +82,8 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
 
         exec("print('执行算法 shell 结束')")
         daily_end_date = get_current_time()
-        update_finance_shell_daily(daily_id, daily_end_date, task_status='done')
+        operate_desc = f'成功执行检查点{unusual_id}Python Shell'
+        update_finance_shell_daily(daily_id, daily_end_date, task_status='done', operate_desc=operate_desc)
 
     except BaseException as e:
         print('--- execute_py_shell throw exception ---')
@@ -105,14 +106,24 @@ def execute_kudu_sql(unusual_shell, unusual_id):
         print('*** begin execute_kudu_sql ')
         log.info(unusual_shell)
 
+        daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
+                                              daily_end_date='', unusual_point=unusual_id,
+                                              daily_source='sql',
+                                              operate_desc=f'正在执行检查点{unusual_id}的SQL', unusual_infor='',
+                                              task_status='doing')
+
         prod_execute_sql(conn_type='prod', sqltype='insert', sql=unusual_shell)
         daily_end_date = get_current_time()
         operate_desc = f'成功执行检查点{unusual_id}的SQL'
         print('*** end execute_kudu_sql ***')
 
-        insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
-                                   unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc,
-                                   unusual_infor='', task_status='done')
+        # insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
+        #                            unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc,
+        #                            unusual_infor='', task_status='done')
+
+        daily_end_date = get_current_time()
+        update_finance_shell_daily(daily_id, daily_end_date, task_status='done',operate_desc=operate_desc)
+
     except Exception as e:
         print(e)
         insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
