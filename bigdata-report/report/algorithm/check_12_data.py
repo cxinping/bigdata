@@ -13,7 +13,7 @@ from report.services.common_services import query_billds_finance_all_targets
 
 """
 
-SELECT emp_name, origin_name, dest_name, beg_date, end_date, traf_name
+SELECT bill_id, emp_name, origin_name, destin_name, beg_date, end_date, traf_name, 出差城市
 FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey
 
 
@@ -48,6 +48,21 @@ class Check12Service:
     def save_data(self):
         self.init_file()
 
+        columns_ls = ['bill_id', 'emp_name', 'origin_name', 'destin_name', 'beg_date', 'end_date', 'traf_name' ]
+        columns_str = ",".join(columns_ls)
+        sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey {test_limit_cond}'.format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond)
+
+        count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
+        log.info(count_sql)
+        records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+        count_records = records[0][0]
+        log.info(f'* count_records ==> {count_records}')
+
+        max_size = 1 * 100000
+        limit_size = 2 * 10000
+        select_sql_ls = []
+
     def analyze_data_data(self):
         pass
 
@@ -55,3 +70,5 @@ class Check12Service:
 if __name__ == "__main__":
     check12_service = Check12Service()
     check12_service.save_data()
+
+    #check12_service.analyze_data_data()

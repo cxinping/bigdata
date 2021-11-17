@@ -18,6 +18,11 @@ https://blog.csdn.net/lzx159951/article/details/104357909
 
 异常值：一组测定值中与平均值的偏差超过两倍标准差的测定值
 
+cd /you_filed_algos/app
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_14_data.py
+
+
 """
 
 import sys
@@ -479,7 +484,8 @@ def analyze_plane_data(coefficient=2):
                         names=['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
                                'plane_destin_name', 'plane_check_amount'])
 
-    # print(rd_df.dtypes)
+    print(rd_df.dtypes)
+    print('* counts => ', len(rd_df))
     # rd_df = rd_df[:500]
     #print(rd_df.head(10))
 

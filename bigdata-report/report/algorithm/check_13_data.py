@@ -20,6 +20,9 @@ log = get_logger(__name__)
 
 计算住宿费用的异常值
 
+cd /you_filed_algos/app
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_13_data.py
 
 """
 
