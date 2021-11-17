@@ -18,6 +18,9 @@ log = get_logger(__name__)
 """
 异常值：一组测定值中与平均值的偏差超过两倍标准差的测定值
 
+计算住宿费用的异常值
+
+
 """
 
 import sys
@@ -52,7 +55,7 @@ class Check13Service:
         self.init_file()
 
         sql = f"""
-        SELECT a.bill_id, a.city_name, a.city_grade_name, a.emp_name,a.stand_amount_perday, a.hotel_amount_perday
+        SELECT a.bill_id, a.city_name, a.city_grade_name, a.emp_name, a.stand_amount_perday, a.hotel_amount_perday
             FROM (
             SELECT DISTINCT
             bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,

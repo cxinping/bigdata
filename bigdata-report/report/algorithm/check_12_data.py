@@ -12,8 +12,10 @@ from report.commons.tools import (list_of_groups, kill_pid)
 from report.services.common_services import query_billds_finance_all_targets
 
 """
-SELEct origin_name, dest_name, 
-FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+
+SELECT emp_name, origin_name, dest_name, beg_date, end_date, traf_name
+FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey
+
 
 
 """
@@ -46,8 +48,6 @@ class Check12Service:
     def save_data(self):
         self.init_file()
 
-
-
     def analyze_data_data(self):
         pass
 
@@ -55,5 +55,3 @@ class Check12Service:
 if __name__ == "__main__":
     check12_service = Check12Service()
     check12_service.save_data()
-
-

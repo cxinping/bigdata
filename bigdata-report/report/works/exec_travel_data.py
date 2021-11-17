@@ -19,6 +19,7 @@ cd /you_filed_algos/app
 
 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data.py
 
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data.py
 
 """
 
@@ -111,41 +112,41 @@ def execute_02_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-def operate_reocrd(record):
-    sales_name = str(record[1]) if record[1] else None          # 开票公司
-    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None          # 发票开户行
-
-    # print('sales_name=', sales_name)
-    # print('sales_addressphone=', sales_addressphone)
-    # print('sales_bank=', sales_bank)
-
-    area_name1, area_name2, area_name3 = None, None, None
-    if sales_name != 'None' or sales_name is not None:
-        area_name1 = match_area.fit_area(area=sales_name)
-
-    if sales_addressphone != 'None' or sales_addressphone is not None:
-        area_name2 = match_area.fit_area(area=sales_addressphone)
-
-    if sales_bank != 'None' or sales_bank is not None:
-        area_name3 = match_area.fit_area(area=sales_bank)
-
-    area_names = []
-    if area_name1[0]:
-        area_names.append(area_name1)
-
-    if area_name2[0]:
-        area_names.append(area_name2)
-
-    if area_name3[0]:
-        area_names.append(area_name3)
-
-    result_area = match_area.opera_areas(area_names)
-
-    # show_str = f'### sales_name={sales_name}, sales_addressphone={sales_addressphone}, sales_bank={sales_bank}, sales_address={result_area}'
-    # print(show_str)
-
-    return result_area
+# def operate_reocrd(record):
+#     sales_name = str(record[1]) if record[1] else None          # 开票公司
+#     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+#     sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+#
+#     # print('sales_name=', sales_name)
+#     # print('sales_addressphone=', sales_addressphone)
+#     # print('sales_bank=', sales_bank)
+#
+#     area_name1, area_name2, area_name3 = None, None, None
+#     if sales_name != 'None' or sales_name is not None:
+#         area_name1 = match_area.fit_area(area=sales_name)
+#
+#     if sales_addressphone != 'None' or sales_addressphone is not None:
+#         area_name2 = match_area.fit_area(area=sales_addressphone)
+#
+#     if sales_bank != 'None' or sales_bank is not None:
+#         area_name3 = match_area.fit_area(area=sales_bank)
+#
+#     area_names = []
+#     if area_name1[0]:
+#         area_names.append(area_name1)
+#
+#     if area_name2[0]:
+#         area_names.append(area_name2)
+#
+#     if area_name3[0]:
+#         area_names.append(area_name3)
+#
+#     result_area = match_area.opera_areas(area_names)
+#
+#     # show_str = f'### sales_name={sales_name}, sales_addressphone={sales_addressphone}, sales_bank={sales_bank}, sales_address={result_area}'
+#     # print(show_str)
+#
+#     return result_area
 
 
 def exec_task(sql):
@@ -154,10 +155,7 @@ def exec_task(sql):
 
     if records and len(records) > 0:
         for idx, record in enumerate(records):
-            start_time0 = time.perf_counter()
-            sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
-            consumed_time0 = round(time.perf_counter() - start_time0)
-            log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
+            #sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
 
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
             sales_name = str(record[1]) if record[1] else None  # 开票公司
@@ -167,7 +165,17 @@ def exec_task(sql):
             origin_name = str(record[5]) if record[5] else None  # 行程出发地
             invo_code = str(record[6]) if record[6] else None  # 发票代码
 
-            receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+            start_time0 = time.perf_counter()
+            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+            consumed_time0 = round(time.perf_counter() - start_time0)
+            log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
+
+            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票所在市
+            if receipt_city is None:
+                receipt_city = province_service.query_receipt_city(sales_address)
+
 
             #start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
@@ -212,12 +220,12 @@ def stop_process_pool(executor):
 
 def main():
     execute_02_data()  # 43708 sec = 12 hours
-    #print(f'* created txt file dest_file={dest_file}')
+    print(f'* created txt file dest_file={dest_file}')
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
     #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    #os._exit(0)  # 无错误退出
+    os._exit(0)  # 无错误退出
 
 
 main()

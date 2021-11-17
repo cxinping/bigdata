@@ -129,7 +129,8 @@ def check_14_no_plane_data():
     非飞机的交通费
     通过对比出发地与目的地相同或相近的报销项目，关注交通费偏离平均值或大多数人费用分布的较大情况。
 
-    select finance_travel_id, bill_id, origin_name, destin_name, jour_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)
+    select finance_travel_id, bill_id, origin_name, destin_name, jour_amount
+    from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE jour_amount > 0 AND isPlane is NULL AND (origin_name is not NULL AND destin_name is not NULL)
     """
     init_file(no_plane_dest_file)
 
@@ -263,7 +264,7 @@ def analyze_no_plane_data(coefficient=2):
     for name, group_df in grouped_df:
         origin_name, destin_name = name
         temp = group_df.describe()[['jour_amount']]
-        std_val = temp.at['std', 'jour_amount']  # 标准差
+        std_val = temp.at['std', 'jour_amount']    # 标准差
         mean_val = temp.at['mean', 'jour_amount']  # 平均值
 
         if std_val == 0 or np.isnan(std_val):
