@@ -126,11 +126,11 @@ def exec_task(sql):
             sales_addressphone = str(record[2])  # 开票地址及电话
             sales_bank = str(record[3])          # 发票开会行
 
-            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+            sales_address = match_area.query_sales_address(sales_name=sales_name.replace('超市',''), sales_addressphone=sales_addressphone.replace('超市',''),
+                                                           sales_bank=sales_bank.replace('超市',''))  # 发票开票地(最小行政)
 
-            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)  # 发票开票所在市
+            receipt_city = match_area.query_receipt_city(sales_name=sales_name.replace('超市',''), sales_addressphone=sales_addressphone.replace('超市',''),
+                                                           sales_bank=sales_bank.replace('超市',''))  # 发票开票所在市
             if receipt_city is None:
                 receipt_city = province_service.query_receipt_city(sales_address)
 
@@ -189,7 +189,7 @@ def exec_task(sql):
 
 
 def main():
-    check_linshi_office_data()  # 35918   4532
+    check_linshi_office_data()  # 35918   14776
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
     #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

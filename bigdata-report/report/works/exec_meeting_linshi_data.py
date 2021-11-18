@@ -118,13 +118,16 @@ def exec_task(sql):
             sales_addressphone = str(record[3])     # 开票地址及电话
             sales_bank = str(record[4])             # 发票开会行
             #sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
-            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+            sales_address = match_area.query_sales_address(sales_name=sales_name.replace('超市',''), sales_addressphone=sales_addressphone.replace('超市',''),
+                                                           sales_bank=sales_bank.replace('超市',''))  # 发票开票地(最小行政)
 
-            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)
+            receipt_city = match_area.query_receipt_city(sales_name=sales_name.replace('超市', ''),
+                                                         sales_addressphone=sales_addressphone.replace('超市', ''),
+                                                         sales_bank=sales_bank.replace('超市', ''))  # 发票开票所在市
+
             if receipt_city is None:
                 receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+
 
             meet_addr = meet_addr.replace(',', ' ') if meet_addr else '无'
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'
@@ -184,10 +187,10 @@ def exec_task(sql):
 
 
 def main():
-    #check_meeting_data()     # 3974   460
+    check_meeting_data()     # 3974   460
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

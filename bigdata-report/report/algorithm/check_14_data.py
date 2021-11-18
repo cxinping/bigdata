@@ -12,7 +12,6 @@ from report.commons.tools import (list_of_groups, kill_pid)
 from report.services.common_services import query_billds_finance_all_targets
 from report.commons.settings import CONN_TYPE
 
-
 log = get_logger(__name__)
 
 """
@@ -271,7 +270,7 @@ def analyze_no_plane_data(coefficient=2):
     for name, group_df in grouped_df:
         origin_name, destin_name = name
         temp = group_df.describe()[['jour_amount']]
-        std_val = temp.at['std', 'jour_amount']    # 标准差
+        std_val = temp.at['std', 'jour_amount']  # 标准差
         mean_val = temp.at['mean', 'jour_amount']  # 平均值
 
         if std_val == 0 or np.isnan(std_val):
@@ -295,7 +294,7 @@ def analyze_no_plane_data(coefficient=2):
                     abnormal_bill_id_ls.append(bill_id)
             # print('')
 
-    #print('----  show result ----')
+    # print('----  show result ----')
     # print(abnormal_bill_id_ls)
     del grouped_df
     del rd_df
@@ -329,7 +328,7 @@ def exec_plane_sql(bill_id_ls):
             else:
                 condition_sql = condition_sql + ' OR ' + temp
 
-        #print(condition_sql)
+        # print(condition_sql)
 
         sql = """
         INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
@@ -489,11 +488,11 @@ def analyze_plane_data(coefficient=2):
     print(rd_df.dtypes)
     print('* counts => ', len(rd_df))
     # rd_df = rd_df[:500]
-    #print(rd_df.head(10))
+    # print(rd_df.head(10))
 
-    grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'])
+    grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'], as_index=False, sort=False)
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
-    #print('=' * 60)
+    print('* after groupby ')
 
     bill_id_ls = []
     for name, group_df in grouped_df:
@@ -522,7 +521,11 @@ def analyze_plane_data(coefficient=2):
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
-    # print('---- shwo result ---')
+                    print(row)
+                    print()
+
+
+    # print('---- show result ---')
     # print(bill_id_ls)
 
     del grouped_df
@@ -597,11 +600,11 @@ def main():
     start_time = time.perf_counter()
 
     # 需求1 交通方式为非飞机的交通费用异常分析
-    #check_14_no_plane_data()   # 共有数据 4546085 条
-    #analyze_no_plane_data(coefficient=2)
+    # check_14_no_plane_data()   # 共有数据 4546085 条
+    # analyze_no_plane_data(coefficient=2)
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    #check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
+    # check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
     analyze_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)

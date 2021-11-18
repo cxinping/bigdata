@@ -7,3 +7,5 @@ Created on 2021-08-02
 
 
 DEBUG = True
+
+threaded=True

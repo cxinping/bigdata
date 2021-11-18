@@ -33,8 +33,13 @@ insert  into 01_datamart_layer_007_h_cw_df.finance_blacklist values (uuid(),'','
 
 select * from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '办公费';
 
+############################### checkpoint 16    ###############################
 
-############################### checkpoint 12    ###############################
+select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+where commodityname is not null
+
+
+
 
 
 
@@ -227,8 +232,6 @@ load data inpath '/user/hive/warehouse/03_basal_layer_zfybxers00.db/zfybxers00_z
             WHERE exp_type_name="差旅费" AND hotel_num > 0
             )as a
         WHERE a.hotel_amount_perday < a.stand_amount_perday
-
-
 
 
 

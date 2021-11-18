@@ -17,6 +17,13 @@ from report.commons.settings import CONN_TYPE
 SELECT bill_id, emp_name, origin_name, destin_name, beg_date, end_date, traf_name, 出差城市
 FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey
 
+SELECT bill_id,origin_name, destin_name,travel_city_name,traf_name, beg_date, end_date 
+FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+
+SELECT bill_id,origin_name, destin_name,travel_city_name,traf_name, travel_beg_date,travel_end_date
+FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+WHERE (origin_name is not null and origin_name !='' )  and (destin_name is not null and destin_name !='') AND travel_beg_date != travel_end_date
+AND traf_name like '%动车%' OR traf_name like '%高铁%' OR traf_name like '%飞机%'
 
 """
 
