@@ -138,11 +138,11 @@ class Check12Service:
         if records and len(records) > 0:
             for idx, record in enumerate(records):
                 bill_id = str(record[0])  # bill_id
-                origin_name = str(record[1])       # 出发地
-                destin_name = str(record[2])       # 目的地
+                origin_name = str(record[1])  # 出发地
+                destin_name = str(record[2])  # 目的地
                 travel_city_name = str(record[3])  # 出差城市
-                travel_beg_date = str(record[4])   # 差旅开始时间
-                travel_end_date = str(record[5])   # 差旅结束时间
+                travel_beg_date = str(record[4])  # 差旅开始时间
+                travel_end_date = str(record[5])  # 差旅结束时间
 
                 travel_city_name = re.sub(r'[{}]+'.format(punctuation + digits), ' ', travel_city_name)
                 # log.info(travel_city_name)
@@ -155,23 +155,32 @@ class Check12Service:
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def analyze_data_data(self):
+    def complex_function(self, origin_name, destin_name):
+        pass
+
+    def cal_df_data(self, group_df, origin_name, destin_name, bill_id_ls):
+        pass
+
+    def analyze_data(self):
         log.info('======= check_12 analyze_data_data ===========')
 
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'origin_name', 'destin_name', 'travel_city_name', 'travel_beg_date',
-                                    'travel_end_date'])
+                                   'travel_end_date'])
         # print(rd_df.head())
         # print(len(rd_df))
 
         rd_df = rd_df[:700]
-        grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
+        # 测试1
+        rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
+        grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
+        bill_id_ls =[]
         for name, group_df in grouped_df:
             origin_name, destin_name = name
 
             if len(group_df) >= 2:
-                print(f'*** origin_name={origin_name},destin_name={destin_name}')
+                print(f'*** origin_name={origin_name},destin_name={destin_name}', type(group_df))
 
                 for index, row in group_df.iterrows():
                     bill_id = row['bill_id']
@@ -184,13 +193,12 @@ class Check12Service:
                         else:
                             travel_city_names.remove(origin_name)
                             travel_city_names.remove(destin_name)
-                    elif origin_name in travel_city_names :
+                    elif origin_name in travel_city_names:
                         travel_city_names.remove(origin_name)
-                    elif destin_name in travel_city_names :
+                    elif destin_name in travel_city_names:
                         travel_city_names.remove(destin_name)
 
-                    print('* travel_city_names=> ',travel_city_names)
-
+                    print('* travel_city_names=> ', travel_city_names)
 
                     print(row)
                     print()
@@ -199,6 +207,5 @@ class Check12Service:
 
 if __name__ == "__main__":
     check12_service = Check12Service()
-    #check12_service.save_data()  # 1787675    247222
-    check12_service.analyze_data_data()
-
+    # check12_service.save_data()  # 1787675    247222
+    check12_service.analyze_data()

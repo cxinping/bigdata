@@ -304,7 +304,7 @@ def analyze_no_plane_data(coefficient=2):
 
     # print(len(abnormal_bill_id_ls))
 
-    exec_no_plane_sql(abnormal_bill_id_ls)  # 449975
+    #exec_no_plane_sql(abnormal_bill_id_ls)  # 449975
 
 
 def exec_plane_sql(bill_id_ls):

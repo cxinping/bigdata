@@ -137,7 +137,7 @@ def exec_task(sql):
             sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
             sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
             sales_address = sales_address.replace(',', ' ') if sales_address else '无'
-            receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
+            receipt_city = match_area.fit_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
 
             log.info(f" {threading.current_thread().name} is running ")
             record_str = f'{finance_offical_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
@@ -188,10 +188,10 @@ def exec_task(sql):
 
 
 def main():
-    #check_linshi_office_data()  # 35918   14776
+    check_linshi_office_data()  # 35918   14776
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 

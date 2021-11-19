@@ -357,6 +357,27 @@ class MatchArea:
         else:
             return None
 
+    def filter_area(self, area):
+        """
+        过滤字符串，比如 中国邮政速递物流股份有限公司贵港市，过滤为 贵港市
+        :param area:
+        :return:
+        """
+        if area is not None:
+            kye_word1 = '公司'
+            kye_word2 = '局'
+
+            if area.find(kye_word1) > 0:
+                idx = area.find(kye_word1) + 2
+                return area[idx:]
+            elif area.find(kye_word2) > 0:
+                idx = area.find(kye_word2) + 1
+                return area[idx:]
+            else:
+                return area
+        else:
+            return area
+
     def query_sales_address(self, sales_name, sales_addressphone, sales_bank):
         """
         查询发票开票所在市
