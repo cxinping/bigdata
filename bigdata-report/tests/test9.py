@@ -32,3 +32,11 @@ print('*******' * 10)
 
 ls1 = ['B438C03D9AD1F950E053AC6DF60ADB05']
 print(tuple(ls1))
+
+print('*******' * 10)
+
+ll1 = [1,2]
+ll2 = [1,2]
+ll1.sort()
+ll2.sort()
+print(ll1 == ll2)

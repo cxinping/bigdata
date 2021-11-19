@@ -2,6 +2,9 @@
 
 from report.commons.logging import get_logger
 import os, time
+import re
+from string import punctuation
+from string import digits
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import threading
 from report.services.common_services import ProvinceService
@@ -17,10 +20,11 @@ from report.commons.settings import CONN_TYPE
 SELECT bill_id, emp_name, origin_name, destin_name, beg_date, end_date, traf_name, 出差城市
 FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey
 
-SELECT bill_id,origin_name, destin_name,travel_city_name,traf_name, travel_beg_date,travel_end_date
+SELECT distinct bill_id,origin_name, destin_name,travel_city_name,traf_name, travel_beg_date,travel_end_date
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
-WHERE (origin_name is not null and origin_name !='' )  and (destin_name is not null and destin_name !='') AND travel_beg_date != travel_end_date
-AND traf_name like '%动车%' OR traf_name like '%高铁%' OR traf_name like '%飞机%'
+WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'
+
 
 """
 
@@ -34,7 +38,7 @@ dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint12'
 dest_file = dest_dir + '/check_12_data.txt'
 
 conn_type = 'test'
-test_limit_cond = ' '  # 'LIMIT 1000'``
+test_limit_cond = ' '  # ' LIMIT 100010 '
 
 
 class Check12Service:
@@ -52,10 +56,18 @@ class Check12Service:
     def save_data(self):
         self.init_file()
 
-        columns_ls = ['bill_id', 'emp_name', 'origin_name', 'destin_name', 'beg_date', 'end_date', 'traf_name' ]
+        columns_ls = ['bill_id', 'origin_name', 'destin_name', 'travel_city_name', 'travel_beg_date',
+                      'travel_end_date']
         columns_str = ",".join(columns_ls)
-        sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey {test_limit_cond}'.format(
-            columns_str=columns_str, test_limit_cond=test_limit_cond)
+
+        sql = """
+        select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+        WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+        AND travel_beg_date != travel_end_date AND  travel_beg_date > '20190101'
+        {test_limit_cond}
+        """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\r', '').replace('\n',
+                                                                                                       '').replace('\t',
+                                                                                                                   '')
 
         count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
         log.info(count_sql)
@@ -63,23 +75,130 @@ class Check12Service:
         count_records = records[0][0]
         log.info(f'* count_records ==> {count_records}')
 
-        max_size = 1 * 100000
+        max_size = 10 * 10000
         limit_size = 2 * 10000
         select_sql_ls = []
-
-
-
-
-
         log.info('* 开始分页查询')
 
+        if count_records >= max_size:
+            offset_size = 0
+            while offset_size <= count_records:
+                if offset_size + limit_size > count_records:
+                    limit_size = count_records - offset_size
+                    tmp_sql = """
+                select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+                WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+                AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'                    
+                ORDER BY travel_beg_date limit {limit_size} offset {offset_size}
+                    """.format(limit_size=limit_size, offset_size=offset_size, columns_str=columns_str).replace('\r',
+                                                                                                                '').replace(
+                        '\n', '').replace('\t', '')
+
+                    select_sql_ls.append(tmp_sql)
+                    break
+                else:
+                    tmp_sql = """
+                    select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+                    WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+                    AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'                    
+                    ORDER BY travel_beg_date limit {limit_size} offset {offset_size}
+                        """.format(limit_size=limit_size, offset_size=offset_size,
+                                   columns_str=columns_str).replace('\r', '').replace('\n', '').replace('\t', '')
+
+                    select_sql_ls.append(tmp_sql)
+
+                offset_size = offset_size + limit_size
+        else:
+            tmp_sql = f"""           
+        select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
+        WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+        AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'
+         {test_limit_cond}   
+        """.replace('\r', '').replace('\n', '').replace('\t', '')
+            select_sql_ls.append(tmp_sql)
+            # print('*** tmp_sql => ', tmp_sql)
+
+        log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
+
+        threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+        start_time = time.perf_counter()
+
+        all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+        wait(all_task, return_when=ALL_COMPLETED)
+
+        threadPool.shutdown(wait=True)
+        consumed_time = round(time.perf_counter() - start_time)
+        log.info(f'* 查询耗时 {consumed_time} sec')
+
+    def exec_task(self, sql):
+        log.info(sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        print(0.01)
+
+        if records and len(records) > 0:
+            for idx, record in enumerate(records):
+                bill_id = str(record[0])  # bill_id
+                origin_name = str(record[1])       # 出发地
+                destin_name = str(record[2])       # 目的地
+                travel_city_name = str(record[3])  # 出差城市
+                travel_beg_date = str(record[4])   # 差旅开始时间
+                travel_end_date = str(record[5])   # 差旅结束时间
+
+                travel_city_name = re.sub(r'[{}]+'.format(punctuation + digits), ' ', travel_city_name)
+                # log.info(travel_city_name)
+
+                record_str = f'{bill_id},{origin_name},{destin_name},{travel_city_name},{travel_beg_date},{travel_end_date}'
+                log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
+                log.info(record_str)
+                print()
+
+                with open(dest_file, "a+", encoding='utf-8') as file:
+                    file.write(record_str + "\n")
 
     def analyze_data_data(self):
-        pass
+        log.info('======= check_12 analyze_data_data ===========')
+
+        rd_df = pd.read_csv(dest_file, sep=',', header=None,
+                            names=['bill_id', 'origin_name', 'destin_name', 'travel_city_name', 'travel_beg_date',
+                                    'travel_end_date'])
+        # print(rd_df.head())
+        # print(len(rd_df))
+
+        rd_df = rd_df[:700]
+        grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
+
+        for name, group_df in grouped_df:
+            origin_name, destin_name = name
+
+            if len(group_df) >= 2:
+                print(f'*** origin_name={origin_name},destin_name={destin_name}')
+
+                for index, row in group_df.iterrows():
+                    bill_id = row['bill_id']
+                    travel_city_name = row['travel_city_name']
+
+                    travel_city_names = travel_city_name.split(' ')
+                    if origin_name in travel_city_names and destin_name in travel_city_names:
+                        if origin_name == destin_name:
+                            travel_city_names.remove(origin_name)
+                        else:
+                            travel_city_names.remove(origin_name)
+                            travel_city_names.remove(destin_name)
+                    elif origin_name in travel_city_names :
+                        travel_city_names.remove(origin_name)
+                    elif destin_name in travel_city_names :
+                        travel_city_names.remove(destin_name)
+
+                    print('* travel_city_names=> ',travel_city_names)
+
+
+                    print(row)
+                    print()
+                print('------' * 20)
 
 
 if __name__ == "__main__":
     check12_service = Check12Service()
-    check12_service.save_data()
+    #check12_service.save_data()  # 1787675    247222
+    check12_service.analyze_data_data()
 
-    #check12_service.analyze_data_data()
