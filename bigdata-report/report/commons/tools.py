@@ -8,11 +8,13 @@ import psutil
 
 log = get_logger(__name__)
 
+
 def kill_pid(parent_pid):
     parent = psutil.Process(parent_pid)
     for child in parent.children(recursive=True):  # or parent.children() for recursive=False
         child.kill()
     parent.kill()
+
 
 def match_address(place, key):
     ssxq = ['省', '市', '县', '区', '乡']
@@ -345,19 +347,15 @@ class MatchArea:
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' or sales_name is not None:
             area_name1 = self.match_address(place=sales_name, key='市')
-
-        if sales_addressphone != 'None' or sales_addressphone is not None:
-            area_name2 = self.match_address(place=sales_addressphone, key='市')
-
-        if sales_bank != 'None' or sales_bank is not None:
-            area_name3 = self.match_address(place=sales_bank, key='市')
-
-        if area_name1 != 'None' or area_name1 is not None:
             return area_name1
-        elif area_name2 != 'None' or area_name2 is not None:
+        elif sales_addressphone != 'None' or sales_addressphone is not None:
+            area_name2 = self.match_address(place=sales_addressphone, key='市')
             return area_name2
-        elif area_name3 != 'None' or area_name3 is not None:
+        elif sales_bank != 'None' or sales_bank is not None:
+            area_name3 = self.match_address(place=sales_bank, key='市')
             return area_name3
+        else:
+            return None
 
     def query_sales_address(self, sales_name, sales_addressphone, sales_bank):
         """
@@ -495,6 +493,3 @@ def save_file(output_file, line, buff_size=1000, clear_buff=False):
             fp.write("\n".join(result))
             fp.write("\n")
         result = []
-
-
-

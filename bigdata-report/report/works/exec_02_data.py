@@ -21,6 +21,7 @@ match_area = MatchArea()
 
 test_limit_cond = ' LIMIT 10000 '  # 'LIMIT 10000'
 
+
 def init_file():
     if os.path.exists(dest_file):
         os.remove(dest_file)
@@ -35,7 +36,7 @@ def execute_02_data():
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
     {test_limit_cond}}
-    """.format(columns_str=columns_str,test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
+    """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
@@ -95,18 +96,18 @@ def execute_02_data():
                 sales_address = operate_reocrd(record)  # 发票开票地(市)
                 sales_address = sales_address if sales_address else 'null'
 
-                destin_name = str(record[0]) if record[0] else None         # 行程目的地
-                sales_name = str(record[1]) if record[1] else None          # 开票公司
+                destin_name = str(record[0]) if record[0] else None  # 行程目的地
+                sales_name = str(record[1]) if record[1] else None  # 开票公司
                 sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-                sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+                sales_bank = str(record[3]) if record[3] else None  # 发票开户行
                 finance_travel_id = str(record[4]) if record[4] else None
-                origin_name = str(record[5]) if record[5] else 'null'       # 行程出发地(市)
-                invo_code = str(record[6]) if record[6] else 'null'         # 发票代码
+                origin_name = str(record[5]) if record[5] else 'null'  # 行程出发地(市)
+                invo_code = str(record[6]) if record[6] else 'null'  # 发票代码
 
                 start_time2 = time.perf_counter()
-                origin_province = match_area.query_belong_province(origin_name)              # 行程出发地(省)
+                origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
                 origin_province = origin_province if origin_province else 'null'
-                print('111 origin_province => ' , origin_province)
+                print('111 origin_province => ', origin_province)
 
                 destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                    destin_name=destin_name)  # 行程目的地(省)
@@ -132,10 +133,10 @@ def execute_02_data():
 
 
 def operate_reocrd(record):
-    #destin_name = str(record[0]) if record[0] else None
-    sales_name = str(record[1]) if record[1] else None          # 开票公司
+    # destin_name = str(record[0]) if record[0] else None
+    sales_name = str(record[1]) if record[1] else None  # 开票公司
     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
 
     # print('destin_name=',destin_name)
     # print('sales_name=', sales_name)
@@ -165,7 +166,7 @@ def operate_reocrd(record):
     result_area = match_area.opera_areas(area_names)
 
     show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
-    print('### operate_reocrd show_str ==> ',show_str)
+    print('### operate_reocrd show_str ==> ', show_str)
 
     return result_area
 
@@ -190,5 +191,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

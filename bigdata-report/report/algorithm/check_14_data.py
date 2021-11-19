@@ -477,7 +477,7 @@ def analyze_plane_data(coefficient=2):
     :return:
     """
 
-    log.info('======= analyze_plane_data ===========')
+    log.info('======= check_14 analyze_plane_data ===========')
 
     rd_df = pd.read_csv(plane_dest_file, sep=',', header=None, encoding="utf-8",
                         dtype={'finance_travel_id': str, 'bill_id': str, 'plane_beg_date': str, 'plane_end_date': str,
@@ -485,7 +485,7 @@ def analyze_plane_data(coefficient=2):
                         names=['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
                                'plane_destin_name', 'plane_check_amount'])
 
-    print(rd_df.dtypes)
+    #print(rd_df.dtypes)
     print('* counts => ', len(rd_df))
     # rd_df = rd_df[:500]
     # print(rd_df.head(10))
@@ -521,8 +521,8 @@ def analyze_plane_data(coefficient=2):
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
-                    print(row)
-                    print()
+                    #print(row)
+                    #print()
 
 
     # print('---- show result ---')
@@ -534,7 +534,7 @@ def analyze_plane_data(coefficient=2):
     targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='14')
     bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
 
-    exec_plane_sql(bill_id_ls)
+    #exec_plane_sql(bill_id_ls)
 
 
 def check_14_plane_data2():
