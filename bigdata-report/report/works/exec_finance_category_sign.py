@@ -6,6 +6,7 @@ from report.services.common_services import (insert_finance_shell_daily, update_
                                              operate_finance_category_sign, clean_finance_category_sign,
                                              query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
+from report.services.travel_expense_service import get_travel_jiebaword
 from report.commons.settings import CONN_TYPE
 
 
@@ -43,7 +44,7 @@ def import_data():
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
-    # part2
+    # part3
     unusual_id = '55'
     category_classify = '01'
     type_str = '车辆使用费'
@@ -58,5 +59,14 @@ def import_data():
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
+    # part4
+    unusual_id = '16'
+    category_classify = ''
+    type_str = '差旅费'
+    available_category_name = get_travel_jiebaword()
+    operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
+                                  category_classify=category_classify, sign_status='0')
+
+    print('--- ok ---')
 
 import_data()

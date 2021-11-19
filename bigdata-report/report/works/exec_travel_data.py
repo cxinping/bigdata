@@ -175,16 +175,16 @@ def exec_task(sql):
 
             """
              1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到开票地所在的市， 
-             2，如果没有找到从开票所在地最小的行政单位，找到开票所在地的市，
-             3，如果没有找到从目的地，找到开票所在的市
+             2，如果没有找到从目的地，找到开票所在的市
+             
+               如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，多个市下可能会有相同的最小行政单位
+             
             """
             receipt_city = match_area.query_receipt_city(sales_name=sales_name.replace('超市', ''),
                                                          sales_addressphone=sales_addressphone.replace('超市', ''),
                                                          sales_bank=sales_bank.replace('超市', ''))  # 发票开票所在市
             if receipt_city is None:
-                receipt_city = province_service.query_receipt_city(sales_address)
-                if receipt_city is None:
-                    receipt_city = match_area.query_receipt_city(sales_name=destin_name.replace('超市', ''),
+                receipt_city = match_area.query_receipt_city(sales_name=destin_name.replace('超市', ''),
                                                                  sales_addressphone=None, sales_bank=None)
 
             # start_time1 = time.perf_counter()
@@ -229,11 +229,11 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 43708 sec = 12 hours ,  43240
-    print(f'* created txt file dest_file={dest_file}')
+    #execute_02_data()  # 43708 sec = 12 hours ,  43240
+    #print(f'* created txt file dest_file={dest_file}')
 
-    # test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     # os._exit(0)  # 无错误退出
 

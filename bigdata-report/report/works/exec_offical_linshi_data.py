@@ -131,8 +131,7 @@ def exec_task(sql):
 
             receipt_city = match_area.query_receipt_city(sales_name=sales_name.replace('超市',''), sales_addressphone=sales_addressphone.replace('超市',''),
                                                            sales_bank=sales_bank.replace('超市',''))  # 发票开票所在市
-            if receipt_city is None:
-                receipt_city = province_service.query_receipt_city(sales_address)
+            #receipt_city = province_service.query_receipt_city(sales_address)
 
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'
             sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
@@ -189,10 +188,10 @@ def exec_task(sql):
 
 
 def main():
-    check_linshi_office_data()  # 35918   14776
+    #check_linshi_office_data()  # 35918   14776
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
