@@ -137,7 +137,7 @@ def exec_task(sql):
             sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
             sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
             sales_address = sales_address.replace(',', ' ') if sales_address else '无'
-            receipt_city = match_area.fit_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+            receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
 
             log.info(f" {threading.current_thread().name} is running ")
             record_str = f'{finance_offical_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'

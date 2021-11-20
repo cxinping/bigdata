@@ -209,7 +209,7 @@ def exec_task(sql):
             sales_address = sales_address if sales_address else '无'  # 发票开票地(市)
             origin_province = origin_province if origin_province else '无'  # 行程出发地(省)
             destin_province = destin_province if destin_province else '无'  # 行程目的地(省)
-            receipt_city = match_area.fit_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+            receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
             destin_name = destin_name.replace(',', ' ') if destin_name else '无'
 
             record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'

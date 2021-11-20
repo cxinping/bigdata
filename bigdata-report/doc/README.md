@@ -69,6 +69,8 @@ nohup /root/anaconda3/bin/python /you_filed_algos/app/run.py &
 运行Python项目，报错Python3—UnicodeEncodeError 'ascii' codec can't encode characters in position 0-1
 解决方法
 ```
+cd /you_filed_algos/app
+
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/run.py
 
 ```
