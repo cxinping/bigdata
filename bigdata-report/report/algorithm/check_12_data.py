@@ -155,11 +155,45 @@ class Check12Service:
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def complex_function(self, origin_name, destin_name):
-        pass
+    def complex_function(self, travel_city_name, origin_name,destin_name ):
+        if travel_city_name is None or travel_city_name == 'NULL':
+            return ''
+
+        #print(travel_city_name)
+
+        #travel_city_name = travel_city_name.replace(origin_name, '').replace(destin_name, '')
+        travel_city_names = travel_city_name.split(' ')
+
+        #print('travel_city_names=>',travel_city_names)
+
+        if origin_name in travel_city_names and destin_name in travel_city_names:
+            if origin_name == destin_name:
+                travel_city_names.remove(origin_name)
+            else:
+                travel_city_names.remove(origin_name)
+                travel_city_names.remove(destin_name)
+        elif origin_name in travel_city_names:
+            travel_city_names.remove(origin_name)
+        elif destin_name in travel_city_names:
+            travel_city_names.remove(destin_name)
+
+        #print('* travel_city_names=> ', travel_city_names)
+
+        return "".join(travel_city_names)
 
     def cal_df_data(self, group_df, origin_name, destin_name, bill_id_ls):
-        pass
+
+        group_df['trnas_travel_city_name'] = group_df.apply(lambda x: self.complex_function(x['travel_city_name'],origin_name,destin_name), axis=1)
+
+        log.info('* before filter')
+        print(group_df)
+        group_df = group_df[group_df.duplicated('trnas_travel_city_name', keep=False) == False]
+        log.info('* after filter')
+        print(group_df)
+        print()
+        for index, row in group_df.iterrows():
+            bill_id = row['bill_id']
+            bill_id_ls.append(bill_id)
 
     def analyze_data(self):
         log.info('======= check_12 analyze_data_data ===========')
@@ -172,7 +206,7 @@ class Check12Service:
 
         rd_df = rd_df[:700]
         # 测试1
-        rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
+        #rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
         grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
         bill_id_ls =[]
@@ -181,28 +215,9 @@ class Check12Service:
 
             if len(group_df) >= 2:
                 print(f'*** origin_name={origin_name},destin_name={destin_name}', type(group_df))
+                self.cal_df_data(group_df=group_df,origin_name=origin_name, destin_name=destin_name, bill_id_ls=bill_id_ls)
 
-                for index, row in group_df.iterrows():
-                    bill_id = row['bill_id']
-                    travel_city_name = row['travel_city_name']
-
-                    travel_city_names = travel_city_name.split(' ')
-                    if origin_name in travel_city_names and destin_name in travel_city_names:
-                        if origin_name == destin_name:
-                            travel_city_names.remove(origin_name)
-                        else:
-                            travel_city_names.remove(origin_name)
-                            travel_city_names.remove(destin_name)
-                    elif origin_name in travel_city_names:
-                        travel_city_names.remove(origin_name)
-                    elif destin_name in travel_city_names:
-                        travel_city_names.remove(destin_name)
-
-                    print('* travel_city_names=> ', travel_city_names)
-
-                    print(row)
-                    print()
-                print('------' * 20)
+        print(bill_id_ls)
 
 
 if __name__ == "__main__":

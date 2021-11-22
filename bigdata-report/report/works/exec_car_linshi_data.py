@@ -8,6 +8,8 @@ from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
+from report.commons.settings import CONN_TYPE
+
 
 """
 
@@ -91,7 +93,7 @@ def check_car_linshi_data():
             """.format(columns_str=columns_str)
 
         select_sql_ls.append(tmp_sql)
-        print('*** tmp_sql => ', tmp_sql)
+        #print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
@@ -181,9 +183,9 @@ def exec_task(sql):
 
 
 def main():
-    check_car_linshi_data()  # 57350     14898
+    check_car_linshi_data()  # 5138
 
-    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    test_hdfs = Test_HDFSTools(conn_type=conn_type)
     #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
