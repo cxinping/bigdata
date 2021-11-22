@@ -217,7 +217,7 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
 
-        rd_df = rd_df[:700]
+        #rd_df = rd_df[:700]
         # 测试1
         #rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
@@ -231,6 +231,7 @@ class Check12Service:
                 self.cal_df_data(group_df=group_df, origin_name=origin_name, destin_name=destin_name,
                                  bill_id_ls=bill_id_ls)
 
+        print('*** len(rd_df) => ', len(rd_df))
         print('*** len(bill_id_ls) => ', len(bill_id_ls))
 
 
