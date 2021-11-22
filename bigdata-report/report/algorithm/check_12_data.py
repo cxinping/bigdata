@@ -165,14 +165,14 @@ class Check12Service:
             return ''
 
         # print(travel_city_name)
-        travel_city_names = travel_city_name.trip().split(' ')
-        print(f'1*** travel_city_names => {travel_city_names}')
-        print(f'2*** len(travel_city_names) => {len(travel_city_names)}')
+        travel_city_names = travel_city_name.strip().split(' ')
+        #print(f'1*** travel_city_names => {travel_city_names}')
+        #print(f'2*** len(travel_city_names) => {len(travel_city_names)}')
 
-        trnas_travel_city_name = ''
+        trans_travel_city_name = ''
         if travel_city_names and len(travel_city_names) > 1:
             travel_city_names.sort()
-            print('3*** travel_city_names => ', travel_city_names, type(travel_city_names))
+            #print('3*** travel_city_names => ', travel_city_names, type(travel_city_names))
 
             if origin_name in travel_city_names and destin_name in travel_city_names:
                 if origin_name == destin_name:
@@ -185,24 +185,25 @@ class Check12Service:
             elif destin_name in travel_city_names:
                 travel_city_names.remove(destin_name)
 
-        trnas_travel_city_name = "".join(travel_city_names)
+        trans_travel_city_name = " ".join(travel_city_names)
 
-        print('4*** trnas_travel_city_name => ', trnas_travel_city_name)
-        print()
+        #print('4*** trnas_travel_city_name => ', trnas_travel_city_name)
+        #print()
 
-        return trnas_travel_city_name
+        return trans_travel_city_name
 
     def cal_df_data(self, group_df, origin_name, destin_name, bill_id_ls):
 
-        group_df['trnas_travel_city_name'] = group_df.apply(
+        group_df['trans_travel_city_name'] = group_df.apply(
             lambda x: self.complex_function(x['travel_city_name'], origin_name, destin_name), axis=1)
 
         log.info('* before filter')
         print(group_df)
-        group_df = group_df[group_df.duplicated('trnas_travel_city_name', keep=False) == False]
+        group_df = group_df[group_df.duplicated('trans_travel_city_name', keep=False) == False]
         log.info('* after filter')
         print(group_df)
         print()
+
         for index, row in group_df.iterrows():
             bill_id = row['bill_id']
             bill_id_ls.append(bill_id)
@@ -216,9 +217,9 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
 
-        rd_df = rd_df[:3000]
+        rd_df = rd_df[:700]
         # 测试1
-        rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
+        #rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
         grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
         bill_id_ls = []

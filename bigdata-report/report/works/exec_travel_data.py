@@ -229,11 +229,11 @@ def stop_process_pool(executor):
 
 
 def main():
-    #execute_02_data()  # 43708 sec = 12 hours ,  43240
+    execute_02_data()  # 43708 sec = 12 hours ,  4995112
     print(f'* created txt file dest_file={dest_file}')
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     # os._exit(0)  # 无错误退出
 

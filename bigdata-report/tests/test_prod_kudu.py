@@ -9,7 +9,16 @@ describe analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
 # describe analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
 # select * from analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets where unusual_id='33'
 
-records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql)
-for record in records:
-    print(record)
+# records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql)
+# for record in records:
+#     print(record)
+
+print('===' * 30)
+
+sql1 ="""
+msck repair table  02_logical_layer_007_h_lf_cw.finance_meeting_linshi_analysis
+"""
+prod_execute_sql(conn_type='test', sqltype='insert', sql=sql1)
+
+
 
