@@ -23,6 +23,7 @@ FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_journey
 SELECT distinct bill_id,origin_name, destin_name,travel_city_name,traf_name, travel_beg_date,travel_end_date
 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
 WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+AND travel_city_name is not NULL AND travel_city_name !=''
 AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'
 
 
@@ -63,6 +64,7 @@ class Check12Service:
         sql = """
         select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+        AND travel_city_name is not NULL AND travel_city_name !=''
         AND travel_beg_date != travel_end_date AND  travel_beg_date > '20190101'
         {test_limit_cond}
         """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\r', '').replace('\n',
@@ -88,6 +90,7 @@ class Check12Service:
                     tmp_sql = """
                 select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
                 WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+                AND travel_city_name is not NULL AND travel_city_name !=''
                 AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'                    
                 ORDER BY travel_beg_date limit {limit_size} offset {offset_size}
                     """.format(limit_size=limit_size, offset_size=offset_size, columns_str=columns_str).replace('\r',
@@ -100,6 +103,7 @@ class Check12Service:
                     tmp_sql = """
                     select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
                     WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+                    AND travel_city_name is not NULL AND travel_city_name !=''
                     AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'                    
                     ORDER BY travel_beg_date limit {limit_size} offset {offset_size}
                         """.format(limit_size=limit_size, offset_size=offset_size,
@@ -112,6 +116,7 @@ class Check12Service:
             tmp_sql = f"""           
         select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
+        AND travel_city_name is not NULL AND travel_city_name !=''
         AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'
          {test_limit_cond}   
         """.replace('\r', '').replace('\n', '').replace('\t', '')
@@ -131,7 +136,7 @@ class Check12Service:
         log.info(f'* 查询耗时 {consumed_time} sec')
 
     def exec_task(self, sql):
-        log.info(sql)
+        #log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         print(0.01)
 
@@ -155,35 +160,42 @@ class Check12Service:
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
 
-    def complex_function(self, travel_city_name, origin_name,destin_name ):
+    def complex_function(self, travel_city_name, origin_name, destin_name):
         if travel_city_name is None or travel_city_name == 'NULL':
             return ''
 
-        #print(travel_city_name)
+        # print(travel_city_name)
+        travel_city_names = travel_city_name.trip().split(' ')
+        print(f'1*** travel_city_names => {travel_city_names}')
+        print(f'2*** len(travel_city_names) => {len(travel_city_names)}')
 
-        #travel_city_name = travel_city_name.replace(origin_name, '').replace(destin_name, '')
-        travel_city_names = travel_city_name.split(' ')
+        trnas_travel_city_name = ''
+        if travel_city_names and len(travel_city_names) > 1:
+            travel_city_names.sort()
+            print('3*** travel_city_names => ', travel_city_names, type(travel_city_names))
 
-        #print('travel_city_names=>',travel_city_names)
-
-        if origin_name in travel_city_names and destin_name in travel_city_names:
-            if origin_name == destin_name:
+            if origin_name in travel_city_names and destin_name in travel_city_names:
+                if origin_name == destin_name:
+                    travel_city_names.remove(origin_name)
+                else:
+                    travel_city_names.remove(origin_name)
+                    travel_city_names.remove(destin_name)
+            elif origin_name in travel_city_names:
                 travel_city_names.remove(origin_name)
-            else:
-                travel_city_names.remove(origin_name)
+            elif destin_name in travel_city_names:
                 travel_city_names.remove(destin_name)
-        elif origin_name in travel_city_names:
-            travel_city_names.remove(origin_name)
-        elif destin_name in travel_city_names:
-            travel_city_names.remove(destin_name)
 
-        #print('* travel_city_names=> ', travel_city_names)
+        trnas_travel_city_name = "".join(travel_city_names)
 
-        return "".join(travel_city_names)
+        print('4*** trnas_travel_city_name => ', trnas_travel_city_name)
+        print()
+
+        return trnas_travel_city_name
 
     def cal_df_data(self, group_df, origin_name, destin_name, bill_id_ls):
 
-        group_df['trnas_travel_city_name'] = group_df.apply(lambda x: self.complex_function(x['travel_city_name'],origin_name,destin_name), axis=1)
+        group_df['trnas_travel_city_name'] = group_df.apply(
+            lambda x: self.complex_function(x['travel_city_name'], origin_name, destin_name), axis=1)
 
         log.info('* before filter')
         print(group_df)
@@ -204,23 +216,26 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
 
-        rd_df = rd_df[:700]
+        rd_df = rd_df[:3000]
         # 测试1
-        #rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
+        rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
         grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
-        bill_id_ls =[]
+        bill_id_ls = []
         for name, group_df in grouped_df:
             origin_name, destin_name = name
 
             if len(group_df) >= 2:
-                print(f'*** origin_name={origin_name},destin_name={destin_name}', type(group_df))
-                self.cal_df_data(group_df=group_df,origin_name=origin_name, destin_name=destin_name, bill_id_ls=bill_id_ls)
+                print(f'*** origin_name={origin_name},destin_name={destin_name}')
+                self.cal_df_data(group_df=group_df, origin_name=origin_name, destin_name=destin_name,
+                                 bill_id_ls=bill_id_ls)
 
-        print(bill_id_ls)
+        print('*** len(bill_id_ls) => ', len(bill_id_ls))
 
 
 if __name__ == "__main__":
     check12_service = Check12Service()
-    # check12_service.save_data()  # 1787675    247222
+    #check12_service.save_data()  # 查询耗时 1181 sec， 1146783  484799
     check12_service.analyze_data()
+
+    os._exit(0)  # 无错误退出
