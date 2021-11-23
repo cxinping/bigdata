@@ -6,3 +6,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 CONFIG_DIR = os.path.join(BASE_DIR , 'config')
 
 CONN_TYPE = 'test'  # test ,  prod
+
+
+

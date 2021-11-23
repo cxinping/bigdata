@@ -34,7 +34,6 @@ dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
 no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
-conn_type = 'test'
 test_limit_cond = ' '  # 'LIMIT 1000'``
 
 
@@ -60,7 +59,7 @@ def check_14_plane_data():
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
     max_size = 1 * 100000
@@ -103,7 +102,7 @@ def check_14_plane_data():
 
 
 def exec_plane_task(sql, dest_file):  # dest_file
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     time.sleep(0.01)
 
     if records and len(records) > 0:
@@ -148,7 +147,7 @@ def check_14_no_plane_data():
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
     max_size = 1 * 100000
@@ -205,7 +204,7 @@ def check_14_no_plane_data():
 
 
 def exec_no_plane_task(sql, dest_file):  # dest_file
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_travel_id = str(record[0])  # finance_travel_id
@@ -259,7 +258,7 @@ def analyze_no_plane_data(coefficient=2):
     # print(rd_df.head(20))
     # print(len(rd_df))
     # print('*' * 50)
-    # rd_df = rd_df[:500]
+    rd_df = rd_df[:500]
     # print(rd_df.head(20))
     # print(len(rd_df))
     # print('=' * 50)
@@ -304,7 +303,7 @@ def analyze_no_plane_data(coefficient=2):
 
     # print(len(abnormal_bill_id_ls))
 
-    #exec_no_plane_sql(abnormal_bill_id_ls)  # 449975
+    exec_no_plane_sql(abnormal_bill_id_ls)  # 449975
 
 
 def exec_plane_sql(bill_id_ls):
@@ -360,7 +359,7 @@ def exec_plane_sql(bill_id_ls):
              0 as jzpz ,
             '差旅费' as target_classify ,
              0 as meeting_amount ,
-             exp_type_name ,
+             ' ' as exp_type_name ,
              ' ' as next_bill_id ,
              ' ' as last_bill_id ,
              ' ' as appr_org_sfname ,
@@ -385,15 +384,18 @@ def exec_plane_sql(bill_id_ls):
              ' ' as iscompany,
              ' ' as origin_province,
              ' ' as destin_province,
+             ' ' as operation_time,
+             ' ' as doc_date,
             importdate
-            FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+            FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
 
         print(sql)
+
         try:
             start_time = time.perf_counter()
-            prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             consumed_time = round(time.perf_counter() - start_time)
             print(f'*** 执行SQL耗时 {consumed_time} sec')
         except Exception as e:
@@ -452,7 +454,10 @@ def exec_no_plane_sql(bill_id_ls):
             ' ' as tb_times ,         ' ' as receipt_city ,     
             ' ' as commodityname ,         ' ' as category_name,     
             ' ' as iscompany,         ' ' as origin_province,      
-            ' ' as destin_province,        importdate   
+            ' ' as destin_province,       
+             ' ' as operation_time,
+             ' ' as doc_date,
+             importdate   
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
@@ -461,7 +466,7 @@ def exec_no_plane_sql(bill_id_ls):
 
         try:
             start_time = time.perf_counter()
-            prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             consumed_time = round(time.perf_counter() - start_time)
             print(f'*** 执行SQL耗时 {consumed_time} sec')
         except Exception as e:
@@ -487,7 +492,7 @@ def analyze_plane_data(coefficient=2):
 
     #print(rd_df.dtypes)
     print('* counts => ', len(rd_df))
-    # rd_df = rd_df[:500]
+    rd_df = rd_df[:1500]
     # print(rd_df.head(10))
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'], as_index=False, sort=False)
@@ -510,7 +515,7 @@ def analyze_plane_data(coefficient=2):
         min_val = mean_val - coefficient * std_val
 
         if len(group_df) >= 2:
-            # str_val = f'plane_beg_date={plane_beg_date}, plane_origin_name={plane_origin_name}, plane_destin_name={plane_destin_name}, 每组数据的数量={len(group_df)}, coefficient系数为 {coefficient}, 标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}'
+            str_val = f'plane_beg_date={plane_beg_date}, plane_origin_name={plane_origin_name}, plane_destin_name={plane_destin_name}, 每组数据的数量={len(group_df)}, coefficient系数为 {coefficient}, 标准差={std_val},平均值={mean_val}, 数据的正常范围为 {min_val} 到 {max_val}'
             # print(str_val)
             # print(group_df)
             # print('')
@@ -521,8 +526,8 @@ def analyze_plane_data(coefficient=2):
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
-                    #print(row)
-                    #print()
+                    print(row)
+                    print()
 
 
     # print('---- show result ---')
@@ -534,7 +539,7 @@ def analyze_plane_data(coefficient=2):
     targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='14')
     bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
 
-    #exec_plane_sql(bill_id_ls)
+    exec_plane_sql(bill_id_ls)
 
 
 def check_14_plane_data2():
@@ -548,7 +553,7 @@ def check_14_plane_data2():
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
     log.info(f'* count_records ==> {count_records}')
@@ -586,9 +591,9 @@ def check_14_plane_data2():
         # print(idx, sel_sql)
 
         if idx == 0:
-            rt_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type='test')
+            rt_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type=CONN_TYPE)
         else:
-            tmp_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type='test')
+            tmp_df = query_kudu_data(sql=sel_sql, columns=columns_ls, conn_type=CONN_TYPE)
             rt_df = rt_df.append(tmp_df, ignore_index=True)
 
     consumed_time = round(time.perf_counter() - start_time)
@@ -601,14 +606,14 @@ def main():
 
     # 需求1 交通方式为非飞机的交通费用异常分析
     # check_14_no_plane_data()   # 共有数据 4546085 条
-    analyze_no_plane_data(coefficient=2)
+    #analyze_no_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)
-    print(f'****** 任务耗时 {consumed_time} sec')
+    #print(f'****** 任务耗时 {consumed_time} sec')
 
     # 需求2 交通方式为飞机的交通费用异常分析
-    # check_14_plane_data()  # 共有数据 3415489 条, 花费时间 3532 seconds
-    #analyze_plane_data(coefficient=2)      # 3523 sec
+    #check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
+    analyze_plane_data(coefficient=2)      # 3523 sec
 
 
 

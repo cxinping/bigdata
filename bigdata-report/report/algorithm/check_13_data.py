@@ -71,7 +71,7 @@ class Check13Service:
 
         count_sql = 'select count(b.bill_id) from ({sql}) b'.format(sql=sql)
         log.info(count_sql)
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
         count_records = records[0][0]
         print(f'* count_records ==> {count_records}')
 
@@ -227,7 +227,7 @@ class Check13Service:
 
 
 def exec_sql(bill_id_ls):
-    print('checkpoint_13 exec_sql ==> ', len(bill_id_ls))
+    log.info('checkpoint_13 exec_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
@@ -304,12 +304,14 @@ def exec_sql(bill_id_ls):
              ' ' as iscompany,
              ' ' as origin_province,
              ' ' as destin_province,
+             ' ' as operation_time,
+             ' ' as doc_date,
             importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
 
-        # print(sql)
+        #print(sql)
 
         try:
             start_time = time.perf_counter()

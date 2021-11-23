@@ -277,12 +277,16 @@ if __name__ == "__main__":
         test_sql = 'select * from 01_datamart_layer_007_h_cw_df.payment_result_info limit 5'
         print(test_sql)
         records = prod_execute_sql(conn_type='prod', sqltype='select', sql=prod_sql)
-        print('*** query_kudu_data=>', len(records))
+        print('111 *** query_kudu_data=>', len(records))
         for record in records:
             print(record)
 
         dis_connection()
         print('-- ok --')
+
+        records = prod_execute_sql(conn_type='prod', sqltype='select', sql=prod_sql)
+        print('222 *** query_kudu_data=>', len(records))
+
     except Exception as e:
         print(e)
 

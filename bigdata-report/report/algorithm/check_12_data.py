@@ -38,7 +38,6 @@ sys.path.append('/you_filed_algos/app')
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint12'
 dest_file = dest_dir + '/check_12_data.txt'
 
-conn_type = 'test'
 test_limit_cond = ' '  # ' LIMIT 100010 '
 
 
@@ -73,7 +72,7 @@ class Check12Service:
 
         count_sql = 'select count(a.bill_id) from ({sql}) a'.format(sql=sql)
         log.info(count_sql)
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
         count_records = records[0][0]
         log.info(f'* count_records ==> {count_records}')
 
@@ -136,7 +135,7 @@ class Check12Service:
         log.info(f'* 查询耗时 {consumed_time} sec')
 
     def exec_task(self, sql):
-        #log.info(sql)
+        # log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         print(0.01)
 
@@ -166,13 +165,13 @@ class Check12Service:
 
         # print(travel_city_name)
         travel_city_names = travel_city_name.strip().split(' ')
-        #print(f'1*** travel_city_names => {travel_city_names}')
-        #print(f'2*** len(travel_city_names) => {len(travel_city_names)}')
+        # print(f'1*** travel_city_names => {travel_city_names}')
+        # print(f'2*** len(travel_city_names) => {len(travel_city_names)}')
 
         trans_travel_city_name = ''
         if travel_city_names and len(travel_city_names) > 1:
             travel_city_names.sort()
-            #print('3*** travel_city_names => ', travel_city_names, type(travel_city_names))
+            # print('3*** travel_city_names => ', travel_city_names, type(travel_city_names))
 
             if origin_name in travel_city_names and destin_name in travel_city_names:
                 if origin_name == destin_name:
@@ -187,8 +186,8 @@ class Check12Service:
 
         trans_travel_city_name = " ".join(travel_city_names)
 
-        #print('4*** trnas_travel_city_name => ', trnas_travel_city_name)
-        #print()
+        # print('4*** trnas_travel_city_name => ', trnas_travel_city_name)
+        # print()
 
         return trans_travel_city_name
 
@@ -217,9 +216,9 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
 
-        rd_df = rd_df[:700]
+        rd_df = rd_df[:600]
         # 测试1
-        #rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
+        # rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
         grouped_df = rd_df.groupby(['origin_name', 'destin_name'], as_index=False, sort=False)
         bill_id_ls = []
@@ -233,11 +232,112 @@ class Check12Service:
 
         print('*** len(rd_df) => ', len(rd_df))
         print('*** len(bill_id_ls) => ', len(bill_id_ls))
+        #print(bill_id_ls)
+        exec_sql(bill_id_ls)
+
+
+def exec_sql(bill_id_ls):
+    print('checkpoint_12 exec_sql ==> ', len(bill_id_ls))
+
+    if bill_id_ls and len(bill_id_ls) > 0:
+        group_ls = list_of_groups(bill_id_ls, 1000)
+        # print(len(group_ls), group_ls)
+
+        condition_sql = ''
+        in_codition = 'bill_id IN {temp}'
+
+        for idx, group in enumerate(group_ls):
+            if len(group) == 1:
+                temp = in_codition.format(temp=str('("' + group[0] + '")'))
+            else:
+                temp = in_codition.format(temp=str(tuple(group)))
+
+            if idx == 0:
+                condition_sql = temp
+            else:
+                condition_sql = condition_sql + ' OR ' + temp
+
+        # print(condition_sql)
+
+        sql = """
+        INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+            SELECT uuid() as finance_id,
+            bill_id ,
+            '12' as unusual_id ,
+             ' ' as company_code ,
+             ' ' as account_period ,
+             ' ' as finance_number ,
+             ' ' as cost_center ,
+             ' ' as profit_center ,
+             ' ' as cart_head ,
+             ' ' as bill_code ,
+             ' ' as bill_beg_date ,
+             ' ' as bill_end_date ,
+             ' ' as origin_city ,
+             ' ' as destin_city ,
+             ' ' as beg_date ,
+             ' ' as end_date ,
+             ' ' as apply_emp_name ,
+             ' ' as emp_name ,
+             ' ' as emp_code ,
+             ' ' as company_name ,
+             0 as jour_amount ,
+             0 as accomm_amount ,
+             0 as subsidy_amount ,
+             0 as other_amount ,
+             0 as check_amount ,
+             0 as jzpz ,
+            '差旅费' as target_classify ,
+             0 as meeting_amount ,
+             exp_type_name ,
+             ' ' as next_bill_id ,
+             ' ' as last_bill_id ,
+             ' ' as appr_org_sfname ,
+             ' ' as sales_address ,
+             ' ' as meet_addr ,
+             ' ' as sponsor ,
+             0 as jzpz_tax ,
+             ' ' as billingdate ,
+             ' ' as remarks ,
+             0 as hotel_amount ,
+             0 as total_amount ,
+             ' ' as apply_id ,
+             ' ' as base_apply_date ,
+             ' ' as scenery_name_details ,
+             ' ' as meet_num ,
+             0 as diff_met_date ,
+             0 as diff_met_date_avg ,
+             ' ' as tb_times ,
+             ' ' as receipt_city ,
+             ' ' as commodityname ,
+             ' ' as category_name,
+             ' ' as iscompany,
+             ' ' as origin_province,
+             ' ' as destin_province,
+             ' ' as operation_time,
+             ' ' as doc_date,
+             importdate
+            FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
+        WHERE {condition_sql}
+            """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+
+        # print(sql)
+
+        try:
+            start_time = time.perf_counter()
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+            consumed_time = round(time.perf_counter() - start_time)
+            print(f'*** 执行SQL耗时 {consumed_time} sec')
+        except Exception as e:
+            print(e)
+            raise RuntimeError(e)
 
 
 if __name__ == "__main__":
     check12_service = Check12Service()
-    #check12_service.save_data()  # 查询耗时 1181 sec， 1146783  484799
+    # check12_service.save_data()  # 查询耗时 1181 sec， 1146783  484799
     check12_service.analyze_data()
 
     os._exit(0)  # 无错误退出
+
+
