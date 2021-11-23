@@ -53,6 +53,8 @@ class Check12Service:
         if os.path.exists(dest_file):
             os.remove(dest_file)
 
+        os.mknod(dest_file)
+
     def save_data(self):
         self.init_file()
 

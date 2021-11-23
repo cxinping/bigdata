@@ -35,6 +35,7 @@ def init_file():
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
+    os.mknod(dest_file)
 
 def check_meeting_data():
     init_file()
