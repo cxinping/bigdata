@@ -32,7 +32,6 @@ log = get_logger(__name__)
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
 dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
-error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
 
 match_area = MatchArea()
 province_service = ProvinceService()
@@ -63,7 +62,8 @@ def execute_02_data():
 
     columns_str = ",".join(columns_ls)
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null {test_limit_cond}
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null)
+       {test_limit_cond}
     """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
@@ -82,19 +82,19 @@ def execute_02_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank order by base_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by base_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by base_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by base_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null {test_limit_cond} ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
@@ -139,8 +139,8 @@ def exec_task(sql):
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
             """
-             1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到开票地所在的市， 
-             2，如果没有找到开票所在的市，就从目的地找到开票所在的市 
+             1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
+             2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
              
                 如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，多个市下可能会有相同的最小行政单位  
             """
@@ -191,7 +191,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 43708 sec = 12 hours ,  4995112 ,  46691
+    execute_02_data()  # 43708 sec = 12 hours ,  17292994 ,   88030
     print(f'* created txt file dest_file={dest_file}')
 
     #test_hdfs = Test_HDFSTools(conn_type=conn_type)

@@ -353,7 +353,6 @@ class MatchArea:
         if sales_bank:
             sales_bank = sales_bank.replace('超市', '')
 
-
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' or sales_name is not None:
             area_name1 = self.match_address(place=sales_name, key='市')
