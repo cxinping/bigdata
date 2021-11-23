@@ -344,6 +344,16 @@ class MatchArea:
         :return:
         """
 
+        if sales_name:
+            sales_name = sales_name.replace('超市', '')
+
+        if sales_addressphone:
+            sales_addressphone = sales_addressphone.replace('超市', '')
+
+        if sales_bank:
+            sales_bank = sales_bank.replace('超市', '')
+
+
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' or sales_name is not None:
             area_name1 = self.match_address(place=sales_name, key='市')
@@ -391,9 +401,14 @@ class MatchArea:
         # print('sales_addressphone=', sales_addressphone)
         # print('sales_bank=', sales_bank)
 
-        # sales_name = sales_name.replace('超市', '')
-        # sales_addressphone = sales_addressphone.replace('超市', '')
-        # sales_bank = sales_bank.replace('超市', '')
+        if sales_name:
+            sales_name = sales_name.replace('超市', '')
+
+        if sales_addressphone:
+            sales_addressphone = sales_addressphone.replace('超市', '')
+
+        if sales_bank:
+            sales_bank = sales_bank.replace('超市', '')
 
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' or sales_name is not None:
