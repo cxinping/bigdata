@@ -217,7 +217,7 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
 
-        #rd_df = rd_df[:700]
+        rd_df = rd_df[:700]
         # 测试1
         #rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 

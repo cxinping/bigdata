@@ -147,10 +147,10 @@ def exec_task(sql):
 
 
 def main():
-    check_meeting_data()     # 1996   460
+    #check_meeting_data()     # 1996   460
 
     test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出
 
