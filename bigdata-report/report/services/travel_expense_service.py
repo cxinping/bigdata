@@ -849,7 +849,7 @@ def get_travel_keyword():
     """
 
     sql = "select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill where commodityname is not null and commodityname !='' "
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     jiebaword = []
     words = []
     for record in records:

@@ -111,7 +111,7 @@ def query_kudu_data(sql, columns):
     发票日期异常检查
     :return:
     """
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     log.info('***' * 10)
     log.info('*** query_kudu_data=>' + str(len(records)))
     log.info('***' * 10)
@@ -331,7 +331,7 @@ def query_checkpoint_42_commoditynames():
     columns_str = ",".join(columns_ls)
 
     sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null and commodityname != "" '
-    rd_df = query_kudu_data(sql, columns_ls)
+    rd_df = query_kudu_data(sql=sql, columns_ls=columns_ls, conn_type=CONN_TYPE)
     # print(len(rd_df))
 
     rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
@@ -357,7 +357,7 @@ def get_office_bill_jiebaword():
 
     commodityname_ls = query_checkpoint_42_commoditynames()
     sql = "select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null and commodityname !=''"
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     jiebaword = []
     words = []
     for record in records:
@@ -396,7 +396,7 @@ def pagination_office_records(categorys, good_keywords):
 
     count_sql = 'SELECT count(a.bill_id) FROM ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
     print('* count_records => ', count_records)
 

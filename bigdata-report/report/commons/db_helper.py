@@ -3,13 +3,14 @@
 import pandas as pd
 #from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
+from report.commons.settings import CONN_TYPE
 
 from report.commons.logging import get_logger
 
 log = get_logger(__name__)
 
 
-def query_kudu_data(sql, columns, conn_type='test'):
+def query_kudu_data(sql, columns, conn_type=CONN_TYPE):
     """
     发票日期异常检查
     :return:
@@ -46,7 +47,7 @@ def query_kudu_data(sql, columns, conn_type='test'):
 
 
 def db_fetch_to_dict(sql, columns=[]):
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     result = []
 
     if len(records) == 1:

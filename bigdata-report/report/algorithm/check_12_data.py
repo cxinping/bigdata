@@ -220,7 +220,7 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
 
-        rd_df = rd_df[:600]
+        rd_df = rd_df[:500]
         # 测试1
         # rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
@@ -237,7 +237,7 @@ class Check12Service:
         print('*** len(rd_df) => ', len(rd_df))
         print('*** len(bill_id_ls) => ', len(bill_id_ls))
         #print(bill_id_ls)
-        exec_sql(bill_id_ls)
+        #exec_sql(bill_id_ls)
 
 
 def exec_sql(bill_id_ls):
@@ -325,7 +325,7 @@ def exec_sql(bill_id_ls):
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
 
-        # print(sql)
+        print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -339,8 +339,8 @@ def exec_sql(bill_id_ls):
 
 if __name__ == "__main__":
     check12_service = Check12Service()
-    # check12_service.save_data()  # 查询耗时 1181 sec， 1146783  484799
-    check12_service.analyze_data()
+    check12_service.save_data()  # 查询耗时 1181 sec， 1146783  484799
+    #check12_service.analyze_data()
 
     os._exit(0)  # 无错误退出
 

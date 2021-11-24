@@ -25,7 +25,7 @@ def check_49_data():
     sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0  '.format(
         columns_str=columns_str)
     start_time = time.perf_counter()
-    rd_df = query_kudu_data(sql, columns_ls)
+    rd_df = query_kudu_data(sql, columns_ls,conn_type=CONN_TYPE)
     # print(rd_df.head())
     # print(rd_df.dtypes)
     # print('*' * 50)
@@ -108,7 +108,7 @@ def exec_sql(bill_id_ls):
 
         try:
             start_time = time.perf_counter()
-            prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             consumed_time = round(time.perf_counter() - start_time)
             print(f'*** 执行SQL耗时 {consumed_time} sec')
         except Exception as e:

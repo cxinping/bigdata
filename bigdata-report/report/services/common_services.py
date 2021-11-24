@@ -2,6 +2,7 @@
 from report.commons.tools import create_uuid
 #from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
+from report.commons.settings import CONN_TYPE
 
 from report.commons.logging import get_logger
 from report.commons.mysql_pool import AsyncMysql, exec_insert
@@ -10,14 +11,12 @@ import asyncio, aiomysql
 
 log = get_logger(__name__)
 
-conn_type = 'test'  # prod
-
 
 def query_billds_finance_all_targets(unusual_id):
     bill_ids = []
     try:
         sql = f'select distinct bill_id from analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets where unusual_id="{unusual_id}" '
-        records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         # print(len(records))
 
         for idx, record in enumerate(records):
@@ -43,7 +42,7 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
         values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}", "{task_status}" )
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
-        prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return daily_id
     except Exception as e:
         print(e)
@@ -55,7 +54,7 @@ def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done', 
         UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="{task_status}", daily_end_date="{daily_end_date}",operate_desc="{operate_desc}" WHERE daily_id="{daily_id}"
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
-        prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return daily_id
     except Exception as e:
         print(e)
@@ -68,7 +67,7 @@ def update_finance_shell_daily_doing_status():
         UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="cancel", unusual_infor="系统重启，取消正在执行的执行检查点任务" WHERE task_status="doing" 
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
-        prod_execute_sql(conn_type=conn_type, sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
     except Exception as e:
         print(e)
 
@@ -79,7 +78,7 @@ def query_finance_shell_daily_status(unusual_point, task_status='doing'):
         SELECT unusual_point, task_status FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily WHERE unusual_point="{unusual_point}" AND task_status="{task_status}" 
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
-        records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         # print(records)
 
         if records and len(records) > 0:
@@ -92,7 +91,7 @@ def query_finance_shell_daily_status(unusual_point, task_status='doing'):
 
 def clean_finance_category_sign(unusual_id):
     del_sql = f'DELETE FROM 01_datamart_layer_007_h_cw_df.finance_category_sign WHERE unusual_id="{unusual_id}"  '
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=del_sql)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
 
 
 def operate_finance_category_sign(unusual_id, category_names, category_classify, sign_status='1'):
@@ -119,7 +118,7 @@ def operate_finance_category_sign(unusual_id, category_names, category_classify,
 
     insert_sql = insert_sql + values_sql
     # print(insert_sql)
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=insert_sql)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=insert_sql)
 
 
 def query_finance_category_sign(unusual_id, category_classify):
@@ -130,7 +129,7 @@ def query_finance_category_sign(unusual_id, category_classify):
     :return:
     """
     sel_sql = f'select category_name from 01_datamart_layer_007_h_cw_df.finance_category_sign where unusual_id="{unusual_id}" and category_classify="{category_classify}" '
-    category_names = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
+    category_names = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
 
     category_name_ls = []
     for category in category_names:
@@ -169,7 +168,7 @@ class ProvinceService:
         sel_sql = f'select area_name from 01_datamart_layer_007_h_cw_df.finance_province_city where grade="{grade}" '
         # print(sel_sql)
         province_names = []
-        records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
         for record in records:
             # print(record)
             province_names.append(record[0])
@@ -302,7 +301,7 @@ def pagination_finance_shell_daily_records(unusual_point=None):
 
     count_sql = 'SELECT count(a.daily_status) FROM ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
     print('* count_records => ', count_records)
 
