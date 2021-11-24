@@ -136,6 +136,9 @@ def exec_task(sql):
             start_time0 = time.perf_counter()
             sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
+            if sales_address is None:
+                sales_address = destin_name
+
             consumed_time0 = round(time.perf_counter() - start_time0)
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
