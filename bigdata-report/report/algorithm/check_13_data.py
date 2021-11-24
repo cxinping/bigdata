@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 from report.commons.logging import get_logger
 from report.commons.db_helper import query_kudu_data
 import time
@@ -36,7 +38,7 @@ dest_file = dest_dir + '/check_13_data.txt'
 
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_13_data.txt'
 
-test_limit_cond = 'LIMIT 100000'  # 'LIMIT 10002'
+test_limit_cond = 'LIMIT 10001'  # 'LIMIT 10002'
 
 
 class Check13Service:
@@ -144,10 +146,10 @@ class Check13Service:
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         if records and len(records) > 0:
             for idx, record in enumerate(records):
-                bill_id = str(record[0])  # bill_id
-                city_name = str(record[1])  # 出差城市名称
-                city_grade_name = str(record[2])  # 出差城市等级
-                emp_name = str(record[3])  # 员工名字
+                bill_id = str(record[0])                # bill_id
+                city_name = str(record[1])              # 出差城市名称
+                city_grade_name = str(record[2])        # 出差城市等级
+                emp_name = str(record[3])               # 员工名字
                 stand_amount_perday = float(record[4])  # 每天标准住宿费用
                 hotel_amount_perday = float(record[5])  # 每天实际花费的住宿费用
 
@@ -325,8 +327,8 @@ def exec_sql(bill_id_ls):
 
 if __name__ == "__main__":
     check13_service = Check13Service()
-    # check13_service.save_fee_data()  # 一共有数据 5776561 条， 花费时间  秒，
-    check13_service.analyze_data(coefficient=2)
+    check13_service.save_fee_data()  # 一共有数据 5776561 条， 花费时间  秒，
+    #check13_service.analyze_data(coefficient=2)
 
     # test_hdfs = Test_HDFSTools(conn_type='test')
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

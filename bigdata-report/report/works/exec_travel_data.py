@@ -2,7 +2,9 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
@@ -30,7 +32,7 @@ select * from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data2.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
 
 match_area = MatchArea()
@@ -116,7 +118,6 @@ def execute_02_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-
 def exec_task(sql):
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
     time.sleep(0.01)
@@ -124,17 +125,17 @@ def exec_task(sql):
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             # sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
-            destin_name = str(record[0]) if record[0] else None         # 行程目的地
-            sales_name = str(record[1]) if record[1] else None          # 开票公司
+            destin_name = str(record[0]) if record[0] else None  # 行程目的地
+            sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None          # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None         # 行程出发地
-            invo_code = str(record[6]) if record[6] else None           # 发票代码
+            origin_name = str(record[5]) if record[5] else None  # 行程出发地
+            invo_code = str(record[6]) if record[6] else None  # 发票代码
 
             start_time0 = time.perf_counter()
-            sales_address = match_area.query_sales_address(sales_name=sales_name,sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)   # 发票开票地(最小行政)
+            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
             consumed_time0 = round(time.perf_counter() - start_time0)
             log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
@@ -145,9 +146,10 @@ def exec_task(sql):
                 如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，多个市下可能会有相同的最小行政单位  
             """
             receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                         sales_bank=sales_bank)    # 发票开票所在市
+                                                         sales_bank=sales_bank)  # 发票开票所在市
             if receipt_city is None:
-                receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None, sales_bank=None)
+                receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
+                                                             sales_bank=None)
 
             # start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
@@ -191,7 +193,7 @@ def stop_process_pool(executor):
 
 
 def main():
-    execute_02_data()  # 43708 sec = 12 hours ,  17292994 ,   88030
+    execute_02_data()  # 43708 sec = 12 hours ,  11848091 ,   340521
     print(f'* created txt file dest_file={dest_file}')
 
     #test_hdfs = Test_HDFSTools(conn_type=conn_type)

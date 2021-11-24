@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from report.commons.tools import create_uuid
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 from report.commons.logging import get_logger
 from report.commons.mysql_pool import AsyncMysql, exec_insert
 from report.commons.db_helper import db_fetch_to_dict

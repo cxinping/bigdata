@@ -12,7 +12,9 @@ import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
 
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, \

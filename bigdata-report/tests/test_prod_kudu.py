@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from report.commons.connect_kudu import prod_execute_sql, dis_connection
+from report.commons.connect_kudu import prod_execute_sql, dis_connection, prod_execute_sql2
 import time
 
 
@@ -53,15 +53,15 @@ if __name__ == "__main__":
         prod_sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 5'
         test_sql = 'select * from 01_datamart_layer_007_h_cw_df.payment_result_info limit 5'
         print(test_sql)
-        records = prod_execute_sql(conn_type='prod', sqltype='select', sql=prod_sql)
+        records = prod_execute_sql2(conn_type='prod', sqltype='select', sql=prod_sql)
         print('111 *** query_kudu_data=>', len(records))
         for record in records:
             print(record)
 
-        dis_connection()
-        print('-- ok --')
+        #dis_connection()
+        #print('-- ok --')
 
-        records = prod_execute_sql(conn_type='prod', sqltype='select', sql=prod_sql)
+        records = prod_execute_sql2(conn_type='prod', sqltype='select', sql=prod_sql)
         print('222 *** query_kudu_data=>', len(records))
 
     except Exception as e:

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import sys
 
 sys.path.append("/usr/local/lib64/python3.6/site-packages")
@@ -10,86 +9,9 @@ import os
 import traceback
 import pandas as pd
 import time
+from report.commons.logging import get_logger
 
-"""
-Created on 2021-08-05
-
-@author: Wang Shuo
-
-"""
-
-pd.set_option('display.max_columns', None)  # 显示完整的列
-pd.set_option('display.max_rows', None)  # 显示完整的行
-pd.set_option('display.expand_frame_repr', False)  # 设置不折叠数据
-
-
-def execute_sql(sql):
-    conn = None
-    jars_path = '/you_filed_algos/jars/'
-
-    dirver = "org.apache.hive.jdbc.HiveDriver"
-    url = "jdbc:hive2://bigdata-dev-014:7180/;ssl=true;sslTrustStore=/you_filed_algos/cm-auto-global_truststore.jks;principal=impala/bigdata-dev-014@SJFWPT.SINOPEC.COM"
-
-    jars_file_ls = []
-    jars_file_str = ''
-    for jar in os.listdir(jars_path):
-        jars_file_ls.append(jars_path + jar)
-
-    jars_file_str = ':'.join(jars_file_ls)
-
-    jvm_options = "-Djava.class.path=" + jars_file_str
-
-    # jvm = jpype.getDefaultJVMPath()
-    jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
-
-    # if not jpype.isJVMStarted():
-    # try:
-    #     #print('--------startjvm---------')
-    #     jpype.startJVM(jvm, jvm_options)
-    #     # print("JVM path:"+ jpype.getDefaultJVMPath())
-    #     # print('----- running jvm -------------')
-    #
-    # except Exception as e:
-    #     print('====== throw error ======')
-    #     traceback.print_exc()
-    #     jpype.shutdownJVM()
-
-    try:
-        print('--------startjvm---------')
-        jpype.startJVM(jvm, jvm_options)
-    except Exception as e:
-        print('====== throw error ======')
-        pass
-
-    System = jpype.java.lang.System
-    # System = jpype.JClass('java.lang.System')
-    System.setProperty("java.security.krb5.conf", "/you_filed_algos/krb5.conf")
-
-    Configuration = jpype.JPackage('org.apache.hadoop.conf').Configuration
-    conf = Configuration()
-    conf.set("hadoop.security.authentication", "kerberos")
-
-    try:
-        UserGroupInformation = jpype.JClass('org.apache.hadoop.security.UserGroupInformation')
-        UserGroupInformation.setConfiguration(conf)
-        UserGroupInformation.loginUserFromKeytab("sjfw_pbpang", "/you_filed_algos/sjfw_pbpang.keytab")
-
-        conn = jaydebeapi.connect(dirver, url)
-        # print("* create connection object")
-
-        cur = conn.cursor()
-        cur.execute(sql)
-        list = cur.fetchall()
-        # list = cur.fetchone()
-
-        # 关闭游标
-        cur.close()
-        # 关闭连接
-        conn.close()
-        return list
-    except Exception as ex:
-        print(ex)
-        traceback.print_exc()
+log = get_logger(__name__)
 
 
 def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
@@ -103,7 +25,6 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     """
     jars_path = '/you_filed_algos/jars/'
     dirver = "org.apache.hive.jdbc.HiveDriver"
-    is_prod_env = True
     PROD = 'prod'  # 生产环境
     TEST = 'test'  # 测试环境
 
@@ -131,39 +52,27 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
     # jvm = jpype.getDefaultJVMPath()
     jvm = '/you_filed_algos/jdk8/jre/lib/amd64/server/libjvm.so'
 
-    # if not jpype.isJVMStarted():
-    #     try:
-    #         # print('--------startjvm---------')
-    #         jpype.startJVM(jvm, jvm_options)
-    #         # print("JVM path:"+ jpype.getDefaultJVMPath())
-    #         # print('----- running jvm -------------')
-    #
-    #     except Exception as e:
-    #         print('====== throw error ======')
-    #         traceback.print_exc()
-    #         jpype.shutdownJVM()
-
     try:
         if not jpype.isJVMStarted():
-            print('--------startjvm---------')
+            log.info('----- 1 startjvm ----- ')
             jpype.startJVM(jvm, jvm_options)
+            log.info('----- 2 attaching jvm ----- ')
+            jpype.attachThreadToJVM()
 
             # jpype.startJVM(jvm, "-ea", jvm_options, '-Xmx5g', '-Xms5g', '-Xmn2g', '-XX:+UseParNewGC',
             #                '-XX:ParallelGCThreads=8', '-XX:SurvivorRatio=6', '-XX:+UseConcMarkSweepGC')
 
-        if jpype.isJVMStarted() and not jpype.isThreadAttachedToJVM():
-            print('-----attaching jvm-----')
-            jpype.attachThreadToJVM()
-            jpype.java.lang.Thread.currentThread().setContextClassLoader(
-                jpype.java.lang.ClassLoader.getSystemClassLoader()
-            )
+        #if not jpype.isThreadAttachedToJVM():
+            #print('-----attaching jvm-----')
+            #jpype.attachThreadToJVM()
+            # jpype.java.lang.Thread.currentThread().setContextClassLoader(
+            #     jpype.java.lang.ClassLoader.getSystemClassLoader()
+            # )
 
-            # print('--------startjvm---------')
-        # jpype.startJVM(jvm, jvm_options)
         # print("JVM path:"+ jpype.getDefaultJVMPath())
-        # print('----- running jvm -------------')
+        log.info('----- running jvm -------------')
     except Exception as e:
-        print('====== throw error ======')
+        log.error('====== throw error ======')
         traceback.print_exc()
         raise RuntimeError(e)
 
@@ -224,32 +133,3 @@ def dis_connection():
         print(ex)
         traceback.print_exc()
         raise RuntimeError(ex)
-
-
-
-# def getKUDUdata(sql):
-#     records = prod_execute_sql(sqltype='select', sql=sql)
-#     dataFromHana = []
-#     dataFfromHana1 = []
-#     dataFfromHana2 = []
-#
-#     print(records)
-#
-#     for item in records:
-#         # print(type(item), item)
-#         dataFromHana.append(str(item))
-#         # dataFfromHana1.append(list(item))
-#         # dataFfromHana2.append(item[1])
-#
-#     print(dataFromHana)
-#
-#     df = pd.DataFrame(dataFromHana)
-#     return df
-
-
-
-
-
-
-
-

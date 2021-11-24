@@ -10,7 +10,9 @@ import threading
 from report.services.common_services import ProvinceService
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 import pandas as pd
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 from report.commons.tools import (list_of_groups, kill_pid)
 from report.services.common_services import query_billds_finance_all_targets
 from report.commons.settings import CONN_TYPE

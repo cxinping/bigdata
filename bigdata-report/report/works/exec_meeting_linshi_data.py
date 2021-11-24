@@ -2,7 +2,9 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
@@ -148,12 +150,12 @@ def exec_task(sql):
 
 
 def main():
-    #check_meeting_data()     # 1996   460
+    check_meeting_data()     # 1996   460
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    os._exit(0)  # 无错误退出
+    #os._exit(0)  # 无错误退出
 
 
 if __name__ == "__main__":
