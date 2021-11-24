@@ -889,8 +889,8 @@ def set_finance_category_sign():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['26', '42', '55']:
-        data = {"result": "error", "details": "只能查询检查点26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
+    if unusual_id not in ['16', '26', '42', '55']:
+        data = {"result": "error", "details": "只能查询检查点 16, 26 ,42 或55 的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
@@ -922,6 +922,9 @@ def set_finance_category_sign():
         elif unusual_id == '26' and category_classify == '02':
             type_str = '会议费'
             available_category_name = get_conference_bill_jiebaword()
+        elif unusual_id == '16' and category_classify == '02':
+            type_str = '差旅费'
+            available_category_name = get_travel_keyword()
 
         category_names = str(category_names).split(',')
 
@@ -965,7 +968,7 @@ def set_finance_category_sign():
 @report_bp.route('/query/category/sign', methods=['POST', 'GET'])
 def query_all_finance_category_sign():
     """
-    设置办公费和车辆使用费的大类的状态
+    查询办公费和车辆使用费的大类和商品关键字的状态
     :return:
     """
     log.info('---- query_finance_category_sign ----')
@@ -979,8 +982,8 @@ def query_all_finance_category_sign():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['26', '42', '55']:
-        data = {"result": "error", "details": "只能查询检查点42或55的大类", "code": 500, 'unusual_id': unusual_id}
+    if unusual_id not in ['16', '26', '42', '55']:
+        data = {"result": "error", "details": "只能查询检查点16,26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
 
@@ -1019,6 +1022,9 @@ def query_all_finance_category_sign():
             # 商品关键字
             type_str = '会议费'
             #records = get_conference_bill_jiebaword()
+        elif unusual_id == '16' and category_classify == '02':
+            # 商品关键字
+            type_str = '差旅费'
 
         checked_datas = query_finance_category_signs(unusual_id, category_classify)
         #log.info(checked_datas)
