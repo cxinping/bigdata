@@ -9,7 +9,6 @@ from report.services.common_services import (insert_finance_shell_daily, update_
 from report.services.travel_expense_service import get_travel_jiebaword
 from report.commons.settings import CONN_TYPE
 
-
 log = get_logger(__name__)
 
 
@@ -68,5 +67,6 @@ def import_data():
                                   category_classify=category_classify, sign_status='0')
 
     print('--- ok ---')
+
 
 import_data()

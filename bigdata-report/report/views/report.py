@@ -30,6 +30,7 @@ from report.services.conference_expense_service import pagination_conference_rec
 from report.commons.db_helper import Pagination
 import traceback
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
+from report.services.travel_expense_service import get_travel_keyword
 
 log = get_logger(__name__)
 
@@ -764,7 +765,7 @@ def query_commoditynames():
         response = jsonify(data)
         return response
 
-    if unusual_id not in ['26', '42', '55']:
+    if unusual_id not in ['26', '42', '55', '16']:
         data = {"result": "error", "details": "只能查询检查点26,42或55的大类", "code": 500, 'unusual_id': unusual_id}
         response = jsonify(data)
         return response
@@ -780,6 +781,9 @@ def query_commoditynames():
         elif unusual_id == '26':
             type_str = '会议费'
             data = query_checkpoint_26_commoditynames()
+        elif unusual_id == '16':
+            type_str = '差旅费'
+            data = get_travel_keyword()
 
         result = {
             'type': type_str,

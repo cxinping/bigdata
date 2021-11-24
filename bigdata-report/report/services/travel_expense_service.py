@@ -842,7 +842,7 @@ def check_15_coststructure_data():
     #dis_connection()
 
 
-def get_travel_jiebaword():
+def get_travel_keyword():
     """
     抽取差旅费的关键字
     :return:
@@ -873,6 +873,6 @@ def get_travel_jiebaword():
 
 if __name__ == "__main__":
     #main()
-    keywords = get_travel_jiebaword()
+    keywords = get_travel_keyword()
     for keyword in keywords:
         print(keyword)
