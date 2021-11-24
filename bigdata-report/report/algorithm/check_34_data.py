@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 
-#from report.commons.connect_kudu import prod_execute_sql
+# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.db_helper import query_kudu_data
@@ -11,11 +11,12 @@ from report.commons.tools import list_of_groups
 log = get_logger(__name__)
 
 import sys
+
 sys.path.append('/you_filed_algos/app')
 
 
 def check_34_data():
-    columns_ls = ['finance_travel_id', 'bill_id', 'meet_lvl_name' , 'met_money']
+    columns_ls = ['finance_travel_id', 'bill_id', 'meet_lvl_name', 'met_money']
     columns_str = ",".join(columns_ls)
 
     sql = f"""
@@ -37,21 +38,21 @@ def check_34_data():
     rd_df = query_kudu_data(sql, columns_ls)
     print(rd_df.head(10))
     print(rd_df.dtypes)
-    #print(rd_df.describe())
-    #print(len(rd_df))
+    # print(rd_df.describe())
+    # print(len(rd_df))
     print('*' * 50)
 
     group_rd_df = rd_df['per_day_met_money'].groupby(rd_df['meet_lvl_name'])
     std_df = group_rd_df.std()
 
-    #print(type(std_df))
-    type_1_meeting_std = None   # 一类会议对应的会议费方差
-    type_2_meeting_std = None   # 二类会议对应的会议费方差
-    type_3_meeting_std = None   # 三类会议对应的会议费方差
-    type_4_meeting_std = None   # 四类会议对应的会议费方差
+    # print(type(std_df))
+    type_1_meeting_std = None  # 一类会议对应的会议费方差
+    type_2_meeting_std = None  # 二类会议对应的会议费方差
+    type_3_meeting_std = None  # 三类会议对应的会议费方差
+    type_4_meeting_std = None  # 四类会议对应的会议费方差
 
     for value in std_df.items():
-        #print(value, value[1])
+        # print(value, value[1])
         if value[0] == '一类会议':
             type_1_meeting_std = value[1]
         elif value[0] == '二类会议':
@@ -61,16 +62,16 @@ def check_34_data():
         elif value[0] == '四类会议':
             type_4_meeting_std = value[1]
 
-    print('type_1_meeting_std=',type_1_meeting_std)
-    print('type_2_meeting_std=',type_2_meeting_std)
-    print('type_3_meeting_std=',type_3_meeting_std)
-    print('type_4_meeting_std=',type_4_meeting_std)
+    print('type_1_meeting_std=', type_1_meeting_std)
+    print('type_2_meeting_std=', type_2_meeting_std)
+    print('type_3_meeting_std=', type_3_meeting_std)
+    print('type_4_meeting_std=', type_4_meeting_std)
 
     # 过滤dataframe ，按照 meet_lvl_name对应的方差，
-    rd_df = rd_df[ ((rd_df.meet_lvl_name == '一类会议') & (rd_df.per_day_met_money > type_1_meeting_std))
-                   | ((rd_df.meet_lvl_name == '二类会议') & (rd_df.per_day_met_money > type_2_meeting_std))
-                   | ((rd_df.meet_lvl_name == '三类会议') & (rd_df.per_day_met_money > type_3_meeting_std))
-                   | ((rd_df.meet_lvl_name == '四类会议') & (rd_df.per_day_met_money > type_4_meeting_std))  ]
+    rd_df = rd_df[((rd_df.meet_lvl_name == '一类会议') & (rd_df.per_day_met_money > type_1_meeting_std))
+                  | ((rd_df.meet_lvl_name == '二类会议') & (rd_df.per_day_met_money > type_2_meeting_std))
+                  | ((rd_df.meet_lvl_name == '三类会议') & (rd_df.per_day_met_money > type_3_meeting_std))
+                  | ((rd_df.meet_lvl_name == '四类会议') & (rd_df.per_day_met_money > type_4_meeting_std))]
 
     print(rd_df.head(20))
     bill_id_ls = rd_df['bill_id'].tolist()
@@ -79,18 +80,18 @@ def check_34_data():
 
 
 def exec_sql(bill_id_ls):
-    print('exec_sql ==> ',len(bill_id_ls))
+    print('exec_sql ==> ', len(bill_id_ls))
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
-        #print(len(group_ls), group_ls)
+        # print(len(group_ls), group_ls)
 
         condition_sql = ''
         in_codition = 'bill_id IN {temp}'
 
         for idx, group in enumerate(group_ls):
             temp = in_codition.format(temp=str(tuple(group)))
-            if idx == 0 :
+            if idx == 0:
                 condition_sql = temp
             else:
                 condition_sql = condition_sql + ' OR ' + temp
@@ -137,6 +138,3 @@ def exec_sql(bill_id_ls):
 
 
 check_34_data()
-
-
-

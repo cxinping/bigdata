@@ -7,6 +7,8 @@ import uuid
 import time
 from datetime import datetime, timezone, timedelta
 import psutil
+from report.commons.settings import CONN_TYPE
+
 
 log = get_logger(__name__)
 
@@ -297,7 +299,7 @@ class MatchArea:
         try:
             sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_id = '{area_id}'"
             # print(sel_sql)
-            records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
+            records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
 
             if len(records) > 0:
                 record = records[0]
@@ -321,7 +323,7 @@ class MatchArea:
         try:
             # sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name like '%{keyword}%'"
             sel_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city where area_name = '{keyword}'"
-            records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_sql)
+            records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
 
             if len(records) > 0:
                 record = records[0]
@@ -519,7 +521,7 @@ class MatchArea:
 result = []
 
 
-def save_file(output_file, line, buff_size=1000, clear_buff=False):
+def save_file(output_file, line, buff_size=5000, clear_buff=False):
     global result
 
     if line:

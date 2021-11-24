@@ -128,6 +128,7 @@ class Check12Service:
 
         log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
+
         threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
         start_time = time.perf_counter()
 

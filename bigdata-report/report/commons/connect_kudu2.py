@@ -70,7 +70,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
             # )
 
         # print("JVM path:"+ jpype.getDefaultJVMPath())
-        log.info('----- running jvm -------------')
+        #log.info('----- running jvm -------------')
     except Exception as e:
         log.error('====== throw error ======')
         traceback.print_exc()

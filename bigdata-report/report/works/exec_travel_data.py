@@ -38,7 +38,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 
-test_limit_cond = ''  # 'LIMIT 10000'
+test_limit_cond = 'LIMIT 20003'  # 'LIMIT 10000'
 
 
 def init_file():
@@ -72,8 +72,8 @@ def execute_02_data():
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
-    max_size = 10 * 10000
-    limit_size = 5 * 1000
+    max_size = 2 * 10000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -101,7 +101,8 @@ def execute_02_data():
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+    # max_workers=30 , 每小时处理数据量 142884
+    threadPool = ThreadPoolExecutor(max_workers=60, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -117,12 +118,20 @@ def execute_02_data():
 
 
 def exec_task(sql):
+    start_time0 = time.perf_counter()
+
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+    consumed_time0 = (time.perf_counter() - start_time0)
+    log.info(f'* 取数耗时 => {consumed_time0} sec')
+
     time.sleep(0.01)
 
     if records and len(records) > 0:
+        result = []
+
         for idx, record in enumerate(records):
-            # sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
+            start_time1 = time.perf_counter()
+
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
             sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
@@ -131,14 +140,10 @@ def exec_task(sql):
             origin_name = str(record[5]) if record[5] else None  # 行程出发地
             invo_code = str(record[6]) if record[6] else None  # 发票代码
 
-            start_time0 = time.perf_counter()
             sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
             if sales_address is None:
                 sales_address = destin_name
-
-            consumed_time0 = round(time.perf_counter() - start_time0)
-            log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
 
             """
              1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
@@ -177,24 +182,39 @@ def exec_task(sql):
             receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
             destin_name = destin_name.replace(',', ' ') if destin_name else '无'
 
-            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
-            print(record_str)
-            print('')
+            consumed_time1 = (time.perf_counter() - start_time1)
+            log.info(f'* 生成每行数据耗时 => {consumed_time1} sec')
 
-            with open(dest_file, "a+", encoding='utf-8') as file:
-                file.write(record_str + "\n")
+            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
+            #print(record_str)
+            #print('')
+            result.append(record_str)
+
+            start_time2 = time.perf_counter()
+
+            # with open(dest_file, "a+", encoding='utf-8') as file:
+            #     file.write(record_str + "\n")
+
+            if len(result) >= 100:
+                for item in result:
+                    with open(dest_file, "a+", encoding='utf-8') as file:
+                        file.write(item + "\n")
+                result = []
+
+            #consumed_time2 = round(time.perf_counter() - start_time2)
+            #log.info(f'* 每行数据存储耗时 => {consumed_time2} sec')
 
             # time.sleep(0.001)
 
-
-def stop_process_pool(executor):
-    for pid, process in executor._processes.items():
-        process.terminate()
-    executor.shutdown()
+        if len(result) > 0:
+            for item in result:
+                with open(dest_file, "a+", encoding='utf-8') as file:
+                    file.write(item + "\n")
+        del result
 
 
 def main():
-    execute_02_data()  # 43708 sec = 12 hours ,  17292994 ,   133241
+    execute_02_data()  # 43708 sec = 12 hours ,  17292994 ,   361291
     print(f'* created txt file dest_file={dest_file}')
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)

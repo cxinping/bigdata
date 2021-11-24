@@ -11,7 +11,7 @@ from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService
 import threading
 import multiprocessing
-
+from report.commons.settings import CONN_TYPE
 
 """
 
@@ -29,15 +29,15 @@ cd /you_filed_algos/app
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data2.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
-error_file = "/you_filed_algos/prod_kudu_data/temp/error_data.txt"
+
 
 match_area = MatchArea()
 province_service = ProvinceService()
 
-conn_type = 'prod'
-
+conn_type = 'test'
+test_limit_cond = ' LIMIT 20000'  # 'LIMIT 10000'
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -60,8 +60,9 @@ def execute_02_data():
 
     columns_str = ",".join(columns_ls)
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null 
-    """.format(columns_str=columns_str).replace('\n', '').replace('\r', '').strip()
+        select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null)
+           {test_limit_cond}
+        """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -70,7 +71,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 10 * 10000
-    limit_size = 1 * 1000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -79,30 +80,30 @@ def execute_02_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by base_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by base_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null order by base_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by base_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_name is not null or sales_addressphone is not null or sales_bank is not null ".format(
-            columns_str=columns_str)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) {test_limit_cond} ".format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
         print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
     start_time = time.perf_counter()
-    pool = multiprocessing.Pool(processes=3)
+    pool = multiprocessing.Pool(processes=30)
 
     for sel_sql in select_sql_ls:
-        pool.apply_async(exec_task, (sel_sql,))
+        pool.apply(exec_task, (sel_sql,))
 
     print("----start----")
     pool.close()
@@ -113,77 +114,55 @@ def execute_02_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-def operate_reocrd(record):
-    sales_name = str(record[1]) if record[1] else None          # 开票公司
-    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-    sales_bank = str(record[3]) if record[3] else None          # 发票开户行
-
-    # print('sales_name=', sales_name)
-    # print('sales_addressphone=', sales_addressphone)
-    # print('sales_bank=', sales_bank)
-
-    area_name1, area_name2, area_name3 = None, None, None
-    if sales_name != 'None' or sales_name is not None:
-        area_name1 = match_area.fit_area(area=sales_name)
-
-    if sales_addressphone != 'None' or sales_addressphone is not None:
-        area_name2 = match_area.fit_area(area=sales_addressphone)
-
-    if sales_bank != 'None' or sales_bank is not None:
-        area_name3 = match_area.fit_area(area=sales_bank)
-
-    area_names = []
-    if area_name1[0]:
-        area_names.append(area_name1)
-
-    if area_name2[0]:
-        area_names.append(area_name2)
-
-    if area_name3[0]:
-        area_names.append(area_name3)
-
-    result_area = match_area.opera_areas(area_names)
-
-    # show_str = f'### sales_name={sales_name}, sales_addressphone={sales_addressphone}, sales_bank={sales_bank}, sales_address={result_area}'
-    # print(show_str)
-
-    return result_area
-
-
 def exec_task(sql):
-    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
-    # time.sleep(0.01)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+    time.sleep(0.01)
 
     if records and len(records) > 0:
         for idx, record in enumerate(records):
-            start_time0 = time.perf_counter()
-            sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
-            consumed_time0 = round(time.perf_counter() - start_time0)
-            log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
-
+            # sales_address = operate_reocrd(record)  # 发票开票地(最小行政)
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
             sales_name = str(record[1]) if record[1] else None  # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
             sales_bank = str(record[3]) if record[3] else None  # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None  # 行程出发地(市)
+            origin_name = str(record[5]) if record[5] else None  # 行程出发地
             invo_code = str(record[6]) if record[6] else None  # 发票代码
 
-            receipt_city = province_service.query_receipt_city(sales_address)  # 发票开票所在市
+            start_time0 = time.perf_counter()
+            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+            if sales_address is None:
+                sales_address = destin_name
 
-            start_time1 = time.perf_counter()
+            consumed_time0 = round(time.perf_counter() - start_time0)
+            log.info(f'* consumed_time0 => {consumed_time0} sec, sales_address={sales_address}')
+
+            """
+             1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
+             2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
+
+                如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，多个市下可能会有相同的最小行政单位  
+            """
+            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                         sales_bank=sales_bank)  # 发票开票所在市
+            if receipt_city is None:
+                receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
+                                                             sales_bank=None)
+
+            # start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
-            log.info(f" {os.getpid()} is running ")
-            consumed_time1 = round(time.perf_counter() - start_time1)
-            log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
+            log.info(f" {threading.current_thread().name} is running ")
+            # consumed_time1 = round(time.perf_counter() - start_time1)
+            # log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
-            start_time2 = time.perf_counter()
+            # start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
             # print('222 destin_province => ', destin_province)
-            consumed_time2 = round(time.perf_counter() - start_time2)
-            log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}, destin_province={destin_province}')
+            # consumed_time2 = round(time.perf_counter() - start_time2)
+            # log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}, destin_province={destin_province}')
 
             origin_name = origin_name.replace(',', ' ') if origin_name else '无'  # 行程出发地(市)
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'  # 开票公司
@@ -193,16 +172,17 @@ def exec_task(sql):
             sales_address = sales_address if sales_address else '无'  # 发票开票地(市)
             origin_province = origin_province if origin_province else '无'  # 行程出发地(省)
             destin_province = destin_province if destin_province else '无'  # 行程目的地(省)
-            receipt_city = receipt_city.replace(',', ' ') if receipt_city else '无'
+            receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+            destin_name = destin_name.replace(',', ' ') if destin_name else '无'
 
-            record_str = f'{finance_travel_id},{origin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
+            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
             print(record_str)
             print('')
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.1)
+            # time.sleep(0.001)
 
 
 
@@ -213,7 +193,7 @@ def main():
     # test_hdfs = Test_HDFSTools(conn_type=conn_type)
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    os._exit(0)  # 无错误退出
+    #os._exit(0)  # 无错误退出
 
 
 if __name__ == "__main__":
