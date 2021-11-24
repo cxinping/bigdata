@@ -4,7 +4,8 @@ from report.commons.logging import get_logger
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily)
 import traceback
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
 from multiprocessing import Process
 from report.commons.settings import CONN_TYPE
 

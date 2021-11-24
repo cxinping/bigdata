@@ -32,7 +32,7 @@ select * from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data2.txt"
+dest_file = "/you_filed_algos/prod_kudu_data/temp/travel_data.txt"
 upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data.txt'
 
 match_area = MatchArea()
@@ -196,8 +196,8 @@ def main():
     execute_02_data()  # 43708 sec = 12 hours ,  11848091 ,   340521
     print(f'* created txt file dest_file={dest_file}')
 
-    #test_hdfs = Test_HDFSTools(conn_type=conn_type)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     # os._exit(0)  # 无错误退出
 

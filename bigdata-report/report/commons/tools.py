@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from report.commons.logging import get_logger
-from report.commons.connect_kudu import prod_execute_sql
+#from report.commons.connect_kudu import prod_execute_sql
+from report.commons.connect_kudu2 import prod_execute_sql
+
 import uuid
 import time
 from datetime import datetime, timezone, timedelta
