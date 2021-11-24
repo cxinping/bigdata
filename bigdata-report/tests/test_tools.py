@@ -3,6 +3,7 @@
 from report.commons.tools import *
 import asyncio, aiomysql
 
+
 def demo1():
     str1 = '北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
     str2 = '安庆市'
@@ -74,8 +75,7 @@ def demo1():
     # get_current_time()
 
 
-if __name__ == '__main__':
-
+def demo2():
     # data = str(input("请输入文本:"))
     # data = "安徽安庆市大观区经三路3号 0556-5386666"
     # data = '江苏省无锡市滨湖区环湖路188号0510'
@@ -91,3 +91,18 @@ if __name__ == '__main__':
     key = '无锡'
     # print(province.find(key))
 
+
+def demo3():
+    match_area = MatchArea()
+    sales_name = '上海澎道投资有限公司'
+    sales_addressphone = '上海市金山区前京大道288号'
+    sales_bank = '建行上海五角场支行31050175390000000303'
+
+    sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                   sales_bank=sales_bank)
+
+    print(sales_address)
+
+
+if __name__ == '__main__':
+    demo3()

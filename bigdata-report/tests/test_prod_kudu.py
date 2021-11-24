@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from report.commons.connect_kudu import prod_execute_sql, dis_connection, prod_execute_sql2
+from report.commons.connect_kudu2 import prod_execute_sql, dis_connection
 import time
 
 
@@ -23,8 +23,7 @@ def demo1():
     """
     prod_execute_sql(conn_type='test', sqltype='insert', sql=sql1)
 
-
-if __name__ == "__main__":
+def demo2():
     start_time = time.perf_counter()
     # 连接 KUDU 库下的表
     # rd_df = getKUDUdata('select * from python_test_kudu.irisdataset limit 10')
@@ -53,16 +52,23 @@ if __name__ == "__main__":
         prod_sql = 'select finance_travel_id,bill_id from 01_datamart_layer_007_h_cw_df.finance_travel_bill t limit 5'
         test_sql = 'select * from 01_datamart_layer_007_h_cw_df.payment_result_info limit 5'
         print(test_sql)
-        records = prod_execute_sql2(conn_type='prod', sqltype='select', sql=prod_sql)
+        records = prod_execute_sql(conn_type='prod', sqltype='select', sql=prod_sql)
         print('111 *** query_kudu_data=>', len(records))
         for record in records:
             print(record)
 
-        #dis_connection()
-        #print('-- ok --')
+        # dis_connection()
+        # print('-- ok --')
 
-        records = prod_execute_sql2(conn_type='prod', sqltype='select', sql=prod_sql)
+        records = prod_execute_sql(conn_type='prod', sqltype='select', sql=prod_sql)
         print('222 *** query_kudu_data=>', len(records))
 
     except Exception as e:
         print(e)
+
+
+if __name__ == "__main__":
+    prod_sql = 'select finance_travel_id,sales_name, sales_addressphone, sales_bank from 01_datamart_layer_007_h_cw_df.finance_travel_bill where finance_travel_id="92b750e8-f1c4-4a25-9c42-15c9aa49542a" '
+    print(prod_sql)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=prod_sql)
+    print(records)

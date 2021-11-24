@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.commons.logging import get_logger
-#from report.commons.connect_kudu import prod_execute_sql
+# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 import uuid
@@ -8,7 +8,6 @@ import time
 from datetime import datetime, timezone, timedelta
 import psutil
 from report.commons.settings import CONN_TYPE
-
 
 log = get_logger(__name__)
 
@@ -349,24 +348,29 @@ class MatchArea:
         """
 
         if sales_name:
-            sales_name = sales_name.replace('超市', '')
+            sales_name = sales_name.replace('超市', '').replace('NULL', '')
 
         if sales_addressphone:
-            sales_addressphone = sales_addressphone.replace('超市', '')
+            sales_addressphone = sales_addressphone.replace('超市', '').replace('NULL', '')
 
         if sales_bank:
-            sales_bank = sales_bank.replace('超市', '')
+            sales_bank = sales_bank.replace('超市', '').replace('NULL', '')
 
         area_name1, area_name2, area_name3 = None, None, None
-        if sales_name != 'None' or sales_name is not None:
+        if sales_name is not None and len(sales_name) > 0:
             area_name1 = self.match_address(place=sales_name, key='市')
-            return area_name1
-        elif sales_addressphone != 'None' or sales_addressphone is not None:
-            area_name2 = self.match_address(place=sales_addressphone, key='市')
-            return area_name2
-        elif sales_bank != 'None' or sales_bank is not None:
-            area_name3 = self.match_address(place=sales_bank, key='市')
-            return area_name3
+            if area_name1:
+                return area_name1
+            elif sales_addressphone is not None and len(sales_addressphone) > 0:
+                area_name2 = self.match_address(place=sales_addressphone, key='市')
+                if area_name2:
+                    return area_name2
+                elif sales_bank is not None and len(sales_bank) > 0:
+                    area_name3 = self.match_address(place=sales_bank, key='市')
+                    if area_name3:
+                        return area_name3
+                    else:
+                        return None
         else:
             return None
 
@@ -414,14 +418,23 @@ class MatchArea:
             sales_bank = sales_bank.replace('超市', '')
 
         area_name1, area_name2, area_name3 = None, None, None
-        if sales_name != 'None' or sales_name is not None:
+        if sales_name is not None:
             area_name1 = self.fit_area(area=sales_name)
+            area_level = area_name1[1]
+            if area_level and area_level == 3:
+                return area_name1[0]
 
-        if sales_addressphone != 'None' or sales_addressphone is not None:
+        if sales_addressphone is not None:
             area_name2 = self.fit_area(area=sales_addressphone)
+            area_level = area_name2[1]
+            if area_level and area_level == 3:
+                return area_name2[0]
 
-        if sales_bank != 'None' or sales_bank is not None:
+        if sales_bank is not None:
             area_name3 = self.fit_area(area=sales_bank)
+            area_level = area_name3[1]
+            if area_level and area_level == 3:
+                return area_name3[0]
 
         area_names = []
         if area_name1[0]:
@@ -516,19 +529,3 @@ class MatchArea:
         elif invo_code_2_letter == '82':
             province = '澳门特别行政区'
         return province
-
-
-result = []
-
-
-def save_file(output_file, line, buff_size=5000, clear_buff=False):
-    global result
-
-    if line:
-        result.append(line)
-
-    if len(result) >= buff_size or clear_buff:
-        with open(output_file, "a+") as fp:
-            fp.write("\n".join(result))
-            fp.write("\n")
-        result = []

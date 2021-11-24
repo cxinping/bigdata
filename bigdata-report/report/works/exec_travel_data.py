@@ -38,7 +38,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 
-test_limit_cond = 'LIMIT 20003'  # 'LIMIT 10000'
+test_limit_cond = ' '  # 'LIMIT 10000'
 
 
 def init_file():
@@ -73,7 +73,7 @@ def execute_02_data():
     count_records = records[0][0]
 
     max_size = 2 * 10000
-    limit_size = 1 * 10000
+    limit_size = 5 * 1000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -102,7 +102,8 @@ def execute_02_data():
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
     # max_workers=30 , 每小时处理数据量 142884
-    threadPool = ThreadPoolExecutor(max_workers=60, thread_name_prefix="thr")
+    # max_workers=60 , 每小时处理数据量
+    threadPool = ThreadPoolExecutor(max_workers=80, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -124,7 +125,7 @@ def exec_task(sql):
     consumed_time0 = (time.perf_counter() - start_time0)
     log.info(f'* 取数耗时 => {consumed_time0} sec')
 
-    time.sleep(0.01)
+    #time.sleep(0.01)
 
     if records and len(records) > 0:
         result = []
@@ -204,7 +205,7 @@ def exec_task(sql):
             #consumed_time2 = round(time.perf_counter() - start_time2)
             #log.info(f'* 每行数据存储耗时 => {consumed_time2} sec')
 
-            # time.sleep(0.001)
+            time.sleep(0.001)
 
         if len(result) > 0:
             for item in result:
@@ -214,11 +215,11 @@ def exec_task(sql):
 
 
 def main():
-    execute_02_data()  # 43708 sec = 12 hours ,  17292994 ,   361291
+    execute_02_data()  #  17292994 ,
     print(f'* created txt file dest_file={dest_file}')
 
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 
 
