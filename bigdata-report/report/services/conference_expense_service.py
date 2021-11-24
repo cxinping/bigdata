@@ -548,7 +548,7 @@ def query_checkpoint_26_commoditynames():
     columns_str = ",".join(columns_ls)
 
     sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_meeting_bill where commodityname is not null and commodityname != "" '
-    rd_df = query_kudu_data(sql=sql, columns_ls=columns_ls, conn_type=CONN_TYPE)
+    rd_df = query_kudu_data(sql=sql, columns=columns_ls, conn_type=CONN_TYPE)
     # print(len(rd_df))
 
     rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)
@@ -686,22 +686,25 @@ if __name__ == "__main__":
 
     # main()
 
-    # records = query_checkpoint_26_commoditynames()
+
+
+
+    #records = query_checkpoint_26_commoditynames()
     # print(records)
     #
     # final_list = get_conference_bill_jiebaword()
     # for word in final_list:
     #     print(word)
 
-    categorys = ['运输服务', '包装饮用水', ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
-    good_keywords = ['手册']  # ['手册', '会议费', '荣誉证书']
-    count_records, sql, columns_ls = pagination_conference_records(categorys, good_keywords)
-    print(count_records, sql, columns_ls)
-
-    current_page = 1
-    page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
-    records = page_obj.exec_sql(sql, columns_ls)
-    print(records)
+    # categorys = ['运输服务', '包装饮用水', ]  # ['运输服务', '包装饮用水', '住宿服务', '计算机配套产品' ]
+    # good_keywords = ['手册']  # ['手册', '会议费', '荣誉证书']
+    # count_records, sql, columns_ls = pagination_conference_records(categorys, good_keywords)
+    # print(count_records, sql, columns_ls)
+    #
+    # current_page = 1
+    # page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=10)
+    # records = page_obj.exec_sql(sql, columns_ls)
+    # print(records)
 
 
 

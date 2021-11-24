@@ -27,8 +27,6 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 
-conn_type = 'test'
-
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -56,7 +54,7 @@ def check_linshi_office_data():
     log.info(sql)
     count_sql = 'select count(a.finance_offical_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
     log.info(f'* count_records ==> {count_records}')
 
@@ -122,7 +120,7 @@ def stop_process_pool(executor):
 
 
 def exec_task(sql):
-    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_offical_id = str(record[0])
@@ -194,7 +192,7 @@ def exec_task(sql):
 def main():
     #check_linshi_office_data()  # 35918 ,   14776
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     os._exit(0)  # 无错误退出

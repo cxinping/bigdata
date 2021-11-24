@@ -115,7 +115,7 @@ def execute_kudu_sql(unusual_shell, unusual_id):
                                               operate_desc=f'正在执行检查点{unusual_id}的SQL', unusual_infor='',
                                               task_status='doing')
 
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=unusual_shell)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
         daily_end_date = get_current_time()
         operate_desc = f'成功执行检查点{unusual_id}的SQL'
         print('*** end execute_kudu_sql ***')

@@ -106,35 +106,6 @@ def check_43_consistent_amount():
     # dis_connection()
 
 
-def query_kudu_data(sql, columns):
-    """
-    发票日期异常检查
-    :return:
-    """
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-    log.info('***' * 10)
-    log.info('*** query_kudu_data=>' + str(len(records)))
-    log.info('***' * 10)
-
-    dataFromKUDU = []
-    for item in records:
-        record = []
-        if columns:
-            for idx in range(len(columns)):
-                # print(item[idx], type(item[idx]))
-
-                if str(item[idx]) == "None":
-                    record.append(None)
-                elif str(type(item[idx])) == "<java class 'JDouble'>":
-                    record.append(float(item[idx]))
-                else:
-                    record.append(str(item[idx]))
-
-        dataFromKUDU.append(record)
-
-    df = pd.DataFrame(data=dataFromKUDU, columns=columns)
-    return df
-
 
 def check_49_data():
     columns_ls = ['finance_travel_id', 'bill_id', 'check_amount']
@@ -331,7 +302,7 @@ def query_checkpoint_42_commoditynames():
     columns_str = ",".join(columns_ls)
 
     sql = f'select distinct {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where commodityname is not null and commodityname != "" '
-    rd_df = query_kudu_data(sql=sql, columns_ls=columns_ls, conn_type=CONN_TYPE)
+    rd_df = query_kudu_data(sql=sql, columns=columns_ls, conn_type=CONN_TYPE)
     # print(len(rd_df))
 
     rd_df['category_class'] = rd_df.apply(lambda rd_df: cal_commodityname_function(rd_df['commodityname']), axis=1)

@@ -38,8 +38,6 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 
-conn_type = 'test'  # test ,  prod
-
 test_limit_cond = ''  # 'LIMIT 10000'
 
 
@@ -71,7 +69,7 @@ def execute_02_data():
     log.info(sql)
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
-    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
     max_size = 10 * 10000
@@ -119,7 +117,7 @@ def execute_02_data():
 
 
 def exec_task(sql):
-    records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     time.sleep(0.01)
 
     if records and len(records) > 0:
@@ -199,7 +197,7 @@ def main():
     execute_02_data()  # 43708 sec = 12 hours ,  17292994 ,   133241
     print(f'* created txt file dest_file={dest_file}')
 
-    test_hdfs = Test_HDFSTools(conn_type=conn_type)
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 

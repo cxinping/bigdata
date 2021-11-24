@@ -31,6 +31,8 @@ from report.commons.db_helper import Pagination
 import traceback
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
+from report.commons.settings import CONN_TYPE
+
 
 log = get_logger(__name__)
 
@@ -683,7 +685,7 @@ def finance_unusual_execute():
             select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
                 """.replace('\n', '')
         print(sql)
-        result = prod_execute_sql(conn_type='test', sqltype='select', sql=sql)
+        result = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         unusual_shell = str(result[0][1])
         # "1为sql类, 2为算法类",
         isalgorithm = str(result[0][2])
