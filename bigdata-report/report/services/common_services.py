@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.commons.tools import create_uuid
-#from report.commons.connect_kudu import prod_execute_sql
+# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 
@@ -158,10 +158,93 @@ def query_finance_category_signs(unusual_id, category_classify):
     return records
 
 
+class FinanceAdministrationService:
+    """
+    行政区域表
+    """
+
+    def __init__(self):
+        sel_sql = "select area_division_code, province, city, county, province_code, city_code	,county_code from 01_datamart_layer_007_h_cw_df.finance_administration "
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
+        # print(len(records))
+
+        self.finance_records = []
+        columns = ['area_division_code', 'province', 'city', 'county', 'province_code', 'city_code', 'county_code']
+        for record in records:
+            result_row = dict(zip(columns, record))
+            self.finance_records.append(result_row)
+            # print(result_row)
+
+    def query_areas(self, sales_taxno):
+        """
+       根据纳锐人识别号查找 开票所在的 省，市，区/县
+       :param sales_taxno: 纳税人识别号
+       :return: 
+       """
+
+        #print(' len(sales_taxno)=', len(sales_taxno))
+
+        sales_taxno_str = None
+        if len(sales_taxno) == 15 or len(sales_taxno) == 20:
+            sales_taxno_str = sales_taxno[:6]
+
+        elif len(sales_taxno) == 18:
+            sales_taxno_str = sales_taxno[2:8]
+
+        #print('sales_taxno_str=',sales_taxno_str)
+
+        if sales_taxno_str:
+            rst = self.query_accurate_areas(sales_taxno_str)
+            # 如果精确查找省，市，县一级的行政单位没有找到，就模糊查找
+            if rst[0] is not None:
+                return rst
+            else:
+                rst = self.query_blur_areas(sales_taxno_str)
+                return rst
+
+        return None, None, None
+
+    def query_blur_areas(self, area_division_code):
+        """
+        根据纳锐人识别号, 模糊 查找 开票所在的 省，市，区/县
+        :param area_division_code: 行政区划代码
+        :return:
+        """
+        code_part1, code_part2, code_part3 = None, None, None
+        code_part1 = area_division_code[0:2]
+        code_part2 = area_division_code[2:4]
+        code_part3 = area_division_code[4:6]
+
+        # print(code_part1, code_part2, code_part3)
+
+        for idx, item in enumerate(self.finance_records):
+            # 值匹配 '省'和'市' 这级别的行政单位
+            if code_part1 == item['province_code'] and code_part2 == item['city_code']:
+                return item['province'], item['city'], None
+
+        for idx, item in enumerate(self.finance_records):
+            # 值匹配 '省  这级别的行政单位
+            if code_part1 == item['province_code']:
+                return item['province'], None, None
+
+    def query_accurate_areas(self, area_division_code):
+        """
+        根据纳锐人识别号, 精确 查找 开票所在的 省，市，区/县
+        :param area_division_code : 行政区划代码
+        :return:
+        """
+
+        for idx, item in enumerate(self.finance_records):
+            if area_division_code == item['area_division_code']:
+                return item['province'], item['city'], item['county']
+
+        return None, None, None
+
+
 class ProvinceService:
 
     def __init__(self):
-        sel_all_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city "
+        sel_all_sql = "select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city "
         self.province_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_all_sql)
 
     def query_province_names(self, grade='1'):

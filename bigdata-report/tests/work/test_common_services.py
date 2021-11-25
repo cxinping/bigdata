@@ -73,6 +73,34 @@ def upload_file():
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 
+def demo2():
+    s = 'abcdefhighlmn'
+    print(s[1:3])
+
+    s2 = '1234567'
+    print(s2[0:2])
+    print(s2[2:4])
+    print(s2[4:6])
+
+
+def demo3():
+    finance_service = FinanceAdministrationService()
+    # area_division_code = '310114'
+    # rst = finance_service.query_accurate_areas(area_division_code)
+    # print(rst, len(rst))
+
+    # area_division_code = '31aabb'
+    # rst = finance_service.query_blur_areas(area_division_code)
+    # print(rst, len(rst))
+
+    sales_taxno = '210104aaaaaaaaaaaaaa'
+    rst = finance_service.query_areas(sales_taxno=sales_taxno)
+    print(rst, len(rst))
+
+
 if __name__ == '__main__':
-    #init_file()
-    upload_file()
+    # init_file()
+    # upload_file()
+
+    # demo2()
+    demo3()
