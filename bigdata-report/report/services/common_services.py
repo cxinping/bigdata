@@ -184,8 +184,6 @@ class FinanceAdministrationService:
        :return: 
        """
 
-        #print(' len(sales_taxno)=', len(sales_taxno))
-
         sales_taxno_str = None
         if len(sales_taxno) == 15 or len(sales_taxno) == 20:
             sales_taxno_str = sales_taxno[:6]
