@@ -103,7 +103,7 @@ def execute_02_data():
 
     # max_workers=30 , 每小时处理数据量 142884
     # max_workers=60 , 每小时处理数据量
-    threadPool = ThreadPoolExecutor(max_workers=50, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -199,7 +199,7 @@ def exec_task(sql):
             #print('')
             result.append(record_str)
 
-            time.sleep(0.01)
+            time.sleep(0.02)
 
             start_time2 = time.perf_counter()
 
