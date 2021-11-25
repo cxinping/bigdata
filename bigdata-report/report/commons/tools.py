@@ -338,7 +338,7 @@ class MatchArea:
             print(e)
             return None, None, None, None
 
-    def query_receipt_city(self, sales_name, sales_addressphone, sales_bank):
+    def query_receipt_city(self, sales_name=None, sales_addressphone=None, sales_bank=None):
         """
         查询发票开票所在市
         :param sales_name: 开票公司
@@ -357,22 +357,24 @@ class MatchArea:
             sales_bank = sales_bank.replace('超市', '').replace('NULL', '')
 
         area_name1, area_name2, area_name3 = None, None, None
-        if sales_name is not None and len(sales_name) > 0:
+        if sales_name != 'None' and sales_name is not None and len(sales_name) > 0:
             area_name1 = self.match_address(place=sales_name, key='市')
             if area_name1:
                 return area_name1
-            elif sales_addressphone is not None and len(sales_addressphone) > 0:
-                area_name2 = self.match_address(place=sales_addressphone, key='市')
-                if area_name2:
-                    return area_name2
-                elif sales_bank is not None and len(sales_bank) > 0:
-                    area_name3 = self.match_address(place=sales_bank, key='市')
-                    if area_name3:
-                        return area_name3
-                    else:
-                        return None
-        else:
-            return None
+
+        if sales_addressphone != 'None' and sales_addressphone is not None and len(sales_addressphone) > 0:
+            area_name2 = self.match_address(place=sales_addressphone, key='市')
+            if area_name2:
+                return area_name2
+
+        if sales_bank != 'None' and sales_bank is not None and len(sales_bank) > 0:
+            area_name3 = self.match_address(place=sales_bank, key='市')
+            if area_name3:
+                return area_name3
+            else:
+                return None
+
+        return None
 
     def filter_area(self, area):
         """
@@ -408,6 +410,9 @@ class MatchArea:
         # print('sales_addressphone=', sales_addressphone)
         # print('sales_bank=', sales_bank)
 
+        if sales_name is None and sales_addressphone is None and sales_bank:
+            return None
+
         if sales_name:
             sales_name = sales_name.replace('超市', '')
 
@@ -418,19 +423,19 @@ class MatchArea:
             sales_bank = sales_bank.replace('超市', '')
 
         area_name1, area_name2, area_name3 = None, None, None
-        if sales_name is not None:
+        if sales_name != 'None' or sales_name is not None:
             area_name1 = self.fit_area(area=sales_name)
             area_level = area_name1[1]
             if area_level and area_level == 3:
                 return area_name1[0]
 
-        if sales_addressphone is not None:
+        if sales_addressphone != 'None' or sales_addressphone is not None:
             area_name2 = self.fit_area(area=sales_addressphone)
             area_level = area_name2[1]
             if area_level and area_level == 3:
                 return area_name2[0]
 
-        if sales_bank is not None:
+        if sales_bank != 'None' or sales_bank is not None:
             area_name3 = self.fit_area(area=sales_bank)
             area_level = area_name3[1]
             if area_level and area_level == 3:

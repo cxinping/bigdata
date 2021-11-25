@@ -162,7 +162,7 @@ class ProvinceService:
 
     def __init__(self):
         sel_all_sql = f"select area_id, area_name, parent_id, grade from 01_datamart_layer_007_h_cw_df.finance_province_city "
-        self.province_records = prod_execute_sql(conn_type='test', sqltype='select', sql=sel_all_sql)
+        self.province_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_all_sql)
 
     def query_province_names(self, grade='1'):
         sel_sql = f'select area_name from 01_datamart_layer_007_h_cw_df.finance_province_city where grade="{grade}" '

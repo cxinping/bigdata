@@ -82,13 +82,13 @@ def execute_02_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by base_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by base_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
                 select_sql_ls.append(tmp_sql)
 
@@ -103,7 +103,7 @@ def execute_02_data():
 
     # max_workers=30 , 每小时处理数据量 142884
     # max_workers=60 , 每小时处理数据量
-    threadPool = ThreadPoolExecutor(max_workers=80, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=20, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -119,13 +119,15 @@ def execute_02_data():
 
 
 def exec_task(sql):
+    log.info(sql)
+
     start_time0 = time.perf_counter()
 
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     consumed_time0 = (time.perf_counter() - start_time0)
-    log.info(f'* 取数耗时 => {consumed_time0} sec')
+    log.info(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')
 
-    #time.sleep(0.01)
+    time.sleep(0.01)
 
     if records and len(records) > 0:
         result = []
@@ -133,24 +135,30 @@ def exec_task(sql):
         for idx, record in enumerate(records):
             start_time1 = time.perf_counter()
 
-            destin_name = str(record[0]) if record[0] else None  # 行程目的地
-            sales_name = str(record[1]) if record[1] else None  # 开票公司
+            destin_name = str(record[0]) if record[0] else None     # 行程目的地
+            sales_name = str(record[1]) if record[1] else None      # 开票公司
             sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-            sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+            sales_bank = str(record[3]) if record[3] else None      # 发票开户行
             finance_travel_id = str(record[4]) if record[4] else None
-            origin_name = str(record[5]) if record[5] else None  # 行程出发地
-            invo_code = str(record[6]) if record[6] else None  # 发票代码
+            origin_name = str(record[5]) if record[5] else None     # 行程出发地
+            invo_code = str(record[6]) if record[6] else None       # 发票代码
 
+            #log.info(f'1 sales_address cal sales_name={sales_name}, {type(sales_name)}, sales_addressphone={sales_addressphone} , sales_bank={sales_bank}')
             sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
+
+            #log.info(f'2 sales_address={sales_address}')
+
             if sales_address is None:
                 sales_address = destin_name
+
+            #log.info(f'* sales_name={sales_name}，sales_addressphone={sales_addressphone}，sales_bank={sales_bank} => sales_address={sales_address}')
 
             """
              1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
              2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
              
-                如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，多个市下可能会有相同的最小行政单位  
+                如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位  
             """
             receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                          sales_bank=sales_bank)  # 发票开票所在市
@@ -161,7 +169,7 @@ def exec_task(sql):
             # start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
-            log.info(f" {threading.current_thread().name} is running ")
+            #log.info(f" {threading.current_thread().name} is running ")
             # consumed_time1 = round(time.perf_counter() - start_time1)
             # log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
@@ -184,12 +192,14 @@ def exec_task(sql):
             destin_name = destin_name.replace(',', ' ') if destin_name else '无'
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(f'* 生成每行数据耗时 => {consumed_time1} sec')
+            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec')
 
             record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_address},{origin_province},{destin_province},{receipt_city}'
             #print(record_str)
             #print('')
             result.append(record_str)
+
+            time.sleep(0.02)
 
             start_time2 = time.perf_counter()
 
@@ -205,7 +215,7 @@ def exec_task(sql):
             #consumed_time2 = round(time.perf_counter() - start_time2)
             #log.info(f'* 每行数据存储耗时 => {consumed_time2} sec')
 
-            time.sleep(0.001)
+            #time.sleep(0.001)
 
         if len(result) > 0:
             for item in result:

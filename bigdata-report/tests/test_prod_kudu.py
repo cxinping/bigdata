@@ -68,7 +68,17 @@ def demo2():
 
 
 if __name__ == "__main__":
-    prod_sql = 'select finance_travel_id,sales_name, sales_addressphone, sales_bank from 01_datamart_layer_007_h_cw_df.finance_travel_bill where finance_travel_id="92b750e8-f1c4-4a25-9c42-15c9aa49542a" '
+    start_time0 = time.perf_counter()
+
+    #prod_sql1 = 'select finance_travel_id,sales_name, sales_addressphone, sales_bank from 01_datamart_layer_007_h_cw_df.finance_travel_bill where finance_travel_id="92b750e8-f1c4-4a25-9c42-15c9aa49542a" '
+    prod_sql = """
+     select destin_name,sales_name,sales_addressphone,sales_bank,finance_travel_id,origin_name,invo_code from 01_datamart_layer_007_h_cw_df.finance_travel_bill
+ where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null) 
+ order by jour_beg_date  limit 5000 offset 290000
+    """
     print(prod_sql)
     records = prod_execute_sql(conn_type='test', sqltype='select', sql=prod_sql)
-    print(records)
+    print(len(records))
+
+    consumed_time0 = (time.perf_counter() - start_time0)
+    print(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')

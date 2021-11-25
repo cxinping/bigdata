@@ -103,6 +103,7 @@ def demo3():
 
     print(sales_address)
 
+    print(type(None))
 
 if __name__ == '__main__':
     demo3()

@@ -56,11 +56,12 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
         if not jpype.isJVMStarted():
             log.info('----- 1 startjvm ----- ')
             jpype.startJVM(jvm, jvm_options)
-            log.info('----- 2 attaching jvm ----- ')
-            jpype.attachThreadToJVM()
 
             # jpype.startJVM(jvm, "-ea", jvm_options, '-Xmx5g', '-Xms5g', '-Xmn2g', '-XX:+UseParNewGC',
             #                '-XX:ParallelGCThreads=8', '-XX:SurvivorRatio=6', '-XX:+UseConcMarkSweepGC')
+
+            log.info('----- 2 attaching jvm ----- ')
+            jpype.attachThreadToJVM()
 
         #if not jpype.isThreadAttachedToJVM():
             #print('-----attaching jvm-----')

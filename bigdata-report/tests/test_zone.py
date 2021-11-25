@@ -21,23 +21,25 @@ print(re.findall('市.*区', a[1])[0].lstrip(r'市'))
 
 def zoneGet(text):
     zoneList = []
-    province = re.findall('.*省', text)
+    province = re.findall('.*省',text)
     if province:
         zoneList.append(province[0])
+    elif re.findall('.*自治区',text):
+        zoneList.append(re.findall('.*自治区',text)[0])
     else:
         zoneList.append('')
-    city = re.findall('.*市', text)
+    city = re.findall('.*市',text)
     if city:
         zoneList.append(city[0].lstrip(zoneList[0]))
     else:
         zoneList.append('')
-    district = re.findall('市.*区', text)
+    district = re.findall('市.*区',text)
     if district:
         zoneList.append(district[0].lstrip('市'))
     else:
         zoneList.append('')
-    return (zoneList)
+    return(zoneList)
 
 
-r = zoneGet(a[0])
+r = zoneGet(a[2])
 print('result =>', r)
