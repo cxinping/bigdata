@@ -8,7 +8,7 @@ from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
-from report.services.common_services import ProvinceService
+from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
 
@@ -37,6 +37,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 
 match_area = MatchArea()
 province_service = ProvinceService()
+finance_service = FinanceAdministrationService()
 
 test_limit_cond = ' '  # 'LIMIT 10000'
 

@@ -164,12 +164,14 @@ class FinanceAdministrationService:
     """
 
     def __init__(self):
-        sel_sql = "select area_division_code, province, city, county, province_code, city_code	,county_code from 01_datamart_layer_007_h_cw_df.finance_administration "
+        columns = ['area_division_code', 'province', 'city', 'county', 'province_code', 'city_code', 'county_code']
+        columns_str = ",".join(columns)
+        sel_sql = f"select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_administration "
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
         # print(len(records))
 
         self.finance_records = []
-        columns = ['area_division_code', 'province', 'city', 'county', 'province_code', 'city_code', 'county_code']
+
         for record in records:
             result_row = dict(zip(columns, record))
             self.finance_records.append(result_row)
@@ -195,7 +197,7 @@ class FinanceAdministrationService:
 
         if sales_taxno_str:
             rst = self.query_accurate_areas(sales_taxno_str)
-            # 如果精确查找省，市，县一级的行政单位没有找到，就模糊查找
+            # 如果精确查找省，市，县 这一级的行政单位没有找到，就模糊查找省或市这级的行政单位
             if rst[0] is not None:
                 return rst
             else:
@@ -218,12 +220,12 @@ class FinanceAdministrationService:
         # print(code_part1, code_part2, code_part3)
 
         for idx, item in enumerate(self.finance_records):
-            # 值匹配 '省'和'市' 这级别的行政单位
+            # 只匹配 '省'和'市' 这级别的行政单位
             if code_part1 == item['province_code'] and code_part2 == item['city_code']:
                 return item['province'], item['city'], None
 
         for idx, item in enumerate(self.finance_records):
-            # 值匹配 '省  这级别的行政单位
+            # 只匹配 '省' 这级别的行政单位
             if code_part1 == item['province_code']:
                 return item['province'], None, None
 
