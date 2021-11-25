@@ -1,88 +1,37 @@
 # -*- coding: utf-8 -*-
-from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily, \
-    query_finance_category_signs,query_finance_shell_daily_status, query_billds_finance_all_targets,ProvinceService
-from report.commons.tools import create_uuid
+from report.services.common_services import *
+import csv
 
 
 def demo1():
-    for i in range(1):
-        daily_status = 'ok'
-        daily_start_date = '2021-11-08 17:05'
-        daily_end_date = '2021-11-08 20:05'
-        unusual_point = '2'
-        daily_source = 'sql'
-        operate_desc = '1' + str(i)
-        unusual_infor = 'aaabbbccc'
-        task_status = 'done'
-
-        daily_id = insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point,
-                                              daily_source,
-                                              operate_desc, unusual_infor, task_status)
-        print(daily_id)
-        update_finance_shell_daily(daily_id, task_status='done 222333', daily_end_date='aaaaa')
-
-    # pagination_finance_shell_daily_records(unusual_point='1')
-
-    # unusual_id = '42'
-    # category_names = ['d']  # ['a' , 'b']
-    # category_classify = '001'
-    # update_finance_category_sign(unusual_id, category_names, category_classify)
-
-    # category_classify = '2'
-    # records = query_finance_category_sign(unusual_id=unusual_id, category_classify=category_classify)
-    # print(records)
-
-    # province_service = ProvinceService()
-    # area_name = '金湖县'
-    # province_service.query_province(area_name)
-    # area_id = '510000'
-    # area_id, area_name, parent_id, grade = province_service.query_previous_province(query_area_id=area_id)
-    # print(area_id, area_name, parent_id, grade)
-
-    # area_name = '南川区'
-    # province_name = province_service.query_belong_province(area_name)
-    # print('province_name=',province_name)
-
-    # city_name = province_service.query_receipt_city(area_name='房山区')
-    # print(f'city_name={city_name}')
-
-    print('--- ok ---')
-    # print('中原区'.find('中'))
+    province_service = ProvinceService()
 
 
 def demo2():
-    mysql_service = MySQLService()
-    # id = create_uuid()
-    # mysql_service.insert_update_area(id=id, area_name='盐山县', city='沧州市', province='广东省')
+    """
+    行政区划代码   area_division_code
+    省           province
+    市           city
+    县/区        county
+    省代码       province_area
+    市代码       city_area
+    县/区代码    county_code
 
-    # id = create_uuid()
-    mysql_service.check_area(area_name_val='丰台区', city_val='北京市', province_val=None)
+    如果纳税人代码识别号是10位，取前6位比对，如果是12位取3-9六位数字比对, 比对不出来的在根据省代码市代码县代码比对.
+    比如河北省石家庄市长安区。 分别是13-河北省，01-石家庄市，02-长安区
 
-    # id = 'fe5419f562bc4e4fa72b2b8482192614'
-    # mysql_service.insert_update_area(id=id, area_name='盐山县', city='111', province='2222')
+    :return:
+    """
+    columns = ['area_division_code', 'province', 'city', 'county', 'province_area', 'city_area', 'county_code']
+    dest_file = '/you_filed_algos/app/config/province_code.csv'
+    f = csv.reader(open(file=dest_file, mode='r', encoding='gbk'))
+    for idx, row in enumerate(f):
+        if idx == 0:
+            continue
 
-    # result = mysql_service.query_area_record(area_name='盐山县')
-    # print(result)
+        #print(idx, row)
+        result_row = dict(zip(columns, row))
+        print(result_row)
 
-    print('--- ok ---')
-
-
-def demo3():
-    #query_finance_category_signs(unusual_id='26', category_classify='01')
-
-    #record = query_finance_shell_daily(unusual_point='13',task_status='doing')
-
-    # records = query_billds_finance_all_targets(unusual_id='14')
-    # print(records)
-
-    province_service = ProvinceService()
-    records = province_service.query_province_names(grade='1')
-    print(records)
-
-
-if __name__ == "__main__":
-    # demo1()
-
-    # demo2()
-
-    demo3()
+if __name__ == '__main__':
+    demo2()
