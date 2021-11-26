@@ -11,6 +11,8 @@ from report.commons.tools import MatchArea
 from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
+import sys
+
 
 """
 
@@ -23,6 +25,20 @@ cd /you_filed_algos/app
 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data.py
 
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2021
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2019
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2018
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2017
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2015
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2014
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2013
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2012
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2011
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2010
 
 
 select * from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
@@ -38,22 +54,29 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
+test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
 test_limit_cond = ' '  # 'LIMIT 10000'
 
 
-def init_file():
+def get_dest_file(year):
+    dest_file = f"/you_filed_algos/prod_kudu_data/temp/travel_data_{year}.txt"
+    return dest_file
+
+
+def init_file(year):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
+    dest_file = get_dest_file(year)
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
     os.mknod(dest_file)
 
 
-def execute_02_data():
-    init_file()
+def execute_02_data(year):
+    init_file(year)
 
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
@@ -63,9 +86,11 @@ def execute_02_data():
 
     columns_str = ",".join(columns_ls)
     sql = """
-    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null )
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' 
        {test_limit_cond}
-    """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
+    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
+                                                                                                              '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -83,20 +108,20 @@ def execute_02_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) {test_limit_cond} ".format(
-            columns_str=columns_str, test_limit_cond=test_limit_cond)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  {test_limit_cond} ".format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond, year=year)
         select_sql_ls.append(tmp_sql)
         # print('*** tmp_sql => ', tmp_sql)
 
@@ -104,14 +129,14 @@ def execute_02_data():
 
     # max_workers=40 , 每小时处理数据量
     # max_workers=60 , 每小时处理数据量
-    threadPool = ThreadPoolExecutor(max_workers=80, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=40, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
     #     log.info(sel_sql)
     # threadPool.submit(exec_task, sel_sql)
 
-    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+    all_task = [threadPool.submit(exec_task, sel_sql, year) for sel_sql in select_sql_ls]
     wait(all_task, return_when=ALL_COMPLETED)
 
     threadPool.shutdown(wait=True)
@@ -172,8 +197,9 @@ def operate_every_record(record):
     return sales_address, receipt_city
 
 
-def exec_task(sql):
+def exec_task(sql, year):
     log.info(sql)
+    #log.info(f'year={year}')
 
     start_time0 = time.perf_counter()
 
@@ -182,6 +208,8 @@ def exec_task(sql):
     log.info(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')
 
     time.sleep(0.01)
+
+    dest_file = get_dest_file(year)
 
     if records and len(records) > 0:
         result = []
@@ -220,7 +248,7 @@ def exec_task(sql):
             # log.info(f" {threading.current_thread().name} is running ")
             consumed_time2 = round(time.perf_counter() - start_time2)
             log.info(
-                 f'* consumed_time2 => {consumed_time2} sec, sales_address={sales_address}, receipt_city={receipt_city}')
+                f'* consumed_time2 => {consumed_time2} sec, sales_address={sales_address}, receipt_city={receipt_city}')
 
             start_time3 = time.perf_counter()
 
@@ -228,7 +256,8 @@ def exec_task(sql):
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
             consumed_time3 = round(time.perf_counter() - start_time3)
-            log.info(f'* consumed_time3 => {consumed_time3} sec,origin_name={origin_name}，origin_province={origin_province}')
+            log.info(
+                f'* consumed_time3 => {consumed_time3} sec,origin_name={origin_name}，origin_province={origin_province}')
 
             start_time4 = time.perf_counter()
 
@@ -254,18 +283,18 @@ def exec_task(sql):
             receipt_city = receipt_city if receipt_city else '无'  # 发票开票所在市
             destin_name = destin_name.replace(',', ' ') if destin_name else '无'
             sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
+            account_period = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
             log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec , idx={idx}')
 
-            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city}'
+            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city}，{account_period}'
             # print(record_str)
             # print('')
             result.append(record_str)
 
             print()
-            #time.sleep(0.01)
-
+            # time.sleep(0.01)
 
             # start_time2 = time.perf_counter()
 
@@ -273,6 +302,7 @@ def exec_task(sql):
             #     file.write(record_str + "\n")
 
             if len(result) >= 100:
+
                 for item in result:
                     with open(dest_file, "a+", encoding='utf-8') as file:
                         file.write(item + "\n")
@@ -289,13 +319,25 @@ def exec_task(sql):
                     file.write(item + "\n")
         del result
 
+        test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
 
 def main():
-    execute_02_data()  # 一共 11926897  , 消耗时间     sec
+
+    """
+    2021 年 , 一共    , 消耗时间     sec
+
+
+    """
+    year = sys.argv[1]
+    execute_02_data(year)  # 一共 11926897  , 消耗时间     sec
     print(f'* created txt file dest_file={dest_file}')
 
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    #test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
+
+
 
 
 main()
