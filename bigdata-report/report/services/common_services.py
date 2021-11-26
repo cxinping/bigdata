@@ -174,8 +174,13 @@ class FinanceAdministrationService:
 
         for record in records:
             result_row = dict(zip(columns, record))
+            #print(result_row)
+
+            for key, value in result_row.items():
+                result_row[key] = str(value)
+
             self.finance_records.append(result_row)
-            # print(result_row)
+
 
     def query_areas(self, sales_taxno):
         """
@@ -184,20 +189,25 @@ class FinanceAdministrationService:
        :return: 
        """
 
-        if sales_taxno is None or sales_taxno == 'None' or len(sales_taxno) not in [15, 20, 18]:
+        if sales_taxno is None or sales_taxno == 'None':
+            return None, None, None
+
+        if sales_taxno and len(sales_taxno) not in [15, 20, 18]:
             return None, None, None
 
         sales_taxno_str = None
         if len(sales_taxno) == 15 or len(sales_taxno) == 20:
             sales_taxno_str = sales_taxno[:6]
-
         elif len(sales_taxno) == 18:
             sales_taxno_str = sales_taxno[2:8]
 
-        #print('sales_taxno_str=',sales_taxno_str)
+        print('sales_taxno_str=',sales_taxno_str)
 
         if sales_taxno_str:
             rst = self.query_accurate_areas(sales_taxno_str)
+
+            #log.info(rst)
+
             # 如果精确查找省，市，县 这一级的行政单位没有找到，就模糊查找省或市这级的行政单位
             if rst[0] is not None:
                 return rst
@@ -223,12 +233,14 @@ class FinanceAdministrationService:
         for idx, item in enumerate(self.finance_records):
             # 只匹配 '省'和'市' 这级别的行政单位
             if code_part1 == item['province_code'] and code_part2 == item['city_code']:
-                return item['province'], item['city'], None
+                return str(item['province']), str(item['city']), None
 
         for idx, item in enumerate(self.finance_records):
             # 只匹配 '省' 这级别的行政单位
             if code_part1 == item['province_code']:
-                return item['province'], None, None
+                return str(item['province']), None, None
+
+        return None, None, None
 
     def query_accurate_areas(self, area_division_code):
         """
@@ -239,7 +251,7 @@ class FinanceAdministrationService:
 
         for idx, item in enumerate(self.finance_records):
             if area_division_code == item['area_division_code']:
-                return item['province'], item['city'], item['county']
+                return str(item['province']), str(item['city']), str(item['county'])
 
         return None, None, None
 

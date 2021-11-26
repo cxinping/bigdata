@@ -40,3 +40,7 @@ ll2 = [1,2]
 ll1.sort()
 ll2.sort()
 print(ll1 == ll2)
+
+print('*******' * 10)
+
+print(type('None'))
