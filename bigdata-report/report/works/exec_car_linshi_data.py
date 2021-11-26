@@ -131,7 +131,8 @@ def operate_every_record(record):
             sales_address = rst[1]
             receipt_city = sales_address
         elif rst[0] is not None:
-            sales_address = rst[0]
+            #sales_address = rst[0]
+            pass
 
         log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 

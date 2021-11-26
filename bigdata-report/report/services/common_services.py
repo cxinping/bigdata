@@ -174,13 +174,12 @@ class FinanceAdministrationService:
 
         for record in records:
             result_row = dict(zip(columns, record))
-            #print(result_row)
+            # print(result_row)
 
             for key, value in result_row.items():
                 result_row[key] = str(value)
 
             self.finance_records.append(result_row)
-
 
     def query_areas(self, sales_taxno):
         """
@@ -201,12 +200,12 @@ class FinanceAdministrationService:
         elif len(sales_taxno) == 18:
             sales_taxno_str = sales_taxno[2:8]
 
-        #print('sales_taxno_str=',sales_taxno_str)
+        # print('sales_taxno_str=',sales_taxno_str)
 
         if sales_taxno_str:
             rst = self.query_accurate_areas(sales_taxno_str)
 
-            #log.info(rst)
+            # log.info(rst)
 
             # 如果精确查找省，市，县 这一级的行政单位没有找到，就模糊查找省或市这级的行政单位
             if rst[0] is not None:
@@ -274,11 +273,12 @@ class ProvinceService:
         return province_names
 
     def query_previous_province(self, query_area_id):
-        if query_area_id is None or query_area_id == 'None' :
+        if query_area_id is None or query_area_id == 'None':
             return None, None, None, None
 
         for record in self.province_records:
             area_id = str(record[0]) if record[0] else None
+            query_area_id = str(query_area_id)
 
             # print(area_id, area_name, parent_id, grade)
             if area_id and query_area_id == area_id:
@@ -291,7 +291,7 @@ class ProvinceService:
         return None, None, None, None
 
     def query_province(self, query_area_name):
-        if query_area_name is None or query_area_name == 'None' :
+        if query_area_name is None or query_area_name == 'None' or len(query_area_name) == 0:
             return None, None, None, None
 
         for record in self.province_records:
@@ -299,7 +299,8 @@ class ProvinceService:
 
             # print(area_id, area_name, parent_id, grade)
             # if query_area_name == area_name:
-            if area_name.find(query_area_name) > -1:
+            #if area_name.find(query_area_name) > -1:
+            if area_name in query_area_name or query_area_name in area_name:
                 area_id = str(record[0]) if record[0] else None
                 parent_id = str(record[2]) if record[2] else None
                 grade = str(record[3]) if record[3] else None
@@ -309,7 +310,7 @@ class ProvinceService:
         return None, None, None, None
 
     def query_belong_province(self, area_name):
-        if area_name is None or area_name == 'None':
+        if area_name is None or area_name == 'None' or len(area_name) == 0:
             return None
 
         area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)
@@ -341,7 +342,7 @@ class ProvinceService:
         :return:
         """
 
-        if area_name is None:
+        if area_name is None or area_name == 'None':
             return None
 
         area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)

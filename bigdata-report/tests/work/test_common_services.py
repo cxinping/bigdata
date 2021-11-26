@@ -94,7 +94,7 @@ def demo3():
     # print(rst, len(rst))
 
     #sales_taxno = '210104aaaaaaaaaaaaaa'
-    sales_taxno= '91330000671623030L'
+    sales_taxno= '370111196502221619A0'
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
     print(rst)
     print(len(rst))

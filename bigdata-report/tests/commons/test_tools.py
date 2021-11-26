@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from report.commons.tools import *
 
-if __name__ == '__main__':
-    """
-    1，优先找最细的行政单位
-    2，加两列，所属省
-       出发地所在省份， 目的地所在省份
 
+def demo1():
     """
+        1，优先找最细的行政单位
+        2，加两列，所属省
+           出发地所在省份， 目的地所在省份
+
+        """
 
     match_area1 = MatchArea()
     # data = '山东省东营市东营区开萍乡北二路504号 0546-8718562'
@@ -57,3 +58,9 @@ if __name__ == '__main__':
     # content_trans = transfer_content(content)
     # print(content_trans)
     # print(content.replace(',', ' '))
+
+def demo2():
+    pass
+
+if __name__ == '__main__':
+    demo2()

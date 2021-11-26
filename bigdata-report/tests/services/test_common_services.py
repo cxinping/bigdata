@@ -76,8 +76,12 @@ def demo3():
     # print(records)
 
     province_service = ProvinceService()
-    records = province_service.query_province_names(grade='1')
-    print(records)
+    # records = province_service.query_province_names(grade='1')
+    # print(records)
+
+    origin_name = '西安市'
+    origin_province = province_service.query_belong_province(area_name=origin_name)
+    print(f'origin_province={origin_province}')
 
 
 if __name__ == "__main__":

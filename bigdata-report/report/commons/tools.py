@@ -241,13 +241,15 @@ class MatchArea:
         """
 
         province = None
-        if invo_code is None:
-            if destin_name and destin_name.find(',') != -1:
-                province = self.query_belong_province(destin_name)
+        if invo_code is None or invo_code == 'None':
+            # if destin_name and destin_name.find(',') != -1:
+            #     province = self.query_belong_province(destin_name)
+            pass
 
         else:
-            invo_code = invo_code[0:2]
-            province = self.query_province_from_invoice_code(invo_code)
+            invo_code = str(invo_code)
+            invo_code_2_letter = invo_code[0:2]
+            province = self.query_province_from_invoice_code(invo_code_2_letter)
 
         return province
 
@@ -348,13 +350,13 @@ class MatchArea:
         """
 
         if sales_name:
-            sales_name = sales_name.replace('超市', '').replace('NULL', '')
+            sales_name = sales_name.replace('超市', '')
 
         if sales_addressphone:
-            sales_addressphone = sales_addressphone.replace('超市', '').replace('NULL', '')
+            sales_addressphone = sales_addressphone.replace('超市', '')
 
         if sales_bank:
-            sales_bank = sales_bank.replace('超市', '').replace('NULL', '')
+            sales_bank = sales_bank.replace('超市', '')
 
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' and sales_name is not None and len(sales_name) > 0:
@@ -371,8 +373,6 @@ class MatchArea:
             area_name3 = self.match_address(place=sales_bank, key='市')
             if area_name3:
                 return area_name3
-            else:
-                return None
 
         return None
 
@@ -385,12 +385,16 @@ class MatchArea:
         if area is not None:
             kye_word1 = '公司'
             kye_word2 = '局'
+            key_word3 = '银行'
 
             if area.find(kye_word1) > 0:
                 idx = area.find(kye_word1) + 2
                 return area[idx:]
             elif area.find(kye_word2) > 0:
                 idx = area.find(kye_word2) + 1
+                return area[idx:]
+            elif area.find(key_word3) > 0:
+                idx = area.find(kye_word2) + 2
                 return area[idx:]
             else:
                 return area
@@ -464,7 +468,7 @@ class MatchArea:
         :return:
         """
 
-        province = ''
+        province = None
         if invo_code_2_letter == '11':
             province = '北京市'
         elif invo_code_2_letter == '12':
@@ -533,4 +537,7 @@ class MatchArea:
             province = '香港特别行政区'
         elif invo_code_2_letter == '82':
             province = '澳门特别行政区'
+        else:
+            return None
+
         return province

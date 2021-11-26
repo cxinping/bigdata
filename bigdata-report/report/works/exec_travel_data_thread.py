@@ -73,8 +73,8 @@ def execute_02_data():
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
-    max_size = 2 * 10000
-    limit_size = 5 * 1000
+    max_size = 1 * 10000
+    limit_size = 1 * 5000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -98,13 +98,13 @@ def execute_02_data():
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
-        #print('*** tmp_sql => ', tmp_sql)
+        # print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
     # max_workers=40 , 每小时处理数据量
     # max_workers=60 , 每小时处理数据量
-    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=80, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -166,6 +166,7 @@ def operate_every_record(record):
             receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
                                                          sales_bank=None)
 
+        receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
         # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
@@ -214,19 +215,28 @@ def exec_task(sql):
             #     receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
             #                                                  sales_bank=None)
 
+            start_time2 = time.perf_counter()
             sales_address, receipt_city = operate_every_record(record)
+            # log.info(f" {threading.current_thread().name} is running ")
+            consumed_time2 = round(time.perf_counter() - start_time2)
+            log.info(
+                 f'* consumed_time2 => {consumed_time2} sec, sales_address={sales_address}, receipt_city={receipt_city}')
 
+            start_time3 = time.perf_counter()
 
-            # start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
-            # log.info(f" {threading.current_thread().name} is running ")
-            # consumed_time1 = round(time.perf_counter() - start_time1)
-            # log.info(f'* consumed_time1 => {consumed_time1} sec, idx={idx}, origin_name={origin_name}, origin_province={origin_province}')
 
-            # start_time2 = time.perf_counter()
+            consumed_time3 = round(time.perf_counter() - start_time3)
+            log.info(f'* consumed_time3 => {consumed_time3} sec,origin_name={origin_name}，origin_province={origin_province}')
+
+            start_time4 = time.perf_counter()
+
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
+
+            consumed_time4 = round(time.perf_counter() - start_time4)
+            log.info(f'* consumed_time4 => {consumed_time4} sec, destin_province={destin_province}')
 
             # print('222 destin_province => ', destin_province)
             # consumed_time2 = round(time.perf_counter() - start_time2)
@@ -240,21 +250,24 @@ def exec_task(sql):
             sales_address = sales_address if sales_address else '无'  # 发票开票地(市)
             origin_province = origin_province if origin_province else '无'  # 行程出发地(省)
             destin_province = destin_province if destin_province else '无'  # 行程目的地(省)
-            receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+            # receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+            receipt_city = receipt_city if receipt_city else '无'  # 发票开票所在市
             destin_name = destin_name.replace(',', ' ') if destin_name else '无'
             sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec')
+            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec , idx={idx}')
 
             record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city}'
             # print(record_str)
             # print('')
             result.append(record_str)
 
-            time.sleep(0.01)
+            print()
+            #time.sleep(0.01)
 
-            start_time2 = time.perf_counter()
+
+            # start_time2 = time.perf_counter()
 
             # with open(dest_file, "a+", encoding='utf-8') as file:
             #     file.write(record_str + "\n")
@@ -281,8 +294,8 @@ def main():
     execute_02_data()  # 一共 11926897  , 消耗时间     sec
     print(f'* created txt file dest_file={dest_file}')
 
-    # test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    #test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 
 main()

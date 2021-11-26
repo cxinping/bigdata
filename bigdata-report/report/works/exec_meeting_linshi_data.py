@@ -148,6 +148,8 @@ def operate_every_record(record):
         receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 
+        receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+
         log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city

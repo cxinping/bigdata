@@ -43,4 +43,7 @@ print(ll1 == ll2)
 
 print('*******' * 10)
 
-print(type('None'))
+#print(type('None'))
+
+if 'g' in 'aaaaaaabbbbg1111':
+    print('-----------')
