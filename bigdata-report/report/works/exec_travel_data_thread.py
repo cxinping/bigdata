@@ -13,7 +13,6 @@ import threading
 from report.commons.settings import CONN_TYPE
 import sys
 
-
 """
 
 把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
@@ -30,9 +29,9 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/wo
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2019
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2018
-
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2017
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016
+
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2015
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2014
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2013
@@ -62,6 +61,11 @@ test_limit_cond = ' '  # 'LIMIT 10000'
 def get_dest_file(year):
     dest_file = f"/you_filed_algos/prod_kudu_data/temp/travel_data_{year}.txt"
     return dest_file
+
+
+def get_upload_hdfs_path(year):
+    upload_hdfs_path = f'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data_{year}.txt'
+    return upload_hdfs_path
 
 
 def init_file(year):
@@ -199,7 +203,7 @@ def operate_every_record(record):
 
 def exec_task(sql, year):
     log.info(sql)
-    #log.info(f'year={year}')
+    # log.info(f'year={year}')
 
     start_time0 = time.perf_counter()
 
@@ -210,6 +214,7 @@ def exec_task(sql, year):
     time.sleep(0.01)
 
     dest_file = get_dest_file(year)
+    upload_hdfs_path = get_upload_hdfs_path(year)
 
     if records and len(records) > 0:
         result = []
@@ -286,7 +291,7 @@ def exec_task(sql, year):
             account_period = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec , idx={idx}')
+            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec , idx={idx}， year={year}')
 
             record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city}，{account_period}'
             # print(record_str)
@@ -323,7 +328,6 @@ def exec_task(sql, year):
 
 
 def main():
-
     """
     2021 年 , 一共    , 消耗时间     sec
 
@@ -333,11 +337,8 @@ def main():
     execute_02_data(year)  # 一共 11926897  , 消耗时间     sec
     print(f'* created txt file dest_file={dest_file}')
 
-    #test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    # test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-
-
-
 
 
 main()
