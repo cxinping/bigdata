@@ -201,7 +201,7 @@ class FinanceAdministrationService:
         elif len(sales_taxno) == 18:
             sales_taxno_str = sales_taxno[2:8]
 
-        print('sales_taxno_str=',sales_taxno_str)
+        #print('sales_taxno_str=',sales_taxno_str)
 
         if sales_taxno_str:
             rst = self.query_accurate_areas(sales_taxno_str)
