@@ -22,7 +22,7 @@ cd /you_filed_algos/app
 
 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data.py
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data.py
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py
 
 
 select * from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
@@ -98,13 +98,13 @@ def execute_02_data():
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
-        print('*** tmp_sql => ', tmp_sql)
+        #print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    # max_workers=30 , 每小时处理数据量 142884
+    # max_workers=40 , 每小时处理数据量
     # max_workers=60 , 每小时处理数据量
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -117,6 +117,58 @@ def execute_02_data():
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
+
+
+def operate_every_record(record):
+    destin_name = str(record[0]) if record[0] else None  # 行程目的地
+    sales_name = str(record[1]) if record[1] else None  # 开票公司
+    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+    finance_travel_id = str(record[4]) if record[4] else None
+    origin_name = str(record[5]) if record[5] else None  # 行程出发地
+    invo_code = str(record[6]) if record[6] else None  # 发票代码
+    sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
+
+    rst = finance_service.query_areas(sales_taxno=sales_taxno)
+    # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+    # log.info(type(rst))
+
+    sales_address, receipt_city = None, None
+    if rst[0] is not None and rst[1] is not None:
+        if rst[2] is not None:
+            sales_address = rst[2]
+            receipt_city = rst[1]
+        elif rst[1] is not None:
+            sales_address = rst[1]
+            receipt_city = sales_address
+        elif rst[0] is not None:
+            sales_address = rst[0]
+
+        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+
+    else:
+        sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                       sales_bank=sales_bank)  # 发票开票地(最小行政)
+        if sales_address is None:
+            sales_address = destin_name
+
+        receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                     sales_bank=sales_bank)  # 发票开票所在市
+
+        """
+        1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
+        2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
+
+           如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位  
+       """
+
+        if receipt_city is None:
+            receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
+                                                         sales_bank=None)
+
+        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+
+    return sales_address, receipt_city
 
 
 def exec_task(sql):
@@ -145,16 +197,10 @@ def exec_task(sql):
             invo_code = str(record[6]) if record[6] else None  # 发票代码
             sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
-            # log.info(f'1 sales_address cal sales_name={sales_name}, {type(sales_name)}, sales_addressphone={sales_addressphone} , sales_bank={sales_bank}')
-            sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
-
-            # log.info(f'2 sales_address={sales_address}')
-
-            if sales_address is None:
-                sales_address = destin_name
-
-            # log.info(f'* sales_name={sales_name}，sales_addressphone={sales_addressphone}，sales_bank={sales_bank} => sales_address={sales_address}')
+            # sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            #                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
+            # if sales_address is None:
+            #     sales_address = destin_name
 
             """
              1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
@@ -162,11 +208,14 @@ def exec_task(sql):
              
                 如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位  
             """
-            receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                         sales_bank=sales_bank)  # 发票开票所在市
-            if receipt_city is None:
-                receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
-                                                             sales_bank=None)
+            # receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            #                                              sales_bank=sales_bank)  # 发票开票所在市
+            # if receipt_city is None:
+            #     receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
+            #                                                  sales_bank=None)
+
+            sales_address, receipt_city = operate_every_record(record)
+
 
             # start_time1 = time.perf_counter()
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
@@ -178,6 +227,7 @@ def exec_task(sql):
             # start_time2 = time.perf_counter()
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
+
             # print('222 destin_province => ', destin_province)
             # consumed_time2 = round(time.perf_counter() - start_time2)
             # log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}, destin_province={destin_province}')
@@ -202,7 +252,7 @@ def exec_task(sql):
             # print('')
             result.append(record_str)
 
-            time.sleep(0.02)
+            time.sleep(0.01)
 
             start_time2 = time.perf_counter()
 
@@ -228,7 +278,7 @@ def exec_task(sql):
 
 
 def main():
-    execute_02_data()  # 17292994 ,
+    execute_02_data()  # 一共 11926897  , 消耗时间     sec
     print(f'* created txt file dest_file={dest_file}')
 
     # test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)

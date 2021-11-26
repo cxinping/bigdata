@@ -2,16 +2,15 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
-#from report.commons.connect_kudu import prod_execute_sql
+# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea
-from report.services.common_services import ProvinceService
+from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
-
 
 """
 
@@ -26,6 +25,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 
 match_area = MatchArea()
 province_service = ProvinceService()
+finance_service = FinanceAdministrationService()
 
 
 def init_file():
@@ -41,24 +41,24 @@ def init_file():
 def check_linshi_office_data():
     init_file()
 
-    columns_ls = ['finance_offical_id', 'sales_name', 'sales_addressphone', 'sales_bank']
+    columns_ls = ['finance_offical_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno']
     columns_str = ",".join(columns_ls)
 
     sql = """
         select {columns_str}
     from 01_datamart_layer_007_h_cw_df.finance_official_bill 
-    where (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
+    where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
         """.format(
         columns_str=columns_str)
 
-    log.info(sql)
+    #log.info(sql)
     count_sql = 'select count(a.finance_offical_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
     log.info(f'* count_records ==> {count_records}')
 
-    max_size = 1 * 10000
+    max_size = 1 * 20000
     limit_size = 1 * 10000
     select_sql_ls = []
 
@@ -71,7 +71,7 @@ def check_linshi_office_data():
                 tmp_sql = """
                     select {columns_str}
                 from 01_datamart_layer_007_h_cw_df.finance_official_bill 
-                where  (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
+                where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
                 order by finance_offical_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
@@ -81,7 +81,7 @@ def check_linshi_office_data():
                 tmp_sql = """
                     select {columns_str}
                 from 01_datamart_layer_007_h_cw_df.finance_official_bill 
-                where (sales_name is not null or sales_addressphone is not null or sales_bank is not null )
+                where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
                 order by finance_offical_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
@@ -92,11 +92,11 @@ def check_linshi_office_data():
         tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_official_bill 
-            where (sales_name is not null or sales_addressphone is not null or sales_bank is not null)
+            where  !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
             """.format(columns_str=columns_str)
 
         select_sql_ls.append(tmp_sql)
-        print('*** tmp_sql => ', tmp_sql)
+        #print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
@@ -113,28 +113,62 @@ def check_linshi_office_data():
     log.info('** 关闭线程池')
 
 
-def stop_process_pool(executor):
-    for pid, process in executor._processes.items():
-        process.terminate()
-    executor.shutdown()
+def operate_every_record(record):
+    finance_offical_id = str(record[0])
+    sales_name = str(record[1])          # 开票公司
+    sales_addressphone = str(record[2])  # 开票地址及电话
+    sales_bank = str(record[3])          # 发票开会行
+    sales_taxno = str(record[4])         # 纳税人识别号
+
+    rst = finance_service.query_areas(sales_taxno=sales_taxno)
+    #log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+
+    sales_address, receipt_city = None, None
+    if rst[0] is not None and rst[1] is not None:
+        if rst[2] is not None:
+            sales_address = rst[2]
+            receipt_city = rst[1]
+        elif rst[1] is not None:
+            sales_address = rst[1]
+            receipt_city = sales_address
+        elif rst[0] is not None:
+            sales_address = rst[0]
+
+        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+
+    else:
+        sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                       sales_bank=sales_bank)  # 发票开票地(最小行政)
+
+        receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                     sales_bank=sales_bank)  # 发票开票所在市
+
+        log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+
+    return sales_address, receipt_city
 
 
 def exec_task(sql):
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     if records and len(records) > 0:
+        result = []
+
         for idx, record in enumerate(records):
             finance_offical_id = str(record[0])
-            sales_name = str(record[1])          # 开票公司
+            sales_name = str(record[1])  # 开票公司
             sales_addressphone = str(record[2])  # 开票地址及电话
-            sales_bank = str(record[3])          # 发票开会行
+            sales_bank = str(record[3])  # 发票开会行
+            sales_taxno = str(record[4])  # 纳税人识别号
 
-            sales_address = match_area.query_sales_address(sales_name=sales_name.replace('超市',''), sales_addressphone=sales_addressphone.replace('超市',''),
-                                                           sales_bank=sales_bank.replace('超市',''))  # 发票开票地(最小行政)
+            # sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            #                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
+            #
+            # receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            #                                              sales_bank=sales_bank)  # 发票开票所在市
 
-            receipt_city = match_area.query_receipt_city(sales_name=sales_name.replace('超市',''), sales_addressphone=sales_addressphone.replace('超市',''),
-                                                           sales_bank=sales_bank.replace('超市',''))  # 发票开票所在市
-            #receipt_city = province_service.query_receipt_city(sales_address)
+            sales_address, receipt_city = operate_every_record(record)
 
+            sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
             sales_name = sales_name.replace(',', ' ') if sales_name else '无'
             sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
             sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
@@ -142,61 +176,34 @@ def exec_task(sql):
             receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
 
             log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_offical_id},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
-            print(record_str)
-            print('')
+            record_str = f'{finance_offical_id},{sales_taxno},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
+            result.append(record_str)
 
-            with open(dest_file, "a+", encoding='utf-8') as file:
-                file.write(record_str + "\n")
+            # print(record_str)
+            # print('')
+            #time.sleep(0.01)
 
-            time.sleep(0.01)
+            if len(result) >= 100:
+                for item in result:
+                    with open(dest_file, "a+", encoding='utf-8') as file:
+                        file.write(item + "\n")
+                result = []
 
 
-# def operate_reocrd(record):
-#     sales_name = str(record[1]) if record[1] else None  # 开票公司
-#     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
-#     sales_bank = str(record[3]) if record[3] else None  # 发票开户行
-#
-#     # print('sales_name=', sales_name)
-#     # print('sales_addressphone=', sales_addressphone)
-#     # print('sales_bank=', sales_bank)
-#
-#     area_name1, area_name2, area_name3 = None, None, None
-#     if sales_name != 'None' or sales_name is not None:
-#         area_name1 = match_area.fit_area(area=sales_name)
-#
-#     if sales_addressphone != 'None' or sales_addressphone is not None:
-#         area_name2 = match_area.fit_area(area=sales_addressphone)
-#
-#     if sales_bank != 'None' or sales_bank is not None:
-#         area_name3 = match_area.fit_area(area=sales_bank)
-#
-#     area_names = []
-#     if area_name1[0]:
-#         area_names.append(area_name1)
-#
-#     if area_name2[0]:
-#         area_names.append(area_name2)
-#
-#     if area_name3[0]:
-#         area_names.append(area_name3)
-#
-#     result_area = match_area.opera_areas(area_names)
-#
-#     # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
-#     # print('### operate_reocrd show_str ==> ', show_str)
-#
-#     return result_area
+        if len(result) > 0:
+            for item in result:
+                with open(dest_file, "a+", encoding='utf-8') as file:
+                    file.write(item + "\n")
+
+        del result
 
 
 def main():
-    #check_linshi_office_data()  # 35918 ,   14776
+    #check_linshi_office_data()  # 一共 44315  条记录 , 消耗时间 206  sec
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-
-    os._exit(0)  # 无错误退出
-
+    print('--- ok ---')
 
 if __name__ == "__main__":
     main()

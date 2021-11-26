@@ -274,7 +274,7 @@ class ProvinceService:
         return province_names
 
     def query_previous_province(self, query_area_id):
-        if query_area_id is None:
+        if query_area_id is None or query_area_id == 'None' :
             return None, None, None, None
 
         for record in self.province_records:
@@ -291,7 +291,7 @@ class ProvinceService:
         return None, None, None, None
 
     def query_province(self, query_area_name):
-        if query_area_name is None:
+        if query_area_name is None or query_area_name == 'None' :
             return None, None, None, None
 
         for record in self.province_records:
@@ -309,7 +309,7 @@ class ProvinceService:
         return None, None, None, None
 
     def query_belong_province(self, area_name):
-        if area_name is None:
+        if area_name is None or area_name == 'None':
             return None
 
         area_id, area_name, parent_id, grade = self.query_province(query_area_name=area_name)
