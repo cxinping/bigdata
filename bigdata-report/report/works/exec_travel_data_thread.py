@@ -160,7 +160,7 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
-    if rst[0] is not None and rst[1] is not None:
+    if rst[2] is not None and rst[1] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
@@ -326,12 +326,13 @@ def exec_task(sql, year):
 
 def main():
     """
-    2021 年 , 一共    , 消耗时间     sec
-
+    2021 年, 一共 3565021 条, 消耗时间      sec
+    2020 年, 一共 4769258 条, 消耗时间      sec
+    2019 年, 一共 4401235 条, 消耗时间      sec
 
     """
     year = sys.argv[1]
-    execute_02_data(year)  # 一共 11926897  , 消耗时间     sec
+    execute_02_data(year)
     print(f'* created txt file dest_file={dest_file}')
 
     # test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
