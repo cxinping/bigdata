@@ -334,6 +334,7 @@ def main():
     year = sys.argv[1]
     execute_02_data(year)
     print(f'* created txt file dest_file={dest_file}')
+    print('--- ok ---')
 
     # test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
