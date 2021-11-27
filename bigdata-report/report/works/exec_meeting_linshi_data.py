@@ -137,7 +137,8 @@ def operate_every_record(record):
             sales_address = rst[1]
             receipt_city = sales_address
         elif rst[0] is not None:
-            sales_address = rst[0]
+            #sales_address = rst[0]
+            pass
 
         log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
@@ -148,7 +149,7 @@ def operate_every_record(record):
         receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 
-        receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+        receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else None
 
         log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
@@ -212,6 +213,7 @@ def exec_task(sql):
 
 def main():
     # 一共 10909 , 消耗时间  115  sec
+    # 一共 20841 , 消耗时间  115  sec
     check_meeting_data()
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
