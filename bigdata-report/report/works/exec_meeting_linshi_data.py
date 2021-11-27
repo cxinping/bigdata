@@ -47,7 +47,7 @@ def check_meeting_data():
     sql = """
         select {columns_str}
     from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-    where  !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
+    where  !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) 
         """.format(columns_str=columns_str)
 
     # log.info(sql)
@@ -57,8 +57,8 @@ def check_meeting_data():
     count_records = records[0][0]
     log.info(f'* count_records ==> {count_records}')
 
-    max_size = 1 * 10000
-    limit_size = 5000
+    max_size = 2 * 10000
+    limit_size = 10000
     select_sql_ls = []
 
     if count_records >= max_size:
@@ -70,7 +70,7 @@ def check_meeting_data():
                 tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
+            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) 
                 order by finance_meeting_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
@@ -80,7 +80,7 @@ def check_meeting_data():
                 tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
+            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null ) 
                 order by finance_meeting_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
@@ -91,7 +91,7 @@ def check_meeting_data():
         tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
+            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) 
             """.format(columns_str=columns_str)
 
         select_sql_ls.append(tmp_sql)
@@ -107,7 +107,7 @@ def check_meeting_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* 操作耗时 {consumed_time} sec')
 
 
 def operate_every_record(record):
@@ -125,11 +125,11 @@ def operate_every_record(record):
 
     # log.info(f'000 sales_taxno={sales_taxno}')
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
-    log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+    #log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
-    if rst[0] is not None and rst[1] is not None:
+    if rst[1] is not None and rst[2] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
@@ -140,7 +140,7 @@ def operate_every_record(record):
             #sales_address = rst[0]
             pass
 
-        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
     else:
         sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
@@ -149,10 +149,16 @@ def operate_every_record(record):
         receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 
-        receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else None
+        #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
-        log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        if sales_address is None and receipt_city is None:
+            sales_address = match_area.query_sales_address(sales_name=meet_addr, sales_addressphone=None,
+                                                           sales_bank=None)  # 发票开票地(最小行政)
+            receipt_city = match_area.query_receipt_city(sales_name=meet_addr, sales_addressphone=None,
+                                                         sales_bank=None)  # 发票开票所在市
 
+
+    receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else None
     return sales_address, receipt_city
 
 
@@ -213,7 +219,7 @@ def exec_task(sql):
 
 def main():
     # 一共 10909 , 消耗时间  115  sec
-    # 一共 20841 , 消耗时间  115  sec
+    # 一共 66880 , 消耗时间  1001   sec
     check_meeting_data()
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)

@@ -107,7 +107,7 @@ def check_car_linshi_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* 操作耗时 {consumed_time} sec')
     log.info('** 关闭线程池')
 
 
@@ -123,7 +123,7 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
-    if rst[0] is not None and rst[1] is not None:
+    if rst[2] is not None and rst[1] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
@@ -201,7 +201,8 @@ def exec_task(sql):
 
 
 def main():
-    check_car_linshi_data()  # 一共  5138  条记录 , 消耗时间   sec
+    # 一共  5398  条记录 , 消耗时间 1036  sec
+    check_car_linshi_data()
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)

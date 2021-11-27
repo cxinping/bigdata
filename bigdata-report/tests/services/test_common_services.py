@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily, \
-    query_finance_category_signs,query_finance_shell_daily_status, query_billds_finance_all_targets,ProvinceService
+    query_finance_category_signs, query_finance_shell_daily_status, query_billds_finance_all_targets, ProvinceService
 from report.commons.tools import create_uuid
+from report.services.common_services import *
+import csv
+import os
+from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 
 
 def demo1():
@@ -68,9 +72,9 @@ def demo2():
 
 
 def demo3():
-    #query_finance_category_signs(unusual_id='26', category_classify='01')
+    # query_finance_category_signs(unusual_id='26', category_classify='01')
 
-    #record = query_finance_shell_daily(unusual_point='13',task_status='doing')
+    # record = query_finance_shell_daily(unusual_point='13',task_status='doing')
 
     # records = query_billds_finance_all_targets(unusual_id='14')
     # print(records)
@@ -84,9 +88,28 @@ def demo3():
     print(f'origin_province={origin_province}')
 
 
+def demo4():
+    finance_service = FinanceAdministrationService()
+    # area_division_code = '310114'
+    # rst = finance_service.query_accurate_areas(area_division_code)
+    # print(rst, len(rst))
+
+    # area_division_code = '31aabb'
+    # rst = finance_service.query_blur_areas(area_division_code)
+    # print(rst, len(rst))
+
+    # sales_taxno = '210104aaaaaaaaaaaaaa'
+    sales_taxno = '370111196502221619A0'
+    rst = finance_service.query_areas(sales_taxno=sales_taxno)
+    print(rst)
+    print(len(rst))
+
+
 if __name__ == "__main__":
     # demo1()
 
     # demo2()
 
-    demo3()
+    # demo3()
+
+    demo4()

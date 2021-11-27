@@ -51,7 +51,7 @@ def check_linshi_office_data():
         """.format(
         columns_str=columns_str)
 
-    #log.info(sql)
+    # log.info(sql)
     count_sql = 'select count(a.finance_offical_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
@@ -96,7 +96,7 @@ def check_linshi_office_data():
             """.format(columns_str=columns_str)
 
         select_sql_ls.append(tmp_sql)
-        #print('*** tmp_sql => ', tmp_sql)
+        # print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
@@ -108,23 +108,23 @@ def check_linshi_office_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* 操作耗时 {consumed_time} sec')
 
     log.info('** 关闭线程池')
 
 
 def operate_every_record(record):
     finance_offical_id = str(record[0])
-    sales_name = str(record[1])          # 开票公司
+    sales_name = str(record[1])  # 开票公司
     sales_addressphone = str(record[2])  # 开票地址及电话
-    sales_bank = str(record[3])          # 发票开会行
-    sales_taxno = str(record[4])         # 纳税人识别号
+    sales_bank = str(record[3])  # 发票开会行
+    sales_taxno = str(record[4])  # 纳税人识别号
 
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
-    #log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+    # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
 
     sales_address, receipt_city = None, None
-    if rst[0] is not None and rst[1] is not None:
+    if rst[2] is not None and rst[1] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
@@ -132,7 +132,7 @@ def operate_every_record(record):
             sales_address = rst[1]
             receipt_city = sales_address
         elif rst[0] is not None:
-            #sales_address = rst[0]
+            # sales_address = rst[0]
             pass
 
         log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
@@ -182,14 +182,13 @@ def exec_task(sql):
 
             # print(record_str)
             # print('')
-            #time.sleep(0.01)
+            # time.sleep(0.01)
 
             if len(result) >= 100:
                 for item in result:
                     with open(dest_file, "a+", encoding='utf-8') as file:
                         file.write(item + "\n")
                 result = []
-
 
         if len(result) > 0:
             for item in result:
@@ -200,11 +199,14 @@ def exec_task(sql):
 
 
 def main():
-    #check_linshi_office_data()  # 一共 44315  条记录 , 消耗时间 206  sec
+    # 一共 44315  条记录 , 消耗时间 206  sec
+    # 一共 44888  条记录 , 消耗时间    sec
+    check_linshi_office_data()
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
     print('--- ok ---')
+
 
 if __name__ == "__main__":
     main()

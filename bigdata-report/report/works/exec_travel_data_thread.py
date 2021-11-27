@@ -142,7 +142,7 @@ def execute_02_data(year):
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* 操作耗时 {consumed_time} sec')
 
 
 def operate_every_record(record):
