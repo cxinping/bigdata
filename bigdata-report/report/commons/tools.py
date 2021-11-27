@@ -47,7 +47,7 @@ def match_address(place, key):
 
 
 def check_invoicing_place(addr1, addr2):
-    if addr1.find(addr2) > -1 or addr2.find(addr1):
+    if addr1.find(addr2) > -1 or addr2.find(addr1) > -1:
         return True
 
     return False
@@ -350,14 +350,18 @@ class MatchArea:
         :return:
         """
 
-        if sales_name:
-            sales_name = sales_name.replace('超市', '')
+        # if sales_name:
+        #     sales_name = sales_name.replace('超市', '')
+        #
+        # if sales_addressphone:
+        #     sales_addressphone = sales_addressphone.replace('超市', '')
+        #
+        # if sales_bank:
+        #     sales_bank = sales_bank.replace('超市', '')
 
-        if sales_addressphone:
-            sales_addressphone = sales_addressphone.replace('超市', '')
-
-        if sales_bank:
-            sales_bank = sales_bank.replace('超市', '')
+        sales_name = self.__filter_invalid_words(sales_name)
+        sales_addressphone = self.__filter_invalid_words(sales_addressphone)
+        sales_bank = self.__filter_invalid_words(sales_bank)
 
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' and sales_name is not None and len(sales_name) > 0:
