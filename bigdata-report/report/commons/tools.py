@@ -143,7 +143,8 @@ class MatchArea:
         if place is None:
             return None
 
-        place = place.replace('市区', '市')
+        if '市区' in place:
+            place = place.replace('市区', '市')
 
         ssxq = ['省', '市', '县', '区', '乡']
         indexes0 = [place.find(x) for x in ssxq]
@@ -260,7 +261,7 @@ class MatchArea:
         :return:
         """
 
-        if keyword is None:
+        if keyword is None or keyword == 'None':
             return None
 
         area_id, area_name, parent_id, grade = self._query_province(keyword)
@@ -294,7 +295,7 @@ class MatchArea:
         :return:
         """
 
-        if area_id is None:
+        if area_id is None or area_id == 'None':
             return None, None, None, None
 
         try:
@@ -318,7 +319,7 @@ class MatchArea:
 
     def _query_province(self, keyword):
 
-        if keyword is None or keyword == 'None':
+        if keyword is None or keyword == 'None' or len(keyword) == 0 :
             return None, None, None, None
 
         try:
@@ -401,6 +402,22 @@ class MatchArea:
         else:
             return area
 
+    def __filter_invalid_words(self, area_name):
+        """
+        过滤非法字符串，比如 超市， 及辖区
+        :return:
+        """
+        if area_name is None or area_name == 'None' or len(area_name) == 0:
+            return None
+
+        if '超市' in area_name:
+            area_name = area_name.replace('超市', '')
+
+        if '辖区' in area_name:
+            area_name = area_name.replace('辖区', '')
+
+        return area_name
+
     def query_sales_address(self, sales_name, sales_addressphone, sales_bank):
         """
         查询发票开票所在市
@@ -417,14 +434,9 @@ class MatchArea:
         if sales_name is None and sales_addressphone is None and sales_bank:
             return None
 
-        if sales_name:
-            sales_name = sales_name.replace('超市', '')
-
-        if sales_addressphone:
-            sales_addressphone = sales_addressphone.replace('超市', '')
-
-        if sales_bank:
-            sales_bank = sales_bank.replace('超市', '')
+        sales_name = self.__filter_invalid_words(sales_name)
+        sales_addressphone = self.__filter_invalid_words(sales_addressphone)
+        sales_bank = self.__filter_invalid_words(sales_bank)
 
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' or sales_name is not None:
