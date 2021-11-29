@@ -126,7 +126,7 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
-    if rst[1] is not None:
+    if rst[1] is not None or rst[2] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]

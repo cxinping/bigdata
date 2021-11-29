@@ -132,19 +132,21 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
-    if rst[1] is not None and rst[2] is not None:
+    if rst[1] is not None or rst[2] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
         elif rst[1] is not None:
             sales_address = rst[1]
-            receipt_city = sales_address
-        elif rst[0] is not None:
-            #sales_address = rst[0]
-            pass
+            sales_address2 = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+            if sales_address2 is not None:
+                sales_address = sales_address2
 
-        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+            receipt_city = rst[1]
+            #receipt_city = sales_address
 
+        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
     else:
         sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
