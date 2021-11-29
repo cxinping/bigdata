@@ -50,7 +50,6 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
-test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
 test_limit_cond = ' '  # 'LIMIT 10000'
 
@@ -126,11 +125,14 @@ def execute_02_data(year):
         select_sql_ls.append(tmp_sql)
         # print('*** tmp_sql => ', tmp_sql)
 
-    log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
+    if count_records >= 20000:
+        max_workers = 40
+    else:
+        max_workers = 5
 
-    # max_workers=40 , 每小时处理数据量
-    # max_workers=60 , 每小时处理数据量
-    threadPool = ThreadPoolExecutor(max_workers=40, thread_name_prefix="thr")
+    log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页, max_workers={max_workers}')
+
+    threadPool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -210,9 +212,6 @@ def exec_task(sql, year):
 
     time.sleep(0.01)
 
-    dest_file = get_dest_file(year)
-    upload_hdfs_path = get_upload_hdfs_path(year)
-
     if records and len(records) > 0:
         result = []
 
@@ -228,23 +227,6 @@ def exec_task(sql, year):
             invo_code = str(record[6]) if record[6] else None  # 发票代码
             sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
-            # sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
-            #                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
-            # if sales_address is None:
-            #     sales_address = destin_name
-
-            """
-             1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
-             2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
-             
-                如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位  
-            """
-            # receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
-            #                                              sales_bank=sales_bank)  # 发票开票所在市
-            # if receipt_city is None:
-            #     receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
-            #                                                  sales_bank=None)
-
             start_time2 = time.perf_counter()
             sales_address, receipt_city = operate_every_record(record)
             # log.info(f" {threading.current_thread().name} is running ")
@@ -258,9 +240,7 @@ def exec_task(sql, year):
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
             consumed_time3 = round(time.perf_counter() - start_time3)
-            log.info(
-                f'* consumed_time3 => {consumed_time3} sec,origin_name={origin_name}，origin_province={origin_province}')
-
+            log.info(f'* consumed_time3 => {consumed_time3} sec,origin_name={origin_name}，origin_province={origin_province}')
             start_time4 = time.perf_counter()
 
             destin_province = match_area.query_destin_province(invo_code=invo_code,
@@ -290,18 +270,12 @@ def exec_task(sql, year):
             consumed_time1 = (time.perf_counter() - start_time1)
             log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec , idx={idx}， year={year}')
 
-            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city}，{account_period}'
+            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city},{account_period}'
             # print(record_str)
             # print('')
             result.append(record_str)
 
             print()
-            # time.sleep(0.01)
-
-            # start_time2 = time.perf_counter()
-
-            # with open(dest_file, "a+", encoding='utf-8') as file:
-            #     file.write(record_str + "\n")
 
             if len(result) >= 100:
 
@@ -310,16 +284,20 @@ def exec_task(sql, year):
                         file.write(item + "\n")
                 result = []
 
-            # consumed_time2 = round(time.perf_counter() - start_time2)
-            # log.info(f'* 每行数据存储耗时 => {consumed_time2} sec')
-
-            # time.sleep(0.001)
-
         if len(result) > 0:
             for item in result:
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(item + "\n")
+
         del result
+
+
+def upload_hdfs_file():
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+
+    for year in ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021']:
+        dest_file = get_dest_file(year)
+        upload_hdfs_path = get_upload_hdfs_path(year)
 
         test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
@@ -329,15 +307,14 @@ def main():
     2021 年, 一共 3565021 条, 消耗时间      sec
     2020 年, 一共 4769258 条, 消耗时间      sec
     2019 年, 一共 4401235 条, 消耗时间      sec
-
+    2016 年, 一共 1088516 条, 消耗时间   41055   sec
     """
-    year = sys.argv[1]
-    execute_02_data(year)
+    # year = sys.argv[1]
+    # execute_02_data(year)
     print(f'* created txt file dest_file={dest_file}')
-    print('--- ok ---')
 
-    # test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    upload_hdfs_file()
+    print('--- ok ---')
 
 
 main()
