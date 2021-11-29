@@ -2,7 +2,6 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.logging import get_logger
@@ -16,6 +15,9 @@ import sys
 """
 
 把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
+
+select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
+
 
 cd /you_filed_algos/app
 
@@ -50,8 +52,10 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
+test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
 test_limit_cond = ' '  # 'LIMIT 10000'
+lock = threading.RLock()
 
 
 def get_dest_file(year):
@@ -99,7 +103,7 @@ def execute_02_data(year):
     count_records = records[0][0]
 
     max_size = 1 * 10000
-    limit_size = 1 * 5000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -170,7 +174,8 @@ def operate_every_record(record):
             sales_address = rst[1]
             receipt_city = sales_address
         elif rst[0] is not None:
-            sales_address = rst[0]
+            # sales_address = rst[0]
+            pass
 
         # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
@@ -203,6 +208,8 @@ def operate_every_record(record):
 def exec_task(sql, year):
     log.info(sql)
     # log.info(f'year={year}')
+
+    dest_file = get_dest_file(year)
 
     start_time0 = time.perf_counter()
 
@@ -240,14 +247,15 @@ def exec_task(sql, year):
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
             consumed_time3 = round(time.perf_counter() - start_time3)
-            log.info(f'* consumed_time3 => {consumed_time3} sec,origin_name={origin_name}，origin_province={origin_province}')
+            log.info(
+                f'* consumed_time3 => {consumed_time3} sec, origin_name={origin_name}, origin_province={origin_province}')
             start_time4 = time.perf_counter()
 
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
 
             consumed_time4 = round(time.perf_counter() - start_time4)
-            log.info(f'* consumed_time4 => {consumed_time4} sec, destin_province={destin_province}')
+            log.info(f'* consumed_time4 => {consumed_time4} sec, destin_name={destin_name}, destin_province={destin_province}')
 
             # print('222 destin_province => ', destin_province)
             # consumed_time2 = round(time.perf_counter() - start_time2)
@@ -268,7 +276,7 @@ def exec_task(sql, year):
             account_period = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec , idx={idx}， year={year}')
+            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
             record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city},{account_period}'
             # print(record_str)
@@ -278,11 +286,14 @@ def exec_task(sql, year):
             print()
 
             if len(result) >= 100:
+                lock.acquire()
 
                 for item in result:
                     with open(dest_file, "a+", encoding='utf-8') as file:
                         file.write(item + "\n")
                 result = []
+
+                lock.release()
 
         if len(result) > 0:
             for item in result:
@@ -292,9 +303,13 @@ def exec_task(sql, year):
         del result
 
 
-def upload_hdfs_file():
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+def upload_hdfs_file(year):
+    dest_file = get_dest_file(year)
+    upload_hdfs_path = get_upload_hdfs_path(year)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
+
+def upload_hdfs_all_files():
     for year in ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021']:
         dest_file = get_dest_file(year)
         upload_hdfs_path = get_upload_hdfs_path(year)
@@ -307,13 +322,16 @@ def main():
     2021 年, 一共 3565021 条, 消耗时间      sec
     2020 年, 一共 4769258 条, 消耗时间      sec
     2019 年, 一共 4401235 条, 消耗时间      sec
+    2018 年, 一共 3548757 条, 消耗时间      sec
+    2017 年, 一共 2318286 条, 消耗时间      sec
     2016 年, 一共 1088516 条, 消耗时间   41055   sec
     """
-    # year = sys.argv[1]
-    # execute_02_data(year)
-    print(f'* created txt file dest_file={dest_file}')
+    year = sys.argv[1]
+    # year = 2021
+    execute_02_data(year)
+    upload_hdfs_file(year)
+    # print(f'* created txt file dest_file={dest_file}')
 
-    upload_hdfs_file()
     print('--- ok ---')
 
 

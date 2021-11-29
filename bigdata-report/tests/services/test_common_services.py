@@ -83,7 +83,7 @@ def demo3():
     # records = province_service.query_province_names(grade='1')
     # print(records)
 
-    origin_name = '西安市'
+    origin_name = '东营区'
     origin_province = province_service.query_belong_province(area_name=origin_name)
     print(f'origin_province={origin_province}')
 
@@ -99,7 +99,8 @@ def demo4():
     # print(rst, len(rst))
 
     # sales_taxno = '210104aaaaaaaaaaaaaa'
-    sales_taxno = '370111196502221619A0'
+    sales_taxno = '92320829MA1P7E0E2U'
+    print(len(sales_taxno), sales_taxno)
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
     print(rst)
     print(len(rst))
@@ -110,6 +111,6 @@ if __name__ == "__main__":
 
     # demo2()
 
-    # demo3()
+    #demo3()
 
     demo4()

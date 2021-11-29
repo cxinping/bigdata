@@ -7,7 +7,7 @@ from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import MatchArea
+from report.commons.tools import MatchArea, process_invalid_content
 from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
@@ -15,6 +15,10 @@ from report.commons.settings import CONN_TYPE
 """
 
 把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_offical_linshi_analysis 表里
+
+select * from  02_logical_layer_007_h_lf_cw.finance_offical_linshi_analysis
+
+
 """
 
 log = get_logger(__name__)
@@ -169,15 +173,23 @@ def exec_task(sql):
 
             sales_address, receipt_city = operate_every_record(record)
 
-            sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
-            sales_name = sales_name.replace(',', ' ') if sales_name else '无'
-            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
-            sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
-            sales_address = sales_address.replace(',', ' ') if sales_address else '无'
-            receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+            # sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
+            # sales_name = sales_name.replace(',', ' ') if sales_name else '无'
+            # sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
+            # sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
+            # sales_address = sales_address.replace(',', ' ') if sales_address else '无'
+            # receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
+
+            sales_taxno = process_invalid_content(sales_taxno)
+            sales_name = process_invalid_content(sales_name)
+            sales_addressphone = process_invalid_content(sales_addressphone)
+            sales_bank = process_invalid_content(sales_bank)
+            sales_address = process_invalid_content(sales_address)
+            receipt_city = match_area.filter_area(process_invalid_content(receipt_city))
+            account_period = '无'
 
             log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_offical_id},{sales_taxno},{sales_name},{sales_addressphone},{sales_bank},{sales_address},{receipt_city}'
+            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{account_period}'
             result.append(record_str)
 
             # print(record_str)

@@ -12,6 +12,20 @@ from report.commons.settings import CONN_TYPE
 log = get_logger(__name__)
 
 
+def process_invalid_content(word):
+    """
+    处理写入到文件的非法字符串
+    :param word:
+    :return:
+    """
+    if word is None or word == 'None' or len(word) == 0:
+        return '无'
+
+    if '\u0001' in word:
+        word = word.replace('\u0001', ' ')
+
+    return word
+
 def kill_pid(parent_pid):
     parent = psutil.Process(parent_pid)
     for child in parent.children(recursive=True):  # or parent.children() for recursive=False
@@ -212,7 +226,7 @@ class MatchArea:
             # print('&&&&& county==> ' , county, area, grade)
 
             if grade is None:
-                return None, -1
+                return county, 3
 
             return county, int(grade)
         else:
@@ -224,7 +238,7 @@ class MatchArea:
                 # print('&&&&& city==> ' , city, area, grade)
 
                 if len(city) > 5 or grade is None:
-                    return None, -1
+                    return city, 2
 
                 return city, int(grade)
             else:
@@ -243,9 +257,9 @@ class MatchArea:
 
         province = None
         if invo_code is None or invo_code == 'None':
-            # if destin_name and destin_name.find(',') != -1:
-            #     province = self.query_belong_province(destin_name)
-            pass
+            if destin_name and destin_name.find(',') != -1:
+                province = self.query_belong_province(destin_name)
+            #pass
 
         else:
             invo_code = str(invo_code)
@@ -391,18 +405,25 @@ class MatchArea:
             kye_word1 = '公司'
             kye_word2 = '局'
             key_word3 = '银行'
+            key_word4 = '工行'
 
             if area.find(kye_word1) > 0:
                 idx = area.find(kye_word1) + 2
-                return area[idx:]
-            elif area.find(kye_word2) > 0:
+                area = area[idx:]
+
+            if area.find(kye_word2) > 0:
                 idx = area.find(kye_word2) + 1
-                return area[idx:]
-            elif area.find(key_word3) > 0:
-                idx = area.find(kye_word2) + 2
-                return area[idx:]
-            else:
-                return area
+                area = area[idx:]
+
+            if area.find(key_word3) > 0:
+                idx = area.find(key_word3) + 2
+                area = area[idx:]
+
+            if area.find(key_word4) > 0:
+                idx = area.find(key_word4) + 2
+                area = area[idx:]
+
+            return area
         else:
             return area
 
@@ -419,6 +440,9 @@ class MatchArea:
 
         if '辖区' in area_name:
             area_name = area_name.replace('辖区', '')
+
+        if '工行' in area_name:
+            area_name = area_name.replace('工行', '')
 
         return area_name
 
@@ -471,6 +495,7 @@ class MatchArea:
         if area_name3[0]:
             area_names.append(area_name3)
 
+        #print(area_names)
         result_area = self.opera_areas(area_names)
 
         # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'

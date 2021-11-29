@@ -75,8 +75,16 @@ if __name__ == "__main__":
      select destin_name,sales_name,sales_addressphone,sales_bank,finance_travel_id,origin_name,invo_code from 01_datamart_layer_007_h_cw_df.finance_travel_bill
  where finance_travel_id='d8b37cb8-1b42-4de9-8cab-d1ed0586d120'
     """
-    print(prod_sql)
-    records = prod_execute_sql(conn_type='test', sqltype='select', sql=prod_sql)
+
+    prod_sql2= """
+    select count(finance_travel_id) from (select destin_name,sales_name,sales_addressphone,sales_bank,finance_travel_id,origin_name,invo_code,sales_taxno 
+from 01_datamart_layer_007_h_cw_df.finance_travel_bill         
+where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) 
+and left(account_period,4) ='2016') a
+    """
+
+    print(prod_sql2)
+    records = prod_execute_sql(conn_type='test', sqltype='select', sql=prod_sql2)
     print(len(records))
 
     for record in records:
