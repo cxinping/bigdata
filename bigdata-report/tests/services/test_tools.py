@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from report.commons.tools import *
-import asyncio, aiomysql
-
 
 def demo1():
     str1 = '北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
@@ -94,11 +92,11 @@ def demo2():
 
 def demo3():
     match_area = MatchArea()
-    sales_name = '洪泽县高良涧镇汉庭时尚宾馆'
-    sales_addressphone = '洪泽县高良涧镇巴黎花园25B幢S2室18936778833'
-    sales_bank = '中国工商银行洪泽分行6222081110000244536'
+    sales_name = '山东省质量管理协会'
+    sales_addressphone = '济南市经十路9999号0531-88825786'
+    sales_bank = '工商银行济南和平支行1602132809000020048'
 
-    area_name = match_area.match_address(place=sales_addressphone, key='县')
+    area_name = match_area.match_address(place=sales_addressphone, key='市')
     print('1 area_name=', area_name, type(area_name))
     area = match_area.fit_area(sales_name)
     print('2 area=', area, type(area))
@@ -106,7 +104,10 @@ def demo3():
     sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                    sales_bank=sales_bank)
 
-    print('sales_address=', sales_address)
+    print('3 sales_address=', sales_address)
+
+    area = match_area.filter_area('工商银行驻马店开发区')
+    print(area)
 
 
 if __name__ == '__main__':

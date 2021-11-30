@@ -185,7 +185,7 @@ def exec_task(sql):
             sales_name = process_invalid_content(sales_name)
             sales_addressphone = process_invalid_content(sales_addressphone)
             sales_bank = process_invalid_content(sales_bank)
-            sales_address = process_invalid_content(sales_address)
+            sales_address = match_area.filter_area(process_invalid_content(sales_address))
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))
             account_period = '无'
 

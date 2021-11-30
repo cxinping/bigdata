@@ -183,20 +183,6 @@ class MatchArea:
         for idx, area in enumerate(ares):
             area_name, area_level = area[0], area[1]
 
-            if area_level == 3:
-                return area_name
-            elif area_level == 2:
-                return area_name
-            elif area_level == 1:
-                return area_name
-
-        return result_area_name
-
-    def opera_areas2(self, ares):
-        max_level_area, result_area_name = 0, None
-        for idx, area in enumerate(ares):
-            area_name, area_level = area[0], area[1]
-
             if idx == 0:
                 max_level_area = area_level
                 result_area_name = area_name
@@ -444,6 +430,12 @@ class MatchArea:
         if '工行' in area_name:
             area_name = area_name.replace('工行', '')
 
+        if '军区' in area_name:
+            area_name = area_name.replace('军区', '')
+
+        if '园区' in area_name:
+            area_name = area_name.replace('园区', '')
+
         return area_name
 
     def query_sales_address(self, sales_name, sales_addressphone, sales_bank):
@@ -495,7 +487,7 @@ class MatchArea:
         if area_name3[0]:
             area_names.append(area_name3)
 
-        #print(area_names)
+        #log.info(area_names)
         result_area = self.opera_areas(area_names)
 
         # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'

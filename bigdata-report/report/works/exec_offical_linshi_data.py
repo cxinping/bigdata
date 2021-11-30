@@ -18,6 +18,9 @@ from report.commons.settings import CONN_TYPE
 
 select * from  02_logical_layer_007_h_lf_cw.finance_offical_linshi_analysis
 
+cd /you_filed_algos/app
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_offical_linshi_data.py
 
 """
 
@@ -186,7 +189,7 @@ def exec_task(sql):
             sales_name = process_invalid_content(sales_name)
             sales_addressphone = process_invalid_content(sales_addressphone)
             sales_bank = process_invalid_content(sales_bank)
-            sales_address = process_invalid_content(sales_address)
+            sales_address = match_area.filter_area(process_invalid_content(sales_address))
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))
             account_period = '无'
 

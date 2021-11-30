@@ -6,7 +6,7 @@ from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import MatchArea
+from report.commons.tools import MatchArea, process_invalid_content
 from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
@@ -18,12 +18,19 @@ import sys
 
 select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
 
-
 cd /you_filed_algos/app
 
-/root/anaconda3/bin/python -u /you_filed_algos/app/report/works/exec_travel_data.py
-
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py
+
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2021 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2019 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2018 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2017 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2015 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2014 &
 
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2021
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020
@@ -39,8 +46,6 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/wo
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2010   没数据
 
 
-select * from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
-
 """
 
 log = get_logger(__name__)
@@ -54,7 +59,7 @@ province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
-test_limit_cond = ' '  # 'LIMIT 10000'
+test_limit_cond = ' LIMIT 1000000 '  # 'LIMIT 10000'
 lock = threading.RLock()
 
 
@@ -103,7 +108,7 @@ def execute_02_data(year):
     count_records = records[0][0]
 
     max_size = 1 * 10000
-    limit_size = 1 * 10000
+    limit_size = 1 * 20000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -130,7 +135,7 @@ def execute_02_data(year):
         # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 40
+        max_workers = 50
     else:
         max_workers = 5
 
@@ -166,18 +171,24 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
-    if rst[2] is not None and rst[1] is not None:
+    if rst[1] is not None or rst[2] is not None:
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
         elif rst[1] is not None:
             sales_address = rst[1]
-            receipt_city = sales_address
-        elif rst[0] is not None:
-            # sales_address = rst[0]
-            pass
+            sales_address2 = match_area.query_sales_address(sales_name=sales_name,
+                                                            sales_addressphone=sales_addressphone,
+                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
+            if sales_address2 is not None:
+                sales_address = sales_address2
 
-        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+            if sales_address is None:
+                sales_address = destin_name
+
+            receipt_city = rst[1]
+
+        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
     else:
         sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
@@ -199,25 +210,21 @@ def operate_every_record(record):
             receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
                                                          sales_bank=None)
 
-        receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else None
-        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
 
 def exec_task(sql, year):
-    log.info(sql)
-    # log.info(f'year={year}')
-
     dest_file = get_dest_file(year)
 
+    log.info(sql)
     start_time0 = time.perf_counter()
-
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     consumed_time0 = (time.perf_counter() - start_time0)
     log.info(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')
 
-    time.sleep(0.01)
+    #time.sleep(0.01)
 
     if records and len(records) > 0:
         result = []
@@ -234,58 +241,53 @@ def exec_task(sql, year):
             invo_code = str(record[6]) if record[6] else None  # 发票代码
             sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
-            start_time2 = time.perf_counter()
+            # start_time2 = time.perf_counter()
             sales_address, receipt_city = operate_every_record(record)
             # log.info(f" {threading.current_thread().name} is running ")
-            consumed_time2 = round(time.perf_counter() - start_time2)
-            log.info(
-                f'* consumed_time2 => {consumed_time2} sec, sales_address={sales_address}, receipt_city={receipt_city}')
-
-            start_time3 = time.perf_counter()
+            # consumed_time2 = round(time.perf_counter() - start_time2)
+            # log.info(
+            #     f'* consumed_time2 => {consumed_time2} sec, sales_address={sales_address}, receipt_city={receipt_city}')
+            #
+            # start_time3 = time.perf_counter()
 
             # origin_province = match_area.query_belong_province(origin_name)  # 行程出发地(省)
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
-            consumed_time3 = round(time.perf_counter() - start_time3)
-            log.info(
-                f'* consumed_time3 => {consumed_time3} sec, origin_name={origin_name}, origin_province={origin_province}')
-            start_time4 = time.perf_counter()
+            # consumed_time3 = round(time.perf_counter() - start_time3)
+            # log.info(
+            #     f'* consumed_time3 => {consumed_time3} sec, origin_name={origin_name}, origin_province={origin_province}')
+            # start_time4 = time.perf_counter()
 
             destin_province = match_area.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
 
-            consumed_time4 = round(time.perf_counter() - start_time4)
-            log.info(f'* consumed_time4 => {consumed_time4} sec, destin_name={destin_name}, destin_province={destin_province}')
+            # consumed_time4 = round(time.perf_counter() - start_time4)
+            # log.info(
+            #     f'* consumed_time4 => {consumed_time4} sec, destin_name={destin_name}, destin_province={destin_province}')
 
-            # print('222 destin_province => ', destin_province)
-            # consumed_time2 = round(time.perf_counter() - start_time2)
-            # log.info(f'* consumed_time2 => {consumed_time2} sec, idx={idx}, destin_province={destin_province}')
-
-            origin_name = origin_name.replace(',', ' ') if origin_name else '无'  # 行程出发地(市)
-            sales_name = sales_name.replace(',', ' ') if sales_name else '无'  # 开票公司
-            sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'  # 开票地址及电话
-            sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'  # 发票开户行
-            invo_code = invo_code if invo_code else '无'  # 发票代码
-            sales_address = sales_address if sales_address else '无'  # 发票开票地(市)
-            origin_province = origin_province if origin_province else '无'  # 行程出发地(省)
-            destin_province = destin_province if destin_province else '无'  # 行程目的地(省)
-            # receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
-            receipt_city = receipt_city if receipt_city else '无'  # 发票开票所在市
-            destin_name = destin_name.replace(',', ' ') if destin_name else '无'
-            sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
+            origin_name = process_invalid_content(origin_name)  # 行程出发地(市)
+            sales_name = process_invalid_content(sales_name)  # 开票公司
+            sales_addressphone = process_invalid_content(sales_addressphone)  # 开票地址及电话
+            sales_bank = process_invalid_content(sales_bank)  # 发票开户行
+            invo_code = process_invalid_content(invo_code)  # 发票代码
+            sales_address = match_area.filter_area(process_invalid_content(sales_address))  # 发票开票地(市)
+            origin_province = process_invalid_content(origin_province)  # 行程出发地(省)
+            destin_province = process_invalid_content(destin_province)  # 行程目的地(省)
+            receipt_city = match_area.filter_area(process_invalid_content(receipt_city))  # 发票开票所在市
+            destin_name = process_invalid_content(destin_name)
+            sales_taxno = process_invalid_content(sales_taxno)
             account_period = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
             log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
-            record_str = f'{finance_travel_id},{origin_name},{destin_name},{sales_name},{sales_addressphone},{sales_bank},{invo_code},{sales_taxno},{sales_address},{origin_province},{destin_province},{receipt_city},{account_period}'
+            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_city}\u0001{account_period}'
             # print(record_str)
             # print('')
+
             result.append(record_str)
 
-            print()
-
-            if len(result) >= 100:
+            if len(result) >= 1000:
                 lock.acquire()
 
                 for item in result:
@@ -315,6 +317,7 @@ def upload_hdfs_all_files():
         upload_hdfs_path = get_upload_hdfs_path(year)
 
         test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+        print(f'* upload the dest_file={dest_file}')
 
 
 def main():
@@ -326,11 +329,11 @@ def main():
     2017 年, 一共 2318286 条, 消耗时间      sec
     2016 年, 一共 1088516 条, 消耗时间   41055   sec
     """
-    year = sys.argv[1]
-    # year = 2021
+
+    # year = sys.argv[1]
+    year = '2021'
     execute_02_data(year)
     upload_hdfs_file(year)
-    # print(f'* created txt file dest_file={dest_file}')
 
     print('--- ok ---')
 
