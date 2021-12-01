@@ -92,9 +92,9 @@ def demo2():
 
 def demo3():
     match_area = MatchArea()
-    sales_name = '山东省质量管理协会'
-    sales_addressphone = '济南市经十路9999号0531-88825786'
-    sales_bank = '工商银行济南和平支行1602132809000020048'
+    sales_name = '内蒙古阿健实业（集团）有限公司如意工业园区分公司'
+    sales_addressphone = '内蒙古自治区呼和浩特市如意工业园区如意和大街与万通路交汇口往北800米路西 0471-2949999'
+    sales_bank = '中国建设银行股份有限公司呼和浩特腾飞路支行  15050170662800000324'
 
     area_name = match_area.match_address(place=sales_addressphone, key='市')
     print('1 area_name=', area_name, type(area_name))
@@ -104,10 +104,10 @@ def demo3():
     sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                    sales_bank=sales_bank)
 
-    print('3 sales_address=', sales_address)
+    print('*** sales_address=', sales_address)
 
-    area = match_area.filter_area('工商银行驻马店开发区')
-    print(area)
+    # area = match_area.filter_area('工商银行驻马店开发区')
+    # print(area)
 
 
 if __name__ == '__main__':

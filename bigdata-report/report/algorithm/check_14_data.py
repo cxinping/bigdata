@@ -616,9 +616,6 @@ def main():
     # 需求2 交通方式为飞机的交通费用异常分析
     #check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
     analyze_plane_data(coefficient=2)      # 3523 sec
-
-
-
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
 
     print('--- ok ---')

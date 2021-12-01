@@ -90,16 +90,12 @@ def execute_02_data(year):
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
 
-    # extra_columns_ls = ['bill_id']
-    # columns_ls.extend(extra_columns_ls)
-
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' 
        {test_limit_cond}
-    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
-                                                                                                              '').strip()
+    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -135,7 +131,7 @@ def execute_02_data(year):
         # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 5
+        max_workers = 10
     else:
         max_workers = 5
 

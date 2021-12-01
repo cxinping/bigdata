@@ -26,6 +26,7 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/wo
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021014
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021013
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021012
+
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021011
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021010
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021009
@@ -90,21 +91,17 @@ def init_file(year_month):
 
 
 def execute_02_data(year_month):
-    init_file(year_month)
-
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
-
-    # extra_columns_ls = ['bill_id']
-    # columns_ls.extend(extra_columns_ls)
 
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' 
        {test_limit_cond}
-    """.format(columns_str=columns_str, year_month=year_month, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
-                                                                                                              '').strip()
+    """.format(columns_str=columns_str, year_month=year_month, test_limit_cond=test_limit_cond).replace('\n',
+                                                                                                        '').replace(
+        '\r', '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -140,13 +137,15 @@ def execute_02_data(year_month):
         # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 5
+        max_workers = 10
     else:
         max_workers = 5
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页, max_workers={max_workers}')
 
-    if len(select_sql_ls) > 0:
+    if count_records > 0:
+        init_file(year_month)
+
         threadPool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
@@ -156,6 +155,10 @@ def execute_02_data(year_month):
         threadPool.shutdown(wait=True)
         consumed_time = round(time.perf_counter() - start_time)
         log.info(f'* 处理 {count_records} 条记录，共操作耗时 {consumed_time} sec, max_workers={max_workers}')
+
+        upload_hdfs_file(year_month)
+    else:
+        log.info(f'* 查询日期 => {year_month}， 没有查询到任何数据')
 
 
 def operate_every_record(record):
@@ -281,7 +284,8 @@ def exec_task(sql, year_month):
             account_period = year_month
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year_month={year_month}')
+
+            #log.info( f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year_month={year_month}')
 
             record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_city}\u0001{account_period}'
             # print(record_str)
@@ -313,29 +317,10 @@ def upload_hdfs_file(year_month):
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 
-def upload_hdfs_all_files():
-    for year in ['2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021']:
-        dest_file = get_dest_file(year)
-        upload_hdfs_path = get_upload_hdfs_path(year)
-
-        test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-        print(f'* upload the dest_file={dest_file}')
-
-
 def main():
-    """
-    2021 年, 一共 3565021 条, 消耗时间      sec
-    2020 年, 一共 4769258 条, 消耗时间      sec
-    2019 年, 一共 4401235 条, 消耗时间      sec
-    2018 年, 一共 3548757 条, 消耗时间      sec
-    2017 年, 一共 2318286 条, 消耗时间      sec
-    2016 年, 一共 1088516 条, 消耗时间   41055   sec
-    """
-
-    year = sys.argv[1]
-    # year = '2021'
-    execute_02_data(year)
-    upload_hdfs_file(year)
+    year_month = sys.argv[1]
+    # year = '2021011'
+    execute_02_data(year_month)
 
     print('--- ok ---')
 

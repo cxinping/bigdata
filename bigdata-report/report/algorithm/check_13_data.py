@@ -36,9 +36,7 @@ sys.path.append('/you_filed_algos/app')
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint13'
 dest_file = dest_dir + '/check_13_data.txt'
 
-upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/check_13_data.txt'
-
-test_limit_cond = 'LIMIT 10001'  # 'LIMIT 10002'
+test_limit_cond = ' '  # 'LIMIT 10002'
 
 
 class Check13Service:
@@ -131,7 +129,7 @@ class Check13Service:
             # print('*** tmp_sql => ', tmp_sql)
 
         log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
-        threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+        threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
         all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
@@ -139,11 +137,13 @@ class Check13Service:
 
         threadPool.shutdown(wait=True)
         consumed_time = round(time.perf_counter() - start_time)
-        log.info(f'* 查询耗时 {consumed_time} sec')
+        log.info(f'* 一共有数据 {count_records} 条，保存数据耗时 {consumed_time} sec')
 
     def exec_task(self, sql):
-        log.info(sql)
+        #log.info(sql)
+
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+
         if records and len(records) > 0:
             for idx, record in enumerate(records):
                 bill_id = str(record[0])                # bill_id
@@ -160,9 +160,8 @@ class Check13Service:
                 emp_name = emp_name.replace(',', ' ')
 
                 record_str = f'{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
-                log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
-                log.info(record_str)
-                print()
+                #log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
+                #log.info(record_str)
 
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
@@ -225,7 +224,7 @@ class Check13Service:
         targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='13')
         bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
 
-        exec_sql(bill_id_ls)  # 42423
+        exec_sql(bill_id_ls)  #
 
 
 def exec_sql(bill_id_ls):
@@ -325,12 +324,8 @@ def exec_sql(bill_id_ls):
             raise RuntimeError(e)
 
 
-if __name__ == "__main__":
-    check13_service = Check13Service()
-    check13_service.save_fee_data()  # 一共有数据 5776561 条， 花费时间  秒，
-    #check13_service.analyze_data(coefficient=2)
 
-    # test_hdfs = Test_HDFSTools(conn_type='test')
-    # test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-
-    print('--- ok ---')
+check13_service = Check13Service()
+check13_service.save_fee_data()  #
+#check13_service.analyze_data(coefficient=2)
+print('--- ok ---')

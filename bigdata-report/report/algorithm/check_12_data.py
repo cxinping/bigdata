@@ -10,7 +10,7 @@ import threading
 from report.services.common_services import ProvinceService
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 import pandas as pd
-#from report.commons.connect_kudu import prod_execute_sql
+# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.tools import (list_of_groups, kill_pid)
@@ -61,14 +61,14 @@ class Check12Service:
         self.init_file()
 
         columns_ls = ['bill_id', 'origin_name', 'destin_name', 'travel_city_name', 'travel_beg_date',
-                      'travel_end_date']
+                      'travel_end_date', 'bill_code']
         columns_str = ",".join(columns_ls)
 
         sql = """
         select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
         AND travel_city_name is not NULL AND travel_city_name !=''
-        AND travel_beg_date != travel_end_date AND  travel_beg_date > '20190101'
+        AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101' AND bill_code is not NULL
         {test_limit_cond}
         """.format(columns_str=columns_str, test_limit_cond=test_limit_cond).replace('\r', '').replace('\n',
                                                                                                        '').replace('\t',
@@ -94,7 +94,7 @@ class Check12Service:
                 select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
                 WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
                 AND travel_city_name is not NULL AND travel_city_name !=''
-                AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'                    
+                AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101' AND bill_code is not NULL                   
                 ORDER BY travel_beg_date limit {limit_size} offset {offset_size}
                     """.format(limit_size=limit_size, offset_size=offset_size, columns_str=columns_str).replace('\r',
                                                                                                                 '').replace(
@@ -107,7 +107,7 @@ class Check12Service:
                     select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
                     WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
                     AND travel_city_name is not NULL AND travel_city_name !=''
-                    AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'                    
+                    AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101' AND bill_code is not NULL                    
                     ORDER BY travel_beg_date limit {limit_size} offset {offset_size}
                         """.format(limit_size=limit_size, offset_size=offset_size,
                                    columns_str=columns_str).replace('\r', '').replace('\n', '').replace('\t', '')
@@ -120,7 +120,7 @@ class Check12Service:
         select distinct {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL and destin_name !='' and destin_name !='NULL'  
         AND travel_city_name is not NULL AND travel_city_name !=''
-        AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'
+        AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101' AND bill_code is not NULL
          {test_limit_cond}   
         """.replace('\r', '').replace('\n', '').replace('\t', '')
             select_sql_ls.append(tmp_sql)
@@ -128,8 +128,7 @@ class Check12Service:
 
         log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-
-        threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+        threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
         all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
@@ -137,12 +136,11 @@ class Check12Service:
 
         threadPool.shutdown(wait=True)
         consumed_time = round(time.perf_counter() - start_time)
-        log.info(f'* 查询耗时 {consumed_time} sec')
+        log.info(f'* 一共有 {count_records} 条数据, 保存数据共耗时 {consumed_time} sec')
 
     def exec_task(self, sql):
         # log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-        print(0.01)
 
         if records and len(records) > 0:
             for idx, record in enumerate(records):
@@ -152,14 +150,15 @@ class Check12Service:
                 travel_city_name = str(record[3])  # 出差城市
                 travel_beg_date = str(record[4])  # 差旅开始时间
                 travel_end_date = str(record[5])  # 差旅结束时间
+                bill_code = str(record[6])  # bill_code
 
                 travel_city_name = re.sub(r'[{}]+'.format(punctuation + digits), ' ', travel_city_name)
                 # log.info(travel_city_name)
 
-                record_str = f'{bill_id},{origin_name},{destin_name},{travel_city_name},{travel_beg_date},{travel_end_date}'
-                log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
+                record_str = f'{bill_id},{origin_name},{destin_name},{travel_city_name},{travel_beg_date},{travel_end_date},{bill_code}'
+                #log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
                 log.info(record_str)
-                print()
+                # print()
 
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
@@ -202,11 +201,11 @@ class Check12Service:
             lambda x: self.complex_function(x['travel_city_name'], origin_name, destin_name), axis=1)
 
         log.info('* before filter')
-        print(group_df)
+        #print(group_df.head())
         group_df = group_df[group_df.duplicated('trans_travel_city_name', keep=False) == False]
         log.info('* after filter')
-        print(group_df)
-        print()
+        #print(group_df.head())
+        #print()
 
         for index, row in group_df.iterrows():
             bill_id = row['bill_id']
@@ -218,10 +217,10 @@ class Check12Service:
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'origin_name', 'destin_name', 'travel_city_name', 'travel_beg_date',
                                    'travel_end_date'])
-        # print(rd_df.head())
+        #print(rd_df.head())
         # print(len(rd_df))
 
-        rd_df = rd_df[:500]
+        rd_df = rd_df[:100]
         # 测试1
         # rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
@@ -237,7 +236,7 @@ class Check12Service:
 
         print('*** len(rd_df) => ', len(rd_df))
         print('*** len(bill_id_ls) => ', len(bill_id_ls))
-        #print(bill_id_ls)
+        print(bill_id_ls)
         #exec_sql(bill_id_ls)
 
 
@@ -338,11 +337,7 @@ def exec_sql(bill_id_ls):
             raise RuntimeError(e)
 
 
-if __name__ == "__main__":
-    check12_service = Check12Service()
-    check12_service.save_data()  # 查询耗时 1181 sec， 1146783  484799
-    #check12_service.analyze_data()
 
-    os._exit(0)  # 无错误退出
-
-
+check12_service = Check12Service()
+check12_service.save_data()  #  一共有 1453561 条数据, 保存数据共耗时 708 sec
+#check12_service.analyze_data()
