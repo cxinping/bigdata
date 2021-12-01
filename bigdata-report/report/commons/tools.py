@@ -243,7 +243,7 @@ class MatchArea:
 
         province = None
         if invo_code is None or invo_code == 'None':
-            if destin_name and destin_name.find(',') != -1:
+            if destin_name and len(destin_name) > 0 and ',' not in destin_name:
                 province = self.query_belong_province(destin_name)
             #pass
 

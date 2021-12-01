@@ -20,30 +20,35 @@ select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py
 
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2021 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2019 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2018 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2017 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2015 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2014 &
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021016
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021015
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021014
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021013
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021012
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021011
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021010
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021009
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021008
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021007
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021006
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021005
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021004
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021003
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021002
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2021001
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2021
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2019
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2018
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2017
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2015
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2014
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2013   没数据
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2012   没数据
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2011   没数据
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2010   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2020
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2019
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2018
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2017
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2016
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2015
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2014
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2013   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2012   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2011   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread2.py 2010   没数据
 
 
 """
@@ -59,7 +64,7 @@ province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
-test_limit_cond = ' LIMIT 100000 '  # 'LIMIT 10000'
+test_limit_cond = ' '  # 'LIMIT 10000'
 lock = threading.RLock()
 
 
@@ -68,24 +73,24 @@ def get_dest_file(year):
     return dest_file
 
 
-def get_upload_hdfs_path(year):
-    upload_hdfs_path = f'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data_{year}.txt'
+def get_upload_hdfs_path(year_month):
+    upload_hdfs_path = f'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis/travel_data_{year_month}.txt'
     return upload_hdfs_path
 
 
-def init_file(year):
+def init_file(year_month):
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
 
-    dest_file = get_dest_file(year)
+    dest_file = get_dest_file(year_month)
     if os.path.exists(dest_file):
         os.remove(dest_file)
 
     os.mknod(dest_file)
 
 
-def execute_02_data(year):
-    init_file(year)
+def execute_02_data(year_month):
+    init_file(year_month)
 
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
@@ -96,9 +101,9 @@ def execute_02_data(year):
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' 
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' 
        {test_limit_cond}
-    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
+    """.format(columns_str=columns_str, year_month=year_month, test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
                                                                                                               '').strip()
 
     log.info(sql)
@@ -117,20 +122,20 @@ def execute_02_data(year):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  {test_limit_cond} ".format(
-            columns_str=columns_str, test_limit_cond=test_limit_cond, year=year)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  {test_limit_cond} ".format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond, year_month=year_month)
         select_sql_ls.append(tmp_sql)
         # print('*** tmp_sql => ', tmp_sql)
 
@@ -145,7 +150,7 @@ def execute_02_data(year):
         threadPool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
-        all_task = [threadPool.submit(exec_task, sel_sql, year) for sel_sql in select_sql_ls]
+        all_task = [threadPool.submit(exec_task, sel_sql, year_month) for sel_sql in select_sql_ls]
         wait(all_task, return_when=ALL_COMPLETED)
 
         threadPool.shutdown(wait=True)
@@ -212,8 +217,8 @@ def operate_every_record(record):
     return sales_address, receipt_city
 
 
-def exec_task(sql, year):
-    dest_file = get_dest_file(year)
+def exec_task(sql, year_month):
+    dest_file = get_dest_file(year_month)
 
     log.info(sql)
     start_time0 = time.perf_counter()
@@ -273,10 +278,10 @@ def exec_task(sql, year):
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))  # 发票开票所在市
             destin_name = process_invalid_content(destin_name)
             sales_taxno = process_invalid_content(sales_taxno)
-            account_period = year
+            account_period = year_month
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
+            log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year_month={year_month}')
 
             record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_city}\u0001{account_period}'
             # print(record_str)
@@ -302,9 +307,9 @@ def exec_task(sql, year):
         del result
 
 
-def upload_hdfs_file(year):
-    dest_file = get_dest_file(year)
-    upload_hdfs_path = get_upload_hdfs_path(year)
+def upload_hdfs_file(year_month):
+    dest_file = get_dest_file(year_month)
+    upload_hdfs_path = get_upload_hdfs_path(year_month)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 

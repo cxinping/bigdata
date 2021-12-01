@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
+
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
-
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea, process_invalid_content
@@ -66,7 +65,7 @@ def check_linshi_office_data():
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 1 * 20000
-    limit_size = 1 * 10000
+    limit_size = 1 * 2000
     select_sql_ls = []
 
     if count_records >= max_size:
