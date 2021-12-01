@@ -80,8 +80,14 @@ def check_34_data():
 
     print(rd_df.head(10))
     bill_id_ls = rd_df['bill_id'].tolist()
-    #print(bill_id_ls)
-    #exec_sql(bill_id_ls)
+
+    if len(bill_id_ls) > 0:
+        #exec_sql(bill_id_ls)  #
+        pass
+    else:
+        print('* bill_id_ls length is 0 ')
+
+    print('--- check_34 has been completed ')
 
 
 def exec_sql(bill_id_ls):

@@ -205,7 +205,7 @@ def check_14_no_plane_data():
     log.info(f'* 查询耗时 {consumed_time} sec')
 
 
-def exec_no_plane_task(sql, dest_file):  # dest_file
+def exec_no_plane_task(sql, dest_file):
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     if records and len(records) > 0:
         for idx, record in enumerate(records):
@@ -236,6 +236,8 @@ def init_file(dest_file):
 
     if os.path.exists(dest_file):
         os.remove(dest_file)
+
+    os.mknod(dest_file)
 
 
 def analyze_no_plane_data(coefficient=2):

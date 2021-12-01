@@ -51,6 +51,8 @@ class Check13Service:
         if os.path.exists(dest_file):
             os.remove(dest_file)
 
+        os.mknod(dest_file)
+
     def save_fee_data(self):
         """
         查询超过标准报销费用的住宿费记录

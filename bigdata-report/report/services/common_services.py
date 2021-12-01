@@ -7,8 +7,25 @@ from report.commons.logging import get_logger
 from report.commons.mysql_pool import AsyncMysql, exec_insert
 from report.commons.db_helper import db_fetch_to_dict
 
-
 log = get_logger(__name__)
+
+
+def query_finance_ids_finance_all_targets(unusual_id):
+    finance_idw = []
+    try:
+        sql = f'select distinct finance_id from analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets where unusual_id="{unusual_id}" '
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        # print(len(records))
+
+        for idx, record in enumerate(records):
+            # print(record)
+            finance_id = str(record[0])
+            finance_idw.append(finance_id)
+
+        return finance_idw
+    except Exception as e:
+        print(e)
+        return []
 
 
 def query_billds_finance_all_targets(unusual_id):
@@ -298,7 +315,7 @@ class ProvinceService:
 
             # print(area_id, area_name, parent_id, grade)
             # if query_area_name == area_name:
-            #if area_name.find(query_area_name) > -1:
+            # if area_name.find(query_area_name) > -1:
             if area_name in query_area_name or query_area_name in area_name:
                 area_id = str(record[0]) if record[0] else None
                 parent_id = str(record[2]) if record[2] else None
