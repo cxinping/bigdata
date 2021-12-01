@@ -14,9 +14,14 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
+import pandas as pd
+
+# 设置显示最大列数 与 显示宽度
+pd.set_option('display.max_columns',None)
+pd.set_option('display.width', 500)
 
 def check_34_data():
-    columns_ls = ['finance_travel_id', 'bill_id', 'meet_lvl_name', 'met_money']
+    columns_ls = ['finance_meeting_id', 'bill_id', 'meet_lvl_name', 'met_money']
     columns_str = ",".join(columns_ls)
 
     sql = f"""
@@ -34,10 +39,10 @@ def check_34_data():
     print(sql)
     columns_ls.append('per_day_met_money')  # 每人每天的会议费
 
-    print(columns_ls)
+    #print(columns_ls)
     rd_df = query_kudu_data(sql, columns_ls)
     print(rd_df.head(10))
-    print(rd_df.dtypes)
+    #print(rd_df.dtypes)
     # print(rd_df.describe())
     # print(len(rd_df))
     print('*' * 50)
@@ -73,10 +78,10 @@ def check_34_data():
                   | ((rd_df.meet_lvl_name == '三类会议') & (rd_df.per_day_met_money > type_3_meeting_std))
                   | ((rd_df.meet_lvl_name == '四类会议') & (rd_df.per_day_met_money > type_4_meeting_std))]
 
-    print(rd_df.head(20))
+    print(rd_df.head(10))
     bill_id_ls = rd_df['bill_id'].tolist()
-    print(bill_id_ls)
-    exec_sql(bill_id_ls)
+    #print(bill_id_ls)
+    #exec_sql(bill_id_ls)
 
 
 def exec_sql(bill_id_ls):

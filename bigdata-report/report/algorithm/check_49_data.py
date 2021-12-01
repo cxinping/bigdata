@@ -20,15 +20,15 @@ sys.path.append('/you_filed_algos/app')
 import pandas as pd
 
 # 设置显示最大列数 与 显示宽度
-pd.set_option('display.max_columns',None)
+pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 500)
 
 
 def check_49_data():
-    columns_ls = ['finance_offical_id', 'bill_id', 'bill_code','check_amount']  # 日期字段 account_period
+    columns_ls = ['finance_offical_id', 'bill_id', 'bill_code', 'check_amount']  # 日期字段 account_period
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0 AND bill_code is not NULL AND bill_code !="" limit 10000 '.format(
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0 AND bill_code is not NULL AND bill_code !=""  '.format(
         columns_str=columns_str)
     start_time = time.perf_counter()
     rd_df = query_kudu_data(sql, columns_ls, conn_type=CONN_TYPE)
@@ -149,9 +149,9 @@ def exec_sql(finance_id_ls):
         importdate
         from 01_datamart_layer_007_h_cw_df.finance_official_bill
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql) #.replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-        #print(sql)
+        print(sql)
 
         try:
             start_time = time.perf_counter()
