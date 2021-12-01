@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import pandas as pd
-#from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 
@@ -16,13 +15,13 @@ def query_kudu_data(sql=None, columns=[], conn_type=CONN_TYPE):
     :return:
     """
 
-    print(sql, columns, conn_type)
+    #print(sql, columns, conn_type)
 
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
     # log.info('***' * 20)
     log.info('*** query_kudu_data => ' + str(len(records)))
     # log.info('***' * 20)
-    print('')
+    #print('')
 
     dataFromKUDU = []
     for item in records:
