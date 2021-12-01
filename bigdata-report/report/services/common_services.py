@@ -11,7 +11,7 @@ log = get_logger(__name__)
 
 
 def query_finance_ids_finance_all_targets(unusual_id):
-    finance_idw = []
+    finance_ids = []
     try:
         sql = f'select distinct finance_id from analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets where unusual_id="{unusual_id}" '
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
@@ -20,9 +20,9 @@ def query_finance_ids_finance_all_targets(unusual_id):
         for idx, record in enumerate(records):
             # print(record)
             finance_id = str(record[0])
-            finance_idw.append(finance_id)
+            finance_ids.append(finance_id)
 
-        return finance_idw
+        return finance_ids
     except Exception as e:
         print(e)
         return []

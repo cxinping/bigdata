@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily, \
-    query_finance_category_signs, query_finance_shell_daily_status, query_billds_finance_all_targets, ProvinceService
+    query_finance_category_signs, query_finance_shell_daily_status, query_billds_finance_all_targets, ProvinceService, \
+    query_finance_ids_finance_all_targets
 from report.commons.tools import create_uuid
 from report.services.common_services import *
 import csv
@@ -106,11 +107,24 @@ def demo4():
     print(len(rst))
 
 
+def demo5():
+    results = query_finance_ids_finance_all_targets(unusual_id='49')
+    print('总数为 => ', len(results))
+
+    for idx, item in enumerate(results):
+        if idx == 10:
+            break
+
+        print(item)
+
+
 if __name__ == "__main__":
     # demo1()
 
     # demo2()
 
-    #demo3()
+    # demo3()
 
-    demo4()
+    # demo4()
+
+    demo5()

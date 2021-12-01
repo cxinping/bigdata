@@ -28,7 +28,7 @@ def check_49_data():
     columns_ls = ['finance_offical_id', 'bill_id', 'bill_code', 'check_amount']  # 日期字段 account_period
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0 AND bill_code is not NULL AND bill_code !=""  '.format(
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0 AND bill_code is not NULL AND bill_code !=""   '.format(
         columns_str=columns_str)
     print(sql)
 
@@ -45,17 +45,21 @@ def check_49_data():
     result = rd_df[rd_df['check_amount'] > std_val]
 
     print(f'* "check_amount"列计算的方差为 => {std_val}')
-    print(result.head(5))
+    print(result.head(10))
 
     finance_id_ls = result['finance_offical_id'].tolist()
+    print(f'before filter len(finance_id_ls)={len(finance_id_ls)}')
+
     targes_finance_ids_ls = query_finance_ids_finance_all_targets(unusual_id='49')
-    finance_id_ls = [x for x in finance_id_ls if x not in targes_finance_ids_ls]
     print(f'* len(targes_finance_ids_ls)={len(targes_finance_ids_ls)}')
+
+    finance_id_ls = [x for x in finance_id_ls if x not in targes_finance_ids_ls]
+    print(f'* after filter len(finance_id_ls)={len(finance_id_ls)}')
 
     if len(finance_id_ls) > 0:
         exec_sql(finance_id_ls)  #
     else:
-        print(' finance_id_ls length is 0 ')
+        print('** finance_id_ls length is 0 ')
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 查询耗时 {consumed_time} sec')
