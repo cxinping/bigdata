@@ -2,7 +2,7 @@ from concurrent import futures
 import time
 
 def task(n):
-    time.sleep(10)
+    time.sleep(1)
     print(n)
 
 

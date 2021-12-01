@@ -140,7 +140,7 @@ def exec_sql(bill_id_ls):
     0 as meeting_amount
     FROM 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
     WHERE {condition_sql}
-        """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+        """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
     print(sql)
     start_time = time.perf_counter()
     prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
