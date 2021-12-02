@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import time
 import threading
-#from report.commons.connect_kudu import prod_execute_sql
+# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.db_helper import query_kudu_data
@@ -92,7 +92,7 @@ def check_14_plane_data():
 
     log.info('* 开始分页查询')
 
-    threadPool = ThreadPoolExecutor(max_workers=20, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     all_task = [threadPool.submit(exec_plane_task, sel_sql, plane_dest_file) for sel_sql in select_sql_ls]
@@ -100,7 +100,7 @@ def check_14_plane_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* 一共有数据 {count_records} 条,保存数据耗时 {consumed_time} sec')
 
 
 def exec_plane_task(sql, dest_file):  # dest_file
@@ -181,7 +181,7 @@ def check_14_no_plane_data():
     log.info('* 开始分页查询')
 
     obj_list = []
-    threadPool = ThreadPoolExecutor(max_workers=30, thread_name_prefix="thr")
+    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
     # for sel_sql in select_sql_ls:
@@ -202,7 +202,7 @@ def check_14_no_plane_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* 一共有数据 {count_records} 条, 保存数据耗时 {consumed_time} sec')
 
 
 def exec_no_plane_task(sql, dest_file):
@@ -222,12 +222,12 @@ def exec_no_plane_task(sql, dest_file):
             # log.info(f'dest_file = {dest_file}')
             log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
             log.info(record_str)
-            print()
+            # print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
 
-            time.sleep(0.01)
+            # time.sleep(0.01)
 
 
 def init_file(dest_file):
@@ -334,7 +334,7 @@ def exec_plane_sql(bill_id_ls):
         # print(condition_sql)
 
         sql = """
-        INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+        INSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
             SELECT uuid() as finance_id,
             bill_id ,
             '14' as unusual_id ,
@@ -431,7 +431,7 @@ def exec_no_plane_sql(bill_id_ls):
         # print(condition_sql)
 
         sql = """
-        INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets       
+        INSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets  
             SELECT uuid() as finance_id,        bill_id ,       
             '14' as unusual_id ,         ' ' as company_code ,        
             ' ' as account_period ,         ' ' as finance_number ,     
@@ -494,7 +494,7 @@ def analyze_plane_data(coefficient=2):
                         names=['finance_travel_id', 'bill_id', 'plane_beg_date', 'plane_end_date', 'plane_origin_name',
                                'plane_destin_name', 'plane_check_amount'])
 
-    #print(rd_df.dtypes)
+    # print(rd_df.dtypes)
     print('* counts => ', len(rd_df))
     rd_df = rd_df[:1500]
     # print(rd_df.head(10))
@@ -532,7 +532,6 @@ def analyze_plane_data(coefficient=2):
 
                     print(row)
                     print()
-
 
     # print('---- show result ---')
     # print(bill_id_ls)
@@ -605,22 +604,37 @@ def check_14_plane_data2():
     print(len(rt_df))
 
 
-def main():
+def task1(coefficient):
     start_time = time.perf_counter()
-
     # 需求1 交通方式为非飞机的交通费用异常分析
-    # check_14_no_plane_data()   # 共有数据 4546085 条
-    #analyze_no_plane_data(coefficient=2)
+    check_14_no_plane_data()  # 共有数据 4546085 条
+    # analyze_no_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)
-    #print(f'****** 任务耗时 {consumed_time} sec')
+    print(f'****** 任务耗时 {consumed_time} sec')
+    print('--- analyze_no_plane_data has been completed ---')
 
+
+def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     #check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
-    analyze_plane_data(coefficient=2)      # 3523 sec
+    # analyze_plane_data(coefficient=2)  # sec
+    print('--- analyze_plane_data has been completed ---')
+
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
 
-    print('--- ok ---')
+
+def main():
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        print('main: starting')
+        ex.submit(task1, 2)
+        ex.submit(task2, 2)
+
+    print('*** main: done ***')
+
+    # task1()
+
+    # task2()
 
 
 main()

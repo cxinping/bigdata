@@ -17,8 +17,9 @@ sys.path.append('/you_filed_algos/app')
 import pandas as pd
 
 # 设置显示最大列数 与 显示宽度
-pd.set_option('display.max_columns',None)
+pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 500)
+
 
 def check_34_data():
     columns_ls = ['finance_meeting_id', 'bill_id', 'meet_lvl_name', 'met_money']
@@ -40,13 +41,13 @@ def check_34_data():
     print(sql)
     columns_ls.append('per_day_met_money')  # 每人每天的会议费
 
-    #print(columns_ls)
+    # print(columns_ls)
     rd_df = query_kudu_data(sql, columns_ls)
-    print(rd_df.head(10))
-    #print(rd_df.dtypes)
+    #print(rd_df.head(10))
+    # print(rd_df.dtypes)
     # print(rd_df.describe())
     # print(len(rd_df))
-    print('*' * 50)
+    #print('*' * 50)
 
     group_rd_df = rd_df['per_day_met_money'].groupby(rd_df['meet_lvl_name'])
     std_df = group_rd_df.std()
@@ -79,17 +80,14 @@ def check_34_data():
                   | ((rd_df.meet_lvl_name == '三类会议') & (rd_df.per_day_met_money > type_3_meeting_std))
                   | ((rd_df.meet_lvl_name == '四类会议') & (rd_df.per_day_met_money > type_4_meeting_std))]
 
-    print(rd_df.head(10))
+    #print(rd_df.head(10))
     bill_id_ls = rd_df['bill_id'].tolist()
-    #print(bill_id_ls)
+    #print(len(bill_id_ls))
 
     if len(bill_id_ls) > 0:
-        #exec_sql(bill_id_ls)  #
-        pass
+        exec_sql(bill_id_ls)
     else:
         print('* bill_id_ls length is 0 ')
-
-    print('--- check_34 has been completed ')
 
 
 def exec_sql(bill_id_ls):
@@ -110,45 +108,88 @@ def exec_sql(bill_id_ls):
                 condition_sql = condition_sql + ' OR ' + temp
 
     sql = """
-    UPSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
-    SELECT 
-    bill_id, 
-    '34' as unusual_id,
-    company_code,
-    account_period,
-    account_item,
-    finance_number,
-    cost_center,
-    profit_center,
-    '' as cart_head,
-    bill_code,
-  bill_beg_date,
-  bill_end_date,
-    ''   as  origin_city,
-    ''  as destin_city,
-    base_beg_date  as beg_date,
-    base_end_date  as end_date,
-  apply_emp_name,
-    '' as emp_name,
-    '' as emp_code,
-  '' as company_name,
-    0 as jour_amount,
-    0 as accomm_amount,
-    0 as subsidy_amount,
-    0 as other_amount,
-    check_amount,
-    jzpz,
-    '会议费',
-    0 as meeting_amount
-    FROM 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
+    UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets  
+        SELECT
+        finance_meeting_id as finance_id,
+        bill_id,
+        '34' as unusual_id,
+        company_code,
+        account_period,
+        finance_number,
+        cost_center,
+        profit_center,
+        cart_head,
+        bill_code,
+        bill_beg_date,
+        bill_end_date,
+        '' as origin_city,
+        '' as destin_city,
+        '' as beg_date,
+        '' as end_date,
+        apply_emp_name,
+        '' as emp_name,
+        '' as emp_code,
+        company_name,
+        0 as jour_amount,
+        0 as accomm_amount,
+        0 as subsidy_amount,
+        0 as other_amount,
+        check_amount,
+        jzpz,
+        '会议费' as target_classify,
+        0 as meeting_amount,
+        '' as exp_type_name,
+        '' as next_bill_id,
+        '' as last_bill_id,
+        appr_org_sfname,
+        sales_address,
+        meet_addr,
+        sponsor,
+        jzpz_tax,
+        billingdate,
+        '' as remarks,
+        0 as hotel_amount,
+        0 as total_amount,
+        apply_id,
+        base_apply_date,
+        '' as scenery_name_details,
+        meet_num,
+        0 as diff_met_date,
+        0 as diff_met_date_avg,
+        tb_times,
+        receipt_city,
+        commodityname,
+        '' as category_name,
+        iscompany,
+        '' as origin_province,
+        '' as destin_province,
+        operation_time,
+        doc_date,
+        operation_emp_name,
+        invoice_type_name,
+        taxt_amount,
+        original_tax_amount,
+        js_times,
+        '' as offset_day,
+        meet_lvl_name,
+        meet_type_name,
+        buget_limit,
+        0 as sum_person,
+        invo_number,
+        invo_code,
+        '' as city,
+        importdate
+        from 01_datamart_layer_007_h_cw_df.finance_meeting_bill
     WHERE {condition_sql}
-        """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
-    print(sql)
+        """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
+
+    # print(sql)
+
     start_time = time.perf_counter()
     prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
     consumed_time = round(time.perf_counter() - start_time)
     print(f'*** 执行SQL耗时 {consumed_time} sec')
 
 
-check_34_data()
-print('--- check_34 has completed ---')
+check_34_data() # 10906
+print('--- check_34 has been completed ')

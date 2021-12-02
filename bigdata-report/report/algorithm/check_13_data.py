@@ -67,7 +67,8 @@ class Check13Service:
             bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,
             ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
-            WHERE exp_type_name="差旅费" AND hotel_num > 0           
+            WHERE exp_type_name="差旅费" AND hotel_num > 0
+            AND bill_id is not null AND bill_id != ''           
             )as a   {test_limit_cond}        
         """
 
@@ -93,6 +94,7 @@ class Check13Service:
                             ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
                             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
                             WHERE exp_type_name="差旅费" AND hotel_num > 0
+                            AND bill_id is not null AND bill_id != ''
                             )as a                       
                         order by stand_amount_perday limit {limit_size} offset {offset_size}
                     """.format(limit_size=limit_size, offset_size=offset_size)
@@ -108,6 +110,7 @@ class Check13Service:
                                ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
                                FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
                                WHERE exp_type_name="差旅费" AND hotel_num > 0
+                               AND bill_id is not null AND bill_id != ''
                                )as a                           
                            order by stand_amount_perday limit {limit_size} offset {offset_size}
                            """.format(limit_size=limit_size, offset_size=offset_size)
@@ -123,14 +126,15 @@ class Check13Service:
             bill_id, city_name, city_grade_name, emp_name,ROUND(stand_amount, 2) as stand_amount_perday,
             ROUND(hotel_amount/hotel_num , 2) as hotel_amount_perday
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm  
-            WHERE exp_type_name="差旅费" AND hotel_num > 0             
+            WHERE exp_type_name="差旅费" AND hotel_num > 0     
+            AND bill_id is not null AND bill_id != ''        
             )as a
         WHERE a.hotel_amount_perday  > a.stand_amount_perday  {test_limit_cond}   
         """
             select_sql_ls.append(tmp_sql)
             # print('*** tmp_sql => ', tmp_sql)
 
-        log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
+        log.info(f'* 开始分页查询，一共 {len(select_sql_ls)} 页')
         threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
@@ -162,8 +166,8 @@ class Check13Service:
                 emp_name = emp_name.replace(',', ' ')
 
                 record_str = f'{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
-                #log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
-                #log.info(record_str)
+                log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
+                log.info(record_str)
 
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
@@ -253,7 +257,7 @@ def exec_sql(bill_id_ls):
         # print(condition_sql)
 
         sql = """
-        INSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets
+        INSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
             SELECT uuid() as finance_id,
             bill_id ,
             '13' as unusual_id ,
@@ -328,6 +332,6 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-check13_service.save_fee_data()  #
+check13_service.save_fee_data()  # 5644036
 #check13_service.analyze_data(coefficient=2)
 print('--- ok ---')

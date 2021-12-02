@@ -89,7 +89,7 @@ def exec_sql(finance_id_ls):
         # print(condition_sql)
 
         sql = """
-        UPSERT INTO analytic_layer_zbyy_sjbyy_003_cwzbbg.finance_all_targets    
+        UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets   
         SELECT
         finance_offical_id as finance_id,
         bill_id,
@@ -164,7 +164,7 @@ def exec_sql(finance_id_ls):
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-        #print(sql)
+        # print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -176,5 +176,5 @@ def exec_sql(finance_id_ls):
             raise RuntimeError(e)
 
 
-check_49_data()
+check_49_data()  # 181583
 print('--- check_49 has completed ---')

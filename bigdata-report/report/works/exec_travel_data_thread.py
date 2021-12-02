@@ -28,9 +28,9 @@ PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/rep
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2018 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2017 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2016 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2015 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2014 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2013 &
 
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2021
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_thread.py 2020
@@ -85,8 +85,6 @@ def init_file(year):
 
 
 def execute_02_data(year):
-    init_file(year)
-
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
 
@@ -139,6 +137,8 @@ def execute_02_data(year):
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页, max_workers={max_workers}')
 
     if count_records > 0:
+        init_file(year)
+
         threadPool = ThreadPoolExecutor(max_workers=max_workers, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
@@ -331,7 +331,7 @@ def main():
     """
 
     year = sys.argv[1]
-    #year = '2021'
+    #year = '2015'
     execute_02_data(year)
     print('--- ok ---')
 
