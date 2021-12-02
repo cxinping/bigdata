@@ -230,11 +230,11 @@ class Check13Service:
         targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='13')
         bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
 
-        exec_sql(bill_id_ls)  #
+        exec_sql(bill_id_ls)
 
 
 def exec_sql(bill_id_ls):
-    log.info('checkpoint_13 exec_sql ==> ', len(bill_id_ls))
+    log.info(f'checkpoint_13 exec_sql ==> {len(bill_id_ls)}' )
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
@@ -254,66 +254,80 @@ def exec_sql(bill_id_ls):
             else:
                 condition_sql = condition_sql + ' OR ' + temp
 
-        # print(condition_sql)
+        #print(condition_sql)
 
         sql = """
-        INSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
-            SELECT uuid() as finance_id,
-            bill_id ,
-            '13' as unusual_id ,
-             ' ' as company_code ,
-             ' ' as account_period ,
-             ' ' as finance_number ,
-             ' ' as cost_center ,
-             ' ' as profit_center ,
-             ' ' as cart_head ,
-             ' ' as bill_code ,
-             ' ' as bill_beg_date ,
-             ' ' as bill_end_date ,
-             ' ' as origin_city ,
-             ' ' as destin_city ,
-             ' ' as beg_date ,
-             ' ' as end_date ,
-             ' ' as apply_emp_name ,
-             ' ' as emp_name ,
-             ' ' as emp_code ,
-             ' ' as company_name ,
-             0 as jour_amount ,
-             0 as accomm_amount ,
-             0 as subsidy_amount ,
-             0 as other_amount ,
-             0 as check_amount ,
-             0 as jzpz ,
-            '差旅费' as target_classify ,
-             0 as meeting_amount ,
-             exp_type_name ,
-             ' ' as next_bill_id ,
-             ' ' as last_bill_id ,
-             ' ' as appr_org_sfname ,
-             ' ' as sales_address ,
-             ' ' as meet_addr ,
-             ' ' as sponsor ,
-             0 as jzpz_tax ,
-             ' ' as billingdate ,
-             ' ' as remarks ,
-             0 as hotel_amount ,
-             0 as total_amount ,
-             ' ' as apply_id ,
-             ' ' as base_apply_date ,
-             ' ' as scenery_name_details ,
-             ' ' as meet_num ,
-             0 as diff_met_date ,
-             0 as diff_met_date_avg ,
-             ' ' as tb_times ,
-             ' ' as receipt_city ,
-             ' ' as commodityname ,
-             ' ' as category_name,
-             ' ' as iscompany,
-             ' ' as origin_province,
-             ' ' as destin_province,
-             ' ' as operation_time,
-             ' ' as doc_date,
-            importdate
+        UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets    
+        SELECT
+        hotel_bill_id as finance_id,
+        bill_id,
+        '13' as unusual_id,
+        '' as company_code,
+        '' as account_period,
+        '' as finance_number,
+        '' as cost_center,
+        '' as profit_center,
+        '' as cart_head,
+        '' as bill_code,
+        '' as bill_beg_date,
+        '' as bill_end_date,
+        '' as origin_city,
+        '' as destin_city,
+        beg_date,
+        end_date,
+        '' as apply_emp_name,
+        emp_name,
+        emp_code,
+        '' as company_name,
+        0 as jour_amount,
+        0 as accomm_amount,
+        0 as subsidy_amount,
+        0 as other_amount,
+        0 as check_amount,
+        0 as jzpz,
+        '差旅费' as target_classify,
+        0 as meeting_amount,
+        exp_type_name,
+        '' as next_bill_id,
+        '' as last_bill_id,
+        '' as appr_org_sfname,
+        '' as sales_address,
+        '' as meet_addr,
+        '' as sponsor,
+        0 as jzpz_tax,
+        '' as billingdate,
+        '' as remarks,
+        hotel_amount,
+        total_amount,
+        '' as apply_id,
+        '' as base_apply_date,
+        '' as scenery_name_details,
+        '' as meet_num,
+        0 as diff_met_date,
+        0 as diff_met_date_avg,
+        '' as tb_times,
+        '' as receipt_city,
+        '' as commodityname,
+        '' as category_name,
+        '' as iscompany,
+        '' as origin_province,
+        '' as destin_province,
+        '' as operation_time,
+        '' as doc_date,
+        '' as operation_emp_name,
+        invoice_type_name,
+        0 as taxt_amount,
+        0 as original_tax_amount,
+        '' as js_times,
+        '' as offset_day,
+        '' as meet_lvl_name,
+        '' as meet_type_name,
+        0 as buget_limit,
+        0 as sum_person,
+        '' as invo_number,
+        '' as invo_code,
+        '' as city,
+        importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
@@ -334,4 +348,4 @@ def exec_sql(bill_id_ls):
 check13_service = Check13Service()
 check13_service.save_fee_data()  # 5644036
 #check13_service.analyze_data(coefficient=2)
-print('--- ok ---')
+print('--- ok, check_13 ---')
