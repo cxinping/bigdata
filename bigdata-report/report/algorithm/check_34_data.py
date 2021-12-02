@@ -35,6 +35,7 @@ def check_34_data():
     )) as per_day_met_money 
      from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
      where meet_lvl_name is not null and meet_lvl_name !='不适用' and met_money is not null 
+     AND bill_id is not null AND bill_id != ''
     """
     print(sql)
     columns_ls.append('per_day_met_money')  # 每人每天的会议费
@@ -80,6 +81,7 @@ def check_34_data():
 
     print(rd_df.head(10))
     bill_id_ls = rd_df['bill_id'].tolist()
+    #print(bill_id_ls)
 
     if len(bill_id_ls) > 0:
         #exec_sql(bill_id_ls)  #
@@ -149,3 +151,4 @@ def exec_sql(bill_id_ls):
 
 
 check_34_data()
+print('--- check_34 has completed ---')

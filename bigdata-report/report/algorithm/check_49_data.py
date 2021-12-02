@@ -177,4 +177,4 @@ def exec_sql(finance_id_ls):
 
 
 check_49_data()
-print('--- ok ---')
+print('--- check_49 has completed ---')

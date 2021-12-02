@@ -284,8 +284,7 @@ def exec_task(sql, year_month):
             account_period = year_month
 
             consumed_time1 = (time.perf_counter() - start_time1)
-
-            #log.info( f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year_month={year_month}')
+            log.info( f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year_month={year_month}')
 
             record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_city}\u0001{account_period}'
             # print(record_str)
@@ -319,9 +318,8 @@ def upload_hdfs_file(year_month):
 
 def main():
     year_month = sys.argv[1]
-    # year = '2021011'
+    #year_month = '2020001'
     execute_02_data(year_month)
-
     print('--- ok ---')
 
 

@@ -220,7 +220,7 @@ def main():
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-    print('--- ok ---')
+    print('--- 办公费临时表数据已经跑完数据了，ok ---')
 
 
 if __name__ == "__main__":
