@@ -32,6 +32,10 @@ import sys
 
 sys.path.append('/you_filed_algos/app')
 
+# 设置显示最大列数 与 显示宽度
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', 500)
+
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
 no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
@@ -262,6 +266,7 @@ def analyze_no_plane_data(coefficient=2):
     # print(rd_df.head(20))
     # print(len(rd_df))
     # print('*' * 50)
+    # test
     rd_df = rd_df[:500]
     # print(rd_df.head(20))
     # print(len(rd_df))
@@ -334,66 +339,80 @@ def exec_plane_sql(bill_id_ls):
         # print(condition_sql)
 
         sql = """
-        INSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
-            SELECT uuid() as finance_id,
-            bill_id ,
-            '14' as unusual_id ,
-             ' ' as company_code ,
-             ' ' as account_period ,
-             ' ' as finance_number ,
-             ' ' as cost_center ,
-             ' ' as profit_center ,
-             ' ' as cart_head ,
-             ' ' as bill_code ,
-             ' ' as bill_beg_date ,
-             ' ' as bill_end_date ,
-             ' ' as origin_city ,
-             ' ' as destin_city ,
-             ' ' as beg_date ,
-             ' ' as end_date ,
-             ' ' as apply_emp_name ,
-             ' ' as emp_name ,
-             ' ' as emp_code ,
-             ' ' as company_name ,
-             0 as jour_amount ,
-             0 as accomm_amount ,
-             0 as subsidy_amount ,
-             0 as other_amount ,
-             0 as check_amount ,
-             0 as jzpz ,
-            '差旅费' as target_classify ,
-             0 as meeting_amount ,
-             ' ' as exp_type_name ,
-             ' ' as next_bill_id ,
-             ' ' as last_bill_id ,
-             ' ' as appr_org_sfname ,
-             ' ' as sales_address ,
-             ' ' as meet_addr ,
-             ' ' as sponsor ,
-             0 as jzpz_tax ,
-             ' ' as billingdate ,
-             ' ' as remarks ,
-             0 as hotel_amount ,
-             0 as total_amount ,
-             ' ' as apply_id ,
-             ' ' as base_apply_date ,
-             ' ' as scenery_name_details ,
-             ' ' as meet_num ,
-             0 as diff_met_date ,
-             0 as diff_met_date_avg ,
-             ' ' as tb_times ,
-             ' ' as receipt_city ,
-             ' ' as commodityname ,
-             ' ' as category_name,
-             ' ' as iscompany,
-             ' ' as origin_province,
-             ' ' as destin_province,
-             ' ' as operation_time,
-             ' ' as doc_date,
+        UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets    
+            SELECT
+            finance_travel_id as finance_id,
+            bill_id,
+            '14' as unusual_id,
+            company_code,
+            account_period,
+            finance_number,
+            cost_center,
+            profit_center,
+            cart_head,
+            bill_code,
+            bill_beg_date,
+            bill_end_date,
+            '' as origin_city,
+            '' as destin_city,
+            '' as beg_date,
+            '' as end_date,
+            apply_emp_name,
+            '' as emp_name,
+            '' as emp_code,
+            '' as company_name,
+            jour_amount,
+            accomm_amount,
+            subsidy_amount,
+            other_amount,
+            check_amount,
+            jzpz,
+            '差旅费' as target_classify,
+            0 as meeting_amount,
+            '' as exp_type_name,
+            '' as next_bill_id,
+            '' as last_bill_id,
+            appr_org_sfname,
+            sales_address,
+            '' as meet_addr,
+            '' as sponsor,
+            jzpz_tax,
+            billingdate,
+            '' as remarks,
+            0 as hotel_amount,
+            0 as total_amount,
+            apply_id,
+            base_apply_date,
+            '' as scenery_name_details,
+            '' as meet_num,
+            0 as diff_met_date,
+            0 as diff_met_date_avg,
+            tb_times,
+            receipt_city,
+            commodityname,
+            '' as category_name,
+            iscompany,
+            origin_province,
+            destin_province,
+            operation_time,
+            doc_date,
+            operation_emp_name,
+            invoice_type_name,
+            taxt_amount,
+            original_tax_amount,
+            js_times,
+            '' as offset_day,
+            '' as meet_lvl_name,
+            '' as meet_type_name,
+            0 as buget_limit,
+            0 as sum_person,
+            invo_number,
+            invo_code,
+            '' as city,
             importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
 
         print(sql)
 
@@ -431,40 +450,80 @@ def exec_no_plane_sql(bill_id_ls):
         # print(condition_sql)
 
         sql = """
-        INSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets  
-            SELECT uuid() as finance_id,        bill_id ,       
-            '14' as unusual_id ,         ' ' as company_code ,        
-            ' ' as account_period ,         ' ' as finance_number ,     
-            ' ' as cost_center ,         ' ' as profit_center ,      
-            ' ' as cart_head ,         ' ' as bill_code ,       
-            ' ' as bill_beg_date ,         ' ' as bill_end_date ,     
-            ' ' as origin_city ,         ' ' as destin_city ,    
-            ' ' as beg_date ,         ' ' as end_date ,       
-            ' ' as apply_emp_name ,         ' ' as emp_name ,    
-            ' ' as emp_code ,         ' ' as company_name ,     
-            0 as jour_amount ,         0 as accomm_amount ,       
-            0 as subsidy_amount ,         0 as other_amount ,       
-            0 as check_amount ,         0 as jzpz ,       
-            '差旅费' as target_classify ,         0 as meeting_amount ,  
-            ' ' as exp_type_name  ,         ' ' as next_bill_id ,        
-            ' ' as last_bill_id ,         ' ' as appr_org_sfname ,   
-            ' ' as sales_address ,         ' ' as meet_addr ,     
-            ' ' as sponsor ,         0 as jzpz_tax ,       
-            ' ' as billingdate ,         ' ' as remarks ,    
-            0 as hotel_amount ,         0 as total_amount ,    
-            ' ' as apply_id ,         ' ' as base_apply_date ,    
-            ' ' as scenery_name_details ,         ' ' as meet_num ,    
-            0 as diff_met_date ,         0 as diff_met_date_avg ,     
-            ' ' as tb_times ,         ' ' as receipt_city ,     
-            ' ' as commodityname ,         ' ' as category_name,     
-            ' ' as iscompany,         ' ' as origin_province,      
-            ' ' as destin_province,       
-             ' ' as operation_time,
-             ' ' as doc_date,
-             importdate   
+        UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets    
+        SELECT
+        finance_travel_id as finance_id,
+        bill_id,
+        '14' as unusual_id,
+        company_code,
+        account_period,
+        finance_number,
+        cost_center,
+        profit_center,
+        cart_head,
+        bill_code,
+        bill_beg_date,
+        bill_end_date,
+        '' as origin_city,
+        '' as destin_city,
+        '' as beg_date,
+        '' as end_date,
+        apply_emp_name,
+        '' as emp_name,
+        '' as emp_code,
+        '' as company_name,
+        jour_amount,
+        accomm_amount,
+        subsidy_amount,
+        other_amount,
+        check_amount,
+        jzpz,
+        '差旅费' as target_classify,
+        0 as meeting_amount,
+        '' as exp_type_name,
+        '' as next_bill_id,
+        '' as last_bill_id,
+        appr_org_sfname,
+        sales_address,
+        '' as meet_addr,
+        '' as sponsor,
+        jzpz_tax,
+        billingdate,
+        '' as remarks,
+        0 as hotel_amount,
+        0 as total_amount,
+        apply_id,
+        base_apply_date,
+        '' as scenery_name_details,
+        '' as meet_num,
+        0 as diff_met_date,
+        0 as diff_met_date_avg,
+        tb_times,
+        receipt_city,
+        commodityname,
+        '' as category_name,
+        iscompany,
+        origin_province,
+        destin_province,
+        operation_time,
+        doc_date,
+        operation_emp_name,
+        invoice_type_name,
+        taxt_amount,
+        original_tax_amount,
+        js_times,
+        '' as offset_day,
+        '' as meet_lvl_name,
+        '' as meet_type_name,
+        0 as buget_limit,
+        0 as sum_person,
+        invo_number,
+        invo_code,
+        '' as city,
+        importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql).replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
 
         # print(sql)
 
@@ -496,6 +555,8 @@ def analyze_plane_data(coefficient=2):
 
     # print(rd_df.dtypes)
     print('* counts => ', len(rd_df))
+
+    # test
     rd_df = rd_df[:1500]
     # print(rd_df.head(10))
 
@@ -530,8 +591,8 @@ def analyze_plane_data(coefficient=2):
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
-                    print(row)
-                    print()
+                    # print(row)
+                    # print()
 
     # print('---- show result ---')
     # print(bill_id_ls)
@@ -607,8 +668,8 @@ def check_14_plane_data2():
 def task1(coefficient):
     start_time = time.perf_counter()
     # 需求1 交通方式为非飞机的交通费用异常分析
-    check_14_no_plane_data()  # 共有数据 4546085 条
-    # analyze_no_plane_data(coefficient=2)
+    #check_14_no_plane_data()  # 共有数据 4546085 条
+    analyze_no_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** 任务耗时 {consumed_time} sec')
@@ -618,7 +679,7 @@ def task1(coefficient):
 def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     #check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
-    # analyze_plane_data(coefficient=2)  # sec
+    analyze_plane_data(coefficient=2)  # sec
     print('--- analyze_plane_data has been completed ---')
 
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
@@ -627,14 +688,11 @@ def task2(coefficient):
 def main():
     with ThreadPoolExecutor(max_workers=2) as ex:
         print('main: starting')
-        ex.submit(task1, 2)
+        #ex.submit(task1, 2)
         ex.submit(task2, 2)
 
     print('*** main: done ***')
 
-    # task1()
-
-    # task2()
 
 
 main()
