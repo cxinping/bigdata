@@ -201,6 +201,10 @@ def operate_every_record(record):
         if sales_address is None:
             sales_address = destin_name
 
+        if sales_address and '市' in sales_address:
+            receipt_city = sales_address
+            return sales_address, receipt_city
+
         receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 

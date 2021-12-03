@@ -149,6 +149,10 @@ def operate_every_record(record):
         sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
 
+        if sales_address and '市' in sales_address:
+            receipt_city = sales_address
+            return sales_address, receipt_city
+
         receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 

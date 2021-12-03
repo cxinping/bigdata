@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from gevent import monkey;
+from gevent import monkey
 monkey.patch_all()
+
 import gevent
 from gevent.pool import Pool
 
@@ -20,7 +21,8 @@ from report.commons.settings import CONN_TYPE
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2021
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2020
+
 """
 
 log = get_logger(__name__)
@@ -112,12 +114,12 @@ def execute_02_data(year):
         init_file(year)
 
         start_time = time.perf_counter()
-        pool = Pool(40)
+        pool = Pool(5)
 
         results = []
         for sel_sql in select_sql_ls:
             rst = pool.spawn(exec_task, sel_sql, year)
-            #rst = gevent.spawn(exec_task, sel_sql, year)
+            # rst = gevent.spawn(exec_task, sel_sql, year)
             results.append(rst)
 
         gevent.joinall(results)
@@ -143,7 +145,7 @@ def operate_every_record(record):
     sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
-    # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+    #log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
@@ -164,13 +166,17 @@ def operate_every_record(record):
 
             receipt_city = rst[1]
 
-        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
     else:
         sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
         if sales_address is None:
             sales_address = destin_name
+
+        if sales_address and '市' in sales_address:
+            receipt_city = sales_address
+            return sales_address, receipt_city
 
         receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
@@ -186,7 +192,7 @@ def operate_every_record(record):
             receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
                                                          sales_bank=None)
 
-        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
@@ -200,7 +206,7 @@ def exec_task(sql, year_month):
     consumed_time0 = (time.perf_counter() - start_time0)
     log.info(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')
 
-    gevent.sleep(1)
+    #gevent.sleep(1)
 
     if records and len(records) > 0:
         result = []
@@ -225,8 +231,13 @@ def exec_task(sql, year_month):
                                                                destin_name=destin_name)  # 行程目的地(省)
 
             consumed_time2 = round(time.perf_counter() - start_time1)
-            if consumed_time2 >= 2 :
-                gevent.sleep(0.1)
+            if consumed_time2 >= 2:
+                log.info(f'** 耗时 {consumed_time2} 秒')
+                log.info(f'** sales_name={sales_name},sales_addressphone={sales_addressphone},sales_bank={sales_bank}')
+                log.info(f'** sales_address={sales_address}, receipt_city={receipt_city}')
+                #log.info(f'** origin_name={origin_name}, origin_province={origin_province}')
+                #log.info(f'** invo_code={invo_code}, origin_province={destin_province}')
+                #gevent.sleep(0.5)
 
             # origin_province = None
             # destin_province = None
@@ -275,16 +286,13 @@ def upload_hdfs_file(year):
 
 
 def main():
-    # year = sys.argv[1]
+    year = sys.argv[1]
     """
-    在2015年，有 287741 条数据
-
-    2021年， 3565021
-
-    在 2019 年，有 4401235 条数据
+   
+    在 2020 年，有 4983999 条数据
 
     """
-    year = '2019'
+    #year = '2020'
 
     execute_02_data(year)
     print('--- ok ---')
