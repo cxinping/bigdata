@@ -139,7 +139,7 @@ def execute_02_data(year):
         init_file(year)
 
         start_time = time.perf_counter()
-        pool = Pool(max_workers)
+        pool = Pool(10)
 
         results = []
         for sel_sql in select_sql_ls:

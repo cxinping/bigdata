@@ -105,7 +105,7 @@ def execute_02_data(year_month):
         # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 50
+        max_workers = 20
     else:
         max_workers = 5
 
@@ -115,7 +115,7 @@ def execute_02_data(year_month):
         init_file(year_month)
 
         start_time = time.perf_counter()
-        pool = Pool(max_workers)
+        pool = Pool(20)
 
         results = []
         for sel_sql in select_sql_ls:
@@ -308,7 +308,7 @@ def main():
     2021001
 
     """
-    year_month = '2021009'
+    year_month = '2021011'
 
     execute_02_data(year_month)
     print('--- ok ---')

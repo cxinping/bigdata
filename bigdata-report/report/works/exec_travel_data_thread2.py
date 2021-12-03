@@ -340,7 +340,8 @@ def upload_hdfs_file(year_month):
 
 
 def main():
-    #year_month = sys.argv[1]
+    year_month = sys.argv[1]
+
     """
 
        2021016  无数据
@@ -362,7 +363,7 @@ def main():
 
        """
 
-    year_month = '2021011'
+    #year_month = '2021011'
     execute_02_data(year_month)
     print('--- ok ---')
 
