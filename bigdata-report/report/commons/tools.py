@@ -157,6 +157,9 @@ class MatchArea:
         if place is None:
             return None
 
+        if key not in place:
+            return None
+
         if '市区' in place:
             place = place.replace('市区', '市')
 
@@ -177,6 +180,50 @@ class MatchArea:
             if addr.find(key) > -1:
                 return addr
         return None
+
+    def match_address_new(self, place):
+        firstRegion = ['省', '自治区']
+        secondRegion = ['市', '自治州', '盟']
+        thirdRegion = ['区', '县', '自治旗']
+
+        n = len(firstRegion)
+        m = len(secondRegion)
+        l = len(thirdRegion)
+
+        i = 0
+        j = 0
+        k = 0
+        res = []
+        area_name = None
+
+        while i in range(n):
+            split = place.split(firstRegion[i])
+            if len(split) > 1:
+                res.append(split[0] + firstRegion[i])
+                place = split[1]
+            elif len(res) < 1 and i == n - 1:
+                res.append(None)
+            i = i + 1
+
+        while j in range(m):
+            split = place.split(secondRegion[j])
+            if len(split) > 1:
+                res.append(split[0] + secondRegion[j])
+                place = split[1]
+            elif len(res) < 2 and j == m - 1:
+                res.append(None)
+            j = j + 1
+
+        while k in range(l):
+            split = place.split(thirdRegion[k])
+            if len(split) > 1:
+                res.append(split[0] + thirdRegion[k])
+                place = split[1]
+            elif len(res) < 3 and k == l - 1:
+                res.append(None)
+            k = k + 1
+
+        return res
 
     def opera_areas(self, ares):
         max_level_area, result_area_name = 0, None
@@ -235,6 +282,38 @@ class MatchArea:
                     return province, 1
 
         return None, -1
+
+    def fit_area_new(self, area):
+        """
+        匹配区域到最细的行政区域
+
+        """
+
+        if area is None or area == 'None':
+            return None, -1
+
+        rst = self.match_address_new(place=area)
+
+        # 县, 区
+        if rst[2] is not None:
+            # area_id, area_name, parent_id, grade = self._query_province(rst[2])
+            # if grade is None:
+            #     return rst[2], 3
+
+            return rst[2], 3
+        elif rst[1] is not None:
+            # 市
+            area_id, area_name, parent_id, grade = self._query_province(rst[2])
+            if grade is None:
+                return rst[1], 3
+
+            return rst[1], 2
+        elif rst[0] is not None:
+            # 省
+            return rst[0], 1
+        else:
+            return None, -1
+
 
     def query_destin_province(self, invo_code, destin_name):
         """
@@ -350,15 +429,6 @@ class MatchArea:
         :return:
         """
 
-        # if sales_name:
-        #     sales_name = sales_name.replace('超市', '')
-        #
-        # if sales_addressphone:
-        #     sales_addressphone = sales_addressphone.replace('超市', '')
-        #
-        # if sales_bank:
-        #     sales_bank = sales_bank.replace('超市', '')
-
         sales_name = self.__filter_invalid_words(sales_name)
         sales_addressphone = self.__filter_invalid_words(sales_addressphone)
         sales_bank = self.__filter_invalid_words(sales_bank)
@@ -380,6 +450,41 @@ class MatchArea:
                 return area_name3
 
         return None
+
+    def query_receipt_city_new(self, sales_name=None, sales_addressphone=None, sales_bank=None):
+        """
+        查询发票开票所在市
+        :param sales_name: 开票公司
+        :param sales_addressphone: 开票地址及电话
+        :param sales_bank: 发票开户行
+        :return:
+        """
+
+        sales_name = self.__filter_invalid_words(sales_name)
+        sales_addressphone = self.__filter_invalid_words(sales_addressphone)
+        sales_bank = self.__filter_invalid_words(sales_bank)
+
+        area_name1, area_name2, area_name3 = None, None, None
+        if sales_name != 'None' and sales_name is not None and len(sales_name) > 0:
+            area_name1 = self.match_address_new(place=sales_name )
+            # 市一级行政单位不为空
+            if area_name1[1] is not None:
+                return area_name1[1]
+
+        if sales_addressphone != 'None' and sales_addressphone is not None and len(sales_addressphone) > 0:
+            area_name2 = self.match_address_new(place=sales_addressphone )
+            # 市一级行政单位不为空
+            if area_name2[1] is not None:
+                return area_name2[1]
+
+        if sales_bank != 'None' and sales_bank is not None and len(sales_bank) > 0:
+            area_name3 = self.match_address_new(place=sales_bank)
+            # 市一级行政单位不为空
+            if area_name3[1] is not None:
+                return area_name3[1]
+
+        return None
+
 
     def filter_area(self, area):
         """
@@ -440,7 +545,7 @@ class MatchArea:
 
     def query_sales_address(self, sales_name, sales_addressphone, sales_bank):
         """
-        查询发票开票所在市
+        查询发票开票所在的最小行政单位
         :param sales_name: 开票公司
         :param sales_addressphone: 开票地址及电话
         :param sales_bank: 发票开户行
@@ -473,6 +578,63 @@ class MatchArea:
 
         if sales_bank != 'None' or sales_bank is not None:
             area_name3 = self.fit_area(area=sales_bank)
+            area_level = area_name3[1]
+            if area_level and area_level == 3:
+                return area_name3[0]
+
+        area_names = []
+        if area_name1[0]:
+            area_names.append(area_name1)
+
+        if area_name2[0]:
+            area_names.append(area_name2)
+
+        if area_name3[0]:
+            area_names.append(area_name3)
+
+        #log.info(area_names)
+        result_area = self.opera_areas(area_names)
+
+        # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
+        # print('### query_sales_address show_str ==> ', show_str)
+
+        return result_area
+
+    def query_sales_address_new(self, sales_name, sales_addressphone, sales_bank):
+        """
+        查询发票开票所在的最小行政单位
+        :param sales_name: 开票公司
+        :param sales_addressphone: 开票地址及电话
+        :param sales_bank: 发票开户行
+        :return:
+        """
+
+        # print('sales_name=', sales_name)
+        # print('sales_addressphone=', sales_addressphone)
+        # print('sales_bank=', sales_bank)
+
+        if sales_name is None and sales_addressphone is None and sales_bank:
+            return None
+
+        sales_name = self.__filter_invalid_words(sales_name)
+        sales_addressphone = self.__filter_invalid_words(sales_addressphone)
+        sales_bank = self.__filter_invalid_words(sales_bank)
+
+        area_name1, area_name2, area_name3 = None, None, None
+        if sales_name != 'None' or sales_name is not None:
+            area_name1 = self.fit_area_new(area=sales_name)
+            area_level = area_name1[1]
+            if area_level and area_level == 3:
+                return area_name1[0]
+
+        if sales_addressphone != 'None' or sales_addressphone is not None:
+            area_name2 = self.fit_area_new(area=sales_addressphone)
+            area_level = area_name2[1]
+            if area_level and area_level == 3:
+                return area_name2[0]
+
+        if sales_bank != 'None' or sales_bank is not None:
+            area_name3 = self.fit_area_new(area=sales_bank)
             area_level = area_name3[1]
             if area_level and area_level == 3:
                 return area_name3[0]

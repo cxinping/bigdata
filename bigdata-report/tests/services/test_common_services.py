@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from report.services.common_services import MySQLService, insert_finance_shell_daily, update_finance_shell_daily, \
+from report.services.common_services import insert_finance_shell_daily, update_finance_shell_daily, \
     query_finance_category_signs, query_finance_shell_daily_status, query_billds_finance_all_targets, ProvinceService, \
     query_finance_ids_finance_all_targets
 from report.commons.tools import create_uuid
@@ -56,12 +56,12 @@ def demo1():
 
 
 def demo2():
-    mysql_service = MySQLService()
+    #mysql_service = MySQLService()
     # id = create_uuid()
     # mysql_service.insert_update_area(id=id, area_name='盐山县', city='沧州市', province='广东省')
 
     # id = create_uuid()
-    mysql_service.check_area(area_name_val='丰台区', city_val='北京市', province_val=None)
+    #mysql_service.check_area(area_name_val='丰台区', city_val='北京市', province_val=None)
 
     # id = 'fe5419f562bc4e4fa72b2b8482192614'
     # mysql_service.insert_update_area(id=id, area_name='盐山县', city='111', province='2222')
@@ -125,6 +125,6 @@ if __name__ == "__main__":
 
     # demo3()
 
-    # demo4()
+    demo4()
 
-    demo5()
+    #demo5()

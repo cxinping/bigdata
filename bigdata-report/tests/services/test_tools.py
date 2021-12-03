@@ -92,22 +92,31 @@ def demo2():
 
 def demo3():
     match_area = MatchArea()
-    sales_name = '内蒙古阿健实业（集团）有限公司如意工业园区分公司'
-    sales_addressphone = '内蒙古自治区呼和浩特市如意工业园区如意和大街与万通路交汇口往北800米路西 0471-2949999'
-    sales_bank = '中国建设银行股份有限公司呼和浩特腾飞路支行  15050170662800000324'
+    sales_name = '海南奥斯特酒店管理有限公司'
+    sales_addressphone = '海口市秀英区西海岸长滨三路'
+    sales_bank = '海南银行股份有限公司海口五源河支行'
 
-    area_name = match_area.match_address(place=sales_addressphone, key='市')
-    print('1 area_name=', area_name, type(area_name))
-    area = match_area.fit_area(sales_name)
-    print('2 area=', area, type(area))
+    # area_name = match_area.match_address(place=sales_addressphone, key='市')
+    # print('1 area_name=', area_name, type(area_name))
+    # area = match_area.fit_area(sales_name)
+    # print('2 area=', area, type(area))
 
+    start_time0 = time.perf_counter()
     sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                    sales_bank=sales_bank)
+    print('111 sales_address=', sales_address)
 
-    print('*** sales_address=', sales_address)
+    consumed_time0 = (time.perf_counter() - start_time0)
+    print(f'* 取数耗时 => {consumed_time0} sec')
 
-    # area = match_area.filter_area('工商银行驻马店开发区')
-    # print(area)
+    start_time0 = time.perf_counter()
+    # sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+    #                                                sales_bank=sales_bank)
+    area = match_area.fit_area_new(sales_name)
+    print('area=', area)
+    print('222 sales_address=', sales_address)
+    consumed_time0 = (time.perf_counter() - start_time0)
+    print(f'* 取数耗时 => {consumed_time0} sec')
 
 
 if __name__ == '__main__':

@@ -19,9 +19,35 @@ from report.commons.settings import CONN_TYPE
 
 """
 
+把上传的数据放到 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis 表里
+
+select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
+
 cd /you_filed_algos/app
 
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2021 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2020 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2019 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2018 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2017 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2016 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2015 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2014 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2013 &
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2021
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2020
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2019
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2018
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2017
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2016
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2015
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2014
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2013   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2012   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2011   没数据
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2010   没数据
+
 
 """
 
@@ -101,10 +127,9 @@ def execute_02_data(year):
         tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond, year=year)
         select_sql_ls.append(tmp_sql)
-        # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 10
+        max_workers = 50
     else:
         max_workers = 5
 
@@ -114,12 +139,12 @@ def execute_02_data(year):
         init_file(year)
 
         start_time = time.perf_counter()
-        pool = Pool(5)
+        pool = Pool(max_workers)
 
         results = []
         for sel_sql in select_sql_ls:
             rst = pool.spawn(exec_task, sel_sql, year)
-            # rst = gevent.spawn(exec_task, sel_sql, year)
+            #rst = gevent.spawn(exec_task, sel_sql, year_month)
             results.append(rst)
 
         gevent.joinall(results)
@@ -155,7 +180,7 @@ def operate_every_record(record):
             receipt_city = rst[1]
         elif rst[1] is not None:
             sales_address = rst[1]
-            sales_address2 = match_area.query_sales_address(sales_name=sales_name,
+            sales_address2 = match_area.query_sales_address_new(sales_name=sales_name,
                                                             sales_addressphone=sales_addressphone,
                                                             sales_bank=sales_bank)  # 发票开票地(最小行政)
             if sales_address2 is not None:
@@ -166,10 +191,10 @@ def operate_every_record(record):
 
             receipt_city = rst[1]
 
-        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
     else:
-        sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+        sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
         if sales_address is None:
             sales_address = destin_name
@@ -178,27 +203,27 @@ def operate_every_record(record):
             receipt_city = sales_address
             return sales_address, receipt_city
 
-        receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+        receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 
         """
         1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
         2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
-
+        
            如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位  
-       """
+        """
 
         if receipt_city is None:
-            receipt_city = match_area.query_receipt_city(sales_name=destin_name, sales_addressphone=None,
+            receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
                                                          sales_bank=None)
 
-        log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
 
-def exec_task(sql, year_month):
-    dest_file = get_dest_file(year_month)
+def exec_task(sql, year):
+    dest_file = get_dest_file(year)
 
     log.info(sql)
     start_time0 = time.perf_counter()
@@ -237,7 +262,7 @@ def exec_task(sql, year_month):
                 log.info(f'** sales_address={sales_address}, receipt_city={receipt_city}')
                 #log.info(f'** origin_name={origin_name}, origin_province={origin_province}')
                 #log.info(f'** invo_code={invo_code}, origin_province={destin_province}')
-                #gevent.sleep(0.5)
+                gevent.sleep(0.5)
 
             # origin_province = None
             # destin_province = None
@@ -253,11 +278,11 @@ def exec_task(sql, year_month):
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))  # 发票开票所在市
             destin_name = process_invalid_content(destin_name)
             sales_taxno = process_invalid_content(sales_taxno)
-            account_period = year_month
+            account_period = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
             log.info(
-                f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year_month={year_month}')
+                f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
             record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_city}\u0001{account_period}'
             # print(record_str)
@@ -289,10 +314,8 @@ def main():
     year = sys.argv[1]
     """
    
-    在 2020 年，有 4983999 条数据
-
     """
-    #year = '2020'
+    #year = '2021010'
 
     execute_02_data(year)
     print('--- ok ---')
