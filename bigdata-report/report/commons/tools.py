@@ -324,8 +324,8 @@ class MatchArea:
         if invo_code is None or invo_code == 'None':
             # if destin_name and len(destin_name) > 0 and ',' not in destin_name:
             #     province = self.query_belong_province(destin_name)
-            pass
 
+            pass
         else:
             invo_code = str(invo_code)
             invo_code_2_letter = invo_code[0:2]

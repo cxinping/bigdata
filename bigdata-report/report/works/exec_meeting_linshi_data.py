@@ -138,7 +138,7 @@ def operate_every_record(record):
             receipt_city = rst[1]
         elif rst[1] is not None:
             sales_address = rst[1]
-            sales_address2 = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            sales_address2 = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
             if sales_address2 is not None:
                 sales_address = sales_address2
@@ -148,22 +148,22 @@ def operate_every_record(record):
 
         log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
     else:
-        sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
+        sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
 
         if sales_address and '市' in sales_address:
             receipt_city = sales_address
             return sales_address, receipt_city
 
-        receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
+        receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 
         #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
         if sales_address is None and receipt_city is None:
-            sales_address = match_area.query_sales_address(sales_name=meet_addr, sales_addressphone=None,
+            sales_address = match_area.query_sales_address_new(sales_name=meet_addr, sales_addressphone=None,
                                                            sales_bank=None)  # 发票开票地(最小行政)
-            receipt_city = match_area.query_receipt_city(sales_name=meet_addr, sales_addressphone=None,
+            receipt_city = match_area.query_receipt_city_new(sales_name=meet_addr, sales_addressphone=None,
                                                          sales_bank=None)  # 发票开票所在市
 
 
