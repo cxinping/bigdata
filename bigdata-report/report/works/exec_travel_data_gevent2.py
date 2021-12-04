@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from gevent import monkey
+
 monkey.patch_all()
 
 import gevent
@@ -119,7 +120,7 @@ def execute_02_data(year_month):
         # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 20
+        max_workers = 30
     else:
         max_workers = 5
 
@@ -129,12 +130,12 @@ def execute_02_data(year_month):
         init_file(year_month)
 
         start_time = time.perf_counter()
-        pool = Pool(20)
+        pool = Pool(30)
 
         results = []
         for sel_sql in select_sql_ls:
             rst = pool.spawn(exec_task, sel_sql, year_month)
-            #rst = gevent.spawn(exec_task, sel_sql, year_month)
+            # rst = gevent.spawn(exec_task, sel_sql, year_month)
             results.append(rst)
 
         gevent.joinall(results)
@@ -160,7 +161,7 @@ def operate_every_record(record):
     sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
-    #log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+    # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
@@ -171,8 +172,8 @@ def operate_every_record(record):
         elif rst[1] is not None:
             sales_address = rst[1]
             sales_address2 = match_area.query_sales_address_new(sales_name=sales_name,
-                                                            sales_addressphone=sales_addressphone,
-                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
+                                                                sales_addressphone=sales_addressphone,
+                                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
             if sales_address2 is not None:
                 sales_address = sales_address2
 
@@ -181,11 +182,11 @@ def operate_every_record(record):
 
             receipt_city = rst[1]
 
-        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
 
     else:
         sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                       sales_bank=sales_bank)  # 发票开票地(最小行政)
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
         if sales_address is None:
             sales_address = destin_name
 
@@ -194,7 +195,7 @@ def operate_every_record(record):
             return sales_address, receipt_city
 
         receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                     sales_bank=sales_bank)  # 发票开票所在市
+                                                         sales_bank=sales_bank)  # 发票开票所在市
 
         """
         1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
@@ -205,9 +206,9 @@ def operate_every_record(record):
 
         if receipt_city is None:
             receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
-                                                         sales_bank=None)
+                                                             sales_bank=None)
 
-        #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
@@ -221,7 +222,7 @@ def exec_task(sql, year_month):
     consumed_time0 = (time.perf_counter() - start_time0)
     log.info(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')
 
-    #gevent.sleep(1)
+    # gevent.sleep(1)
 
     if records and len(records) > 0:
         result = []
@@ -250,8 +251,8 @@ def exec_task(sql, year_month):
                 log.info(f'** 耗时 {consumed_time2} 秒')
                 log.info(f'** sales_name={sales_name},sales_addressphone={sales_addressphone},sales_bank={sales_bank}')
                 log.info(f'** sales_address={sales_address}, receipt_city={receipt_city}')
-                #log.info(f'** origin_name={origin_name}, origin_province={origin_province}')
-                #log.info(f'** invo_code={invo_code}, origin_province={destin_province}')
+                # log.info(f'** origin_name={origin_name}, origin_province={origin_province}')
+                # log.info(f'** invo_code={invo_code}, origin_province={destin_province}')
                 gevent.sleep(0.5)
 
             # origin_province = None
@@ -302,8 +303,8 @@ def upload_hdfs_file(year):
 
 def main():
     year_month = sys.argv[1]
-    """
-   
+
+    """   
     2021016  无数据
     2021015  无数据
     2021014  无数据
@@ -322,10 +323,11 @@ def main():
     2021001
 
     """
-    #year_month = '2021008'
+    #year_month = '2021001'
 
     execute_02_data(year_month)
     print('--- ok ---')
 
 
-main()
+if __name__ == "__main__":
+    main()
