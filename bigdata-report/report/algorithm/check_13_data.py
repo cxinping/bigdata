@@ -346,6 +346,6 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-check13_service.save_fee_data()  # 保存数据总数 5644036
+check13_service.save_fee_data()  # 保存数据总数 5917850
 #check13_service.analyze_data(coefficient=2)
-print('--- ok, check_13 ---')
+print('--- ok, check_13 has been completed ---')

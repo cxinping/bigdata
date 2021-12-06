@@ -182,6 +182,13 @@ class MatchArea:
         return None
 
     def match_address_new(self, place):
+
+        if place is None:
+            return None
+
+        if '市区' in place:
+            place = place.replace('市区', '市')
+
         firstRegion = ['省', '自治区']
         secondRegion = ['市', '自治州', '盟']
         thirdRegion = ['区', '县', '自治旗']

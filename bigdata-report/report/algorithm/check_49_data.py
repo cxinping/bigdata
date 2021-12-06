@@ -26,7 +26,7 @@ def check_49_data():
     columns_ls = ['finance_offical_id', 'bill_id', 'bill_code', 'check_amount']  # 日期字段 account_period
     columns_str = ",".join(columns_ls)
 
-    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0 AND bill_code is not NULL AND bill_code !=""   '.format(
+    sql = 'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_official_bill where check_amount > 0 AND bill_code is not NULL AND bill_code !=""  '.format(
         columns_str=columns_str)
     print(sql)
 
@@ -162,7 +162,7 @@ def exec_sql(finance_id_ls):
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-        # print(sql)
+        #print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -174,5 +174,5 @@ def exec_sql(finance_id_ls):
             raise RuntimeError(e)
 
 
-check_49_data()  # 181583
+check_49_data()  #
 print('--- check_49 has completed ---')

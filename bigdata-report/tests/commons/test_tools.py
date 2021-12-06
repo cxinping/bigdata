@@ -59,8 +59,10 @@ def demo1():
     # print(content_trans)
     # print(content.replace(',', ' '))
 
+
 def demo2():
     pass
+
 
 if __name__ == '__main__':
     demo2()
