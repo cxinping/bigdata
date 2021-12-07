@@ -14,7 +14,7 @@ import pandas as pd
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.tools import (list_of_groups, kill_pid)
-from report.services.common_services import query_billds_finance_all_targets
+from report.services.common_services import query_bill_codes_finance_all_targets
 from report.commons.settings import CONN_TYPE
 
 """
@@ -142,7 +142,7 @@ class Check12Service:
         log.info(f'* 一共有 {count_records} 条数据, 保存数据共耗时 {consumed_time} sec')
 
     def exec_task(self, sql):
-        # log.info(sql)
+        #log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
 
         if records and len(records) > 0:
@@ -159,8 +159,8 @@ class Check12Service:
 
                 record_str = f'{bill_code},{origin_name},{destin_name},{travel_city_name},{travel_beg_date},{travel_end_date}'
                 log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
-                log.info(record_str)
-                print()
+                #log.info(record_str)
+                #print()
 
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
@@ -242,8 +242,12 @@ class Check12Service:
 
         print('*** len(rd_df) => ', len(rd_df))
         print('*** len(bill_id_ls) => ', len(bill_code_ls))
-        # print(bill_id_ls)
+        targes_finance_bill_codes_ls = query_bill_codes_finance_all_targets(unusual_id='12')
+        bill_code_ls = [x for x in bill_code_ls if x not in targes_finance_bill_codes_ls]
+        print(f'* after filter len(bill_code_ls)={len(bill_code_ls)}')
+
         self.exec_sql(bill_code_ls)
+
 
     def exec_sql(self, bill_code_ls):
         print('checkpoint_12 exec_sql ==> ', len(bill_code_ls))

@@ -16,9 +16,9 @@ m=300
 print('* g=',g)  # {'x': 100, 'y': 2,'z':200,......}
 print('* l=',l)  # {'m': 300}
 
-print('=' * 50)
+print('=' * 90)
 
-r = 'print(x+y)'
+r0 = 'print(x+y)'
 r1 = """
 result = x + y
 #print(result)

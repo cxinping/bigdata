@@ -10,6 +10,24 @@ from report.commons.db_helper import db_fetch_to_dict
 log = get_logger(__name__)
 
 
+def query_bill_codes_finance_all_targets(unusual_id):
+    bill_codes = []
+    try:
+        sql = f'select distinct bill_code from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id="{unusual_id}" '
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        # print(len(records))
+
+        for idx, record in enumerate(records):
+            # print(record)
+            bill_code = str(record[0])
+            bill_codes.append(bill_code)
+
+        return bill_codes
+    except Exception as e:
+        print(e)
+        return []
+
+
 def query_finance_ids_finance_all_targets(unusual_id):
     finance_ids = []
     try:
@@ -423,5 +441,3 @@ def pagination_finance_shell_daily_records(unusual_point=None):
     # print(sql)
 
     return count_records, sql, columns_ls
-
-
