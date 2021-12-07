@@ -14,7 +14,6 @@ import os
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import threading
 from report.services.common_services import ProvinceService
-from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import list_of_groups
 from report.services.common_services import query_billds_finance_all_targets
 from report.commons.settings import CONN_TYPE

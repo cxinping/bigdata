@@ -129,7 +129,7 @@ def exec_plane_task(sql, dest_file):  # dest_file
             # log.info(f'dest_file = {dest_file}')
             log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
             # log.info(record_str)
-            print()
+            #print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
@@ -225,7 +225,7 @@ def exec_no_plane_task(sql, dest_file):
             record_str = f'{finance_travel_id},{bill_id},{origin_name},{destin_name},{jour_amount}'
             # log.info(f'dest_file = {dest_file}')
             log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
-            log.info(record_str)
+            #log.info(record_str)
             # print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
@@ -676,8 +676,8 @@ def check_14_plane_data2():
 def task1(coefficient):
     start_time = time.perf_counter()
     # 需求1 交通方式为非飞机的交通费用异常分析
-    #check_14_no_plane_data()  # 共有数据 4546085 条
-    analyze_no_plane_data(coefficient=2)
+    check_14_no_plane_data()  # 共有数据 4546085 条
+    #analyze_no_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** 任务耗时 {consumed_time} sec')
@@ -686,8 +686,8 @@ def task1(coefficient):
 
 def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
-    #check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
-    analyze_plane_data(coefficient=2)  # sec
+    check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
+    #analyze_plane_data(coefficient=2)  # sec
     print('--- analyze_plane_data has been completed ---')
 
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
@@ -696,7 +696,7 @@ def task2(coefficient):
 def main():
     with ThreadPoolExecutor(max_workers=2) as ex:
         print('main: starting')
-        #ex.submit(task1, 2)
+        ex.submit(task1, 2)
         ex.submit(task2, 2)
 
     print('*** main: done ***')

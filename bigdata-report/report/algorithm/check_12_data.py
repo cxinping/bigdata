@@ -7,13 +7,9 @@ from string import punctuation
 from string import digits
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import threading
-from report.services.common_services import ProvinceService
-from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 import pandas as pd
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
-
-from report.commons.tools import (list_of_groups, kill_pid)
+from report.commons.tools import list_of_groups
 from report.services.common_services import query_bill_codes_finance_all_targets
 from report.commons.settings import CONN_TYPE
 
