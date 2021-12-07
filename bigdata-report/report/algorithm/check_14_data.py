@@ -409,6 +409,10 @@ def exec_plane_sql(bill_id_ls):
             invo_number,
             invo_code,
             '' as city,
+            0 as amounttax,
+            '' as offset_ratio,
+            '' as amounttax_ratio,
+            '' as ratio,
             importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE {condition_sql}
@@ -520,6 +524,10 @@ def exec_no_plane_sql(bill_id_ls):
         invo_number,
         invo_code,
         '' as city,
+        0 as amounttax,
+        '' as offset_ratio,
+        '' as amounttax_ratio,
+        '' as ratio,
         importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         WHERE {condition_sql}

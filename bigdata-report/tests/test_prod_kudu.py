@@ -190,6 +190,13 @@ def upsert_finance_all_targets():
     prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql)
 
 
+def demo4():
+    sql = 'select * from default.analytic_layer_zbyy_cwyy_014_cwzbbg'
+    records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql)
+    print(len(records))
+
+
 if __name__ == "__main__":
-    #select_finance_all_targets()
-    upsert_finance_all_targets()
+    # select_finance_all_targets()
+    # upsert_finance_all_targets()
+    demo4()

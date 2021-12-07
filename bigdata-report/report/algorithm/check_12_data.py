@@ -339,6 +339,10 @@ class Check12Service:
                 invo_number,
                 invo_code,
                 '' as city,
+                0 as amounttax,
+                '' as offset_ratio,
+                '' as amounttax_ratio,
+                '' as ratio,
                 importdate
                 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
             WHERE {condition_sql}
@@ -358,6 +362,6 @@ class Check12Service:
 
 check12_service = Check12Service()
 # 一共有 2218081 条数据, 保存数据共耗时 2281 sec
-check12_service.save_data()
-#check12_service.analyze_data()
+#check12_service.save_data()
+check12_service.analyze_data()
 print('--- ok, check_12 has been completed ---')

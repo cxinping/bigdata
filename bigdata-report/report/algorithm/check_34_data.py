@@ -178,12 +178,16 @@ def exec_sql(bill_id_ls):
         invo_number,
         invo_code,
         '' as city,
+        0 as amounttax,
+        '' as offset_ratio,
+        '' as amounttax_ratio,
+        '' as ratio,
         importdate
         from 01_datamart_layer_007_h_cw_df.finance_meeting_bill
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-    print(sql)
+    #print(sql)
 
     try:
         start_time = time.perf_counter()

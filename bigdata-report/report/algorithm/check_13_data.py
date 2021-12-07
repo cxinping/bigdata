@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-#from report.commons.connect_kudu import prod_execute_sql
-from report.commons.connect_kudu2 import prod_execute_sql
+from gevent import monkey
+monkey.patch_all()
+import gevent
+from gevent.pool import Pool
 
+from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.db_helper import query_kudu_data
 import time
@@ -135,13 +138,22 @@ class Check13Service:
             # print('*** tmp_sql => ', tmp_sql)
 
         log.info(f'* 开始分页查询，一共 {len(select_sql_ls)} 页')
-        threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
         start_time = time.perf_counter()
+        # threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+        # all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+        # wait(all_task, return_when=ALL_COMPLETED)
+        # threadPool.shutdown(wait=True)
 
-        all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
-        wait(all_task, return_when=ALL_COMPLETED)
+        pool = Pool(30)
+        results = []
+        for sel_sql in select_sql_ls:
+            rst = pool.spawn(self.exec_task, sel_sql)
+            # rst = gevent.spawn(exec_task, sel_sql, year_month)
+            results.append(rst)
 
-        threadPool.shutdown(wait=True)
+        gevent.joinall(results)
+
+
         consumed_time = round(time.perf_counter() - start_time)
         log.info(f'* 一共有数据 {count_records} 条，保存数据耗时 {consumed_time} sec')
 
@@ -327,6 +339,10 @@ def exec_sql(bill_id_ls):
         '' as invo_number,
         '' as invo_code,
         '' as city,
+        0 as amounttax,
+        '' as offset_ratio,
+        '' as amounttax_ratio,
+        '' as ratio,
         importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
         WHERE {condition_sql}
@@ -346,6 +362,6 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-check13_service.save_fee_data()  # 保存数据总数 5917850
-#check13_service.analyze_data(coefficient=2)
+#check13_service.save_fee_data()  # 保存数据总数 5917850
+check13_service.analyze_data(coefficient=2)
 print('--- ok, check_13 has been completed ---')

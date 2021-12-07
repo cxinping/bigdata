@@ -8,4 +8,4 @@ Created on 2021-08-02
 
 DEBUG = False
 
-threaded=True
+threaded=False
