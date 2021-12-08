@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+
+
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import pandas as pd
 import numpy as np
 import time
 import threading
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.db_helper import query_kudu_data
@@ -94,7 +95,7 @@ def check_14_plane_data():
             columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
-    log.info('* 开始分页查询')
+    log.info('* check_14_plane_data 开始分页查询')
 
     threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
@@ -104,7 +105,7 @@ def check_14_plane_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 一共有数据 {count_records} 条,保存数据耗时 {consumed_time} sec')
+    log.info(f'* check_14_plane_data 一共有数据 {count_records} 条,保存数据耗时 {consumed_time} sec')
 
 
 def exec_plane_task(sql, dest_file):  # dest_file
@@ -181,7 +182,7 @@ def check_14_no_plane_data():
             columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
-    log.info('* 开始分页查询')
+    log.info('* check_14_no_plane_data 开始分页查询')
 
     obj_list = []
     threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
@@ -205,7 +206,7 @@ def check_14_no_plane_data():
 
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 一共有数据 {count_records} 条, 保存数据耗时 {consumed_time} sec')
+    log.info(f'* check_14_no_plane_data 一共有数据 {count_records} 条, 保存数据耗时 {consumed_time} sec')
 
 
 def exec_no_plane_task(sql, dest_file):
