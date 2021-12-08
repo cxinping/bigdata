@@ -251,7 +251,7 @@ def analyze_no_plane_data(coefficient=2):
     :return:
     """
 
-    log.info('==========  analyze_no_plane_data ===============')
+    log.info('========== check_14 analyze_no_plane_data ===============')
     start_time = time.perf_counter()
 
     rd_df = pd.read_csv(no_plane_dest_file, sep=',', header=None,
@@ -426,7 +426,7 @@ def exec_plane_sql(bill_id_ls):
             start_time = time.perf_counter()
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             consumed_time = round(time.perf_counter() - start_time)
-            print(f'*** 执行SQL耗时 {consumed_time} sec')
+            print(f'*** 执行 plane SQL耗时 {consumed_time} sec')
         except Exception as e:
             print(e)
             raise RuntimeError(e)
@@ -541,7 +541,7 @@ def exec_no_plane_sql(bill_id_ls):
             start_time = time.perf_counter()
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             consumed_time = round(time.perf_counter() - start_time)
-            print(f'*** 执行SQL耗时 {consumed_time} sec')
+            print(f'*** 执行 no plane SQL耗时 {consumed_time} sec')
         except Exception as e:
             print(e)
             raise RuntimeError(e)
@@ -565,7 +565,7 @@ def analyze_plane_data(coefficient=2):
                                'plane_destin_name', 'plane_check_amount'])
 
     # print(rd_df.dtypes)
-    print('* counts => ', len(rd_df))
+    #print('* counts => ', len(rd_df))
 
     # test
     #rd_df = rd_df[:1500]
@@ -573,7 +573,7 @@ def analyze_plane_data(coefficient=2):
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'], as_index=False, sort=False)
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
-    print('* after groupby ')
+    #print('* after groupby ')
 
     bill_id_ls = []
     for name, group_df in grouped_df:
@@ -680,20 +680,24 @@ def check_14_plane_data2():
 
 
 def task1(coefficient):
-    start_time = time.perf_counter()
     # 需求1 交通方式为非飞机的交通费用异常分析
+    start_time = time.perf_counter()
     check_14_no_plane_data()  # 共有数据 4546085 条
-    #analyze_no_plane_data(coefficient=2)
+    analyze_no_plane_data(coefficient=2) #
 
     consumed_time = round(time.perf_counter() - start_time)
-    print(f'****** 任务耗时 {consumed_time} sec')
+    print(f'****** task1 任务耗时 {consumed_time} sec')
     print('--- analyze_no_plane_data has been completed ---')
 
 
 def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
+    start_time = time.perf_counter()
     check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
-    #analyze_plane_data(coefficient=2)  # sec
+    analyze_plane_data(coefficient=2)  #
+
+    consumed_time = round(time.perf_counter() - start_time)
+    print(f'****** task2 任务耗时 {consumed_time} sec')
     print('--- analyze_plane_data has been completed ---')
 
     # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds

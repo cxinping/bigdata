@@ -24,6 +24,10 @@ WHERE origin_name is not NULL and origin_name !='' and destin_name is not NULL a
 AND travel_city_name is not NULL AND travel_city_name !=''
 AND travel_beg_date != travel_end_date AND travel_beg_date > '20190101'
 
+cd /you_filed_algos/app
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_12_data.py 
+
 """
 
 log = get_logger(__name__)
@@ -198,12 +202,12 @@ class Check12Service:
         group_df['trans_travel_city_name'] = group_df.apply(
             lambda x: self.complex_function(x['travel_city_name'], origin_name, destin_name), axis=1)
 
-        log.info('* before filter')
-        print(group_df.head())
+        # log.info('* before filter')
+        # print(group_df.head())
         group_df = group_df[group_df.duplicated('trans_travel_city_name', keep=False) == False]
-        log.info('* after filter')
-        print(group_df.head())
-        print()
+        # log.info('* after filter')
+        # print(group_df.head())
+        # print()
 
         for index, row in group_df.iterrows():
             bill_code = row['bill_code']
@@ -229,7 +233,7 @@ class Check12Service:
             origin_name, destin_name = name
 
             if len(group_df) >= 2:
-                print(f'*** origin_name={origin_name},destin_name={destin_name}')
+                #print(f'*** origin_name={origin_name},destin_name={destin_name}')
                 # print(group_df)
                 # print()
 
@@ -365,5 +369,5 @@ class Check12Service:
 
 check12_service = Check12Service()
 #check12_service.save_data() # 一共有 2218081 条数据, 保存数据共耗时 2281 sec
-check12_service.analyze_data()
+check12_service.analyze_data() # 共有异常数据 546613 条
 print('--- ok, check_12 has been completed ---')

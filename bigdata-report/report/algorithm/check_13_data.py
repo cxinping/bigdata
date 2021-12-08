@@ -175,7 +175,7 @@ class Check13Service:
                 emp_name = emp_name.replace(',', ' ')
 
                 record_str = f'{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}'
-                log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
+                #log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
                 #log.info(record_str)
 
                 with open(dest_file, "a+", encoding='utf-8') as file:
@@ -365,6 +365,6 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-#check13_service.save_fee_data()  # 保存数据总数 5917850
-check13_service.analyze_data(coefficient=2) # 执行检查点13的数据共耗时 2113 sec
+check13_service.save_fee_data()  # 保存数据总数 5917850
+check13_service.analyze_data(coefficient=2) # 执行检查点13的数据共耗时 2079 sec
 print('--- ok, check_13 has been completed ---')

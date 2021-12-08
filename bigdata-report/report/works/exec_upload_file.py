@@ -14,8 +14,5 @@ def upload_finance_hdfs():
     prod_hdfs.uploadFile(hdfsDirPath=hdfs_file_url, localPath=local_file_name)
 
 
-
-
-
 if __name__ == "__main__":
     upload_finance_hdfs()
