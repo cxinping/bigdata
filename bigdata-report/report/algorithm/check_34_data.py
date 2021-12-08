@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import time
 
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
-
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 
@@ -43,11 +42,11 @@ def check_34_data():
 
     # print(columns_ls)
     rd_df = query_kudu_data(sql, columns_ls)
-    #print(rd_df.head(10))
+    # print(rd_df.head(10))
     # print(rd_df.dtypes)
     # print(rd_df.describe())
     # print(len(rd_df))
-    #print('*' * 50)
+    # print('*' * 50)
 
     group_rd_df = rd_df['per_day_met_money'].groupby(rd_df['meet_lvl_name'])
     std_df = group_rd_df.std()
@@ -80,9 +79,9 @@ def check_34_data():
                   | ((rd_df.meet_lvl_name == '三类会议') & (rd_df.per_day_met_money > type_3_meeting_std))
                   | ((rd_df.meet_lvl_name == '四类会议') & (rd_df.per_day_met_money > type_4_meeting_std))]
 
-    #print(rd_df.head(10))
+    # print(rd_df.head(10))
     bill_id_ls = rd_df['bill_id'].tolist()
-    #print(len(bill_id_ls))
+    # print(len(bill_id_ls))
 
     if len(bill_id_ls) > 0:
         exec_sql(bill_id_ls)
@@ -187,17 +186,16 @@ def exec_sql(bill_id_ls):
     WHERE {condition_sql}
         """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-    #print(sql)
+    # print(sql)
 
     try:
         start_time = time.perf_counter()
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         consumed_time = round(time.perf_counter() - start_time)
         print(f'*** 执行SQL耗时 {consumed_time} sec')
     except Exception as e:
         print(e)
         raise RuntimeError(e)
-
 
 
 check_34_data()  #

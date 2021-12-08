@@ -211,13 +211,13 @@ class Check12Service:
 
     def analyze_data(self):
         log.info('======= check_12 analyze_data_data ===========')
+        start_time = time.perf_counter()
 
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_code', 'origin_name', 'destin_name', 'travel_city_name', 'travel_beg_date',
                                    'travel_end_date'])
         # print(rd_df.head())
         # print(len(rd_df))
-
         # test
         #rd_df = rd_df[:300]
         # 测试1
@@ -243,6 +243,9 @@ class Check12Service:
         print(f'* after filter len(bill_code_ls)={len(bill_code_ls)}')
 
         self.exec_sql(bill_code_ls)
+
+        consumed_time = round(time.perf_counter() - start_time)
+        log.info(f'* 执行检查点12的数据共耗时 {consumed_time} sec')
 
 
     def exec_sql(self, bill_code_ls):

@@ -49,7 +49,7 @@ def check_49_data():
     print(f'before filter len(finance_id_ls)={len(finance_id_ls)}')
 
     targes_finance_ids_ls = query_finance_ids_finance_all_targets(unusual_id='49')
-    print(f'* len(targes_finance_ids_ls)={len(targes_finance_ids_ls)}')
+    print(f'* db len(targes_finance_ids_ls)={len(targes_finance_ids_ls)}')
 
     finance_id_ls = [x for x in finance_id_ls if x not in targes_finance_ids_ls]
     print(f'* after filter len(finance_id_ls)={len(finance_id_ls)}')

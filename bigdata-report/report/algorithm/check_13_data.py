@@ -222,6 +222,9 @@ class Check13Service:
         return bill_id_ls1
 
     def analyze_data(self, coefficient=2):
+        log.info('* 开始执行检查点13 *')
+        start_time = time.perf_counter()
+
         rd_df = pd.read_csv(dest_file, sep=',', header=None,
                             names=['bill_id', 'city_name', 'province', 'city_grade_name', 'emp_name',
                                    'stand_amount_perday', 'hotel_amount_perday'])
@@ -241,6 +244,9 @@ class Check13Service:
         bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
 
         exec_sql(bill_id_ls)
+
+        consumed_time = round(time.perf_counter() - start_time)
+        log.info(f'* 执行检查点13的数据共耗时 {consumed_time} sec')
 
 
 def exec_sql(bill_id_ls):
@@ -360,6 +366,6 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-check13_service.save_fee_data()  # 保存数据总数 5917850
-#check13_service.analyze_data(coefficient=2)
+#check13_service.save_fee_data()  # 保存数据总数 5917850
+check13_service.analyze_data(coefficient=2)
 print('--- ok, check_13 has been completed ---')

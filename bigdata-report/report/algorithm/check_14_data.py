@@ -129,7 +129,7 @@ def exec_plane_task(sql, dest_file):  # dest_file
             # log.info(f'dest_file = {dest_file}')
             log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
             # log.info(record_str)
-            #print()
+            # print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
@@ -225,7 +225,7 @@ def exec_no_plane_task(sql, dest_file):
             record_str = f'{finance_travel_id},{bill_id},{origin_name},{destin_name},{jour_amount}'
             # log.info(f'dest_file = {dest_file}')
             log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
-            #log.info(record_str)
+            # log.info(record_str)
             # print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
@@ -416,7 +416,7 @@ def exec_plane_sql(bill_id_ls):
             importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
         print(sql)
 
@@ -531,7 +531,7 @@ def exec_no_plane_sql(bill_id_ls):
         importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
         # print(sql)
 
@@ -700,7 +700,6 @@ def main():
         ex.submit(task2, 2)
 
     print('*** main: done ***')
-
 
 
 main()

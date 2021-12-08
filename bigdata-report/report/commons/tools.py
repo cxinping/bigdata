@@ -26,6 +26,7 @@ def process_invalid_content(word):
 
     return word
 
+
 def kill_pid(parent_pid):
     parent = psutil.Process(parent_pid)
     for child in parent.children(recursive=True):  # or parent.children() for recursive=False
@@ -321,7 +322,6 @@ class MatchArea:
         else:
             return None, -1
 
-
     def query_destin_province(self, invo_code, destin_name):
         """
         根据发票代码前两位找行程目的地所属省，若是没有发票，再根据行程目的地找所属省
@@ -329,10 +329,10 @@ class MatchArea:
 
         province = None
         if invo_code is None or invo_code == 'None':
-            # if destin_name and len(destin_name) > 0 and ',' not in destin_name:
-            #     province = self.query_belong_province(destin_name)
+            if destin_name and len(destin_name) > 0 and ',' not in destin_name:
+                province = self.query_belong_province(destin_name)
 
-            pass
+            # pass
         else:
             invo_code = str(invo_code)
             invo_code_2_letter = invo_code[0:2]
@@ -405,7 +405,7 @@ class MatchArea:
 
     def _query_province(self, keyword):
 
-        if keyword is None or keyword == 'None' or len(keyword) == 0 :
+        if keyword is None or keyword == 'None' or len(keyword) == 0:
             return None, None, None, None
 
         try:
@@ -473,13 +473,13 @@ class MatchArea:
 
         area_name1, area_name2, area_name3 = None, None, None
         if sales_name != 'None' and sales_name is not None and len(sales_name) > 0:
-            area_name1 = self.match_address_new(place=sales_name )
+            area_name1 = self.match_address_new(place=sales_name)
             # 市一级行政单位不为空
             if area_name1[1] is not None:
                 return area_name1[1]
 
         if sales_addressphone != 'None' and sales_addressphone is not None and len(sales_addressphone) > 0:
-            area_name2 = self.match_address_new(place=sales_addressphone )
+            area_name2 = self.match_address_new(place=sales_addressphone)
             # 市一级行政单位不为空
             if area_name2[1] is not None:
                 return area_name2[1]
@@ -491,7 +491,6 @@ class MatchArea:
                 return area_name3[1]
 
         return None
-
 
     def filter_area(self, area):
         """
@@ -599,7 +598,7 @@ class MatchArea:
         if area_name3[0]:
             area_names.append(area_name3)
 
-        #log.info(area_names)
+        # log.info(area_names)
         result_area = self.opera_areas(area_names)
 
         # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'
@@ -656,7 +655,7 @@ class MatchArea:
         if area_name3[0]:
             area_names.append(area_name3)
 
-        #log.info(area_names)
+        # log.info(area_names)
         result_area = self.opera_areas(area_names)
 
         # show_str = f'{sales_name} , {sales_addressphone} , {sales_bank}, {result_area}'

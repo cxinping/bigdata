@@ -164,6 +164,8 @@ def operate_every_record(record):
     # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
     # log.info(type(rst))
 
+    # sales_address 发票开票地(最小行政)
+    # receipt_city 发票开票所在市
     sales_address, receipt_city = None, None
     if rst[1] is not None or rst[2] is not None:
         if rst[2] is not None:

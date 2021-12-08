@@ -191,9 +191,11 @@ def upsert_finance_all_targets():
 
 
 def demo4():
-    sql = 'select * from default.analytic_layer_zbyy_cwyy_014_cwzbbg'
+    sql = "select unusual_id from 01_datamart_layer_007_h_cw_df.finance_unusual where isalgorithm ='1' and unusual_shell is not null order by unusual_id "
     records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql)
     print(len(records))
+    for record in records:
+        print(record)
 
 
 if __name__ == "__main__":
