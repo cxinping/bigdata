@@ -7,7 +7,6 @@ from gevent.pool import Pool
 
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
-from report.commons.db_helper import query_kudu_data
 import time
 import pandas as pd
 import os
@@ -237,13 +236,13 @@ class Check13Service:
         for idx, province_name in enumerate(province_names):
             # print(province_name)
             tmp_ls = self.cal_abnormal_data(rd_df=rd_df, coefficient=coefficient, query_province=province_name)
-            bill_id_ls.extend(tmp_ls)
+            #bill_id_ls.extend(tmp_ls)
+            exec_sql(tmp_ls)
 
         log.info(f'* all results => {len(bill_id_ls)}')
-        targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='13')
-        bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
-
-        exec_sql(bill_id_ls)
+        #targes_bill_id_ls = query_billds_finance_all_targets(unusual_id='13')
+        #bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
+        #exec_sql(bill_id_ls)
 
         consumed_time = round(time.perf_counter() - start_time)
         log.info(f'* 执行检查点13的数据共耗时 {consumed_time} sec')
@@ -367,5 +366,5 @@ def exec_sql(bill_id_ls):
 
 check13_service = Check13Service()
 #check13_service.save_fee_data()  # 保存数据总数 5917850
-check13_service.analyze_data(coefficient=2)
+check13_service.analyze_data(coefficient=2) # 执行检查点13的数据共耗时 2113 sec
 print('--- ok, check_13 has been completed ---')

@@ -109,7 +109,7 @@ def check_14_plane_data():
 
 def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-    time.sleep(0.01)
+    #time.sleep(0.01)
 
     if records and len(records) > 0:
         for idx, record in enumerate(records):
@@ -126,8 +126,7 @@ def exec_plane_task(sql, dest_file):  # dest_file
 
             record_str = f'{finance_travel_id},{bill_id},{plane_beg_date},{plane_end_date},{plane_origin_name},{plane_destin_name},{plane_check_amount}'
 
-            # log.info(f'dest_file = {dest_file}')
-            log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
+            #log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
             # log.info(record_str)
             # print()
 
@@ -211,6 +210,7 @@ def check_14_no_plane_data():
 
 def exec_no_plane_task(sql, dest_file):
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+
     if records and len(records) > 0:
         for idx, record in enumerate(records):
             finance_travel_id = str(record[0])  # finance_travel_id
@@ -223,15 +223,13 @@ def exec_no_plane_task(sql, dest_file):
             destin_name = destin_name.replace(',', ' ')
 
             record_str = f'{finance_travel_id},{bill_id},{origin_name},{destin_name},{jour_amount}'
-            # log.info(f'dest_file = {dest_file}')
-            log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
+
+            #log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
             # log.info(record_str)
             # print()
 
             with open(dest_file, "a+", encoding='utf-8') as file:
                 file.write(record_str + "\n")
-
-            # time.sleep(0.01)
 
 
 def init_file(dest_file):
@@ -254,6 +252,7 @@ def analyze_no_plane_data(coefficient=2):
     """
 
     log.info('==========  analyze_no_plane_data ===============')
+    start_time = time.perf_counter()
 
     rd_df = pd.read_csv(no_plane_dest_file, sep=',', header=None,
                         # dtype={'finance_travel_id': str, 'origin_name' : str, 'destin_name' : str, 'jour_amount': np.float64},
@@ -267,7 +266,7 @@ def analyze_no_plane_data(coefficient=2):
     # print(len(rd_df))
     # print('*' * 50)
     # test
-    rd_df = rd_df[:500]
+    #rd_df = rd_df[:500]
     # print(rd_df.head(20))
     # print(len(rd_df))
     # print('=' * 50)
@@ -312,7 +311,10 @@ def analyze_no_plane_data(coefficient=2):
 
     # print(len(abnormal_bill_id_ls))
 
-    exec_no_plane_sql(abnormal_bill_id_ls)  # 449975
+    exec_no_plane_sql(abnormal_bill_id_ls)  #
+
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行检查点14 no_plane 的数据共耗时 {consumed_time} sec')
 
 
 def exec_plane_sql(bill_id_ls):
@@ -554,6 +556,7 @@ def analyze_plane_data(coefficient=2):
     """
 
     log.info('======= check_14 analyze_plane_data ===========')
+    start_time = time.perf_counter()
 
     rd_df = pd.read_csv(plane_dest_file, sep=',', header=None, encoding="utf-8",
                         dtype={'finance_travel_id': str, 'bill_id': str, 'plane_beg_date': str, 'plane_end_date': str,
@@ -565,7 +568,7 @@ def analyze_plane_data(coefficient=2):
     print('* counts => ', len(rd_df))
 
     # test
-    rd_df = rd_df[:1500]
+    #rd_df = rd_df[:1500]
     # print(rd_df.head(10))
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'], as_index=False, sort=False)
@@ -612,6 +615,9 @@ def analyze_plane_data(coefficient=2):
     bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
 
     exec_plane_sql(bill_id_ls)
+
+    consumed_time = round(time.perf_counter() - start_time)
+    log.info(f'* 执行检查点14 plane 的数据共耗时 {consumed_time} sec')
 
 
 def check_14_plane_data2():

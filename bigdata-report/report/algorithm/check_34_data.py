@@ -100,7 +100,11 @@ def exec_sql(bill_id_ls):
         in_codition = 'bill_id IN {temp}'
 
         for idx, group in enumerate(group_ls):
-            temp = in_codition.format(temp=str(tuple(group)))
+            if len(group) == 1:
+                temp = in_codition.format(temp=str('("' + group[0] + '")'))
+            else:
+                temp = in_codition.format(temp=str(tuple(group)))
+
             if idx == 0:
                 condition_sql = temp
             else:
