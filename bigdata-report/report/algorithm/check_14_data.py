@@ -711,7 +711,7 @@ def main():
     with ThreadPoolExecutor(max_workers=3) as ex:
         print('main: starting')
         ex.submit(task1, 2)
-        #ex.submit(task2, 2)
+        ex.submit(task2, 2)
 
     print('*** main: done ***')
 
