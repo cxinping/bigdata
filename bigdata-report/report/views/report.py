@@ -12,9 +12,8 @@ import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
 
-#from report.commons.connect_kudu import prod_execute_sql
-from report.commons.connect_kudu2 import prod_execute_sql
 
+from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, \
@@ -125,7 +124,7 @@ values('{standard_id}','{unusual_id}','{unusual_level}',{standard_value},{out_va
 
     print(sql)
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -172,7 +171,7 @@ def finance_standard_update():
 
     print(sql)
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -211,7 +210,7 @@ delete from  01_datamart_layer_007_h_cw_df.finance_standard where standard_id='{
     print(sql)
 
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -264,7 +263,7 @@ def finance_scenery_add():
 
     print(sql)
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -313,7 +312,7 @@ def finance_scenery_update():
 
     print(sql)
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -349,7 +348,7 @@ def finance_scenery_delete():
         """.replace('\n', '')
 
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -397,7 +396,7 @@ def finance_person_add():
         values('{person_id}','{company_code}','{inner_code}', {sum_person}, '{pesiod}' )
             """.replace('\n', '')
         print(sql)
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -445,7 +444,7 @@ def finance_person_update():
 
     print(sql)
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -481,7 +480,7 @@ def finance_person_delete():
         """.replace('\n', '')
 
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -531,14 +530,18 @@ def finance_unusual_add():
         response = jsonify(data)
         return response
 
+    # 对输入的python脚本进行转义
+    #unusual_shell = transfer_content(unusual_shell)
+
     sql = f"""
 insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_type, unusual_point, unusual_content, unusual_shell, isalgorithm)
-values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' ,'{unusual_type}', '{unusual_point}' , '{unusual_content}', "{unusual_shell}", '{isalgorithm}')
+values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' ,'{unusual_type}', '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}')
     """.replace('\n', '')
 
     print(sql)
+
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -567,15 +570,15 @@ def finance_unusual_update():
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
     # 1为sql类2为算法类
-    isalgorithm = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
+    isalgorithm = request.form.get('isalgorithm') if request.form.get('isalgorithm') else None
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
-    log.info('* unusual_content *')
-    # log.info(f'unusual_shell={unusual_shell}')
+    log.info(f'* unusual_content={unusual_content}')
+    log.info(f'isalgorithm={isalgorithm}')
 
     unusual_shell = transfer_content(unusual_shell)
-    print(unusual_shell)
+    #print(unusual_shell)
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -603,14 +606,14 @@ def finance_unusual_update():
         return response
 
     sql = f"""
-    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell="{unusual_shell}", isalgorithm="{isalgorithm}"
+    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}"
     where unusual_id='{unusual_id}'
     """  # .replace('\n', '').replace('\r', '').strip()
 
     print(sql)
 
     try:
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
         data = {
             'result': 'ok',
@@ -647,7 +650,7 @@ def finance_unusual_delete():
             """.replace('\n', '')
         print(sql)
 
-        prod_execute_sql(conn_type='test', sqltype='insert', sql=sql)
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -684,7 +687,9 @@ def finance_unusual_execute():
         sql = f"""
             select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
                 """.replace('\n', '')
+
         print(sql)
+
         result = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         unusual_shell = str(result[0][1])
         # "1为sql类, 2为算法类",
