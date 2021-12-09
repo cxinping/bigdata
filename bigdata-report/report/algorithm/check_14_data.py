@@ -421,7 +421,7 @@ def exec_plane_sql(bill_id_ls):
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-        print(sql)
+        #print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -683,8 +683,8 @@ def check_14_plane_data2():
 def task1(coefficient):
     # 需求1 交通方式为非飞机的交通费用异常分析
     start_time = time.perf_counter()
-    check_14_no_plane_data()  # 共有数据 4546085 条
-    analyze_no_plane_data(coefficient=2) #
+    #check_14_no_plane_data()  # 共有数据 4546085 条
+    analyze_no_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task1 任务耗时 {consumed_time} sec')
@@ -694,8 +694,8 @@ def task1(coefficient):
 def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     start_time = time.perf_counter()
-    check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
-    analyze_plane_data(coefficient=2)  #
+    #check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
+    analyze_plane_data(coefficient=2)
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task2 任务耗时 {consumed_time} sec')
@@ -709,7 +709,7 @@ def main():
         print('main: starting')
         ex.submit(task1, 2)
         ex.submit(task2, 2)
-
+        # 执行检查点14 plane 的数据共耗时 15683 sec
     print('*** main: done ***')
 
 

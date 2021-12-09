@@ -142,7 +142,7 @@ class Check12Service:
         log.info(f'* 一共有 {count_records} 条数据, 保存数据共耗时 {consumed_time} sec')
 
     def exec_task(self, sql):
-        #log.info(sql)
+        # log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
 
         if records and len(records) > 0:
@@ -159,8 +159,8 @@ class Check12Service:
 
                 record_str = f'{bill_code},{origin_name},{destin_name},{travel_city_name},{travel_beg_date},{travel_end_date}'
                 log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
-                #log.info(record_str)
-                #print()
+                # log.info(record_str)
+                # print()
 
                 with open(dest_file, "a+", encoding='utf-8') as file:
                     file.write(record_str + "\n")
@@ -223,7 +223,7 @@ class Check12Service:
         # print(rd_df.head())
         # print(len(rd_df))
         # test
-        #rd_df = rd_df[:300]
+        # rd_df = rd_df[:300]
         # 测试1
         # rd_df = rd_df[(rd_df['origin_name'] == '宁波市') & (rd_df['destin_name'] == '南京市')]
 
@@ -233,7 +233,7 @@ class Check12Service:
             origin_name, destin_name = name
 
             if len(group_df) >= 2:
-                #print(f'*** origin_name={origin_name},destin_name={destin_name}')
+                # print(f'*** origin_name={origin_name},destin_name={destin_name}')
                 # print(group_df)
                 # print()
 
@@ -250,7 +250,6 @@ class Check12Service:
 
         consumed_time = round(time.perf_counter() - start_time)
         log.info(f'* 执行检查点12的数据共耗时 {consumed_time} sec')
-
 
     def exec_sql(self, bill_code_ls):
         print('checkpoint_12 exec_sql ==> ', len(bill_code_ls))
@@ -353,9 +352,9 @@ class Check12Service:
                 importdate
                 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
             WHERE {condition_sql}
-                """.format(condition_sql=condition_sql)#.replace('\n', '').replace('\r', '').strip()
+                """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-            #print(sql)
+            # print(sql)
 
             try:
                 start_time = time.perf_counter()
@@ -368,6 +367,6 @@ class Check12Service:
 
 
 check12_service = Check12Service()
-#check12_service.save_data() # 一共有 2218081 条数据, 保存数据共耗时 2281 sec
-check12_service.analyze_data() # 共有异常数据 546613 条
+# check12_service.save_data() # 一共有 2218081 条数据, 保存数据共耗时 2281 sec
+check12_service.analyze_data()  # 共有异常数据 546613 条, 执行检查点12的数据共耗时 9856 sec
 print('--- ok, check_12 has been completed ---')

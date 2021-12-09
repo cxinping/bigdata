@@ -311,10 +311,11 @@ def upload_hdfs_file(year):
 
 
 def main():
+    """
+
+    """
+
     year = sys.argv[1]
-    """
-   
-    """
     #year = '2021010'
 
     execute_02_data(year)

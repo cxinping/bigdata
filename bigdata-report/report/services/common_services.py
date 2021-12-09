@@ -295,7 +295,7 @@ class ProvinceService:
         self.province_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_all_sql)
 
     def query_province_names(self, grade='1'):
-        sel_sql = f'select area_name from 01_datamart_layer_007_h_cw_df.finance_province_city where grade="{grade}" '
+        sel_sql = f'select area_name from 01_datamart_layer_007_h_cw_df.finance_province_city where grade="{grade}" order by area_name '
         # print(sel_sql)
         province_names = []
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)

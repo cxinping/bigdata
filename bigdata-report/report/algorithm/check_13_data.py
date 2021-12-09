@@ -237,6 +237,7 @@ class Check13Service:
             # print(province_name)
             tmp_ls = self.cal_abnormal_data(rd_df=rd_df, coefficient=coefficient, query_province=province_name)
             #bill_id_ls.extend(tmp_ls)
+
             exec_sql(tmp_ls)
 
         log.info(f'* all results => {len(bill_id_ls)}')
@@ -365,6 +366,7 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-check13_service.save_fee_data()  # 保存数据总数 5917850
-check13_service.analyze_data(coefficient=2) # 执行检查点13的数据共耗时 2079 sec
+#check13_service.save_fee_data()  # 保存数据总数 5917850
+check13_service.analyze_data(coefficient=2) # 执行检查点13的数据共耗时 2167 sec
 print('--- ok, check_13 has been completed ---')
+

@@ -6,6 +6,7 @@ from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.commons.tools import not_empty
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 
@@ -14,16 +15,20 @@ sys.path.append('/you_filed_algos/app')
 
 
 def exec_55_data():
-    columns_ls = ['finance_travel_id', 'bill_id', 'commodityname']
+    columns_ls = ['finance_car_id', 'bill_id', 'commodityname']
     columns_str = ",".join(columns_ls)
 
     sql = f'select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_car_bill where commodityname is not null '
+    log.info(sql)
+
     rd_df = query_kudu_data(sql, columns_ls)
 
     category_columns_ls = ['blacklist_category', 'whitelist_category']
     category_columns_str = ",".join(category_columns_ls)
     category_sql = f"select {category_columns_str} from 01_datamart_layer_007_h_cw_df.finance_blacklist where classify = '车辆使用费'"
-    category_df = query_kudu_data(category_sql, category_columns_ls)
+    log.info(category_sql)
+
+    category_df = query_kudu_data(category_sql, category_columns_ls,conn_type=CONN_TYPE)
 
     # 黑名单列表
     blacklist_category_ls = category_df['blacklist_category'].tolist()
@@ -36,7 +41,7 @@ def exec_55_data():
     rd_df['is_blacklist'] = rd_df.apply(lambda rd_df: complex_function(rd_df['commodityname'], blacklist_category_ls, whitelist_category_ls), axis=1)
 
     # rd_df = rd_df[rd_df['is_blacklist'] == 1]
-    print(rd_df.head(500))
+    print(rd_df.head(50))
     print('* len==> ', len(rd_df))
 
     # dest_file = "/you_filed_algos/prod_kudu_data/check_55_data.txt"
