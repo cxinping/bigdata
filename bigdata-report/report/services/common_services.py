@@ -342,6 +342,24 @@ class ProvinceService:
 
         return None, None, None, None
 
+    def query_destin_province(self, invo_code, destin_name):
+        """
+        根据发票代码前两位找行程目的地所属省，若是没有发票，再根据行程目的地找所属省
+        """
+        province = None
+        if invo_code is None or invo_code == 'None':
+            if destin_name and len(destin_name) > 0 and ',' not in destin_name:
+                province = self.query_belong_province(destin_name)
+
+            # pass
+        else:
+            invo_code = str(invo_code)
+            invo_code_2_letter = invo_code[0:2]
+            province = self.query_province_from_invoice_code(invo_code_2_letter)
+
+        return province
+
+
     def query_belong_province(self, area_name):
         if area_name is None or area_name == 'None' or len(area_name) == 0:
             return None
@@ -407,6 +425,85 @@ class ProvinceService:
 
         return None
 
+    def query_province_from_invoice_code(self, invo_code_2_letter):
+        """
+        根据发票代码前两位找行程目的地所属省，若是没有发票，再根据行程目的地找所属省
+        :return:
+        """
+
+        province = None
+        if invo_code_2_letter == '11':
+            province = '北京市'
+        elif invo_code_2_letter == '12':
+            province = '天津市'
+        elif invo_code_2_letter == '13':
+            province = '河北省'
+        elif invo_code_2_letter == '14':
+            province = '山西省'
+        elif invo_code_2_letter == '15':
+            province = '内蒙古自治区'
+        elif invo_code_2_letter == '21':
+            province = '辽宁省'
+        elif invo_code_2_letter == '22':
+            province = '吉林省'
+        elif invo_code_2_letter == '23':
+            province = '黑龙江省'
+        elif invo_code_2_letter == '31':
+            province = '上海市'
+        elif invo_code_2_letter == '32':
+            province = '江苏省'
+        elif invo_code_2_letter == '33':
+            province = '浙江省'
+        elif invo_code_2_letter == '34':
+            province = '安徽省'
+        elif invo_code_2_letter == '35':
+            province = '福建省'
+        elif invo_code_2_letter == '36':
+            province = '江西省'
+        elif invo_code_2_letter == '37':
+            province = '山东省'
+        elif invo_code_2_letter == '41':
+            province = '河南省'
+        elif invo_code_2_letter == '42':
+            province = '湖北省'
+        elif invo_code_2_letter == '43':
+            province = '湖南省'
+        elif invo_code_2_letter == '44':
+            province = '广东省'
+        elif invo_code_2_letter == '45':
+            province = '广西壮族自治区'
+        elif invo_code_2_letter == '46':
+            province = '海南省'
+        elif invo_code_2_letter == '50':
+            province = '重庆市'
+        elif invo_code_2_letter == '51':
+            province = '四川省'
+        elif invo_code_2_letter == '52':
+            province = '贵州省'
+        elif invo_code_2_letter == '53':
+            province = '云南省'
+        elif invo_code_2_letter == '54':
+            province = '西藏自治区'
+        elif invo_code_2_letter == '61':
+            province = '陕西省'
+        elif invo_code_2_letter == '62':
+            province = '甘肃省'
+        elif invo_code_2_letter == '63':
+            province = '青海省'
+        elif invo_code_2_letter == '64':
+            province = '宁夏回族自治区'
+        elif invo_code_2_letter == '65':
+            province = '新疆维吾尔自治区'
+        elif invo_code_2_letter == '71':
+            province = '台湾省'
+        elif invo_code_2_letter == '81':
+            province = '香港特别行政区'
+        elif invo_code_2_letter == '82':
+            province = '澳门特别行政区'
+        else:
+            return None
+
+        return province
 
 def pagination_finance_shell_daily_records(unusual_point=None):
     """

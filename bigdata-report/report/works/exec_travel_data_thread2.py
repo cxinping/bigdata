@@ -281,7 +281,7 @@ def exec_task(sql, year_month):
             #     f'* consumed_time3 => {consumed_time3} sec, origin_name={origin_name}, origin_province={origin_province}')
             # start_time4 = time.perf_counter()
 
-            destin_province = match_area.query_destin_province(invo_code=invo_code,
+            destin_province = province_service.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
 
             # consumed_time4 = round(time.perf_counter() - start_time4)
@@ -341,23 +341,22 @@ def upload_hdfs_file(year_month):
 
 def main():
     """
-
-       2021016  无数据
-       2021015  无数据
-       2021014  无数据
-       2021013  无数据
-       2021012  无数据
-       2021011  280312 条记录
-       2021010
-       2021009
-       2021008
-       2021007
-       2021006
-       2021005
-       2021004
-       2021003
-       2021002
-       2021001
+   2021016  无数据
+   2021015  无数据
+   2021014  无数据
+   2021013  无数据
+   2021012  无数据
+   2021011  280312 条记录
+   2021010
+   2021009
+   2021008
+   2021007
+   2021006
+   2021005
+   2021004
+   2021003
+   2021002
+   2021001
 
     """
 

@@ -245,7 +245,7 @@ def exec_task(sql, year_month):
 
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
-            destin_province = match_area.query_destin_province(invo_code=invo_code,
+            destin_province = province_service.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
 
             consumed_time2 = round(time.perf_counter() - start_time1)

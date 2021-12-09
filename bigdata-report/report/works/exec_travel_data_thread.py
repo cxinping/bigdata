@@ -262,7 +262,7 @@ def exec_task(sql, year_month):
             #     f'* consumed_time3 => {consumed_time3} sec, origin_name={origin_name}, origin_province={origin_province}')
             # start_time4 = time.perf_counter()
 
-            destin_province = match_area.query_destin_province(invo_code=invo_code,
+            destin_province = province_service.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
 
             # consumed_time4 = round(time.perf_counter() - start_time4)
@@ -334,8 +334,8 @@ def main():
     2016 年, 一共 1088516 条, 消耗时间   41055   sec
     """
 
-    year = sys.argv[1]
-    #year = '2015'
+    #year = sys.argv[1]
+    year = '2021'
     execute_02_data(year)
     print('--- ok ---')
 

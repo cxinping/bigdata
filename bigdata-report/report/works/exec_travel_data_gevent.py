@@ -60,7 +60,7 @@ province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
-test_limit_cond = ' '  # 'LIMIT 10000'
+test_limit_cond = ' LIMIT 50000'  # 'LIMIT 10000'
 
 
 def get_dest_file(year):
@@ -102,8 +102,8 @@ def execute_02_data(year):
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
-    max_size = 1 * 10000
-    limit_size = 5 * 1000
+    max_size = 1 * 10001
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -129,22 +129,22 @@ def execute_02_data(year):
         select_sql_ls.append(tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 50
+        max_workers = 40
     else:
         max_workers = 5
 
-    log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页, year={year}')
+    log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页, year={year}, max_workers={max_workers}')
 
     if count_records > 0:
         init_file(year)
 
         start_time = time.perf_counter()
-        pool = Pool(20)
+        pool = Pool(30)
 
         results = []
         for sel_sql in select_sql_ls:
             rst = pool.spawn(exec_task, sel_sql, year)
-            #rst = gevent.spawn(exec_task, sel_sql, year_month)
+            #rst = gevent.spawn(exec_task, sel_sql, year)
             results.append(rst)
 
         gevent.joinall(results)
@@ -153,7 +153,7 @@ def execute_02_data(year):
         log.info(f'* 处理 {count_records} 条记录，共操作耗时 {consumed_time} sec, year={year}')
 
         # 上传文件到HDFS
-        upload_hdfs_file(year)
+        #upload_hdfs_file(year)
 
     else:
         log.info(f'* 查询日期 => {year}， 没有查询到任何数据')
@@ -252,7 +252,8 @@ def exec_task(sql, year):
 
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
-            destin_province = match_area.query_destin_province(invo_code=invo_code,
+            # 优化方法
+            destin_province = province_service.query_destin_province(invo_code=invo_code,
                                                                destin_name=destin_name)  # 行程目的地(省)
 
             consumed_time2 = round(time.perf_counter() - start_time1)
@@ -313,10 +314,16 @@ def upload_hdfs_file(year):
 def main():
     """
 
+    处理 50000 条记录，共操作耗时 403 sec, year=2021
+
+    处理 50000 条记录，共操作耗时 324 sec, year=2021
+
+    * 处理 50000 条记录，共操作耗时 408 sec, year=2021
+    :return:
     """
 
-    year = sys.argv[1]
-    #year = '2021010'
+    #year = sys.argv[1]
+    year = '2021'
 
     execute_02_data(year)
     print('--- ok ---')
