@@ -95,7 +95,6 @@ def exec_sql(finance_id_ls):
         company_code,
         account_period,
         finance_number,
-        cost_center,
         profit_center,
         cart_head,
         bill_code,

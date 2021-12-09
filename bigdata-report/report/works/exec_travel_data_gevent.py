@@ -33,7 +33,6 @@ PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/rep
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2016 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2015 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2014 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2013 &
 
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2021
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2020
@@ -60,7 +59,7 @@ province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
 
-test_limit_cond = ' LIMIT 50000'  # 'LIMIT 10000'
+test_limit_cond = ' '  # 'LIMIT 10000'
 
 
 def get_dest_file(year):
@@ -153,7 +152,7 @@ def execute_02_data(year):
         log.info(f'* 处理 {count_records} 条记录，共操作耗时 {consumed_time} sec, year={year}')
 
         # 上传文件到HDFS
-        #upload_hdfs_file(year)
+        upload_hdfs_file(year)
 
     else:
         log.info(f'* 查询日期 => {year}， 没有查询到任何数据')
@@ -174,7 +173,11 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
+    receipt_province = None  # receipt_province 发票开票所在省
+
     if rst[1] is not None or rst[2] is not None:
+        receipt_province = rst[0]
+
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
@@ -201,7 +204,11 @@ def operate_every_record(record):
 
         if sales_address and '市' in sales_address:
             receipt_city = sales_address
-            return sales_address, receipt_city
+
+            if receipt_province is None:
+                receipt_province = province_service.query_belong_province(area_name=receipt_city)
+
+            return sales_address, receipt_city, receipt_province
 
         receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
@@ -217,9 +224,12 @@ def operate_every_record(record):
             receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
                                                          sales_bank=None)
 
+        if receipt_province is None:
+            receipt_province = province_service.query_belong_province(area_name=receipt_city)
+
         #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
-    return sales_address, receipt_city
+    return sales_address, receipt_city, receipt_province
 
 
 def exec_task(sql, year):
@@ -248,7 +258,7 @@ def exec_task(sql, year):
             invo_code = str(record[6]) if record[6] else None  # 发票代码
             sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
-            sales_address, receipt_city = operate_every_record(record)
+            sales_address, receipt_city, receipt_province = operate_every_record(record)
 
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
@@ -277,15 +287,16 @@ def exec_task(sql, year):
             origin_province = process_invalid_content(origin_province)  # 行程出发地(省)
             destin_province = process_invalid_content(destin_province)  # 行程目的地(省)
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))  # 发票开票所在市
+            receipt_province = match_area.filter_area(process_invalid_content(receipt_province))  # 发票开票所在省
+
             destin_name = process_invalid_content(destin_name)
             sales_taxno = process_invalid_content(sales_taxno)
             account_period = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
-            log.info(
-                f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
+            #log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
-            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_city}\u0001{account_period}'
+            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_province}\u0001{receipt_city}\u0001{account_period}'
             # print(record_str)
             # print('')
 
@@ -313,17 +324,13 @@ def upload_hdfs_file(year):
 
 def main():
     """
+    处理 50000 条记录，共操作耗时 314 sec, year=2021
 
-    处理 50000 条记录，共操作耗时 403 sec, year=2021
 
-    处理 50000 条记录，共操作耗时 324 sec, year=2021
-
-    * 处理 50000 条记录，共操作耗时 408 sec, year=2021
-    :return:
     """
 
-    #year = sys.argv[1]
-    year = '2021'
+    year = sys.argv[1]
+    #year = '2021'
 
     execute_02_data(year)
     print('--- ok ---')

@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+from gevent import monkey
+monkey.patch_all()
+
+import gevent
+from gevent.pool import Pool
+
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
@@ -61,7 +67,7 @@ def check_meeting_data():
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 2 * 10000
-    limit_size = 5000
+    limit_size = 10000
     select_sql_ls = []
 
     if count_records >= max_size:
@@ -101,24 +107,26 @@ def check_meeting_data():
         # print('*** tmp_sql => ', tmp_sql)
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
-
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
-    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
-    wait(all_task, return_when=ALL_COMPLETED)
+    # threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+    # all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+    # wait(all_task, return_when=ALL_COMPLETED)
+    # threadPool.shutdown(wait=True)
 
-    threadPool.shutdown(wait=True)
+    pool = Pool(30)
+    results = []
+    for sel_sql in select_sql_ls:
+        rst = pool.spawn(exec_task, sel_sql)
+        results.append(rst)
+
+    gevent.joinall(results)
+
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 操作耗时 {consumed_time} sec')
+    log.info(f'* 处理 {records} 条记录, 共操作耗时 {consumed_time} sec')
 
 
 def operate_every_record(record):
-    # if 1 == 1:
-    #     return None, None
-
-    # print()
-
     finance_meeting_id = str(record[0])
     meet_addr = str(record[1])           # 会议地址
     sales_name = str(record[2])          # 开票公司
@@ -132,7 +140,11 @@ def operate_every_record(record):
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
+    receipt_province = None  # receipt_province 发票开票所在省
+
     if rst[1] is not None or rst[2] is not None:
+        receipt_province = rst[0]
+
         if rst[2] is not None:
             sales_address = rst[2]
             receipt_city = rst[1]
@@ -146,14 +158,18 @@ def operate_every_record(record):
             receipt_city = rst[1]
             #receipt_city = sales_address
 
-        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
     else:
         sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
 
         if sales_address and '市' in sales_address:
             receipt_city = sales_address
-            return sales_address, receipt_city
+
+            if receipt_province is None:
+                receipt_province = province_service.query_belong_province(area_name=receipt_city)
+
+            return sales_address, receipt_city, receipt_province
 
         receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
@@ -166,8 +182,10 @@ def operate_every_record(record):
             receipt_city = match_area.query_receipt_city_new(sales_name=meet_addr, sales_addressphone=None,
                                                          sales_bank=None)  # 发票开票所在市
 
+        if receipt_province is None:
+            receipt_province = province_service.query_belong_province(area_name=receipt_city)
 
-    return sales_address, receipt_city
+    return sales_address, receipt_city, receipt_province
 
 
 def exec_task(sql):
@@ -192,16 +210,7 @@ def exec_task(sql):
             # receipt_city = match_area.query_receipt_city(sales_name=sales_name, sales_addressphone=sales_addressphone,
             #                                              sales_bank=sales_bank)  # 发票开票所在市
 
-            sales_address, receipt_city = operate_every_record(record)
-
-            # sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
-            # meet_addr = meet_addr.replace(',', ' ') if meet_addr else '无'
-            # sales_name = sales_name.replace(',', ' ') if sales_name else '无'
-            # sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
-            # sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
-            # sales_address = sales_address.replace(',', ' ') if sales_address else '无'
-            # receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
-
+            sales_address, receipt_city, receipt_province = operate_every_record(record)
 
             sales_taxno = process_invalid_content(sales_taxno)
             meet_addr = process_invalid_content(meet_addr)
@@ -210,10 +219,11 @@ def exec_task(sql):
             sales_bank = process_invalid_content(sales_bank)
             sales_address = match_area.filter_area(process_invalid_content(sales_address))
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))
+            receipt_province = match_area.filter_area(process_invalid_content(receipt_province))
             account_period = '无'
 
             log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_meeting_id}\u0001{sales_taxno}\u0001{meet_addr}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{account_period}'
+            record_str = f'{finance_meeting_id}\u0001{sales_taxno}\u0001{meet_addr}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_province}\u0001{receipt_city}\u0001{account_period}'
             result.append(record_str)
 
             # print(record_str)

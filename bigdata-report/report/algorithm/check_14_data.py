@@ -350,7 +350,6 @@ def exec_plane_sql(bill_id_ls):
             company_code,
             account_period,
             finance_number,
-            cost_center,
             profit_center,
             cart_head,
             bill_code,
@@ -465,7 +464,6 @@ def exec_no_plane_sql(bill_id_ls):
         company_code,
         account_period,
         finance_number,
-        cost_center,
         profit_center,
         cart_head,
         bill_code,
@@ -705,11 +703,16 @@ def task2(coefficient):
 
 
 def main():
-    with ThreadPoolExecutor(max_workers=2) as ex:
+    """
+    执行检查点14 plane 的数据共耗时 15683 sec
+
+    """
+
+    with ThreadPoolExecutor(max_workers=3) as ex:
         print('main: starting')
         ex.submit(task1, 2)
-        ex.submit(task2, 2)
-        # 执行检查点14 plane 的数据共耗时 15683 sec
+        #ex.submit(task2, 2)
+
     print('*** main: done ***')
 
 

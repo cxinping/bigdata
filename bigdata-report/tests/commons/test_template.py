@@ -37,7 +37,7 @@ sys.path.append("/you_filed_algos/app")
 dest_dir = "/you_filed_algos/prod_kudu_data/checkpoint13"
 dest_file = dest_dir + "/check_13_data.txt"
 
-test_limit_cond = " "   # " LIMIT 10002"
+test_limit_cond = " LIMIT 120 "   # " LIMIT 10002"
 
 
 class Check13Service:
