@@ -681,8 +681,8 @@ def check_14_plane_data2():
 def task1(coefficient):
     # 需求1 交通方式为非飞机的交通费用异常分析
     start_time = time.perf_counter()
-    check_14_no_plane_data()  # 共有数据 4546085 条
-    #analyze_no_plane_data(coefficient=2) # task1 任务耗时 4752 sec
+    #check_14_no_plane_data()  # 一共有数据 6428955 条, 保存数据耗时 4389 sec
+    analyze_no_plane_data(coefficient=3) # task1 任务耗时 4752 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task1 任务耗时 {consumed_time} sec')
@@ -692,8 +692,8 @@ def task1(coefficient):
 def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     start_time = time.perf_counter()
-    check_14_plane_data()  # 共有数据 7768386 条, 花费时间 3532 seconds
-    #analyze_plane_data(coefficient=2)  # task2 任务耗时 19293 sec
+    #check_14_plane_data()  # 一共有数据 6352119 条,保存数据耗时 4774 sec
+    analyze_plane_data(coefficient=3)  # task2 任务耗时 19293 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task2 任务耗时 {consumed_time} sec')
