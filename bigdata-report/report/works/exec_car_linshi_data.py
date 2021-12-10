@@ -106,10 +106,11 @@ def check_car_linshi_data():
 
     all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
     wait(all_task, return_when=ALL_COMPLETED)
-
     threadPool.shutdown(wait=True)
+
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 操作耗时 {consumed_time} sec')
+    log.info(f'* 处理 {count_records} 条记录，操作共耗时 {consumed_time} sec')
     log.info('** 关闭线程池')
 
 
@@ -139,7 +140,7 @@ def operate_every_record(record):
             receipt_city = rst[1]
             #receipt_city = sales_address
 
-        log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
     else:
         sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
@@ -151,14 +152,13 @@ def operate_every_record(record):
         receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                      sales_bank=sales_bank)  # 发票开票所在市
 
-        log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
 
 def exec_task(sql):
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-    time.sleep(0.01)
 
     if records and len(records) > 0:
         result = []
@@ -176,13 +176,6 @@ def exec_task(sql):
             #                                              sales_bank=sales_bank)  # 发票开票所在市
 
             sales_address, receipt_city = operate_every_record(record)
-
-            # sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
-            # sales_name = sales_name.replace(',', ' ') if sales_name else '无'
-            # sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
-            # sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
-            # sales_address = sales_address.replace(',', ' ') if sales_address else '无'
-            # receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
 
             sales_taxno = process_invalid_content(sales_taxno)
             sales_name = process_invalid_content(sales_name)

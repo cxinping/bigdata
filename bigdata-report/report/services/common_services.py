@@ -529,11 +529,10 @@ def pagination_finance_shell_daily_records(unusual_point=None):
     sql = sql + where_sql + order_sql
 
     count_sql = 'SELECT count(a.daily_status) FROM ({sql}) a'.format(sql=sql)
-    log.info(count_sql)
+    #log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
-    print('* count_records => ', count_records)
-
+    #print('* count_records => ', count_records)
     # print(sql)
 
     return count_records, sql, columns_ls
