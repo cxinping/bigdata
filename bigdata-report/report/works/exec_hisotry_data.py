@@ -3,10 +3,17 @@ from report.commons.connect_kudu2 import prod_execute_sql, dis_connection
 import time
 from report.commons.settings import CONN_TYPE
 
+"""
+
+处理KUDUde历史数据
+
+"""
+
 
 def del_history_exception_data():
-    sql = "delete from  analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('12' ,'13', '14', '34', '49' )"
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('12' ,'13', '14', '34', '49' ) "
+    print(sql)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 
 def demo1():
@@ -26,4 +33,6 @@ def demo1():
 
 
 if __name__ == '__main__':
-    demo1()
+    del_history_exception_data()
+    #demo1()
+    print('--- ok ---')

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, \
     pagination_office_records
-from report.services.conference_expense_service import query_checkpoint_26_commoditynames,get_conference_bill_jiebaword
+from report.services.conference_expense_service import query_checkpoint_26_commoditynames, get_conference_bill_jiebaword
 from report.commons.logging import get_logger
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
                                              operate_finance_category_sign, clean_finance_category_sign,
@@ -75,4 +75,5 @@ def import_data():
     print('--- ok ---')
 
 
-import_data()
+if __name__ == "__main__":
+    import_data()

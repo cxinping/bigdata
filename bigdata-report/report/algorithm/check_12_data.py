@@ -252,7 +252,7 @@ class Check12Service:
         log.info(f'* 执行检查点12的数据共耗时 {consumed_time} sec')
 
     def exec_sql(self, bill_code_ls):
-        log.info('checkpoint_12 exec_sql ==> ', len(bill_code_ls))
+        print('checkpoint_12 exec_sql ==> ', len(bill_code_ls))
 
         if bill_code_ls and len(bill_code_ls) > 0:
             group_ls = list_of_groups(bill_code_ls, 1000)
