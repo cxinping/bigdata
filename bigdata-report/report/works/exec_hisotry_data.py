@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from report.commons.connect_kudu2 import prod_execute_sql, dis_connection
-import time
 from report.commons.settings import CONN_TYPE
 
 """

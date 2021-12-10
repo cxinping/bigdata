@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from report.commons.tools import create_uuid
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
@@ -70,7 +69,7 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
     """
     daily_id = create_uuid()
     try:
-        #log.info('*** insert_finance_shell_daily ***')
+        # log.info('*** insert_finance_shell_daily ***')
         sql = f"""
         insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor,task_status) 
         values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}", "{task_status}" )
@@ -360,7 +359,6 @@ class ProvinceService:
 
         return province
 
-
     def query_belong_province(self, area_name):
         if area_name is None or area_name == 'None' or len(area_name) == 0:
             return None
@@ -505,6 +503,7 @@ class ProvinceService:
             return None
 
         return province
+
 
 def pagination_finance_shell_daily_records(unusual_point=None):
     """

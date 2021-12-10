@@ -2,7 +2,6 @@
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import time
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.logging import get_logger
@@ -61,7 +60,7 @@ def check_car_linshi_data():
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 1 * 1000
-    limit_size = 1 * 2000
+    limit_size = 1 * 5000
     select_sql_ls = []
 
     if count_records >= max_size:
