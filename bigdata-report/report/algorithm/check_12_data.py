@@ -158,7 +158,7 @@ class Check12Service:
                 # log.info(travel_city_name)
 
                 record_str = f'{bill_code},{origin_name},{destin_name},{travel_city_name},{travel_beg_date},{travel_end_date}'
-                log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
+                #log.info(f"checkpoint_12 {threading.current_thread().name} is running ")
                 # log.info(record_str)
                 # print()
 
@@ -252,7 +252,7 @@ class Check12Service:
         log.info(f'* 执行检查点12的数据共耗时 {consumed_time} sec')
 
     def exec_sql(self, bill_code_ls):
-        print('checkpoint_12 exec_sql ==> ', len(bill_code_ls))
+        log.info('checkpoint_12 exec_sql ==> ', len(bill_code_ls))
 
         if bill_code_ls and len(bill_code_ls) > 0:
             group_ls = list_of_groups(bill_code_ls, 1000)
@@ -366,6 +366,6 @@ class Check12Service:
 
 
 check12_service = Check12Service()
-# check12_service.save_data() # 一共有 2218081 条数据, 保存数据共耗时 2281 sec
-check12_service.analyze_data()  # 共有异常数据 546613 条, 执行检查点12的数据共耗时 9856 sec
+check12_service.save_data() # 一共有 2218081 条数据, 保存数据共耗时 2281 sec
+#check12_service.analyze_data()  # 执行检查点13的数据共耗时 1671 sec
 print('--- ok, check_12 has been completed ---')

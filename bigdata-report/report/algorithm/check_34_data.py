@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import time
 
+import time
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
@@ -21,6 +21,8 @@ pd.set_option('display.width', 500)
 
 
 def check_34_data():
+    log.info("* 开始执行 检查点34 *")
+
     columns_ls = ['finance_meeting_id', 'bill_id', 'meet_lvl_name', 'met_money']
     columns_str = ",".join(columns_ls)
 

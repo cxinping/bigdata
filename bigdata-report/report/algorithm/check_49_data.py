@@ -23,6 +23,8 @@ pd.set_option('display.width', 500)
 
 
 def check_49_data():
+    log.info("* 开始执行 检查点49 *")
+
     columns_ls = ['finance_offical_id', 'bill_id', 'bill_code', 'check_amount']  # 日期字段 account_period
     columns_str = ",".join(columns_ls)
 

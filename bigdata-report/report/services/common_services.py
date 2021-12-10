@@ -70,6 +70,7 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
     """
     daily_id = create_uuid()
     try:
+        #log.info('*** insert_finance_shell_daily ***')
         sql = f"""
         insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor,task_status) 
         values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}", "{task_status}" )

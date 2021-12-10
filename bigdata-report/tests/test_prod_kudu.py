@@ -199,24 +199,33 @@ def demo4():
 
 
 def demo5():
+    #sql = "delete from  analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('13', '14')"
     sql = "delete from  analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('13', '14')"
+
     prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql)
     print('--- ok ---')
 
+
 def demo6():
-    sql1 = """
-    """
+    sql1 = "update 01_datamart_layer_007_h_cw_df.finance_unusual set isalgorithm='2' where unusual_id = '12'"
     #prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql1)
 
-    sql2 = "select * from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '13'"
+    sql2 = f"""
+    UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="cancel", unusual_infor="系统重启，取消正在执行的执行检查点任务" WHERE task_status="doing"
+    """
+    #print(sql)
+    #prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
+
+    sql2 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '12' "
     records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql2)
     for record in records:
         print(record)
+
 
 if __name__ == "__main__":
     # select_finance_all_targets()
     # upsert_finance_all_targets()
     # demo4()
 
-    demo5()
-    #demo6()
+    # demo5()
+    demo6()
