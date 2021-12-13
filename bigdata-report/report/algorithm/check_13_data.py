@@ -343,6 +343,7 @@ def exec_sql(bill_id_ls):
         0 as amounttax,
         "" as offset_ratio,
         "" as amounttax_ratio,
+        "" as approve_name,
         "" as ratio,
         importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
@@ -363,7 +364,7 @@ def exec_sql(bill_id_ls):
 
 
 check13_service = Check13Service()
-check13_service.save_fee_data()  # 保存数据总数 5917850
+#check13_service.save_fee_data()  # 保存数据总数 5917850
 check13_service.analyze_data(coefficient=3) # 执行检查点13的数据共耗时 2167 sec
 print("--- ok, check_13 has been completed ---")
 

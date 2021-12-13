@@ -162,6 +162,7 @@ def exec_sql(finance_id_ls):
         '' as offset_ratio,
         '' as amounttax_ratio,
         '' as ratio,
+        '' as approve_name,
         importdate
         from 01_datamart_layer_007_h_cw_df.finance_official_bill
         WHERE {condition_sql}
