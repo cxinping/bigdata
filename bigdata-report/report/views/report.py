@@ -608,7 +608,7 @@ def finance_unusual_update():
     sql = f"""
     update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}"
     where unusual_id='{unusual_id}'
-    """#.replace('\n', '').replace('\r', '').strip()
+    """
 
     log.info(sql)
 

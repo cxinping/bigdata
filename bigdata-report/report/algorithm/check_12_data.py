@@ -367,6 +367,6 @@ class Check12Service:
 
 
 check12_service = Check12Service()
-#check12_service.save_data() # 一共有 2342893 条数据, 保存数据共耗时 1078 sec
+check12_service.save_data() # 一共有 2342893 条数据, 保存数据共耗时 1078 sec
 check12_service.analyze_data()  #
 print('--- ok, check_12 has been completed ---')

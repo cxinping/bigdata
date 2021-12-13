@@ -129,13 +129,13 @@ def execute_kudu_sql(unusual_shell, unusual_id):
 
         daily_end_date = get_current_time()
         update_finance_shell_daily(daily_id, daily_end_date, task_status='done',operate_desc=operate_desc)
-
     except Exception as e:
         print(e)
         # insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
         #                            daily_end_date=daily_end_date,
         #                            unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e),
         #                            task_status='done')
+
         error_info = str(e)
         daily_end_date = get_current_time()
         update_finance_shell_daily(daily_id, daily_end_date, task_status='error', operate_desc=error_info)
