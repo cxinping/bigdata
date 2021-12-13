@@ -216,8 +216,9 @@ def demo6():
     #print(sql)
     #prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
 
-    sql2 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '12' "
-    records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql2)
+    #sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '12' "
+    sql3 = 'describe  01_datamart_layer_007_h_cw_df.finance_travel_bill '
+    records = prod_execute_sql(conn_type='prod', sqltype='select', sql=sql3)
     for record in records:
         print(record)
 

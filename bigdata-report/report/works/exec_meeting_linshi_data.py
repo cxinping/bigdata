@@ -123,7 +123,7 @@ def check_meeting_data():
     gevent.joinall(results)
 
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 处理 {records} 条记录, 共操作耗时 {consumed_time} sec')
+    log.info(f'* 处理 {count_records} 条记录, 共操作耗时 {consumed_time} sec')
 
 
 def operate_every_record(record):
@@ -222,7 +222,7 @@ def exec_task(sql):
             receipt_province = match_area.filter_area(process_invalid_content(receipt_province))
             account_period = '无'
 
-            log.info(f" {threading.current_thread().name} is running ")
+            #log.info(f" {threading.current_thread().name} is running ")
             record_str = f'{finance_meeting_id}\u0001{sales_taxno}\u0001{meet_addr}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_province}\u0001{receipt_city}\u0001{account_period}'
             result.append(record_str)
 
