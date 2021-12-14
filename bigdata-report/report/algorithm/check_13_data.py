@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from gevent import monkey; monkey.patch_all(thread=False)
+from gevent import monkey;
+
+monkey.patch_all(thread=False)
 
 import gevent
 from gevent.pool import Pool
@@ -37,7 +39,7 @@ sys.path.append("/you_filed_algos/app")
 dest_dir = "/you_filed_algos/prod_kudu_data/checkpoint13"
 dest_file = dest_dir + "/check_13_data.txt"
 
-test_limit_cond = " "   # " LIMIT 10002"
+test_limit_cond = ""  # " LIMIT 10002"
 
 
 class Check13Service:
@@ -153,16 +155,16 @@ class Check13Service:
         log.info(f"* 一共有数据 {count_records} 条，保存数据耗时 {consumed_time} sec")
 
     def exec_task(self, sql):
-        #log.info(sql)
+        # log.info(sql)
 
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype="select", sql=sql)
 
         if records and len(records) > 0:
             for idx, record in enumerate(records):
-                bill_id = str(record[0])                # bill_id
-                city_name = str(record[1])              # 出差城市名称
-                city_grade_name = str(record[2])        # 出差城市等级
-                emp_name = str(record[3])               # 员工名字
+                bill_id = str(record[0])  # bill_id
+                city_name = str(record[1])  # 出差城市名称
+                city_grade_name = str(record[2])  # 出差城市等级
+                emp_name = str(record[3])  # 员工名字
                 stand_amount_perday = float(record[4])  # 每天标准住宿费用
                 hotel_amount_perday = float(record[5])  # 每天实际花费的住宿费用
 
@@ -173,8 +175,8 @@ class Check13Service:
                 emp_name = emp_name.replace(",", " ")
 
                 record_str = f"{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}"
-                #log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
-                #log.info(record_str)
+                # log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
+                # log.info(record_str)
 
                 with open(dest_file, "a+", encoding="utf-8") as file:
                     file.write(record_str + "\n")
@@ -189,9 +191,12 @@ class Check13Service:
         # print(abnormal_rd_df1.head(10))
 
         # part1 过滤查询
-        temp = abnormal_rd_df1.describe()[["consume_amount_perday"]]
-        std_val = temp.at["std", "consume_amount_perday"]  # 标准差
-        mean_val = temp.at["mean", "consume_amount_perday"]  # 平均值
+        # temp = abnormal_rd_df1.describe()[["consume_amount_perday"]]
+        # std_val = temp.at["std", "consume_amount_perday"]  # 标准差
+        # mean_val = temp.at["mean", "consume_amount_perday"]  # 平均值
+
+        std_val = abnormal_rd_df1.std().at['consume_amount_perday'] # 标准差
+        mean_val = abnormal_rd_df1.mean().at['consume_amount_perday'] # 平均值
 
         # 数据的正常范围为 【mean - 2 × std , mean + 2 × std】
         max_val = mean_val + coefficient * std_val
@@ -219,7 +224,7 @@ class Check13Service:
         return bill_id_ls1
 
     def analyze_data(self, coefficient=2):
-        log.info("* 开始执行检查点13 *")
+        log.info(f"* 开始执行检查点13 coefficient={coefficient} ")
         start_time = time.perf_counter()
 
         rd_df = pd.read_csv(dest_file, sep=",", header=None,
@@ -234,21 +239,21 @@ class Check13Service:
         for idx, province_name in enumerate(province_names):
             # print(province_name)
             tmp_ls = self.cal_abnormal_data(rd_df=rd_df, coefficient=coefficient, query_province=province_name)
-            #bill_id_ls.extend(tmp_ls)
+            # bill_id_ls.extend(tmp_ls)
 
             exec_sql(tmp_ls)
 
         log.info(f"* all results => {len(bill_id_ls)}")
-        #targes_bill_id_ls = query_billds_finance_all_targets(unusual_id="13")
-        #bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
-        #exec_sql(bill_id_ls)
+        # targes_bill_id_ls = query_billds_finance_all_targets(unusual_id="13")
+        # bill_id_ls = [x for x in bill_id_ls if x not in targes_bill_id_ls]
+        # exec_sql(bill_id_ls)
 
         consumed_time = round(time.perf_counter() - start_time)
         log.info(f"* 执行检查点13的数据共耗时 {consumed_time} sec")
 
 
 def exec_sql(bill_id_ls):
-    log.info(f"checkpoint_13 exec_sql ==> {len(bill_id_ls)}" )
+    log.info(f"checkpoint_13 exec_sql ==> {len(bill_id_ls)}")
 
     if bill_id_ls and len(bill_id_ls) > 0:
         group_ls = list_of_groups(bill_id_ls, 1000)
@@ -268,7 +273,7 @@ def exec_sql(bill_id_ls):
             else:
                 condition_sql = condition_sql + " OR " + temp
 
-        #print(condition_sql)
+        # print(condition_sql)
 
         sql = """        
         UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets    
@@ -350,7 +355,7 @@ def exec_sql(bill_id_ls):
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql).replace("\n", "").replace("\r", "").strip()
 
-        #print(sql)
+        # print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -362,9 +367,7 @@ def exec_sql(bill_id_ls):
             raise RuntimeError(e)
 
 
-
 check13_service = Check13Service()
 check13_service.save_fee_data()  # 保存数据总数 5917850
-check13_service.analyze_data(coefficient=3) # 执行检查点13的数据共耗时 2167 sec
+check13_service.analyze_data(coefficient=4)  # 执行检查点13的数据共耗时 2167 sec
 print("--- ok, check_13 has been completed ---")
-

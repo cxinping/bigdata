@@ -1163,8 +1163,7 @@ def query_finance_shell_daily():
     if unusual_point is None or len(unusual_point) == 0:
         unusual_point = None
 
-    log.info(
-        f'*** current_page={current_page},page_size={page_size}, unusual_point => {unusual_point} , {type(unusual_point)}')
+    log.info(f'* current_page={current_page},page_size={page_size}, unusual_point => {unusual_point} ')
 
     if current_page is None:
         data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}

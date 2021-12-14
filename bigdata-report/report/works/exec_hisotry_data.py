@@ -13,7 +13,7 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('12', '13' ) " # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ( '13' ) " # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
@@ -32,7 +32,7 @@ def demo1():
     #sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
     sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '12' "
     # sql3 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
-    print(sql3)
+    log.info(sql3)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql3)
     for record in records:
         print(record)
@@ -43,9 +43,15 @@ def demo2():
       delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="01"
     """
     sql2 = 'delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily'
-    sql3 = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id='01' "
+    sql3 = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id='04' "
 
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql3)
+    sql4 = """
+  
+    """
+
+    print(sql4)
+
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql4)
 
 
 def exec_sql():
@@ -70,28 +76,26 @@ def exec_sql():
     for record in records:
         unusual_id = record[0]
         unusual_shell = record[1]
-
         """
-        检查点 01 不用执行
-        检查点 02 执行时间长
+       
+        
         """
 
         if unusual_id  in ['01', '02'] and unusual_id in unusual_ls:
             log.info(unusual_shell)
 
-            if '37' == '37':
-                try:
-                    if unusual_shell is not None and unusual_shell != 'None':
-                        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
-                        log.info(f'成功执行 检查点{unusual_id} 的SQL')
-                except Exception as e:
-                    print(e)
-                    log.info(f'error 执行检查点{unusual_id} 的SQL失败')
+            try:
+                if unusual_shell is not None and unusual_shell != 'None':
+                    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
+                    log.info(f'成功执行 检查点{unusual_id} 的SQL')
+            except Exception as e:
+                print(e)
+                log.info(f'error 执行检查点{unusual_id} 的SQL失败')
 
 
 if __name__ == '__main__':
     #del_history_exception_data()
-    demo1()
-    #demo2()
+    #demo1()
+    demo2()
     #exec_sql()
-    print('--- ok 1 ---')
+    print('--- ok  ---')

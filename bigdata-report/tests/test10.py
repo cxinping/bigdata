@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+#import ariama
+
 s1 = '''
 111
 222

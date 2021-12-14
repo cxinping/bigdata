@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+from gevent import monkey;
+
+monkey.patch_all(thread=False)
+
+import gevent
+from gevent.pool import Pool
 
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
@@ -8,7 +14,6 @@ import numpy as np
 import time
 import threading
 from report.commons.connect_kudu2 import prod_execute_sql
-
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
@@ -41,7 +46,7 @@ dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
 no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
-test_limit_cond = ' '  # 'LIMIT 1000'``
+test_limit_cond = ''  # 'LIMIT 1000'``
 
 
 def check_14_plane_data():
@@ -97,20 +102,27 @@ def check_14_plane_data():
 
     log.info('* check_14_plane_data 开始分页查询')
 
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
-    all_task = [threadPool.submit(exec_plane_task, sel_sql, plane_dest_file) for sel_sql in select_sql_ls]
-    wait(all_task, return_when=ALL_COMPLETED)
+    # threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+    # all_task = [threadPool.submit(exec_plane_task, sel_sql, plane_dest_file) for sel_sql in select_sql_ls]
+    # wait(all_task, return_when=ALL_COMPLETED)
+    # threadPool.shutdown(wait=True)
 
-    threadPool.shutdown(wait=True)
+    pool = Pool(30)
+    results = []
+    for sel_sql in select_sql_ls:
+        rst = pool.spawn(exec_plane_task, sel_sql, plane_dest_file)
+        results.append(rst)
+    gevent.joinall(results)
+
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_14_plane_data 一共有数据 {count_records} 条,保存数据耗时 {consumed_time} sec')
 
 
 def exec_plane_task(sql, dest_file):  # dest_file
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-    #time.sleep(0.01)
+    # time.sleep(0.01)
 
     if records and len(records) > 0:
         for idx, record in enumerate(records):
@@ -127,7 +139,7 @@ def exec_plane_task(sql, dest_file):  # dest_file
 
             record_str = f'{finance_travel_id},{bill_id},{plane_beg_date},{plane_end_date},{plane_origin_name},{plane_destin_name},{plane_check_amount}'
 
-            #log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
+            # log.info(f"checkpoint14 plane {threading.current_thread().name} is running")
             # log.info(record_str)
             # print()
 
@@ -157,7 +169,7 @@ def check_14_no_plane_data():
     count_records = records[0][0]
 
     max_size = 1 * 100000
-    limit_size = 2 * 10000
+    limit_size = 1 * 10000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -184,27 +196,20 @@ def check_14_no_plane_data():
 
     log.info('* check_14_no_plane_data 开始分页查询')
 
-    obj_list = []
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
     start_time = time.perf_counter()
 
-    # for sel_sql in select_sql_ls:
-    #     log.info(sel_sql)
-    #     obj = threadPool.submit(exec_task, sel_sql, no_plane_dest_file)
-    #     obj_list.append(obj)
+    # threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+    # all_task = [threadPool.submit(exec_no_plane_task, sel_sql, no_plane_dest_file) for sel_sql in select_sql_ls]
+    # wait(all_task, return_when=ALL_COMPLETED)
+    # threadPool.shutdown(wait=True)
 
-    # rd_list = []
-    # for future in as_completed(obj_list):
-    #     data = future.result()
-    #     rd_list.append(data)
-    #     print('* len(data)=', len(data))
+    pool = Pool(30)
+    results = []
+    for sel_sql in select_sql_ls:
+        rst = pool.spawn(exec_no_plane_task, sel_sql, no_plane_dest_file)
+        results.append(rst)
+    gevent.joinall(results)
 
-    # print(select_sql_ls)
-
-    all_task = [threadPool.submit(exec_no_plane_task, sel_sql, no_plane_dest_file) for sel_sql in select_sql_ls]
-    wait(all_task, return_when=ALL_COMPLETED)
-
-    threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_14_no_plane_data 一共有数据 {count_records} 条, 保存数据耗时 {consumed_time} sec')
 
@@ -225,7 +230,7 @@ def exec_no_plane_task(sql, dest_file):
 
             record_str = f'{finance_travel_id},{bill_id},{origin_name},{destin_name},{jour_amount}'
 
-            #log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
+            # log.info(f"checkpoint14 no_plane {threading.current_thread().name} is running")
             # log.info(record_str)
             # print()
 
@@ -252,7 +257,7 @@ def analyze_no_plane_data(coefficient=2):
     :return:
     """
 
-    log.info('========== check_14 analyze_no_plane_data ===============')
+    log.info(f'========== check_14 analyze_no_plane_data coefficient={coefficient} ')
     start_time = time.perf_counter()
 
     rd_df = pd.read_csv(no_plane_dest_file, sep=',', header=None,
@@ -267,7 +272,7 @@ def analyze_no_plane_data(coefficient=2):
     # print(len(rd_df))
     # print('*' * 50)
     # test
-    #rd_df = rd_df[:500]
+    # rd_df = rd_df[:500]
     # print(rd_df.head(20))
     # print(len(rd_df))
     # print('=' * 50)
@@ -277,9 +282,12 @@ def analyze_no_plane_data(coefficient=2):
     abnormal_bill_id_ls = []
     for name, group_df in grouped_df:
         origin_name, destin_name = name
-        temp = group_df.describe()[['jour_amount']]
-        std_val = temp.at['std', 'jour_amount']  # 标准差
-        mean_val = temp.at['mean', 'jour_amount']  # 平均值
+        # temp = group_df.describe()[['jour_amount']]
+        # std_val = temp.at['std', 'jour_amount']  # 标准差
+        # mean_val = temp.at['mean', 'jour_amount']  # 平均值
+
+        std_val = group_df.std().at['jour_amount']  # 标准差
+        mean_val = group_df.mean().at['jour_amount']  # 平均值
 
         if std_val == 0 or np.isnan(std_val):
             std_val = 0
@@ -312,7 +320,7 @@ def analyze_no_plane_data(coefficient=2):
 
     # print(len(abnormal_bill_id_ls))
 
-    exec_no_plane_sql(abnormal_bill_id_ls)  #
+    exec_no_plane_sql(abnormal_bill_id_ls)
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 执行检查点14 no_plane 的数据共耗时 {consumed_time} sec')
@@ -421,7 +429,7 @@ def exec_plane_sql(bill_id_ls):
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
 
-        #print(sql)
+        # print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -556,7 +564,7 @@ def analyze_plane_data(coefficient=2):
     :return:
     """
 
-    log.info('======= check_14 analyze_plane_data ===========')
+    log.info(f'======= check_14 analyze_plane_data coefficient={coefficient} ')
     start_time = time.perf_counter()
 
     rd_df = pd.read_csv(plane_dest_file, sep=',', header=None, encoding="utf-8",
@@ -566,23 +574,25 @@ def analyze_plane_data(coefficient=2):
                                'plane_destin_name', 'plane_check_amount'])
 
     # print(rd_df.dtypes)
-    #print('* counts => ', len(rd_df))
-
+    # print('* counts => ', len(rd_df))
     # test
-    #rd_df = rd_df[:1500]
+    # rd_df = rd_df[:1500]
     # print(rd_df.head(10))
 
     grouped_df = rd_df.groupby(['plane_beg_date', 'plane_origin_name', 'plane_destin_name'], as_index=False, sort=False)
     # grouped_df = rd_df.groupby([ 'plane_origin_name', 'plane_destin_name'])
-    #print('* after groupby ')
+    # print('* after groupby ')
 
     bill_id_ls = []
     for name, group_df in grouped_df:
         # print(name)
         plane_beg_date, plane_origin_name, plane_destin_name = name
-        temp = group_df.describe()[['plane_check_amount']]
-        std_val = temp.at['std', 'plane_check_amount']  # 标准差
-        mean_val = temp.at['mean', 'plane_check_amount']  # 平均值
+        # temp = group_df.describe()[['plane_check_amount']]
+        # std_val = temp.at['std', 'plane_check_amount']  # 标准差
+        # mean_val = temp.at['mean', 'plane_check_amount']  # 平均值
+
+        std_val = group_df.std().at['plane_check_amount']  # 标准差
+        mean_val = group_df.mean().at['plane_check_amount']  # 平均值
 
         if std_val == 0 or np.isnan(std_val):
             std_val = 0
@@ -684,7 +694,7 @@ def task1(coefficient):
     # 需求1 交通方式为非飞机的交通费用异常分析
     start_time = time.perf_counter()
     check_14_no_plane_data()  # 一共有数据 6428955 条, 保存数据耗时 4389 sec
-    analyze_no_plane_data(coefficient=3) # task1 任务耗时 4752 sec
+    analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task1 任务耗时 {consumed_time} sec')
@@ -695,13 +705,13 @@ def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     start_time = time.perf_counter()
     check_14_plane_data()  # 一共有数据 6352119 条,保存数据耗时 4774 sec
-    analyze_plane_data(coefficient=3)  # task2 任务耗时 19293 sec
+    analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task2 任务耗时 {consumed_time} sec')
     print('--- analyze_plane_data has been completed ---')
 
-    # check_14_plane_data2()    # 共有数据 3415489 条, 花费时间 3423 seconds
+    # check_14_plane_data2()
 
 
 def main():
@@ -710,10 +720,10 @@ def main():
 
     """
 
-    with ThreadPoolExecutor(max_workers=3) as ex:
+    with ThreadPoolExecutor(max_workers=2) as ex:
         print('main: starting')
-        ex.submit(task1, 2)
-        ex.submit(task2, 2)
+        ex.submit(task1, 4)
+        ex.submit(task2, 4)
 
     print('*** main: done ***')
 

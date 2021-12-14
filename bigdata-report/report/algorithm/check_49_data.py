@@ -2,7 +2,6 @@
 
 import time
 from report.commons.connect_kudu2 import prod_execute_sql
-
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
@@ -45,7 +44,7 @@ def check_49_data():
     result = rd_df[rd_df['check_amount'] > std_val]
 
     print(f'* "check_amount"列计算的方差为 => {std_val}')
-    print(result.head(10))
+    print(result.head(5))
 
     finance_id_ls = result['finance_offical_id'].tolist()
     print(f'before filter len(finance_id_ls)={len(finance_id_ls)}')

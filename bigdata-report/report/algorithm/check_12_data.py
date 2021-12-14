@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 
+from gevent import monkey;
+monkey.patch_all(thread=False)
+
+import gevent
+from gevent.pool import Pool
+
+
 from report.commons.logging import get_logger
 import os, time
 import re
@@ -43,7 +50,7 @@ pd.set_option('display.width', 500)
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint12'
 dest_file = dest_dir + '/check_12_data.txt'
 
-test_limit_cond = ' '  # ' LIMIT 100010 '
+test_limit_cond = ''  # ' LIMIT 100010 '
 
 
 class Check12Service:
@@ -134,10 +141,18 @@ class Check12Service:
         threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
         start_time = time.perf_counter()
 
-        all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
-        wait(all_task, return_when=ALL_COMPLETED)
+        # all_task = [threadPool.submit(self.exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+        # wait(all_task, return_when=ALL_COMPLETED)
+        # threadPool.shutdown(wait=True)
 
-        threadPool.shutdown(wait=True)
+        pool = Pool(30)
+        results = []
+        for sel_sql in select_sql_ls:
+            rst = pool.spawn(self.exec_task, sel_sql)
+            results.append(rst)
+
+        gevent.joinall(results)
+
         consumed_time = round(time.perf_counter() - start_time)
         log.info(f'* 一共有 {count_records} 条数据, 保存数据共耗时 {consumed_time} sec')
 
@@ -367,6 +382,6 @@ class Check12Service:
 
 
 check12_service = Check12Service()
-check12_service.save_data() # 一共有 2342893 条数据, 保存数据共耗时 1078 sec
-check12_service.analyze_data()  #
+check12_service.save_data() # 一共有 2342878 条数据, 保存数据共耗时 879 sec
+check12_service.analyze_data()  # 执行检查点12的数据共耗时 9997 sec
 print('--- ok, check_12 has been completed ---')
