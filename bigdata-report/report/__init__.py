@@ -42,12 +42,11 @@ def create_app(config_object='config.default', config_map=None):
     app.logger.debug('os.environ=%s', os.environ)
 
     # a simple page that says hello
+    # # http://10.5.138.11:8004/hello
     @app.route('/hello')
     def hello():
         result = {'report_service_status': HTTPStatus.OK}
         result['version'] = '1.0'
-
-        # TODO: test email server connection
 
         status = HTTPStatus.INTERNAL_SERVER_ERROR if HTTPStatus.INTERNAL_SERVER_ERROR in result.values() else HTTPStatus.OK
 

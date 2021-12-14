@@ -12,7 +12,6 @@ import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
 
-
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
@@ -21,8 +20,10 @@ from report.services.office_expenses_service import query_checkpoint_42_commodit
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
     pagination_car_records
 from report.commons.tools import get_current_time
-from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily, query_finance_shell_daily_status,
-                                             operate_finance_category_sign, clean_finance_category_sign,query_finance_category_signs,
+from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
+                                             query_finance_shell_daily_status,
+                                             operate_finance_category_sign, clean_finance_category_sign,
+                                             query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
@@ -31,7 +32,6 @@ import traceback
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
 from report.commons.settings import CONN_TYPE
-
 
 log = get_logger(__name__)
 
@@ -531,7 +531,7 @@ def finance_unusual_add():
         return response
 
     # 对输入的python脚本进行转义
-    #unusual_shell = transfer_content(unusual_shell)
+    # unusual_shell = transfer_content(unusual_shell)
 
     sql = f"""
 insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_type, unusual_point, unusual_content, unusual_shell, isalgorithm)
@@ -569,16 +569,16 @@ def finance_unusual_update():
     unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
-    # 1为sql类2为算法类
+    # 1为sql类, 2为算法类
     isalgorithm = request.form.get('isalgorithm') if request.form.get('isalgorithm') else None
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
-    log.info(f'* unusual_content={unusual_content}')
+    log.info(f'unusual_content={unusual_content}')
     log.info(f'isalgorithm={isalgorithm}')
 
     unusual_shell = transfer_content(unusual_shell)
-    #print(unusual_shell)
+    log.info(f'unusual_shell=\n{unusual_shell}')
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -600,8 +600,9 @@ def finance_unusual_update():
         response = jsonify(data)
         return response
 
-    if isalgorithm is None:
-        data = {"result": "error", "details": "输入的 isalgorithm 不能为空", "code": 500}
+    if isalgorithm is None or isalgorithm not in ['1', '2']:
+        data = {"result": "error", "details": "输入的 isalgorithm 不能为空或者isalgorithm不等于'1'或'2'。当isalgorithm等于1为sql类, 2为算法类",
+                "code": 500}
         response = jsonify(data)
         return response
 
@@ -618,7 +619,7 @@ def finance_unusual_update():
         data = {
             'result': 'ok',
             'code': 200,
-            'details': "成功修改一条'检查点相关'记录"
+            'details': f"成功修改'检查点{unusual_id}'相关记录"
         }
         response = jsonify(data)
         return response
@@ -677,8 +678,10 @@ executor = ThreadPoolExecutor(2)
 def finance_unusual_execute():
     log.info('----- finance_unusual execute -----')
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    log.info(f'unusual_id={unusual_id},{type(unusual_id)}')
 
     if unusual_id is None:
+        log.info('*** unusual_id is None')
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
         response = jsonify(data)
         return response
@@ -688,11 +691,11 @@ def finance_unusual_execute():
             select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
                 """.replace('\n', '')
 
-        print(sql)
+        # log.info(sql)
 
         result = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         unusual_shell = str(result[0][1])
-        # "1为sql类, 2为算法类",
+        # "1为sql类, 2为算法类"
         isalgorithm = str(result[0][2])
 
         if unusual_shell is None:
@@ -705,7 +708,7 @@ def finance_unusual_execute():
             response = jsonify(data)
             return response
 
-        record = query_finance_shell_daily_status(unusual_point=unusual_id,task_status='doing')
+        record = query_finance_shell_daily_status(unusual_point=unusual_id, task_status='doing')
         if record:
             task_str = None
             if isalgorithm == '1':
@@ -718,22 +721,21 @@ def finance_unusual_execute():
 
         if isalgorithm == '1':
             ######### 执行 SQL ############
-            #executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
-            execute_kudu_sql(unusual_shell, unusual_id)
-            #pass
+            executor.submit(execute_kudu_sql, unusual_shell, unusual_id)
+            # execute_kudu_sql(unusual_shell, unusual_id)
+
         elif isalgorithm == '2':
             ###### 执行算法 python 脚本  ############
-            #executor.submit(execute_py_shell, unusual_shell, unusual_id)
-            execute_py_shell(unusual_shell, unusual_id)
-            #pass
+            executor.submit(execute_py_shell, unusual_shell, unusual_id)
+            # execute_py_shell(unusual_shell, unusual_id)
 
-        #execute_task(isalgorithm=isalgorithm,unusual_shell=unusual_shell, unusual_id=unusual_id)
+        # execute_task(isalgorithm=isalgorithm,unusual_shell=unusual_shell, unusual_id=unusual_id)
 
         daily_source = 'SQL' if isalgorithm == '1' else 'Python Shell'
         data = {
             'result': 'ok',
             'code': 200,
-            'details': f'执行检查点{unusual_id}的{daily_source}'
+            'details': f'正在执行检查点{unusual_id}的{daily_source}'
         }
         response = jsonify(data)
         return response
@@ -881,7 +883,7 @@ def set_finance_category_sign():
     category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
     category_names = request.form.get('category_names') if request.form.get('category_names') else None
 
-    #category_names = request.form.getlist("category_names")
+    # category_names = request.form.getlist("category_names")
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -937,7 +939,7 @@ def set_finance_category_sign():
 
         category_names = str(category_names).split(',')
 
-        print(f'* unusual_id={unusual_id}, category_classify={category_classify} ' )
+        print(f'* unusual_id={unusual_id}, category_classify={category_classify} ')
         print('* available_category_name => ', available_category_name)
         print('* checked category_names => ', category_names)
 
@@ -1010,33 +1012,33 @@ def query_all_finance_category_sign():
         if unusual_id == '42' and category_classify == '01':
             # 商品大类
             type_str = '办公费'
-            #records = query_checkpoint_42_commoditynames()
+            # records = query_checkpoint_42_commoditynames()
         elif unusual_id == '55' and category_classify == '01':
             # 商品大类
             type_str = '车辆使用费'
-            #records = query_checkpoint_55_commoditynames()
+            # records = query_checkpoint_55_commoditynames()
         elif unusual_id == '26' and category_classify == '01':
             # 商品大类
             type_str = '会议费'
-            #records = query_checkpoint_26_commoditynames()
+            # records = query_checkpoint_26_commoditynames()
         elif unusual_id == '42' and category_classify == '02':
             # 商品关键字
             type_str = '办公费'
-            #records = get_office_bill_jiebaword()
+            # records = get_office_bill_jiebaword()
         elif unusual_id == '55' and category_classify == '02':
             # 商品关键字
             type_str = '车辆使用费'
-            #records = get_car_bill_jiebaword()
+            # records = get_car_bill_jiebaword()
         elif unusual_id == '26' and category_classify == '02':
             # 商品关键字
             type_str = '会议费'
-            #records = get_conference_bill_jiebaword()
+            # records = get_conference_bill_jiebaword()
         elif unusual_id == '16' and category_classify == '02':
             # 商品关键字
             type_str = '差旅费'
 
         checked_datas = query_finance_category_signs(unusual_id, category_classify)
-        #log.info(checked_datas)
+        # log.info(checked_datas)
 
         # checked_record_ls = []
         # for record in records:
@@ -1051,7 +1053,7 @@ def query_all_finance_category_sign():
         #
         #     checked_record_ls.append(temp)
 
-            # print(record)
+        # print(record)
 
         result = {
             'status': 'ok',
