@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from gevent import monkey;
-
 monkey.patch_all(thread=False)
 
 import gevent
@@ -305,7 +304,7 @@ def analyze_no_plane_data(coefficient=2):
                 jour_amount = row['jour_amount']
                 # print('jour_amount=', jour_amount)
 
-                if jour_amount > max_val or jour_amount < min_val:
+                if jour_amount > max_val: # jour_amount > max_val or jour_amount < min_val:
                     bill_id = row['bill_id']
                     abnormal_bill_id_ls.append(bill_id)
             # print('')
@@ -609,7 +608,7 @@ def analyze_plane_data(coefficient=2):
 
             for index, row in group_df.iterrows():
                 plane_check_amount = row['plane_check_amount']
-                if plane_check_amount > max_val or plane_check_amount < min_val:
+                if plane_check_amount > max_val: # plane_check_amount > max_val or plane_check_amount < min_val:
                     bill_id = row['bill_id']
                     bill_id_ls.append(bill_id)
 
