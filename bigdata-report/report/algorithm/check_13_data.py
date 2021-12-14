@@ -170,8 +170,14 @@ class Check13Service:
                 province = self.province_service.query_belong_province(city_name)  # 出差城市所属的省
                 # province = province if province else "******"   # 可能需要补充  01_datamart_layer_007_h_cw_df.finance_province_city 表中的数据
 
-                city_name = city_name.replace(",", " ")
-                emp_name = emp_name.replace(",", " ")
+                # city_name = city_name.replace(",", " ")
+                # emp_name = emp_name.replace(",", " ")
+
+                if ',' in city_name:
+                    city_name = city_name.replace(",", " ")
+
+                if ',' in emp_name:
+                    emp_name = emp_name.replace(",", " ")
 
                 record_str = f"{bill_id},{city_name},{province},{city_grade_name},{emp_name},{stand_amount_perday},{hotel_amount_perday}"
                 # log.info(f"checkpoint_13 {threading.current_thread().name} is running ")
@@ -217,10 +223,11 @@ class Check13Service:
         abnormal_rd_df2 = rd_df[(rd_df["province"] == query_province) & (
                 rd_df["stand_amount_perday"] < rd_df["hotel_amount_perday"])]
         bill_id_ls2 = abnormal_rd_df2["bill_id"].tolist()
-        bill_id_ls1.extend(bill_id_ls2)
+        # 对两个列表合并并去重
+        rst_ls = list(set(bill_id_ls1 + bill_id_ls2))
 
-        log.info(f"checkpoint_13 {query_province} 异常数量={len(bill_id_ls1)}")
-        return bill_id_ls1
+        log.info(f"checkpoint_13 {query_province} 异常数量={len(rst_ls)}")
+        return rst_ls
 
     def analyze_data(self, coefficient=2):
         log.info(f"* 开始执行检查点13 coefficient={coefficient} ")
@@ -352,7 +359,7 @@ def exec_sql(bill_id_ls):
         importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_rma_travel_accomm
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql).replace("\n", "").replace("\r", "").strip()
+            """.format(condition_sql=condition_sql)
 
         # print(sql)
 

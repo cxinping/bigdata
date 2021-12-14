@@ -38,9 +38,13 @@ def check_49_data():
     # print('*' * 50)
     # print(rd_df.describe())
 
-    temp = rd_df.describe()[['check_amount']]
-    mean_val = temp.at['mean', 'check_amount']  # 平均值
-    std_val = temp.at['std', 'check_amount']  # 标准方差
+    # temp = rd_df.describe()[['check_amount']]
+    # mean_val = temp.at['mean', 'check_amount']  # 平均值
+    # std_val = temp.at['std', 'check_amount']  # 标准方差
+
+    mean_val = rd_df.mean().at['check_amount']  # 平均值
+    std_val = rd_df.std().at['check_amount']# 标准方差
+
     result = rd_df[rd_df['check_amount'] > std_val]
 
     print(f'* "check_amount"列计算的方差为 => {std_val}')

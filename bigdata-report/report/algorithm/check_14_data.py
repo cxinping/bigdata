@@ -285,7 +285,7 @@ def analyze_no_plane_data(coefficient=2):
         # std_val = temp.at['std', 'jour_amount']  # 标准差
         # mean_val = temp.at['mean', 'jour_amount']  # 平均值
 
-        std_val = group_df.std().at['jour_amount']  # 标准差
+        std_val = group_df.std().at['jour_amount']  # 标准方差
         mean_val = group_df.mean().at['jour_amount']  # 平均值
 
         if std_val == 0 or np.isnan(std_val):
@@ -426,7 +426,7 @@ def exec_plane_sql(bill_id_ls):
             importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)
 
         # print(sql)
 
@@ -541,7 +541,7 @@ def exec_no_plane_sql(bill_id_ls):
         importdate
             FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
+            """.format(condition_sql=condition_sql)
 
         # print(sql)
 

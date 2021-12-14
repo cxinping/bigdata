@@ -13,7 +13,7 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ( '13' ) " # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ( '14' ) " # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
@@ -30,7 +30,7 @@ def demo1():
     # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
 
     #sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
-    sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '12' "
+    sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '14' "
     # sql3 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
     log.info(sql3)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql3)
@@ -80,8 +80,7 @@ def exec_sql():
        
         
         """
-
-        if unusual_id  in ['01', '02'] and unusual_id in unusual_ls:
+        if unusual_id in ['01', '02'] and unusual_id in unusual_ls:
             log.info(unusual_shell)
 
             try:
@@ -95,7 +94,7 @@ def exec_sql():
 
 if __name__ == '__main__':
     #del_history_exception_data()
-    #demo1()
-    demo2()
+    demo1()
+    #demo2()
     #exec_sql()
     print('--- ok  ---')

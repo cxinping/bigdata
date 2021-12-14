@@ -6,7 +6,6 @@ monkey.patch_all(thread=False)
 import gevent
 from gevent.pool import Pool
 
-
 from report.commons.logging import get_logger
 import os, time
 import re
@@ -367,7 +366,7 @@ class Check12Service:
                 importdate
                 FROM 01_datamart_layer_007_h_cw_df.finance_travel_bill
             WHERE {condition_sql}
-                """.format(condition_sql=condition_sql)  # .replace('\n', '').replace('\r', '').strip()
+                """.format(condition_sql=condition_sql)
 
             # print(sql)
 
@@ -383,5 +382,6 @@ class Check12Service:
 
 check12_service = Check12Service()
 check12_service.save_data() # 一共有 2342878 条数据, 保存数据共耗时 879 sec
-check12_service.analyze_data()  # 执行检查点12的数据共耗时 9997 sec
+check12_service.analyze_data()  #  共耗时 4940 sec
+
 print('--- ok, check_12 has been completed ---')
