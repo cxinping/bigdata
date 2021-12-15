@@ -74,23 +74,21 @@ def exec_sql():
     # 车辆使用费
     car_ls = ['54', '55', '56', '58', '60', '62', '63', '64', '65', '66']
 
-    unusual_ls = []
-    unusual_ls.extend(travel_ls)
-    unusual_ls.extend(meeting_ls)
-    unusual_ls.extend(office_ls)
-    unusual_ls.extend(car_ls)
+    # unusual_ls = []
+    # unusual_ls.extend(travel_ls)
+    # unusual_ls.extend(meeting_ls)
+    # unusual_ls.extend(office_ls)
+    # unusual_ls.extend(car_ls)
     #print(unusual_ls)
+
+    unusual_ls = ['01', '02', '03', '04', '08', '09', '10', '15', '16', '17', '20', '21', '22', '23'] + ['24', '25', '26', '27', '28', '29', '30', '32']
 
     sql = "select unusual_id, unusual_shell from  01_datamart_layer_007_h_cw_df.finance_unusual where isalgorithm='1' order by unusual_id"
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     for record in records:
         unusual_id = record[0]
         unusual_shell = record[1]
-        """
-       
-        
-        """
-        if unusual_id in ['01', '02'] and unusual_id in unusual_ls:
+        if unusual_id in unusual_ls:
             log.info(unusual_shell)
 
             try:
@@ -104,7 +102,7 @@ def exec_sql():
 
 if __name__ == '__main__':
     #del_history_exception_data()
-    demo1()
+    #demo1()
     #demo2()
-    #exec_sql()
+    exec_sql()
     print('--- ok , executed  ---')
