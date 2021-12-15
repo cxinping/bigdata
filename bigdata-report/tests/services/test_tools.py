@@ -2,6 +2,7 @@
 
 from report.commons.tools import *
 
+
 def demo1():
     str1 = '北京市,杭州市,衢州市,郑州市,安庆市,洛阳市'
     str2 = '安庆市'
@@ -119,5 +120,15 @@ def demo3():
     print(f'* 取数耗时 => {consumed_time0} sec')
 
 
+def demo4():
+    rst = get_running_date()
+    #print(rst)
+
+    dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint14'
+    runningFile = RunningFile()
+    runningFile.get_dest_file(dest_dir)
+
+
 if __name__ == '__main__':
-    demo3()
+    # demo3()
+    demo4()

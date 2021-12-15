@@ -159,6 +159,9 @@ def get_running_date():
 
 class RunningFile:
 
+    def __init__(self):
+        self.begin_date = '20211201'
+
     def get_running_date(self):
         get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
         time_str = get_datetime.strftime('%Y%m%d')

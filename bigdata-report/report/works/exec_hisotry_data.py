@@ -13,7 +13,7 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ( '14' ) " # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ( '22' ) " # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
@@ -30,11 +30,11 @@ def demo1():
     # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
 
     #sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
-    sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '12' "
+    sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '49' "
     # sql3 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
     sql4 = 'select account_period from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 limit 10'
     log.info(sql3)
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql3)
     for record in records:
         print(record)
 
@@ -50,11 +50,9 @@ def demo2():
     delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
     where  unusual_id in ('01','02','03','04','08','09','10','15','16','17','20','21','22','23','24','25','26','27','28','29','30')
     """
-    #
-    # print(sql4)
-    #
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql4)
 
+    print(sql4)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql4)
 
     sql4 = """
     select account_period,finance_travel_id,bill_id,plane_beg_date,plane_end_date,plane_origin_name,plane_destin_name,plane_check_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) 
@@ -106,7 +104,7 @@ def exec_sql():
 
 if __name__ == '__main__':
     #del_history_exception_data()
-    #demo1()
-    demo2()
+    demo1()
+    #demo2()
     #exec_sql()
     print('--- ok , executed  ---')

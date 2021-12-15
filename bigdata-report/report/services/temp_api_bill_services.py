@@ -24,6 +24,6 @@ def exec_temp_api_bill_sql(target_classify):
         api_sql = record[2]
         log.info(api_sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=api_sql)
-        print(f'------------------ 执行成功第{idx+1}条临时表的SQL ------------------' )
+        log.info(f'------------------ 执行成功第{idx+1}条临时表的SQL ------------------')
 
 

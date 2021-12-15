@@ -38,12 +38,8 @@ def check_49_data():
     # print('*' * 50)
     # print(rd_df.describe())
 
-    # temp = rd_df.describe()[['check_amount']]
-    # mean_val = temp.at['mean', 'check_amount']  # 平均值
-    # std_val = temp.at['std', 'check_amount']  # 标准方差
-
     mean_val = rd_df.mean().at['check_amount']  # 平均值
-    std_val = rd_df.std().at['check_amount']# 标准方差
+    std_val = rd_df.std().at['check_amount'] # 标准方差
 
     result = rd_df[rd_df['check_amount'] > std_val]
 
@@ -65,7 +61,7 @@ def check_49_data():
         print('** finance_id_ls length is 0 ')
 
     consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 查询耗时 {consumed_time} sec')
+    log.info(f'* check_49 查询耗时 {consumed_time} sec')
 
 
 def exec_sql(finance_id_ls):

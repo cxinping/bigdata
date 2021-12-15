@@ -29,7 +29,7 @@ https://blog.csdn.net/lzx159951/article/details/104357909
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_14_data.py
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_14_2_data.py
 
 
 """
@@ -47,6 +47,16 @@ no_plane_dest_file = dest_dir + '/check_14_no_plane_data.txt'
 plane_dest_file = dest_dir + '/check_14_plane_data.txt'
 
 test_limit_cond = ''  # 'LIMIT 1000'``
+history_where_cond = ' AND plane_check_amount <= "20211201" '
+end_date = '20211201'
+
+def get_plane_history_dest_file(end_date):
+    dest_file = f"/you_filed_algos/prod_kudu_data/checkpoint14/check_14_no_plane_data_{end_date}.txt"
+    return dest_file
+
+def get_plane_dest_file(running_date):
+    dest_file = f"/you_filed_algos/prod_kudu_data/checkpoint14/check_14_no_plane_data_{running_date}.txt"
+    return dest_file
 
 
 def check_14_plane_data():
@@ -66,7 +76,7 @@ def check_14_plane_data():
                   'plane_destin_name', 'plane_check_amount']
     columns_str = ",".join(columns_ls)
 
-    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond} ".format(
+    sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {history_where_cond}  {test_limit_cond} ".format(
         columns_str=columns_str, test_limit_cond=test_limit_cond)
 
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -84,19 +94,19 @@ def check_14_plane_data():
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {history_where_cond} ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {history_where_cond} ORDER BY plane_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {test_limit_cond}".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) AND (plane_beg_date is not null AND plane_beg_date !='') {history_where_cond} {test_limit_cond}".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond)
         select_sql_ls.append(tmp_sql)
 
@@ -106,10 +116,10 @@ def check_14_plane_data():
 
     pool = Pool(30)
     results = []
-    # for sel_sql in select_sql_ls:
-    #     rst = pool.spawn(exec_plane_task, sel_sql, plane_dest_file)
-    #     results.append(rst)
-    # gevent.joinall(results)
+    for sel_sql in select_sql_ls:
+        rst = pool.spawn(exec_plane_task, sel_sql, get_plane_history_dest_file())
+        results.append(rst)
+    gevent.joinall(results)
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_14_plane_data 一共有数据 {count_records} 条,保存数据耗时 {consumed_time} sec')
@@ -627,7 +637,7 @@ def task1(coefficient):
     # 需求1 交通方式为非飞机的交通费用异常分析
     start_time = time.perf_counter()
     check_14_no_plane_data()  # 一共有数据 6428955 条, 保存数据耗时 4389 sec
-    #analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
+    # analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task1 任务耗时 {consumed_time} sec')
@@ -638,7 +648,7 @@ def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     start_time = time.perf_counter()
     check_14_plane_data()  # 一共有数据 6352119 条,保存数据耗时 4774 sec
-    #analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
+    # analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task2 任务耗时 {consumed_time} sec')
@@ -653,8 +663,8 @@ def main():
 
     with ThreadPoolExecutor(max_workers=2) as ex:
         print('main: starting')
-        #ex.submit(task1, 4)
-        ex.submit(task2, 4)
+        ex.submit(task1, 4)
+        #ex.submit(task2, 4)
 
     print('*** main: done ***')
 
