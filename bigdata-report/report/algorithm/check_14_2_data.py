@@ -104,17 +104,12 @@ def check_14_plane_data():
 
     start_time = time.perf_counter()
 
-    # threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
-    # all_task = [threadPool.submit(exec_plane_task, sel_sql, plane_dest_file) for sel_sql in select_sql_ls]
-    # wait(all_task, return_when=ALL_COMPLETED)
-    # threadPool.shutdown(wait=True)
-
     pool = Pool(30)
     results = []
-    for sel_sql in select_sql_ls:
-        rst = pool.spawn(exec_plane_task, sel_sql, plane_dest_file)
-        results.append(rst)
-    gevent.joinall(results)
+    # for sel_sql in select_sql_ls:
+    #     rst = pool.spawn(exec_plane_task, sel_sql, plane_dest_file)
+    #     results.append(rst)
+    # gevent.joinall(results)
 
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* check_14_plane_data 一共有数据 {count_records} 条,保存数据耗时 {consumed_time} sec')
@@ -631,8 +626,8 @@ def analyze_plane_data(coefficient=2):
 def task1(coefficient):
     # 需求1 交通方式为非飞机的交通费用异常分析
     start_time = time.perf_counter()
-    #check_14_no_plane_data()  # 一共有数据 6428955 条, 保存数据耗时 4389 sec
-    analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
+    check_14_no_plane_data()  # 一共有数据 6428955 条, 保存数据耗时 4389 sec
+    #analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task1 任务耗时 {consumed_time} sec')
@@ -642,8 +637,8 @@ def task1(coefficient):
 def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     start_time = time.perf_counter()
-    #check_14_plane_data()  # 一共有数据 6352119 条,保存数据耗时 4774 sec
-    analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
+    check_14_plane_data()  # 一共有数据 6352119 条,保存数据耗时 4774 sec
+    #analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task2 任务耗时 {consumed_time} sec')
@@ -658,7 +653,7 @@ def main():
 
     with ThreadPoolExecutor(max_workers=2) as ex:
         print('main: starting')
-        ex.submit(task1, 4)
+        #ex.submit(task1, 4)
         ex.submit(task2, 4)
 
     print('*** main: done ***')

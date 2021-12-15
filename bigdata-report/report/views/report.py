@@ -27,6 +27,7 @@ from report.services.common_services import (insert_finance_shell_daily, update_
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
     pagination_conference_records, query_checkpoint_26_commoditynames
+from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 from report.commons.db_helper import Pagination
 import traceback
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
@@ -1206,4 +1207,34 @@ def query_finance_shell_daily():
             'unusual_point': unusual_point
         }
 
+        return mk_utf8resp(result)
+
+# http://10.5.138.11:8004/report/temp/api
+@report_bp.route('/temp/api', methods=['POST', 'GET'])
+def exec_temp_api():
+    log.info('---- exec_temp_api ----')
+    target_classify = str(request.form.get('target_classify')) if request.form.get('target_classify') else None
+    log.info(target_classify)
+
+    if target_classify is None:
+        data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        exec_temp_api_bill_sql(target_classify)
+
+        result = {
+            'status': 'ok',
+            'target_classify': target_classify
+        }
+
+        return mk_utf8resp(result)
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'target_classify': target_classify
+        }
         return mk_utf8resp(result)

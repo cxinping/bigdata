@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from report.commons.logging import get_logger
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
 
 import uuid
-import time
+import time,os
 from datetime import datetime, timezone, timedelta
 import psutil
 from report.commons.settings import CONN_TYPE
@@ -150,6 +149,35 @@ def get_current_time():
     get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
     time_str = get_datetime.strftime('%Y-%m-%d %H:%M:%S')
     return time_str
+
+
+def get_running_date():
+    get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
+    time_str = get_datetime.strftime('%Y%m%d')
+    return time_str
+
+
+class RunningFile:
+
+    def get_running_date(self):
+        get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
+        time_str = get_datetime.strftime('%Y%m%d')
+        return time_str
+
+    def init_file(self, dest_dir, dest_file):
+        if not os.path.exists(dest_dir):
+            os.makedirs(dest_dir)
+
+        if os.path.exists(dest_file):
+            os.remove(dest_file)
+
+        os.mknod(dest_file)
+
+    def get_dest_file(self, file_dir):
+        dir_list = os.listdir(file_dir)
+
+        for cur_file in dir_list:
+            print(cur_file)
 
 
 class MatchArea:
