@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 
-'''
+"""
 Created on 2021-08-02
 
 @author: WangShuo
-'''
+"""
 
 from concurrent.futures import ThreadPoolExecutor
 import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
+import traceback
 
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
-from report.services.office_expenses_service import query_checkpoint_42_commoditynames, get_office_bill_jiebaword, \
-    pagination_office_records
-from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
-    pagination_car_records
-from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
-    pagination_conference_records, query_checkpoint_26_commoditynames
+from report.services.office_expenses_service import (query_checkpoint_42_commoditynames, get_office_bill_jiebaword, pagination_office_records)
+from report.services.vehicle_expense_service import (query_checkpoint_55_commoditynames, get_car_bill_jiebaword, pagination_car_records)
+from report.services.conference_expense_service import (pagination_conference_records, get_conference_bill_jiebaword, pagination_conference_records, query_checkpoint_26_commoditynames)
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
                                              query_finance_shell_daily_status,
@@ -28,7 +26,6 @@ from report.services.common_services import (insert_finance_shell_daily, update_
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 from report.commons.db_helper import Pagination
-import traceback
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
 from report.commons.settings import CONN_TYPE
@@ -574,6 +571,8 @@ def finance_unusual_update():
     # 是否执行，1为执行，0为不执行
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
 
+    sign_status = ''
+
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
     log.info(f'unusual_content={unusual_content}')
@@ -581,7 +580,7 @@ def finance_unusual_update():
     log.info(f'sign_status={sign_status}')
 
     unusual_shell = transfer_content(unusual_shell)
-    log.info(f'* unusual_shell=\n{unusual_shell}')
+    #log.info(f'* unusual_shell=\n{unusual_shell}')
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}

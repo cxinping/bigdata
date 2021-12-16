@@ -14,7 +14,6 @@ import numpy as np
 import time
 import threading
 from report.commons.connect_kudu2 import prod_execute_sql
-from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.services.common_services import query_billds_finance_all_targets

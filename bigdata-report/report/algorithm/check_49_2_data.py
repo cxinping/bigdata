@@ -7,14 +7,12 @@ monkey.patch_all(thread=False)
 import gevent
 from gevent.pool import Pool
 
-from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import os
 import pandas as pd
 import numpy as np
 import time
 import threading
 from report.commons.connect_kudu2 import prod_execute_sql
-from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.services.common_services import query_billds_finance_all_targets
@@ -33,12 +31,6 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/al
 import sys
 
 sys.path.append('/you_filed_algos/app')
-
-import pandas as pd
-
-# 设置显示最大列数 与 显示宽度
-pd.set_option('display.max_columns', None)
-pd.set_option('display.width', 500)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/checkpoint49'
 dest_file = dest_dir + '/check_49_data.txt'

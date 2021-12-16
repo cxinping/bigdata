@@ -13,14 +13,14 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('46') "  # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('01', '02', '03', '04', '08', '09', '10', '15', '16', '17', '20', '21',   '23' ) "  # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 
 def process_finance_shell_daily():
     sql1 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily "
-    prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql1)
+    # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql1)
 
     sql2 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where daily_type="稽查点" '
     log.info(sql2)
@@ -94,16 +94,14 @@ def exec_sql():
     # unusual_ls.extend(car_ls)
     # print(unusual_ls)
 
-    unusual_ls = ['33', '34', '35', '37', '38', '39', '40', '41', '42', '43', '45', '46', '47', '50', '51', '52', '53',
-                  '54', '55', '56', '58', '60',
-                  '62', '63', '64', '65', '66']
+    unusual_ls = ['01', '02', '03', '04', '08', '09', '10', '15', '16', '17', '20', '21', '23']
 
     sql = "select unusual_id, unusual_shell from  01_datamart_layer_007_h_cw_df.finance_unusual where isalgorithm='1' order by unusual_id"
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     for record in records:
         unusual_id = record[0]
         unusual_shell = record[1]
-        if unusual_id in unusual_ls and unusual_id in ['46' ]:
+        if unusual_id in unusual_ls:
             # log.info(unusual_shell)
 
             try:
@@ -121,11 +119,10 @@ def process_finance_unusual():
 
 
 if __name__ == '__main__':
-    # del_history_exception_data()
-    #process_finance_shell_daily()
-    #process_finance_unusual()
+    #del_history_exception_data()
+    # process_finance_shell_daily()
+    # process_finance_unusual()
     # demo1()
-    #demo2()
+    # demo2()
     exec_sql()
-    print('--- ok , executed 2 ---')
-
+    print('--- ok , executed 111 ---')

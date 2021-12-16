@@ -14,7 +14,6 @@ import numpy as np
 import time
 import threading
 from report.commons.connect_kudu2 import prod_execute_sql
-from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger
 from report.commons.tools import list_of_groups
 from report.services.common_services import query_billds_finance_all_targets
@@ -637,7 +636,7 @@ def task1(coefficient):
     # 需求1 交通方式为非飞机的交通费用异常分析
     start_time = time.perf_counter()
     check_14_no_plane_data()  # 一共有数据 6428955 条, 保存数据耗时 4389 sec
-    # analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
+    analyze_no_plane_data(coefficient=coefficient)  # task1 任务耗时 4752 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task1 任务耗时 {consumed_time} sec')
@@ -648,7 +647,7 @@ def task2(coefficient):
     # 需求2 交通方式为飞机的交通费用异常分析
     start_time = time.perf_counter()
     check_14_plane_data()  # 一共有数据 6352119 条,保存数据耗时 4774 sec
-    # analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
+    analyze_plane_data(coefficient=coefficient)  # task2 任务耗时 19293 sec
 
     consumed_time = round(time.perf_counter() - start_time)
     print(f'****** task2 任务耗时 {consumed_time} sec')

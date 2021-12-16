@@ -17,6 +17,12 @@ from report.commons.settings import CONN_TYPE
 
 select * from  02_logical_layer_007_h_lf_cw.finance_car_linshi_analysis
 
+
+cd /you_filed_algos/app
+
+PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_car_linshi_data.py
+
+
 """
 
 log = get_logger(__name__)
