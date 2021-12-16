@@ -19,7 +19,7 @@ select * from  02_logical_layer_007_h_lf_cw.finance_offical_linshi_analysis
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_offical_linshi_data.py
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_offical_linshi_data.py &
 
 """
 

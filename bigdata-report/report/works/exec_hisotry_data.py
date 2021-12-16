@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+from gevent import monkey;
+
+monkey.patch_all(thread=False)
+
+import gevent
+from gevent.pool import Pool
+
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
@@ -98,19 +105,37 @@ def exec_sql():
 
     sql = "select unusual_id, unusual_shell from  01_datamart_layer_007_h_cw_df.finance_unusual where isalgorithm='1' order by unusual_id"
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+
+    pool = Pool(30)
+    results = []
     for record in records:
         unusual_id = record[0]
         unusual_shell = record[1]
+
         if unusual_id in unusual_ls:
             # log.info(unusual_shell)
 
-            try:
-                if unusual_shell is not None and unusual_shell != 'None':
-                    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
-                    log.info(f'成功执行检查点 {unusual_id} 的SQL')
-            except Exception as e:
-                print(e)
-                log.info(f'error 执行检查点{unusual_id} 的SQL失败')
+            rst = pool.spawn(exec_task, unusual_id, unusual_shell)
+            results.append(rst)
+
+            # try:
+            #     if unusual_shell is not None and unusual_shell != 'None':
+            #         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
+            #         log.info(f'成功执行检查点 {unusual_id} 的SQL')
+            # except Exception as e:
+            #     print(e)
+            #     log.info(f'error 执行检查点{unusual_id} 的SQL失败')
+
+    gevent.joinall(results)
+
+
+def exec_task(unusual_id, unusual_shell):
+    try:
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
+        log.info(f'成功执行检查点 {unusual_id} 的SQL')
+    except Exception as e:
+        print(e)
+        log.info(f'error 执行检查点{unusual_id} 的SQL失败')
 
 
 def process_finance_unusual():
@@ -119,10 +144,10 @@ def process_finance_unusual():
 
 
 if __name__ == '__main__':
-    #del_history_exception_data()
-    # process_finance_shell_daily()
+    # del_history_exception_data()
+    process_finance_shell_daily()
     # process_finance_unusual()
     # demo1()
     # demo2()
-    exec_sql()
-    print('--- ok , executed 111 ---')
+    #exec_sql()
+    print('--- ok , executed 6 ---')

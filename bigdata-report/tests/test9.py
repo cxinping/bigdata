@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-str1 ='中国建设银行南昌江铜支行'
+str1 = '中国建设银行南昌江铜支行'
 idx = str1.index('银行')
 print(idx)
-print(str1[idx+2:])
+print(str1[idx + 2:])
 
-
-if 'a' in ['a' , 'b']:
+if 'a' in ['a', 'b']:
     print('ok')
 
 print('*******' * 30)
 
-s1 ='3700191130'
+s1 = '3700191130'
 print(s1[:2])
 
 str = "abcdef"
@@ -35,15 +34,15 @@ print(tuple(ls1))
 
 print('*******' * 10)
 
-ll1 = [1,2]
-ll2 = [1,2]
+ll1 = [1, 2]
+ll2 = [1, 2]
 ll1.sort()
 ll2.sort()
 print(ll1 == ll2)
 
 print('*******' * 10)
 
-#print(type('None'))
+# print(type('None'))
 
 if 'g' in 'aaaaaaabbbbg1111':
     print('-----------')
