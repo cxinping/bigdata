@@ -72,7 +72,7 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
                                               daily_end_date='', unusual_point=unusual_id,
                                               daily_source='python shell',
                                               operate_desc=f'正在执行检查点{unusual_id}的Python Shell', unusual_infor='',
-                                              task_status='doing')
+                                              task_status='doing',daily_type='稽查点')
 
         if unusual_id in ['13', '14']:
             # 检查点13,14 测试
@@ -116,7 +116,7 @@ def execute_kudu_sql(unusual_shell, unusual_id):
                                               daily_end_date='', unusual_point=unusual_id,
                                               daily_source='sql',
                                               operate_desc=f'正在执行检查点{unusual_id}的SQL', unusual_infor='',
-                                              task_status='doing')
+                                              task_status='doing',daily_type='稽查点')
 
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
         daily_end_date = get_current_time()

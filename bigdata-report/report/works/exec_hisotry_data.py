@@ -13,9 +13,21 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('33','34','35','37','38','39','40','41','42','43','45','46','47','50','51','52','53','54','55','56','58','60','62','63','64','65','66') " # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('46') "  # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+
+
+def process_finance_shell_daily():
+    sql1 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily "
+    # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql1)
+
+    sql2 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where daily_type="稽查点" '
+    log.info(sql2)
+
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
+    for record in records:
+        print(record)
 
 
 def demo1():
@@ -28,14 +40,14 @@ def demo1():
     sql2 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_id = '01' "
     # print(sql2)
     # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
-    #sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
-    #sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '49' "
-    sql3 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where daily_type="数据处理" '
+    # sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
+    # sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '49' "
+
     sql4 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
 
-    #sql4 = 'select account_period from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 limit 10'
-    log.info(sql3)
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql3)
+    # sql4 = 'select account_period from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 limit 10'
+    log.info(sql4)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
     for record in records:
         print(record)
 
@@ -80,22 +92,24 @@ def exec_sql():
     # unusual_ls.extend(meeting_ls)
     # unusual_ls.extend(office_ls)
     # unusual_ls.extend(car_ls)
-    #print(unusual_ls)
+    # print(unusual_ls)
 
-    unusual_ls = ['56', '58', '60', '62', '63', '64', '65', '66']
+    unusual_ls = ['33', '34', '35', '37', '38', '39', '40', '41', '42', '43', '45', '46', '47', '50', '51', '52', '53',
+                  '54', '55', '56', '58', '60',
+                  '62', '63', '64', '65', '66']
 
     sql = "select unusual_id, unusual_shell from  01_datamart_layer_007_h_cw_df.finance_unusual where isalgorithm='1' order by unusual_id"
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
     for record in records:
         unusual_id = record[0]
         unusual_shell = record[1]
-        if unusual_id in unusual_ls:
-            log.info(unusual_shell)
+        if unusual_id in unusual_ls and unusual_id in ['46' ]:
+            # log.info(unusual_shell)
 
             try:
                 if unusual_shell is not None and unusual_shell != 'None':
                     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
-                    log.info(f'成功执行 检查点{unusual_id} 的SQL')
+                    log.info(f'成功执行检查点 {unusual_id} 的SQL')
             except Exception as e:
                 print(e)
                 log.info(f'error 执行检查点{unusual_id} 的SQL失败')
@@ -103,7 +117,8 @@ def exec_sql():
 
 if __name__ == '__main__':
     #del_history_exception_data()
-    demo1()
-    #demo2()
-    #exec_sql()
-    print('--- ok , executed 1 ---')
+    # process_finance_shell_daily()
+    # demo1()
+    # demo2()
+    exec_sql()
+    print('--- ok , executed 7 ---')

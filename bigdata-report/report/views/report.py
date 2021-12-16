@@ -1162,6 +1162,7 @@ def query_finance_shell_daily():
     unusual_point = str(request.form.get('unusual_point')) if request.form.get('unusual_point') else None
     current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
     page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+    daily_type = str(request.form.get('daily_type')) if request.form.get('daily_type') else None
 
     if unusual_point is None or len(unusual_point) == 0:
         unusual_point = None
@@ -1175,6 +1176,11 @@ def query_finance_shell_daily():
 
     if page_size is None:
         data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if daily_type is None:
+        data = {"result": "error", "details": "输入的 daily_type 不能为空", "code": 500}
         response = jsonify(data)
         return response
 

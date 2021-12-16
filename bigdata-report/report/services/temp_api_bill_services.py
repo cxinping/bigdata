@@ -35,7 +35,7 @@ def exec_temp_api_bill_sql(target_classify):
         for idx, record in enumerate(temp_api_sql_records):
             api_sql = record[2]
             #log.info(api_sql)
-            #prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=api_sql)
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=api_sql)
             log.info(f'------------------ 执行成功第{idx + 1}条临时表的SQL,共有{len(temp_api_sql_records)}条SQL ------------------')
 
         operate_desc = f'成功执行临时表API中类型为{target_classify}的SQL'

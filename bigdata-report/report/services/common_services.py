@@ -505,7 +505,7 @@ class ProvinceService:
         return province
 
 
-def pagination_finance_shell_daily_records(unusual_point=None):
+def pagination_finance_shell_daily_records(unusual_point=None,daily_type=''):
     """
        分页查询shell脚本日志表的记录
        :param unusual_point: 检查点
@@ -520,9 +520,9 @@ def pagination_finance_shell_daily_records(unusual_point=None):
     where_sql = 'WHERE '
 
     if unusual_point is None:
-        where_sql = where_sql + ' 1=1'
+        where_sql = where_sql + f' 1=1 AND daily_type="{daily_type}"'
     elif unusual_point:
-        where_sql = where_sql + f' unusual_point = "{unusual_point}" '
+        where_sql = where_sql + f' unusual_point = "{unusual_point}" AND="{daily_type}" '
 
     sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_shell_daily "
     order_sql = ' ORDER BY daily_start_date DESC '
