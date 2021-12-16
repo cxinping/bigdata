@@ -5,7 +5,6 @@ Created on 2021-08-02
 @author: WangShuo
 """
 
-
 DEBUG = False
 
-threaded=False
+threaded = False

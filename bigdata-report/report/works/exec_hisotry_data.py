@@ -116,10 +116,10 @@ def exec_sql():
 
 
 if __name__ == '__main__':
-    del_history_exception_data()
+    # del_history_exception_data()
     # process_finance_shell_daily()
     # demo1()
     # demo2()
-    #exec_sql()
-    print('--- ok , executed 3 ---')
+    exec_sql()
+    print('--- ok , executed 11 ---')
 

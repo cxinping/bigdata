@@ -52,7 +52,7 @@ def prod_execute_sql(conn_type='prod', sqltype='insert', sql=''):
 
     try:
         if not jpype.isJVMStarted():
-            log.info('----- 1 startjvm ----- ')
+            log.info('----- 1 start jvm ----- ')
             jpype.startJVM(jvm, jvm_options)
 
             # jpype.startJVM(jvm, "-ea", jvm_options, '-Xmx5g', '-Xms5g', '-Xmn2g', '-XX:+UseParNewGC',

@@ -139,7 +139,7 @@ def analyze_data():
     std_val = rd_df.std().at['check_amount']  # 标准方差
 
     result = rd_df[rd_df['check_amount'] > std_val]
-    print(f'* 计算的方差为 => {std_val}')
+    #print(f'* 计算的方差为 => {std_val}')
     #print(result.head(5))
 
     finance_id_ls = result['finance_offical_id'].tolist()
@@ -269,8 +269,8 @@ def exec_sql(finance_id_ls):
 
 
 def main():
-    save_data()  # 一共有数据 1540029 条,保存数据耗时 487 sec
-    analyze_data()  # 分析数据耗时 147 sec
+    save_data()  # 一共有数据 1540029 条,保存数据耗时 319 sec
+    analyze_data()  # 分析数据耗时 139 sec
 
 
 main()
