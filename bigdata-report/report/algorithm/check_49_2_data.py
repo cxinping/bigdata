@@ -144,7 +144,6 @@ def analyze_data():
 
     finance_id_ls = result['finance_offical_id'].tolist()
 
-
     if len(finance_id_ls) > 0:
         exec_sql(finance_id_ls)
     else:

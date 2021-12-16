@@ -7,7 +7,6 @@ Created on 2021-08-02
 '''
 
 from concurrent.futures import ThreadPoolExecutor
-
 import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
@@ -19,14 +18,14 @@ from report.services.office_expenses_service import query_checkpoint_42_commodit
     pagination_office_records
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword, \
     pagination_car_records
+from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
+    pagination_conference_records, query_checkpoint_26_commoditynames
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
                                              query_finance_shell_daily_status,
                                              operate_finance_category_sign, clean_finance_category_sign,
                                              query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
-from report.services.conference_expense_service import pagination_conference_records, get_conference_bill_jiebaword, \
-    pagination_conference_records, query_checkpoint_26_commoditynames
 from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 from report.commons.db_helper import Pagination
 import traceback

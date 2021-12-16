@@ -7,8 +7,6 @@ import jaydebeapi
 import jpype
 import os
 import traceback
-import pandas as pd
-import time
 from report.commons.logging import get_logger
 
 log = get_logger(__name__)

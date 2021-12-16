@@ -5,16 +5,8 @@
 @author: WangShuo
 """
 
-import csv
-import json
-import os
-import time
-
-#from report.commons.connect_kudu import prod_execute_sql, dis_connection
-from report.commons.connect_kudu2 import prod_execute_sql,dis_connection
-
+from report.commons.connect_kudu2 import prod_execute_sql, dis_connection
 from report.commons.logging import get_logger
-from report.commons.tools import match_address
 from report.commons.settings import CONN_TYPE
 from string import punctuation
 from string import digits
@@ -23,7 +15,6 @@ import jieba.analyse as analyse
 import jieba
 
 log = get_logger(__name__)
-
 
 """
 差旅费
@@ -62,7 +53,7 @@ def get_travel_keyword():
 
 
 if __name__ == "__main__":
-    #main()
+    # main()
     keywords = get_travel_keyword()
     for keyword in keywords:
         print(keyword)

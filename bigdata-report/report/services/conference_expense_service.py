@@ -4,15 +4,12 @@
 @author: WangShuo
 
 01_datamart_layer_007_h_cw_df.finance_meeting_bill
+
 """
 
-import time
 
-# from report.commons.connect_kudu import prod_execute_sql
 from report.commons.connect_kudu2 import prod_execute_sql
-
 from report.commons.logging import get_logger
-from report.commons.tools import match_address
 from report.commons.db_helper import query_kudu_data
 from report.services.vehicle_expense_service import cal_commodityname_function
 from report.commons.tools import not_empty
