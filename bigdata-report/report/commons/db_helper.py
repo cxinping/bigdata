@@ -3,7 +3,6 @@
 import pandas as pd
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
-
 from report.commons.logging import get_logger
 
 log = get_logger(__name__)

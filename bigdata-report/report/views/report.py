@@ -571,14 +571,17 @@ def finance_unusual_update():
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
     # 1为sql类, 2为算法类
     isalgorithm = request.form.get('isalgorithm') if request.form.get('isalgorithm') else None
+    # 是否执行，1为执行，0为不执行
+    sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
     log.info(f'unusual_content={unusual_content}')
     log.info(f'isalgorithm={isalgorithm}')
+    log.info(f'sign_status={sign_status}')
 
     unusual_shell = transfer_content(unusual_shell)
-    log.info(f'unusual_shell=\n{unusual_shell}')
+    log.info(f'* unusual_shell=\n{unusual_shell}')
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -606,8 +609,14 @@ def finance_unusual_update():
         response = jsonify(data)
         return response
 
+    if sign_status is None:
+        data = {"result": "error", "details": "输入的 sign_status 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
     sql = f"""
-    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}"
+    update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}" ,
+    sign_status='{sign_status}'
     where unusual_id='{unusual_id}'
     """
 
@@ -670,7 +679,7 @@ def finance_unusual_delete():
         return response
 
 
-executor = ThreadPoolExecutor(20)
+executor = ThreadPoolExecutor(50)
 
 
 # http://10.5.138.11:8004/report/finance_unusual/execute
@@ -1213,10 +1222,11 @@ def query_finance_shell_daily():
             'result': 'error',
             'details': str(e),
             'unusual_point': unusual_point,
-            'code':500
+            'code': 500
         }
 
         return mk_utf8resp(result)
+
 
 # http://10.5.138.11:8004/report/temp/api
 @report_bp.route('/temp/api', methods=['POST', 'GET'])
@@ -1231,8 +1241,8 @@ def exec_temp_api():
         return response
 
     try:
-        #exec_temp_api_bill_sql(target_classify)
-        executor.submit(exec_temp_api_bill_sql, target_classify )
+        # exec_temp_api_bill_sql(target_classify)
+        executor.submit(exec_temp_api_bill_sql, target_classify)
 
         result = {
             'result': 'ok',

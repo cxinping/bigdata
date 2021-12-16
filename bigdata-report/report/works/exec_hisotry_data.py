@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from report.commons.connect_kudu2 import prod_execute_sql, dis_connection
+from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
 
@@ -20,7 +20,7 @@ def del_history_exception_data():
 
 def process_finance_shell_daily():
     sql1 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily "
-    # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql1)
+    prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql1)
 
     sql2 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where daily_type="稽查点" '
     log.info(sql2)
@@ -115,11 +115,17 @@ def exec_sql():
                 log.info(f'error 执行检查点{unusual_id} 的SQL失败')
 
 
+def process_finance_unusual():
+    sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="1" '
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+
+
 if __name__ == '__main__':
     # del_history_exception_data()
-    # process_finance_shell_daily()
+    #process_finance_shell_daily()
+    #process_finance_unusual()
     # demo1()
-    # demo2()
+    #demo2()
     exec_sql()
-    print('--- ok , executed 11 ---')
+    print('--- ok , executed 2 ---')
 

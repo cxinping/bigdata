@@ -269,8 +269,8 @@ def exec_sql(finance_id_ls):
 
 
 def main():
-    save_data()  # 一共有数据 1540029 条,保存数据耗时 319 sec
-    analyze_data()  # 分析数据耗时 139 sec
+    save_data()  # 一共有数据 1540029 条,保存数据耗时 315 sec
+    analyze_data()  # 分析数据耗时 140 sec
 
 
 main()
