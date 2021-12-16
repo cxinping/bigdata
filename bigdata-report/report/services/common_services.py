@@ -63,7 +63,7 @@ def query_billds_finance_all_targets(unusual_id):
 
 
 def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, unusual_point, daily_source,
-                               operate_desc, unusual_infor, task_status='doing'):
+                               operate_desc, unusual_infor, task_status='doing', daily_type=' '):
     """
     保存执行脚本或SQL的状态
     """
@@ -71,8 +71,8 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
     try:
         # log.info('*** insert_finance_shell_daily ***')
         sql = f"""
-        insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor,task_status) 
-        values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}", "{task_status}" )
+        insert into 01_datamart_layer_007_h_cw_df.finance_shell_daily(daily_id, daily_status, daily_start_date, daily_end_date, unusual_point, daily_source, operate_desc, unusual_infor,task_status,daily_type) 
+        values("{daily_id}", "{daily_status}", "{daily_start_date}", "{daily_end_date}" ,"{unusual_point}", "{daily_source}", "{operate_desc}", "{unusual_infor}", "{task_status}","{daily_type}" )
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)

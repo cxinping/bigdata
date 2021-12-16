@@ -671,7 +671,7 @@ def finance_unusual_delete():
         return response
 
 
-executor = ThreadPoolExecutor(2)
+executor = ThreadPoolExecutor(20)
 
 
 # http://10.5.138.11:8004/report/finance_unusual/execute
@@ -1139,7 +1139,8 @@ def check_scope():
             'status': 'ok',
             'current_page': current_page,
             'total': count_records,
-            'data': records
+            'data': records,
+            'code': 200
         }
         return mk_utf8resp(result)
     except Exception as e:
@@ -1147,7 +1148,8 @@ def check_scope():
         result = {
             'status': 'error',
             'desc': str(e),
-            'unusual_id': unusual_id
+            'unusual_id': unusual_id,
+            'code': 500
         }
         return mk_utf8resp(result)
 
@@ -1189,10 +1191,11 @@ def query_finance_shell_daily():
         # print('records => ', records)
 
         result = {
-            'status': 'ok',
+            'result': 'ok',
             'current_page': current_page,
             'total': count_records,
-            'data': records
+            'data': records,
+            'code': 200
         }
 
         # print('==== show infos =========')
@@ -1202,9 +1205,10 @@ def query_finance_shell_daily():
     except Exception as e:
         print(e)
         result = {
-            'status': 'error',
-            'desc': str(e),
-            'unusual_point': unusual_point
+            'result': 'error',
+            'details': str(e),
+            'unusual_point': unusual_point,
+            'code':500
         }
 
         return mk_utf8resp(result)
@@ -1222,19 +1226,21 @@ def exec_temp_api():
         return response
 
     try:
-        exec_temp_api_bill_sql(target_classify)
+        #exec_temp_api_bill_sql(target_classify)
+        executor.submit(exec_temp_api_bill_sql, target_classify )
 
         result = {
-            'status': 'ok',
-            'target_classify': target_classify
+            'result': 'ok',
+            'details': f'正在执行类型为{target_classify}的临时表SQL',
+            "code": 200
         }
 
         return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
-            'status': 'error',
-            'desc': str(e),
-            'target_classify': target_classify
+            'result': 'error',
+            'details': str(e),
+            'code': 500
         }
         return mk_utf8resp(result)

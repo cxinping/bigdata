@@ -134,16 +134,16 @@ def analyze_data():
                         dtype={'finance_offical_id': str, 'bill_id': str, 'bill_code': str, 'check_amount': np.float64},
                         encoding="utf-8",
                         names=['finance_offical_id', 'bill_id', 'bill_code', 'check_amount'])
-    print(rd_df.dtypes)
+    #print(rd_df.dtypes)
     # mean_val = rd_df.mean().at['check_amount']  # 平均值
     std_val = rd_df.std().at['check_amount']  # 标准方差
 
     result = rd_df[rd_df['check_amount'] > std_val]
     print(f'* 计算的方差为 => {std_val}')
-    print(result.head(5))
+    #print(result.head(5))
 
     finance_id_ls = result['finance_offical_id'].tolist()
-    print(f'before filter len(finance_id_ls)={len(finance_id_ls)}')
+
 
     if len(finance_id_ls) > 0:
         exec_sql(finance_id_ls)
@@ -270,8 +270,8 @@ def exec_sql(finance_id_ls):
 
 
 def main():
-    save_data()  #  一共有数据 1540029 条,保存数据耗时 384 sec
-    analyze_data() # 耗时 154 sec
+    save_data()  # 一共有数据 1540029 条,保存数据耗时 487 sec
+    analyze_data()  # 分析数据耗时 147 sec
 
 
 main()

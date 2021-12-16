@@ -13,7 +13,7 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ( '22' ) " # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('33','34','35','37','38','39','40','41','42','43','45','46','47','50','51','52','53','54','55','56','58','60','62','63','64','65','66') " # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
@@ -28,11 +28,12 @@ def demo1():
     sql2 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_id = '01' "
     # print(sql2)
     # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
-
     #sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
-    sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '49' "
-    # sql3 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
-    sql4 = 'select account_period from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 limit 10'
+    #sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '49' "
+    sql3 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where daily_type="数据处理" '
+    sql4 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
+
+    #sql4 = 'select account_period from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 limit 10'
     log.info(sql3)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql3)
     for record in records:
@@ -81,7 +82,7 @@ def exec_sql():
     # unusual_ls.extend(car_ls)
     #print(unusual_ls)
 
-    unusual_ls = ['01', '02', '03', '04', '08', '09', '10', '15', '16', '17', '20', '21', '22', '23'] + ['24', '25', '26', '27', '28', '29', '30', '32']
+    unusual_ls = ['56', '58', '60', '62', '63', '64', '65', '66']
 
     sql = "select unusual_id, unusual_shell from  01_datamart_layer_007_h_cw_df.finance_unusual where isalgorithm='1' order by unusual_id"
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
@@ -102,7 +103,7 @@ def exec_sql():
 
 if __name__ == '__main__':
     #del_history_exception_data()
-    #demo1()
+    demo1()
     #demo2()
-    exec_sql()
-    print('--- ok , executed  ---')
+    #exec_sql()
+    print('--- ok , executed 1 ---')
