@@ -15,9 +15,13 @@ import traceback
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
-from report.services.office_expenses_service import (query_checkpoint_42_commoditynames, get_office_bill_jiebaword, pagination_office_records)
-from report.services.vehicle_expense_service import (query_checkpoint_55_commoditynames, get_car_bill_jiebaword, pagination_car_records)
-from report.services.conference_expense_service import (pagination_conference_records, get_conference_bill_jiebaword, pagination_conference_records, query_checkpoint_26_commoditynames)
+from report.services.office_expenses_service import (query_checkpoint_42_commoditynames, get_office_bill_jiebaword,
+                                                     pagination_office_records)
+from report.services.vehicle_expense_service import (query_checkpoint_55_commoditynames, get_car_bill_jiebaword,
+                                                     pagination_car_records)
+from report.services.conference_expense_service import (pagination_conference_records, get_conference_bill_jiebaword,
+                                                        pagination_conference_records,
+                                                        query_checkpoint_26_commoditynames)
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
                                              query_finance_shell_daily_status,
@@ -33,62 +37,6 @@ from report.commons.settings import CONN_TYPE
 log = get_logger(__name__)
 
 report_bp = Blueprint('report', __name__)
-
-
-# http://10.5.138.11:8004/report/test/wang
-@report_bp.route('/test/<name>', methods=['GET', 'POST'])
-def test_report(name):
-    log.info('---- test_report ============')
-    gender = None
-    if request.method == "POST":
-        gender = request.form['gender']
-        log.info(f'gender={gender}')
-
-    elif request.method == "GET":
-        address = request.args.get("address")
-        log.info(f'address={address}')
-
-    data_ls = [{'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5}]
-    data_str = json.dumps({'a': 'Runoob', 'b': 7}, sort_keys=True, indent=4, separators=(',', ': '))
-
-    result = {
-        'name': name,
-        'time': datetime.datetime.now(),
-        'gender': gender if gender else '',
-        'code': '001',
-        'data': data_ls
-    }
-
-    response = jsonify(result)
-    return response, 200
-
-
-# http://10.5.138.11:8004/report/var
-@report_bp.route('/var/<name>', methods=['GET', 'POST'])
-def test_var(name):
-    log.info('---- test_report ============')
-    gender = None
-    if request.method == "POST":
-        gender = request.form['gender']
-        log.info(f'gender={gender}')
-
-    elif request.method == "GET":
-        address = request.args.get("address")
-        log.info(f'address={address}')
-
-    data_ls = [{'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5}]
-    data_str = json.dumps({'a': 'Runoob', 'b': 7}, sort_keys=True, indent=4, separators=(',', ': '))
-
-    result = {
-        'name': name,
-        'time': datetime.datetime.now(),
-        'gender': gender if gender else '',
-        'code': '001',
-        'data': data_ls
-    }
-
-    response = jsonify(result)
-    return response, 200
 
 
 ############  【费用标准（finance_standard）相关】  ############
@@ -571,7 +519,7 @@ def finance_unusual_update():
     # 是否执行，1为执行，0为不执行
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
 
-    sign_status = ''
+    #sign_status = ''
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
@@ -580,7 +528,7 @@ def finance_unusual_update():
     log.info(f'sign_status={sign_status}')
 
     unusual_shell = transfer_content(unusual_shell)
-    #log.info(f'* unusual_shell=\n{unusual_shell}')
+    # log.info(f'* unusual_shell=\n{unusual_shell}')
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -1175,6 +1123,7 @@ def query_finance_shell_daily():
         unusual_point = None
 
     log.info(f'* current_page={current_page},page_size={page_size}, unusual_point => {unusual_point} ')
+    log.info(f'daily_type => {daily_type}')
 
     if current_page is None:
         data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
@@ -1192,7 +1141,7 @@ def query_finance_shell_daily():
         return response
 
     try:
-        count_records, sql, columns_ls = pagination_finance_shell_daily_records(unusual_point=unusual_point)
+        count_records, sql, columns_ls = pagination_finance_shell_daily_records(unusual_point=unusual_point, daily_type=daily_type)
 
         # print('count_records => ', count_records)
         # print('sql => ', sql)

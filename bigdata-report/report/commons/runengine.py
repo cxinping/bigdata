@@ -104,8 +104,6 @@ def execute_py_shell(unusual_shell, unusual_id, mode='activate'):
 
 
 def execute_kudu_sql(unusual_shell, unusual_id):
-    # print(unusual_shell)
-
     try:
         daily_start_date = get_current_time()
         print('*** begin execute_kudu_sql ')
@@ -122,18 +120,10 @@ def execute_kudu_sql(unusual_shell, unusual_id):
         operate_desc = f'成功执行检查点{unusual_id}的SQL'
         print('*** end execute_kudu_sql ***')
 
-        # insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date, daily_end_date=daily_end_date,
-        #                            unusual_point=unusual_id, daily_source='sql', operate_desc=operate_desc,
-        #                            unusual_infor='', task_status='done')
-
         daily_end_date = get_current_time()
         update_finance_shell_daily(daily_id, daily_end_date, task_status='done',operate_desc=operate_desc)
     except Exception as e:
         print(e)
-        # insert_finance_shell_daily(daily_status='error', daily_start_date=daily_start_date,
-        #                            daily_end_date=daily_end_date,
-        #                            unusual_point=unusual_id, daily_source='sql', operate_desc='', unusual_infor=str(e),
-        #                            task_status='done')
 
         error_info = str(e)
         daily_end_date = get_current_time()

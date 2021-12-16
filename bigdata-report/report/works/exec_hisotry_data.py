@@ -51,10 +51,10 @@ def demo1():
     # sql3 = "select count(1) from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id = '49' "
 
     sql4 = 'select * from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_point="51" '
-
+    sql5 = 'select * from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id="15" '
     # sql4 = 'select account_period from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 limit 10'
-    log.info(sql4)
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
+    log.info(sql5)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql5)
     for record in records:
         print(record)
 
@@ -140,14 +140,20 @@ def exec_task(unusual_id, unusual_shell):
 
 def process_finance_unusual():
     sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="1" '
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+    #prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+
+    sql2 = 'select * from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id="15" '
+    log.info(sql2)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
+    for record in records:
+        print(record)
 
 
 if __name__ == '__main__':
     # del_history_exception_data()
-    process_finance_shell_daily()
-    # process_finance_unusual()
-    # demo1()
+    #process_finance_shell_daily()
+    #process_finance_unusual()
+    #demo1()
     # demo2()
     #exec_sql()
-    print('--- ok , executed 6 ---')
+    print('--- ok , executed 2 ---')
