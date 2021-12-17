@@ -54,7 +54,7 @@ def cal_commodityname_function(commodityname):
     """
     category_class = None
     if commodityname:
-        # print('**** 111 commodityname ==> ', commodityname, type(commodityname))
+        # print('**** commodityname ==> ', commodityname, type(commodityname))
 
         if commodityname.find('*') > -1 and commodityname.find(',') > -1:
             commodityname_ls = commodityname.split(',')

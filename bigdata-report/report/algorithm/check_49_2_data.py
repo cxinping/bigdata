@@ -136,6 +136,8 @@ def analyze_data():
 
     finance_id_ls = result['finance_offical_id'].tolist()
 
+    #finance_id_ls= finance_id_ls[:3]
+
     if len(finance_id_ls) > 0:
         exec_sql(finance_id_ls)
     else:
@@ -169,86 +171,25 @@ def exec_sql(finance_id_ls):
         # print(condition_sql)
 
         sql = """
-        UPSERT INTO analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets   
-        SELECT
-        finance_offical_id as finance_id,
-        bill_id,
-        '49' as unusual_id,
-        company_code,
-        account_period,
-        finance_number,
-        profit_center,
-        cart_head,
-        bill_code,
-        bill_beg_date,
-        bill_end_date,
-        '' as origin_city,
-        '' as destin_city,
-        '' as beg_date,
-        '' as end_date,
-        apply_emp_name,
-        '' as emp_name,
-        '' as emp_code,
-        company_name,
-        0 as jour_amount,
-        0 as accomm_amount,
-        0 as subsidy_amount,
-        0 as other_amount,
-        check_amount,
-        jzpz,
-        '办公费' as target_classify,
-        0 as meeting_amount,
-        exp_type_name,
-        '' as next_bill_id,
-        '' as last_bill_id,
-        appr_org_sfname,
-        sales_address,
-        '' as meet_addr,
-        '' as sponsor,
-        jzpz_tax,
-        billingdate,
-        '' as remarks,
-        0 as hotel_amount,
-        0 as total_amount,
-        apply_id,
-        base_apply_date,
-        '' as scenery_name_details,
-        '' as meet_num,
-        0 as diff_met_date,
-        0 as diff_met_date_avg,
-        tb_times,
-        receipt_city,
-        commodityname,
-        '' as category_name,
-        iscompany,
-        '' as origin_province,
-        '' as destin_province,
-        operation_time,
-        doc_date,
-        operation_emp_name,
-        invoice_type_name,
-        taxt_amount,
-        original_tax_amount,
-        js_times,
-        '' as offset_day,
-        '' as meet_lvl_name,
-        '' as meet_type_name,
-        0 as buget_limit,
-        0 as sum_person,
-        invo_number,
-        invo_code,
-        '' as city,
-        0 as amounttax,
-        '' as offset_ratio,
-        '' as amounttax_ratio,
-        '' as ratio,
-        '' as approve_name,
-        importdate
-        from 01_datamart_layer_007_h_cw_df.finance_official_bill
+        upsert into analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
+(finance_id,bill_id,unusual_id,company_code,account_period,finance_number,profit_center,
+cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,company_name,check_amount,
+jzpz,target_classify,exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,
+apply_id,base_apply_date,tb_times,receipt_city,commodityname,iscompany,operation_time,doc_date,
+operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,
+invo_code,amounttax,totaltax,approve_name,importdate)
+select
+finance_offical_id,bill_id,'49',company_code,account_period,finance_number,profit_center,
+cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,company_name,check_amount,
+jzpz,'办公费',exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,apply_id,
+base_apply_date,tb_times,receipt_city,commodityname,iscompany,operation_time,doc_date,
+operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,
+invo_code,amounttax,totaltax,approve_name,importdate
+from  01_datamart_layer_007_h_cw_df.finance_official_bill
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql)
 
-        # print(sql)
+        #print(sql)
 
         try:
             start_time = time.perf_counter()
@@ -261,8 +202,8 @@ def exec_sql(finance_id_ls):
 
 
 def main():
-    save_data()  # 一共有数据 1540029 条,保存数据耗时 315 sec
-    analyze_data()  # 分析数据耗时 140 sec
+    #save_data()  #  一共有数据 1285473 条,保存数据耗时 256 sec
+    analyze_data()  # 执行SQL耗时 136 sec
 
 
 main()

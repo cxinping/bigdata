@@ -61,11 +61,11 @@ def demo1():
 
 
 def demo2():
-    list_info = ['a','b','c','d','e','f','g']
+    list_info = ['a', 'b', 'c', 'd', 'e', 'f', 'g']
     rs_ls = list_of_groups(list_info=list_info, per_list_len=3)
-    #print(rs_ls)
+    # print(rs_ls)
 
-    for idx , group in enumerate(rs_ls):
+    for idx, group in enumerate(rs_ls):
         print(idx, group)
 
 

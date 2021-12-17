@@ -25,7 +25,7 @@ def exec_temp_api_bill_sql(target_classify):
             where target_classify="{target_classify}" order by tem_api_id asc
             """
         temp_api_sql_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-        log.info(f'需要执行 {temp_api_sql_records} 条SQL')
+        log.info(f'需要执行 {len(temp_api_sql_records)} 条SQL')
         daily_start_date = get_current_time()
         daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
                                               daily_end_date='', unusual_point='',
@@ -37,7 +37,7 @@ def exec_temp_api_bill_sql(target_classify):
             api_sql = record[2]
             # log.info(api_sql)
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=api_sql)
-            log.info(f'------------------ target_classify={target_classify}, 执行成功第{idx + 1}条临时表的SQL,共有{len(temp_api_sql_records)}条SQL ------------------')
+            log.info(f'------------------ target_classify={target_classify}, 执行成功第{idx + 1}条临时表的SQL, 共有{len(temp_api_sql_records)}条SQL ------------------')
 
         operate_desc = f'成功执行临时表API中类型为{target_classify}的SQL'
         daily_end_date = get_current_time()

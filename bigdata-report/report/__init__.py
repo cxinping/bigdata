@@ -14,7 +14,7 @@ from flask import Flask, jsonify
 from .views.report import report_bp
 from .views.test import test_bp
 from report.services.common_services import update_finance_shell_daily_doing_status
-
+from report.commons.tools import get_current_time
 
 def create_app(config_object='config.default', config_map=None):
     # Create and configure the app
@@ -47,7 +47,7 @@ def create_app(config_object='config.default', config_map=None):
     def hello():
         result = {'report_service_status': HTTPStatus.OK}
         result['version'] = '1.0'
-
+        result['time'] = get_current_time()
         status = HTTPStatus.INTERNAL_SERVER_ERROR if HTTPStatus.INTERNAL_SERVER_ERROR in result.values() else HTTPStatus.OK
 
         return jsonify(result), status
