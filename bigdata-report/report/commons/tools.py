@@ -184,6 +184,9 @@ class RunningFile:
 
 
 class MatchArea:
+    def __init__(self):
+        pass
+
     def match_address(self, place, key):
 
         if place is None:

@@ -69,5 +69,16 @@ def demo2():
         print(idx, group)
 
 
+def demo3():
+    match_area = MatchArea()
+    sales_name = '广西嘉旸碧天酒店管理有限公司'
+    sales_addressphone = '广西南宁市吴圩国际机场T2航站区机场大道18号旅客过夜用房0771-2883346'
+    sales_bank = '中国银行南宁市机场支行611974862198'
+    receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                     sales_bank=sales_bank)
+    print(f'receipt_city={receipt_city}')
+
+
 if __name__ == '__main__':
-    demo2()
+    # demo2()
+    demo3()
