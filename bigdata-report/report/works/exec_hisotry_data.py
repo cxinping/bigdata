@@ -73,29 +73,23 @@ def demo2():
     where  unusual_id in ('49')
     """
 
-    print(sql4)
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql4)
+    # print(sql4)
+    # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql4)
+
+    # sql4 = """
+    # select account_period,finance_travel_id,bill_id,plane_beg_date,plane_end_date,plane_origin_name,plane_destin_name,plane_check_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null)
+    # AND (plane_beg_date is not null AND plane_beg_date !='') order by account_period desc limit 10
+    # """
 
     sql4 = """
-    select account_period,finance_travel_id,bill_id,plane_beg_date,plane_end_date,plane_origin_name,plane_destin_name,plane_check_amount from 01_datamart_layer_007_h_cw_df.finance_travel_bill WHERE plane_check_amount > 0 AND isPlane = 'plane' AND ( plane_origin_name is not null AND plane_destin_name is not null) 
-    AND (plane_beg_date is not null AND plane_beg_date !='') order by account_period desc limit 10
+    select account_period
+    from 01_datamart_layer_007_h_cw_df.finance_car_bill where account_period >= '2021010' limit 10
     """
-    # log.info(sql4)
-    # records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
-    # for record in records:
-    #     print(record)
+    log.info(sql4)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
+    for record in records:
+        print(record)
 
-
-def demo3():
-    sql1 = """
-    
-    
-    
-    
-    """
-
-    print(sql1)
-    prod_execute_sql(conn_type='test', sqltype='insert', sql=sql1)
 
 def exec_sql():
     # 差旅费
@@ -187,9 +181,10 @@ if __name__ == '__main__':
     #del_history_exception_data()
     #process_finance_shell_daily()
     #process_finance_unusual()
-    demo1()
-    #demo2()
+    #demo1()
+
+    demo2()
     #exec_sql()
-    print('--- ok , executed 333 ---')
+    print('--- ok , executed 111 ---')
 
 

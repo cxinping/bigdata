@@ -79,6 +79,12 @@ def demo3():
     print(f'receipt_city={receipt_city}')
 
 
+def demo4():
+    date = get_date_month(1)
+    print(date)
+
+
 if __name__ == '__main__':
     # demo2()
-    demo3()
+    # demo3()
+    demo4()

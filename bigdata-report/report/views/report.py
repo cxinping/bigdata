@@ -31,6 +31,7 @@ from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 from report.commons.db_helper import Pagination
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
+from report.services.data_process_services import insert_temp_performance_bill, update_temp_performance_bill
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -475,7 +476,7 @@ def finance_unusual_add():
         return response
 
     # 对输入的python脚本进行转义
-    # unusual_shell = transfer_content(unusual_shell)
+    unusual_shell = transfer_content(unusual_shell)
 
     sql = f"""
 insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_type, unusual_point, unusual_content, unusual_shell, isalgorithm)
@@ -1207,6 +1208,58 @@ def exec_temp_api():
         }
         return mk_utf8resp(result)
 
+############  【绩效临时表相关】  ############
+
+# http://10.5.138.11:8004/report/temp/performance/bill/add
+@report_bp.route('/temp/performance/bill/add', methods=['POST'])
+def temp_performance_bill_add():
+    log.info('----- temp_performance_bill_add add -----')
+    order_number = request.form.get('order_number') if request.form.get('order_number') else None
+    sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
+    performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
+
+    log.info(f'order_number={order_number}')
+    log.info(f'sign_status={sign_status}')
+    log.info(f'performance_sql={performance_sql}')
+
+    if order_number is None:
+        data = {"result": "error", "details": "输入的 order_number 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if sign_status is None:
+        data = {"result": "error", "details": "输入的 sign_status 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if performance_sql is None:
+        data = {"result": "error", "details": "输入的 performance_sql 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    # 对输入的脚本进行转义
+    performance_sql = transfer_content(performance_sql)
+
+    try:
+        insert_temp_performance_bill(order_number, sign_status, performance_sql)
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功新增一条"绩效临时表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
 
 
 
+
+############  【流程表相关】  ############
