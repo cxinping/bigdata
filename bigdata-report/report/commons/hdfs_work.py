@@ -223,4 +223,4 @@ if __name__ == "__main__":
 
     # main3()
 
-    pass
+    print('--- ok ---')

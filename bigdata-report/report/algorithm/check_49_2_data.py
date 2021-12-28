@@ -25,6 +25,7 @@ cd /you_filed_algos/app
 
 PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_49_2_data.py
 
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/algorithm/check_49_2_data.py &
 
 """
 
@@ -118,7 +119,7 @@ def exec_task(sql):
                 file.write(record_str + "\n")
 
 
-def analyze_data():
+def analyze_data(coefficient=2):
     log.info(f'========== check_49 analyze_data ===========')
     start_time = time.perf_counter()
 
@@ -126,20 +127,25 @@ def analyze_data():
                         dtype={'finance_offical_id': str, 'bill_id': str, 'bill_code': str, 'check_amount': np.float64},
                         encoding="utf-8",
                         names=['finance_offical_id', 'bill_id', 'bill_code', 'check_amount'])
-    #print(rd_df.dtypes)
-    # mean_val = rd_df.mean().at['check_amount']  # 平均值
-    std_val = rd_df.std().at['check_amount']  # 标准方差
+    # print(rd_df.dtypes)
+    mean_val = rd_df['check_amount'].mean()  # 平均值
+    std_val = rd_df['check_amount'].std()   # 标准方差
+    print(f'* 计算的方差为 => {std_val} , 平均值 => {mean_val}')
 
-    result = rd_df[rd_df['check_amount'] > std_val]
-    #print(f'* 计算的方差为 => {std_val}')
-    #print(result.head(5))
+    # 判断条件： 大于 (均值 + 2 * 标准方差)
+    max_val = mean_val + coefficient * std_val
+    result = rd_df[rd_df['check_amount'] > max_val]
+
+    # print(result.head(5))
+    print(f'* 计算的结果数量为 => {len(result)}')
 
     finance_id_ls = result['finance_offical_id'].tolist()
 
-    #finance_id_ls= finance_id_ls[:3]
+    # finance_id_ls= finance_id_ls[:3]
 
     if len(finance_id_ls) > 0:
-        exec_sql(finance_id_ls)
+        mean_val = round(mean_val, 6)
+        exec_sql(finance_id_ls, mean_val)
     else:
         print('** finance_id_ls length is 0 ')
 
@@ -147,7 +153,7 @@ def analyze_data():
     log.info(f'* check_49_2 分析数据耗时 {consumed_time} sec')
 
 
-def exec_sql(finance_id_ls):
+def exec_sql(finance_id_ls, mean_val):
     print('* exec_sql ==> ', len(finance_id_ls))
 
     if finance_id_ls and len(finance_id_ls) > 0:
@@ -172,22 +178,18 @@ def exec_sql(finance_id_ls):
 
         sql = """
         upsert into analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
-(finance_id,bill_id,unusual_id,company_code,account_period,finance_number,profit_center,
-cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,company_name,check_amount,
-jzpz,target_classify,exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,
-apply_id,base_apply_date,tb_times,receipt_city,commodityname,iscompany,operation_time,doc_date,
-operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,
-invo_code,amounttax,totaltax,approve_name,importdate)
-select
-finance_offical_id,bill_id,'49',company_code,account_period,finance_number,profit_center,
-cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,company_name,check_amount,
-jzpz,'办公费',exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,apply_id,
-base_apply_date,tb_times,receipt_city,commodityname,iscompany,operation_time,doc_date,
-operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,
-invo_code,amounttax,totaltax,approve_name,importdate
-from  01_datamart_layer_007_h_cw_df.finance_official_bill
+(finance_id,bill_id,unusual_id,company_code,account_period,finance_number,profit_center,cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,
+company_name,check_amount,jzpz,target_classify,exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,apply_id,base_apply_date,tb_times,receipt_city,
+commodityname,iscompany,operation_time,doc_date,operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,invo_code,
+amounttax,totaltax,approve_name,mean,importdate)
+select 
+finance_offical_id,bill_id,'49',company_code,account_period,finance_number,profit_center,cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,
+company_name,check_amount,jzpz,'办公费',exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,apply_id,base_apply_date,tb_times,receipt_city,
+commodityname,isCompany,operation_time,doc_date,operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,invo_code,
+amounttax,totaltax,approve_name,{mean_val},importdate
+from 01_datamart_layer_007_h_cw_df.finance_official_bill
         WHERE {condition_sql}
-            """.format(condition_sql=condition_sql)
+            """.format(condition_sql=condition_sql, mean_val=mean_val)
 
         #print(sql)
 
@@ -202,8 +204,8 @@ from  01_datamart_layer_007_h_cw_df.finance_official_bill
 
 
 def main():
-    #save_data()  #  一共有数据 1285473 条,保存数据耗时 256 sec
-    analyze_data()  # 执行SQL耗时 136 sec
+    save_data()  # 一共有数据 1285473 条,保存数据耗时 256 sec
+    analyze_data(coefficient=2)  # 执行SQL耗时 136 sec
 
 
 main()

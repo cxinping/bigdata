@@ -20,7 +20,6 @@ from report.services.office_expenses_service import (query_checkpoint_42_commodi
 from report.services.vehicle_expense_service import (query_checkpoint_55_commoditynames, get_car_bill_jiebaword,
                                                      pagination_car_records)
 from report.services.conference_expense_service import (pagination_conference_records, get_conference_bill_jiebaword,
-                                                        pagination_conference_records,
                                                         query_checkpoint_26_commoditynames)
 from report.commons.tools import get_current_time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily,
@@ -1207,3 +1206,7 @@ def exec_temp_api():
             'code': 500
         }
         return mk_utf8resp(result)
+
+
+
+

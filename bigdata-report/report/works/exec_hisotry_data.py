@@ -45,7 +45,7 @@ def demo1():
     sql2 = f"""
     UPDATE 01_datamart_layer_007_h_cw_df.finance_shell_daily SET task_status="cancel", unusual_infor="系统重启，取消正在执行的执行检查点任务" WHERE task_status="doing"
     """
-    sql2 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_id = '01' "
+    #sql2 = "delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily where unusual_id = '01' "
     # print(sql2)
     # prod_execute_sql(conn_type='prod', sqltype='insert', sql=sql2)
     # sql3 = "select * from  01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = '01' "
@@ -85,6 +85,17 @@ def demo2():
     # for record in records:
     #     print(record)
 
+
+def demo3():
+    sql1 = """
+    
+    
+    
+    
+    """
+
+    print(sql1)
+    prod_execute_sql(conn_type='test', sqltype='insert', sql=sql1)
 
 def exec_sql():
     # 差旅费
