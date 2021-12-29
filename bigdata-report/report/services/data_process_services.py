@@ -3,8 +3,9 @@ from report.commons.tools import create_uuid
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
 from report.commons.connect_kudu2 import prod_execute_sql
-from abc import ABCMeta, abstractmethod
 from report.services.temp_api_bill_services import exec_temp_api_bill_sql
+from report.commons.tools import list_of_groups
+from abc import ABCMeta, abstractmethod
 
 log = get_logger(__name__)
 
@@ -43,6 +44,62 @@ def update_temp_performance_bill(performance_id, order_number, sign_status, perf
         raise RuntimeError(e)
 
 
+def del_temp_performance_bill(performance_ids):
+    try:
+        sql = 'DELETE FROM 01_datamart_layer_007_h_cw_df.temp_performance_bill WHERE '
+        condition_sql = ''
+        in_codition = 'performance_id IN {temp}'
+
+        if performance_ids and len(performance_ids) > 0:
+            group_ls = list_of_groups(performance_ids, 1000)
+
+            for idx, group in enumerate(group_ls):
+                if len(group) == 1:
+                    temp = in_codition.format(temp=str('("' + group[0] + '")'))
+                else:
+                    temp = in_codition.format(temp=str(tuple(group)))
+
+                if idx == 0:
+                    condition_sql = temp
+                else:
+                    condition_sql = condition_sql + ' OR ' + temp
+
+            sql = sql + condition_sql
+            #log.info(sql)
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+def query_temp_performance_bill(performance_ids):
+    try:
+        sql = 'SELECT performance_sql FROM 01_datamart_layer_007_h_cw_df.temp_performance_bill WHERE '
+        condition_sql = ''
+        in_codition = 'performance_id IN {temp}'
+
+        if performance_ids and len(performance_ids) > 0:
+            group_ls = list_of_groups(performance_ids, 1000)
+
+            for idx, group in enumerate(group_ls):
+                if len(group) == 1:
+                    temp = in_codition.format(temp=str('("' + group[0] + '")'))
+                else:
+                    temp = in_codition.format(temp=str(tuple(group)))
+
+                if idx == 0:
+                    condition_sql = temp
+                else:
+                    condition_sql = condition_sql + ' OR ' + temp
+
+            sql = sql + condition_sql
+            #log.info(sql)
+            records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+            return records
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
 def pagination_temp_performance_bill_records():
     """
     分页查询绩效临时表的记录
@@ -76,14 +133,17 @@ class BaseProcess(metaclass=ABCMeta):
     def __init__(self):
         pass
 
-    def exec_step08(self):
+    def exec_step7(self):
         """
-        执行第八步 8、绩效接口API（脚本）
+        执行第七步 差旅、会议、办公、车辆费聚合接口API（脚本）
         :return:
         """
         target_classify_ls = ['差旅费', '会议费', '办公费', '车辆使用费']
         for item in target_classify_ls:
             exec_temp_api_bill_sql(item)
+
+    def exec_step08(self):
+        pass
 
 
 class IncrementAddProcess(BaseProcess):
@@ -94,6 +154,3 @@ class IncrementAddProcess(BaseProcess):
 class FullAddProcess(BaseProcess):
     """ 增量数据流程 """
     pass
-
-
-

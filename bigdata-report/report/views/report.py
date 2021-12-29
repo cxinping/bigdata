@@ -31,7 +31,9 @@ from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 from report.commons.db_helper import Pagination
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
-from report.services.data_process_services import insert_temp_performance_bill, update_temp_performance_bill, pagination_temp_performance_bill_records
+from report.services.data_process_services import (insert_temp_performance_bill, update_temp_performance_bill,
+                                                   del_temp_performance_bill, query_temp_performance_bill,
+                                                   pagination_temp_performance_bill_records)
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -519,7 +521,7 @@ def finance_unusual_update():
     # 是否执行，1为执行，0为不执行
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
 
-    #sign_status = ''
+    # sign_status = ''
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
@@ -1141,7 +1143,8 @@ def query_finance_shell_daily():
         return response
 
     try:
-        count_records, sql, columns_ls = pagination_finance_shell_daily_records(unusual_point=unusual_point, daily_type=daily_type)
+        count_records, sql, columns_ls = pagination_finance_shell_daily_records(unusual_point=unusual_point,
+                                                                                daily_type=daily_type)
 
         # print('count_records => ', count_records)
         # print('sql => ', sql)
@@ -1207,6 +1210,7 @@ def exec_temp_api():
             'code': 500
         }
         return mk_utf8resp(result)
+
 
 ############  【绩效临时表相关】  ############
 
@@ -1293,7 +1297,8 @@ def temp_performance_bill_update():
     performance_sql = transfer_content(performance_sql)
 
     try:
-        update_temp_performance_bill(performance_id=performance_id, order_number=order_number, sign_status=sign_status, performance_sql=performance_sql)
+        update_temp_performance_bill(performance_id=performance_id, order_number=order_number, sign_status=sign_status,
+                                     performance_sql=performance_sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -1310,6 +1315,7 @@ def temp_performance_bill_update():
         }
         response = jsonify(data)
         return response
+
 
 # http://10.5.138.11:8004/report/temp/performance/bill/query
 @report_bp.route('/temp/performance/bill/query', methods=['POST'])
@@ -1353,7 +1359,64 @@ def temp_performance_bill_query():
         return mk_utf8resp(result)
 
 
+# http://10.5.138.11:8004/report/temp/performance/bill/delete
+@report_bp.route('/temp/performance/bill/delete', methods=['POST'])
+def temp_performance_bill_delete():
+    log.info('---- temp_performance_bill_delete ---- ')
+    performance_ids = request.form.getlist("performance_ids")
+    # print(performance_ids)
+
+    if performance_ids is None or len(performance_ids) == 0:
+        data = {"result": "error", "details": "至少输入一个 performance_ids", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        del_temp_performance_bill(performance_ids)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': f'成功删除{len(performance_ids)}条"绩效临时表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+
+# http://10.5.138.11:8004/report/temp/performance/bill/execute
+@report_bp.route('/temp/performance/bill/execute', methods=['POST'])
+def temp_performance_bill_execute():
+    log.info('---- temp_performance_bill_execute ---- ')
+    performance_ids = request.form.getlist("performance_ids")
+    #print(performance_ids)
+
+    if performance_ids is None or len(performance_ids) == 0:
+        data = {"result": "error", "details": "至少输入一个 performance_ids", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        records = query_temp_performance_bill(performance_ids)
+        #print(len(records), records)
+
+        for idx, performance_sql in enumerate(records):
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=performance_sql)
+        return 'aaaaaa'
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
 ############  【流程表相关】  ############
-
-
-

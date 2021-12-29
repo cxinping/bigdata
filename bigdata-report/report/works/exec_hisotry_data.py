@@ -21,7 +21,7 @@ log = get_logger(__name__)
 
 
 def del_history_exception_data():
-    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('46' ) "  # ('12' ,'13', '14', '34', '49' )
+    sql = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id in ('41' ,'45','50','51','52') "  # ('12' ,'13', '14', '34', '49' )
     print(sql)
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
@@ -182,13 +182,13 @@ def process_finance_unusual():
 
 
 if __name__ == '__main__':
-    #del_history_exception_data()
+    del_history_exception_data()
     #process_finance_shell_daily()
     #process_finance_unusual()
     #demo1()
-
-    demo2()
+    #demo2()
     #exec_sql()
-    print('--- ok , executed 111 ---')
+
+    print('--- ok , executed 22 ---')
 
 
