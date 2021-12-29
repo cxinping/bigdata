@@ -79,6 +79,7 @@ def insert_finance_shell_daily(daily_status, daily_start_date, daily_end_date, u
         return daily_id
     except Exception as e:
         print(e)
+        raise RuntimeError(e)
 
 
 def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done', operate_desc=''):
@@ -91,6 +92,7 @@ def update_finance_shell_daily(daily_id, daily_end_date='', task_status='done', 
         return daily_id
     except Exception as e:
         print(e)
+        raise RuntimeError(e)
 
 
 def update_finance_shell_daily_doing_status():
@@ -103,6 +105,7 @@ def update_finance_shell_daily_doing_status():
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
     except Exception as e:
         print(e)
+        raise RuntimeError(e)
 
 
 def query_finance_shell_daily_status(unusual_point, task_status='doing'):
@@ -120,6 +123,7 @@ def query_finance_shell_daily_status(unusual_point, task_status='doing'):
 
     except Exception as e:
         print(e)
+        raise RuntimeError(e)
 
 
 def clean_finance_category_sign(unusual_id):

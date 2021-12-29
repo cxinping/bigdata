@@ -31,7 +31,7 @@ from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 from report.commons.db_helper import Pagination
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
-from report.services.data_process_services import insert_temp_performance_bill, update_temp_performance_bill
+from report.services.data_process_services import insert_temp_performance_bill, update_temp_performance_bill, pagination_temp_performance_bill_records
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -1260,6 +1260,100 @@ def temp_performance_bill_add():
         return response
 
 
+# http://10.5.138.11:8004/report/temp/performance/bill/update
+@report_bp.route('/temp/performance/bill/update', methods=['POST'])
+def temp_performance_bill_update():
+    log.info('----- temp_performance_bill_update add -----')
+    performance_id = request.form.get('performance_id') if request.form.get('performance_id') else None
+    order_number = request.form.get('order_number') if request.form.get('order_number') else None
+    sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
+    performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
+
+    if performance_id is None:
+        data = {"result": "error", "details": "输入的 performance_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if order_number is None:
+        data = {"result": "error", "details": "输入的 order_number 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if sign_status is None:
+        data = {"result": "error", "details": "输入的 sign_status 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if performance_sql is None:
+        data = {"result": "error", "details": "输入的 performance_sql 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    # 对输入的脚本进行转义
+    performance_sql = transfer_content(performance_sql)
+
+    try:
+        update_temp_performance_bill(performance_id=performance_id, order_number=order_number, sign_status=sign_status, performance_sql=performance_sql)
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功修改一条"绩效临时表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
+
+# http://10.5.138.11:8004/report/temp/performance/bill/query
+@report_bp.route('/temp/performance/bill/query', methods=['POST'])
+def temp_performance_bill_query():
+    log.info('---- temp_performance_bill_query ----')
+    current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+    page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+
+    log.info(f'current_page={current_page},page_size={page_size}')
+
+    if current_page is None:
+        data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if page_size is None:
+        data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        count_records, sql, columns_ls = pagination_temp_performance_bill_records()
+        page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
+        records = page_obj.exec_sql(sql, columns_ls)
+
+        result = {
+            'status': 'ok',
+            'current_page': current_page,
+            'total': count_records,
+            'data': records,
+            'code': 200
+        }
+        return mk_utf8resp(result)
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
 
 
 ############  【流程表相关】  ############
+
+
+

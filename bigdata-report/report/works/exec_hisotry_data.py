@@ -85,6 +85,10 @@ def demo2():
     select account_period
     from 01_datamart_layer_007_h_cw_df.finance_car_bill where account_period >= '2021010' limit 10
     """
+
+    sql4 = """
+    describe 01_datamart_layer_007_h_cw_df.temp_performance_bill
+    """
     log.info(sql4)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
     for record in records:
