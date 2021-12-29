@@ -14,7 +14,8 @@ log = get_logger(__name__)
 
 def exec_temp_api_bill_sql(target_classify):
     """
-    执行临时表API表
+    绩效接口API（脚本）
+    执行临时表API表,
     :param target_classify: 差旅费、会议费、办公费、车辆使用费
     :return:
     """

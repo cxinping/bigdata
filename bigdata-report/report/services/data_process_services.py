@@ -3,6 +3,8 @@ from report.commons.tools import create_uuid
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
 from report.commons.connect_kudu2 import prod_execute_sql
+from abc import ABCMeta, abstractmethod
+from report.services.temp_api_bill_services import exec_temp_api_bill_sql
 
 log = get_logger(__name__)
 
@@ -61,9 +63,37 @@ def pagination_temp_performance_bill_records():
     where_sql = 'WHERE '
     condition_sql = ''
 
-    where_sql = where_sql + ' 1=1'
+    where_sql = where_sql + ' 1=1 '
 
     order_sql = ' ORDER BY order_number ASC '
     sql = sql + where_sql + order_sql
 
     return count_records, sql, columns_ls
+
+
+class BaseProcess(metaclass=ABCMeta):
+
+    def __init__(self):
+        pass
+
+    def exec_step08(self):
+        """
+        执行第八步 8、绩效接口API（脚本）
+        :return:
+        """
+        target_classify_ls = ['差旅费', '会议费', '办公费', '车辆使用费']
+        for item in target_classify_ls:
+            exec_temp_api_bill_sql(item)
+
+
+class IncrementAddProcess(BaseProcess):
+    """ 全量数据流程 """
+    pass
+
+
+class FullAddProcess(BaseProcess):
+    """ 增量数据流程 """
+    pass
+
+
+
