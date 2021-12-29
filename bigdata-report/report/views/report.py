@@ -1219,10 +1219,12 @@ def exec_temp_api():
 def temp_performance_bill_add():
     log.info('----- temp_performance_bill_add add -----')
     order_number = request.form.get('order_number') if request.form.get('order_number') else None
+    describe_num = request.form.get('describe_num') if request.form.get('describe_num') else ''
     sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
     performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
 
     log.info(f'order_number={order_number}')
+    log.info(f'describe_num={describe_num}')
     log.info(f'sign_status={sign_status}')
     log.info(f'performance_sql={performance_sql}')
 
@@ -1245,7 +1247,7 @@ def temp_performance_bill_add():
     performance_sql = transfer_content(performance_sql)
 
     try:
-        insert_temp_performance_bill(order_number, sign_status, performance_sql)
+        insert_temp_performance_bill(order_number=order_number, describe_num=describe_num, sign_status=sign_status, performance_sql=performance_sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -1270,6 +1272,7 @@ def temp_performance_bill_update():
     log.info('----- temp_performance_bill_update add -----')
     performance_id = request.form.get('performance_id') if request.form.get('performance_id') else None
     order_number = request.form.get('order_number') if request.form.get('order_number') else None
+    describe_num = request.form.get('describe_num') if request.form.get('describe_num') else ''
     sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
     performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
 
@@ -1297,7 +1300,7 @@ def temp_performance_bill_update():
     performance_sql = transfer_content(performance_sql)
 
     try:
-        update_temp_performance_bill(performance_id=performance_id, order_number=order_number, sign_status=sign_status,
+        update_temp_performance_bill(performance_id=performance_id, order_number=order_number,describe_num=describe_num, sign_status=sign_status,
                                      performance_sql=performance_sql)
         data = {
             'result': 'ok',
@@ -1407,9 +1410,19 @@ def temp_performance_bill_execute():
         records = query_temp_performance_bill(performance_ids)
         #print(len(records), records)
 
-        for idx, performance_sql in enumerate(records):
+        for idx, record in enumerate(records):
+            performance_sql = record[0]
+            #print(performance_sql)
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=performance_sql)
-        return 'aaaaaa'
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': f'成功执行{len(records)}条绩效临时表的SQL'
+        }
+        response = jsonify(data)
+        return response
+
     except Exception as e:
         print(e)
         result = {

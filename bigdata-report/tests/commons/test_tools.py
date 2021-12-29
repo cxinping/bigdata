@@ -84,7 +84,15 @@ def demo4():
     print(date)
 
 
+def demo5():
+    # ret1 = is_chinese("刘亦菲")
+    ret1 = is_chinese("aaaa111")
+    print(ret1, not ret1)
+
+
+
+
 if __name__ == '__main__':
     # demo2()
     # demo3()
-    demo4()
+    demo5()

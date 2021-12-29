@@ -15,13 +15,13 @@ log = get_logger(__name__)
 """
 
 
-def insert_temp_performance_bill(order_number, sign_status, performance_sql):
+def insert_temp_performance_bill(order_number, describe_num, sign_status, performance_sql):
     performance_id = create_uuid()
     try:
         # log.info('*** insert_finance_shell_daily ***')
         sql = f"""
-        insert into 01_datamart_layer_007_h_cw_df.temp_performance_bill(performance_id, order_number, sign_status, performance_sql) 
-        values("{performance_id}", "{order_number}", "{sign_status}", "{performance_sql}" )
+        insert into 01_datamart_layer_007_h_cw_df.temp_performance_bill(performance_id, order_number, describe_num, sign_status, performance_sql) 
+        values("{performance_id}", "{order_number}", "{describe_num}","{sign_status}", "{performance_sql}" )
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
@@ -31,10 +31,10 @@ def insert_temp_performance_bill(order_number, sign_status, performance_sql):
         raise RuntimeError(e)
 
 
-def update_temp_performance_bill(performance_id, order_number, sign_status, performance_sql):
+def update_temp_performance_bill(performance_id, order_number,describe_num, sign_status, performance_sql):
     try:
         sql = f"""
-        UPDATE 01_datamart_layer_007_h_cw_df.temp_performance_bill SET order_number="{order_number}", sign_status="{sign_status}",performance_sql="{performance_sql}" WHERE performance_id="{performance_id}"
+        UPDATE 01_datamart_layer_007_h_cw_df.temp_performance_bill SET order_number="{order_number}", describe_num="{describe_num}",sign_status="{sign_status}",performance_sql="{performance_sql}" WHERE performance_id="{performance_id}"
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
@@ -106,7 +106,7 @@ def pagination_temp_performance_bill_records():
 
     :return:
     """
-    columns_ls = ['performance_id', 'order_number', 'sign_status', 'performance_sql']
+    columns_ls = ['performance_id', 'order_number', 'describe_num', 'sign_status', 'performance_sql']
     columns_str = ",".join(columns_ls)
     sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.temp_performance_bill "
 
