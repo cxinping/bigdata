@@ -72,14 +72,13 @@ def init_file(year, is_del=False):
 def check_linshi_travel_data(query_date=query_date):
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
-    condition1 = ' length(invo_code) > 4 '
 
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) AND account_period >= '{query_date}' AND {condition1}
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) AND account_period >= '{query_date}'  
         {test_limit_cond}
-    """.format(columns_str=columns_str, query_date=query_date, condition1=condition1,
+    """.format(columns_str=columns_str, query_date=query_date,
                test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
                                                                           '').strip()
 
@@ -99,22 +98,20 @@ def check_linshi_travel_data(query_date=query_date):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) AND account_period >= '{query_date}' AND {condition1} order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, query_date=query_date,
-                    condition1=condition1)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) AND account_period >= '{query_date}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, query_date=query_date)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND account_period >= '{query_date}' AND {condition1} order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, query_date=query_date,
-                    condition1=condition1)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND account_period >= '{query_date}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, query_date=query_date)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND account_period >= '{query_date}' AND {condition1} {test_limit_cond} ".format(
-            columns_str=columns_str, test_limit_cond=test_limit_cond, query_date=query_date, condition1=condition1)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND account_period >= '{query_date}'  {test_limit_cond} ".format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond, query_date=query_date)
         select_sql_ls.append(tmp_sql)
 
     if count_records >= 20000:
