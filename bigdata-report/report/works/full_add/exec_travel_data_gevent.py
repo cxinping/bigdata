@@ -58,7 +58,7 @@ dest_dir = '/you_filed_algos/prod_kudu_data/temp'
 match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
-test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+
 
 test_limit_cond = ' '  # 'LIMIT 10000'
 
@@ -331,6 +331,7 @@ def exec_task(sql, year):
 def upload_hdfs_file(year):
     dest_file = get_dest_file(year)
     upload_hdfs_path = get_upload_hdfs_path(year)
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
 
@@ -351,5 +352,5 @@ def main():
     print('--- ok ---')
 
 
-# if __name__ == "__main__":
-main()
+if __name__ == "__main__":
+    main()
