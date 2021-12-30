@@ -51,8 +51,6 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/wo
 
 """
 
-CONN_TYPE = 'test'
-
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
@@ -89,15 +87,14 @@ def init_file(year):
 def execute_02_data(year):
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
-    condition1 = ' length(invo_code) > 4 '
 
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' AND {condition1}
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}'  
        {test_limit_cond}
-    """.format(columns_str=columns_str, year=year, condition1=condition1, test_limit_cond=test_limit_cond).replace('\n',
-                                                                                                                   '').replace(
+    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond).replace('\n',
+                                                                                            '').replace(
         '\r',
         '').strip()
 
@@ -117,22 +114,20 @@ def execute_02_data(year):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}' AND {condition1} order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year,
-                    condition1=condition1)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}'   order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}' AND {condition1} order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year,
-                    condition1=condition1)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'   order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year=year)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  AND {condition1}  {test_limit_cond} ".format(
-            columns_str=columns_str, test_limit_cond=test_limit_cond, year=year, condition1=condition1)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and left(account_period,4) ='{year}'  {test_limit_cond} ".format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond, year=year)
         select_sql_ls.append(tmp_sql)
 
     if count_records >= 20000:
@@ -177,6 +172,13 @@ def operate_every_record(record):
     origin_name = str(record[5]) if record[5] else None  # 行程出发地
     invo_code = str(record[6]) if record[6] else None  # 发票代码
     sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
+
+    if (sales_taxno is None or len(sales_taxno) == 0) and (invo_code is None or len(invo_code) == 0):
+        sales_address = destin_name
+        receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
+                                                         sales_bank=None)
+        receipt_province = province_service.query_belong_province(area_name=receipt_city)
+        return sales_address, receipt_city, receipt_province
 
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
     # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
@@ -268,9 +270,6 @@ def exec_task(sql, year):
             invo_code = str(record[6]) if record[6] else None  # 发票代码
             sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
-            if is_chinese(invo_code):
-                continue
-
             sales_address, receipt_city, receipt_province = operate_every_record(record)
 
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
@@ -342,15 +341,15 @@ def refresh_linshi_table():
 
 def main():
     """
-    一共有89913条记录，花费  时间
+
     """
 
-    # year = sys.argv[1]
-    year = '2021'
-
+    year = sys.argv[1]
+    # year = '2021'
     execute_02_data(year)
 
-    print('--- ok 2021---')
+    print('--- ok ---')
 
 
+# if __name__ == "__main__":
 main()

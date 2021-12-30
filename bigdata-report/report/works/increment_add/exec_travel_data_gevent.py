@@ -190,7 +190,6 @@ def operate_every_record(record):
             receipt_city = rst[1]
 
         # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
-
     else:
         sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                            sales_bank=sales_bank)  # 发票开票地(最小行政)
@@ -242,7 +241,7 @@ def exec_task(sql, year):
         result = []
 
         for idx, record in enumerate(records):
-            start_time1 = time.perf_counter()
+            #start_time1 = time.perf_counter()
 
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
             sales_name = str(record[1]) if record[1] else None  # 开票公司

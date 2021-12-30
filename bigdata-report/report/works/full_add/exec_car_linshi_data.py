@@ -20,7 +20,7 @@ select * from  02_logical_layer_007_h_lf_cw.finance_car_linshi_analysis
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_car_linshi_data.py &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_car_linshi_data.py &
 
 
 
@@ -35,6 +35,11 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
+
+
+def refresh_linshi_table():
+    sql = 'REFRESH 02_logical_layer_007_h_lf_cw.finance_car_linshi_analysis'
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 
 def init_file():
@@ -59,7 +64,7 @@ def check_car_linshi_data():
     where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null) 
         """.format(columns_str=columns_str)
 
-    #log.info(sql)
+    # log.info(sql)
     count_sql = 'select count(a.finance_car_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
@@ -129,7 +134,7 @@ def operate_every_record(record):
     sales_taxno = str(record[4])  # 纳税人识别号
 
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
-    #log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+    # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
     # log.info(type(rst))
 
     sales_address, receipt_city = None, None
@@ -139,27 +144,28 @@ def operate_every_record(record):
             receipt_city = rst[1]
         elif rst[1] is not None:
             sales_address = rst[1]
-            sales_address2 = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
+            sales_address2 = match_area.query_sales_address_new(sales_name=sales_name,
+                                                                sales_addressphone=sales_addressphone,
+                                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
             if sales_address2 is not None:
                 sales_address = sales_address2
 
             receipt_city = rst[1]
-            #receipt_city = sales_address
+            # receipt_city = sales_address
 
-        #log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
     else:
         sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                       sales_bank=sales_bank)  # 发票开票地(最小行政)
+                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
 
         if sales_address and '市' in sales_address:
             receipt_city = sales_address
             return sales_address, receipt_city
 
         receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                     sales_bank=sales_bank)  # 发票开票所在市
+                                                         sales_bank=sales_bank)  # 发票开票所在市
 
-        #log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
@@ -192,7 +198,7 @@ def exec_task(sql):
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))
             account_period = '无'
 
-            #log.info(f" {threading.current_thread().name} is running ")
+            # log.info(f" {threading.current_thread().name} is running ")
             record_str = f'{finance_car_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{account_period}'
             result.append(record_str)
 
@@ -222,6 +228,8 @@ def main():
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
+    refresh_linshi_table()
     print('--- ok ---')
 
 
