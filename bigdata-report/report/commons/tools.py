@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from report.commons.logging import get_logger
-from report.commons.connect_kudu2 import prod_execute_sql
 
 import uuid
-import time, os
+import time, os, re
 from datetime import datetime, timezone, timedelta
 import psutil
 from report.commons.settings import CONN_TYPE
+from report.commons.logging import get_logger
+from report.commons.connect_kudu2 import prod_execute_sql
 
 log = get_logger(__name__)
 
@@ -793,14 +793,27 @@ class MatchArea:
 
         return province
 
-def is_chinese(string):
+
+def is_chinese(input_str):
     """
     检查整个字符串是否包含中文
     :param string: 需要检查的字符串
     :return: bool
     """
-    for ch in string:
+    for ch in input_str:
         if u'\u4e00' <= ch <= u'\u9fff':
             return True
 
     return False
+
+
+def filter_numbers(input_str):
+    if input_str is None or len(input_str) == 0:
+        return None
+
+    rst = re.findall(r'\d+', input_str)
+
+    if rst and len(rst) > 0:
+        return rst[0]
+    else:
+        return None

@@ -89,10 +89,21 @@ def demo2():
     sql4 = """
     describe 01_datamart_layer_007_h_cw_df.temp_performance_bill
     """
+
+    sql4 = """
+    select * from 01_datamart_layer_007_h_cw_df.temp_performance_bill order by order_number asc
+    """
+
+    sql4 = """
+    select length(invo_code),count(*) from  01_datamart_layer_007_h_cw_df.finance_travel_bill
+group by length(invo_code)
+    """
+
     log.info(sql4)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
     for record in records:
         print(record)
+        #print()
 
 
 def exec_sql():
@@ -182,11 +193,11 @@ def process_finance_unusual():
 
 
 if __name__ == '__main__':
-    del_history_exception_data()
+    #del_history_exception_data()
     #process_finance_shell_daily()
     #process_finance_unusual()
     #demo1()
-    #demo2()
+    demo2()
     #exec_sql()
 
     print('--- ok , executed 22 ---')

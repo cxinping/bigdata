@@ -50,7 +50,7 @@ def init_file():
     os.mknod(dest_file)
 
 
-def check_car_linshi_data(query_date=query_date):
+def check_linshi_car_data(query_date=query_date):
     init_file()
 
     columns_ls = ['finance_car_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno']
@@ -124,6 +124,12 @@ def check_car_linshi_data(query_date=query_date):
     log.info(f'* 操作耗时 {consumed_time} sec')
     log.info(f'* 处理 {count_records} 条记录，操作共耗时 {consumed_time} sec')
     log.info('** 关闭线程池')
+
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+
+    # init_file()
+    print('--- ok ---')
 
 
 def operate_every_record(record):
@@ -223,13 +229,7 @@ def exec_task(sql):
 
 
 def main():
-    check_car_linshi_data()
-
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-
-    # init_file()
-    print('--- ok ---')
+    check_linshi_car_data()
 
 
 if __name__ == "__main__":

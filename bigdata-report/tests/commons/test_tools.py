@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.commons.tools import *
+import re
 
 
 def demo1():
@@ -90,9 +91,19 @@ def demo5():
     print(ret1, not ret1)
 
 
+def demo6():
+    str1 = ',今天111222223333#'
+    str2 = '，4444456666667777测试'
+    # totalNumbers = re.findall(r'\d+', str2)
+    # print(totalNumbers)
+
+    totalNumbers = filter_numbers(str1)
+    print(totalNumbers)
 
 
 if __name__ == '__main__':
     # demo2()
     # demo3()
-    demo5()
+    # demo5()
+    demo6()
+    pass

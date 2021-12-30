@@ -16,7 +16,6 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/run.py
 后台启动 report 项目
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/run.py &
 
-
 """
 
 

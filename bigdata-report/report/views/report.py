@@ -1269,7 +1269,7 @@ def temp_performance_bill_add():
 # http://10.5.138.11:8004/report/temp/performance/bill/update
 @report_bp.route('/temp/performance/bill/update', methods=['POST'])
 def temp_performance_bill_update():
-    log.info('----- temp_performance_bill_update add -----')
+    log.info('----- temp_performance_bill_update -----')
     performance_id = request.form.get('performance_id') if request.form.get('performance_id') else None
     order_number = request.form.get('order_number') if request.form.get('order_number') else None
     describe_num = request.form.get('describe_num') if request.form.get('describe_num') else ''
@@ -1366,15 +1366,18 @@ def temp_performance_bill_query():
 @report_bp.route('/temp/performance/bill/delete', methods=['POST'])
 def temp_performance_bill_delete():
     log.info('---- temp_performance_bill_delete ---- ')
-    performance_ids = request.form.getlist("performance_ids")
-    # print(performance_ids)
+    performance_ids = request.form.get('performance_ids') if request.form.get('performance_ids') else None
+    #print(performance_ids)
 
     if performance_ids is None or len(performance_ids) == 0:
-        data = {"result": "error", "details": "至少输入一个 performance_ids", "code": 500}
+        data = {"result": "error", "details": "输入的 performance_ids 不能为空 或者 没有传递值", "code": 500}
         response = jsonify(data)
         return response
 
     try:
+        performance_ids = str(performance_ids).split(',')
+        print(performance_ids)
+
         del_temp_performance_bill(performance_ids)
 
         data = {
@@ -1398,15 +1401,17 @@ def temp_performance_bill_delete():
 @report_bp.route('/temp/performance/bill/execute', methods=['POST'])
 def temp_performance_bill_execute():
     log.info('---- temp_performance_bill_execute ---- ')
-    performance_ids = request.form.getlist("performance_ids")
+    performance_ids = request.form.get('performance_ids') if request.form.get('performance_ids') else None
     #print(performance_ids)
 
     if performance_ids is None or len(performance_ids) == 0:
-        data = {"result": "error", "details": "至少输入一个 performance_ids", "code": 500}
+        data = {"result": "error", "details": "输入的 performance_ids 不能为空 或者 没有传递值", "code": 500}
         response = jsonify(data)
         return response
 
     try:
+        performance_ids = str(performance_ids).split(',')
+
         records = query_temp_performance_bill(performance_ids)
         #print(len(records), records)
 

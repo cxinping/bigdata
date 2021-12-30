@@ -120,8 +120,11 @@ def check_linshi_office_data(query_date=query_date):
     threadPool.shutdown(wait=True)
     consumed_time = round(time.perf_counter() - start_time)
     log.info(f'* 操作耗时 {consumed_time} sec')
-
     log.info('** 关闭线程池')
+
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+    print('--- 办公费临时表数据已经跑完数据了，ok ---')
 
 
 def operate_every_record(record):
@@ -226,10 +229,6 @@ def exec_task(sql):
 
 def main():
     check_linshi_office_data()
-
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-    print('--- 办公费临时表数据已经跑完数据了，ok ---')
 
 
 if __name__ == "__main__":

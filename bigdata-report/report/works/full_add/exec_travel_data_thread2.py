@@ -54,6 +54,8 @@ PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/wo
 
 """
 
+#CONN_TYPE = 'test'
+
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
@@ -93,13 +95,14 @@ def init_file(year_month):
 def execute_02_data(year_month):
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
+    condition1 = ' length(invo_code) > 4 '
 
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' 
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' AND {condition1}
        {test_limit_cond}
-    """.format(columns_str=columns_str, year_month=year_month, test_limit_cond=test_limit_cond).replace('\n',
+    """.format(columns_str=columns_str, year_month=year_month, condition1=condition1, test_limit_cond=test_limit_cond).replace('\n',
                                                                                                         '').replace(
         '\r', '').strip()
 
@@ -119,20 +122,20 @@ def execute_02_data(year_month):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' and {condition1} order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month,condition1=condition1)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
-                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}' and {condition1} order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                    columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month,condition1=condition1)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  {test_limit_cond} ".format(
-            columns_str=columns_str, test_limit_cond=test_limit_cond, year_month=year_month)
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}' and {condition1} {test_limit_cond} ".format(
+            columns_str=columns_str, test_limit_cond=test_limit_cond, year_month=year_month,condition1=condition1)
         select_sql_ls.append(tmp_sql)
         # print('*** tmp_sql => ', tmp_sql)
 
@@ -360,8 +363,8 @@ def main():
 
     """
 
-    year_month = sys.argv[1]
-    #year_month = '2021011'
+    #year_month = sys.argv[1]
+    year_month = '2021011'
     execute_02_data(year_month)
     print('--- ok ---')
 
