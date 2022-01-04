@@ -173,6 +173,35 @@ def pagination_temp_performance_bill_records():
     return count_records, sql, columns_ls
 
 
+def query_temp_receipt_address():
+    """
+    查询发票地址sql表
+    :param query_date:
+    :return:
+    """
+    try:
+        sql = 'SELECT receipt_sql,receipt_id FROM 01_datamart_layer_007_h_cw_df.temp_receipt_address ORDER BY receipt_id ASC '
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        return records
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
+def query_finance_unusual():
+    """
+    查询差旅费异常明细表
+    :return:
+    """
+    try:
+        sql = 'SELECT unusual_shell,isalgorithm,unusual_number FROM 01_datamart_layer_007_h_cw_df.finance_unusual ORDER BY unusual_number ASC '
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        return records
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
 class BaseProcess(metaclass=ABCMeta):
 
     def __init__(self):
@@ -188,7 +217,32 @@ class BaseProcess(metaclass=ABCMeta):
         5、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
         :return:
         """
-        pass
+        records = query_temp_receipt_address()
+
+        for record in records:
+            sql = record[0]
+            receipt_id = record[1]
+            try:
+                prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+            except Exception as e:
+                print(e)
+                log.error(f'* 执行第五步，序号为{receipt_id}的SQL报错')
+                raise RuntimeError(e)
+
+    def exec_step06(self):
+        """
+        执行第七步
+        6、稽查点sql将数据写到kudu落地表（脚本）
+        :return:
+        """
+        records = query_finance_unusual()
+        for record in records:
+            unusual_shell = record[0]
+            isalgorithm = record[1]
+            unusual_number = record[2]
+
+            print(unusual_number)
+
 
     def exec_step07(self):
         """
