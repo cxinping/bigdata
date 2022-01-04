@@ -361,6 +361,9 @@ class ProvinceService:
             invo_code_2_letter = invo_code[0:2]
             province = self.query_province_from_invoice_code(invo_code_2_letter)
 
+            if province is None :
+                province = self.query_belong_province(destin_name)
+
         return province
 
     def query_belong_province(self, area_name):

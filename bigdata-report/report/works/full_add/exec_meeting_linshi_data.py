@@ -29,6 +29,7 @@ cd /you_filed_algos/app
 
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_meeting_linshi_data.py &
 
+
 """
 
 log = get_logger(__name__)

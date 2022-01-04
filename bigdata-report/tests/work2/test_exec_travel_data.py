@@ -48,7 +48,7 @@ def test_execute_02_data(year):
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-    where  finance_travel_id in ("36e19b94-e91e-44e6-b22c-45a1afe550c4" )
+    where  finance_travel_id in ("7dd7c8a4-7352-49f7-909c-1a39716ed708" )
        {test_limit_cond}
     """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond)
     sql = sql.replace('\n', '').replace('\r', '').strip()
@@ -68,8 +68,4 @@ def test_execute_02_data(year):
 if __name__ == "__main__":
     year = '2021'
     test_execute_02_data(year)
-
-
-
-
 

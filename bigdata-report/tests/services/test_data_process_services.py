@@ -15,6 +15,13 @@ def demo2():
         print()
 
 
+def demo3():
+    full_process = FullAddProcess()
+    #full_process.exec_step05()
+    full_process.exec_step06()
+
+
 if __name__ == '__main__':
-    demo1()
-    #demo2()
+    # demo1()
+    # demo2()
+    demo3()
