@@ -100,7 +100,9 @@ def demo4():
     # print(rst, len(rst))
 
     # sales_taxno = '210104aaaaaaaaaaaaaa'
-    sales_taxno = '51370000MJD6217311'
+    #sales_taxno = '51370000MJD6217311'
+    #sales_taxno = '91460300681156704A'
+    sales_taxno = '91441900736169079R'
     print(len(sales_taxno), sales_taxno)
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
     print(rst)
@@ -120,11 +122,10 @@ def demo5():
 
 if __name__ == "__main__":
     # demo1()
-
     # demo2()
-
     # demo3()
 
     demo4()
-
     #demo5()
+
+    print('--- ok 111 ---')

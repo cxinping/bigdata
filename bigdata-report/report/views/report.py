@@ -1247,7 +1247,8 @@ def temp_performance_bill_add():
     performance_sql = transfer_content(performance_sql)
 
     try:
-        insert_temp_performance_bill(order_number=order_number, describe_num=describe_num, sign_status=sign_status, performance_sql=performance_sql)
+        insert_temp_performance_bill(order_number=order_number, describe_num=describe_num, sign_status=sign_status,
+                                     performance_sql=performance_sql)
         data = {
             'result': 'ok',
             'code': 200,
@@ -1300,7 +1301,8 @@ def temp_performance_bill_update():
     performance_sql = transfer_content(performance_sql)
 
     try:
-        update_temp_performance_bill(performance_id=performance_id, order_number=order_number,describe_num=describe_num, sign_status=sign_status,
+        update_temp_performance_bill(performance_id=performance_id, order_number=order_number,
+                                     describe_num=describe_num, sign_status=sign_status,
                                      performance_sql=performance_sql)
         data = {
             'result': 'ok',
@@ -1367,7 +1369,7 @@ def temp_performance_bill_query():
 def temp_performance_bill_delete():
     log.info('---- temp_performance_bill_delete ---- ')
     performance_ids = request.form.get('performance_ids') if request.form.get('performance_ids') else None
-    #print(performance_ids)
+    # print(performance_ids)
 
     if performance_ids is None or len(performance_ids) == 0:
         data = {"result": "error", "details": "输入的 performance_ids 不能为空 或者 没有传递值", "code": 500}
@@ -1402,7 +1404,7 @@ def temp_performance_bill_delete():
 def temp_performance_bill_execute():
     log.info('---- temp_performance_bill_execute ---- ')
     performance_ids = request.form.get('performance_ids') if request.form.get('performance_ids') else None
-    #print(performance_ids)
+    # print(performance_ids)
 
     if performance_ids is None or len(performance_ids) == 0:
         data = {"result": "error", "details": "输入的 performance_ids 不能为空 或者 没有传递值", "code": 500}
@@ -1413,11 +1415,11 @@ def temp_performance_bill_execute():
         performance_ids = str(performance_ids).split(',')
 
         records = query_temp_performance_bill(performance_ids)
-        #print(len(records), records)
+        # print(len(records), records)
 
         for idx, record in enumerate(records):
             performance_sql = record[0]
-            #print(performance_sql)
+            # print(performance_sql)
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=performance_sql)
 
         data = {
@@ -1437,4 +1439,30 @@ def temp_performance_bill_execute():
         }
         return mk_utf8resp(result)
 
+
 ############  【流程表相关】  ############
+
+# http://10.5.138.11:8004/report/finance_data/data/process/query
+@report_bp.route('/finance_data/data/process/query', methods=['POST'])
+def finance_data_process_query():
+    log.info('---- finance_data_process_query ---- ')
+
+    query_date = request.form.get('query_date') if request.form.get('query_date') else None
+
+    if query_date is None or len(query_date) == 0:
+        data = {"result": "error", "details": "输入的 query_date 不能为空 或者 没有传递值", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+
+
+        return '1111'
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)

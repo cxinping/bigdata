@@ -68,10 +68,10 @@ def demo2():
     # sql2 = 'delete from 01_datamart_layer_007_h_cw_df.finance_shell_daily'
     # sql3 = "delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets where unusual_id='04' "
 
-    sql4 = """
-    delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
-    where  unusual_id in ('49')
-    """
+    # sql4 = """
+    # delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets
+    # where  unusual_id in ('49')
+    # """
 
     # print(sql4)
     # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql4)
@@ -81,29 +81,36 @@ def demo2():
     # AND (plane_beg_date is not null AND plane_beg_date !='') order by account_period desc limit 10
     # """
 
-    sql4 = """
-    select account_period
-    from 01_datamart_layer_007_h_cw_df.finance_car_bill where account_period >= '2021010' limit 10
-    """
+#     sql4 = """
+#     select account_period
+#     from 01_datamart_layer_007_h_cw_df.finance_car_bill where account_period >= '2021010' limit 10
+#     """
+#
+#     sql4 = """
+#     describe 01_datamart_layer_007_h_cw_df.temp_performance_bill
+#     """
+#
+#     sql4 = """
+#     select * from 01_datamart_layer_007_h_cw_df.temp_performance_bill order by order_number asc
+#     """
+#
+#     sql4 = """
+#     select length(invo_code),count(*) from  01_datamart_layer_007_h_cw_df.finance_travel_bill
+# group by length(invo_code)
+#     """
 
-    sql4 = """
-    describe 01_datamart_layer_007_h_cw_df.temp_performance_bill
-    """
+    # sql4 = """
+    #     select * from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_taxno is NULL limit 5
+    #     """
 
-    sql4 = """
-    select * from 01_datamart_layer_007_h_cw_df.temp_performance_bill order by order_number asc
-    """
+    sql4 = f'SELECT * FROM 01_datamart_layer_007_h_cw_df.finance_data_process'
 
-    sql4 = """
-    select length(invo_code),count(*) from  01_datamart_layer_007_h_cw_df.finance_travel_bill
-group by length(invo_code)
-    """
-
+    #sql4 = 'select count(*) from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis'
     log.info(sql4)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql4)
     for record in records:
         print(record)
-        #print()
+        print()
 
 
 def exec_sql():
@@ -199,7 +206,6 @@ if __name__ == '__main__':
     #demo1()
     demo2()
     #exec_sql()
-
-    print('--- ok , executed 22 ---')
+    print('--- ok , executed 3 ---')
 
 

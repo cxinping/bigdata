@@ -109,6 +109,21 @@ def query_temp_performance_bill(performance_ids):
         raise RuntimeError(e)
 
 
+def query_finance_data_process(query_date):
+    """
+    查询流程表中的数据
+    :param query_date:
+    :return:
+    """
+    try:
+        sql = f'SELECT performance_sql,order_number FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE daily_start_date > "{query_date}" AND  daily_end_date < "{query_date}" '
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        return records
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
 def insert_finance_data_process(process_id, process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                 orgin_source, destin_source, importdate):
     """
@@ -227,9 +242,9 @@ class IncrementAddProcess(BaseProcess):
         :return:
         """
         check_linshi_travel_data()
-        #check_linshi_office_data()
-        #check_linshi_meeting_data()
-        #check_linshi_car_data()
+        # check_linshi_office_data()
+        # check_linshi_meeting_data()
+        # check_linshi_car_data()
 
     def exec_step06(self):
         """
@@ -238,7 +253,3 @@ class IncrementAddProcess(BaseProcess):
         :return:
         """
         pass
-
-
-
-

@@ -5,7 +5,7 @@
 @author: WangShuo
 """
 
-from report.commons.connect_kudu2 import prod_execute_sql, dis_connection
+from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.settings import CONN_TYPE
 from string import punctuation
