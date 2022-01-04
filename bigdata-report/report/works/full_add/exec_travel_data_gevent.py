@@ -59,8 +59,7 @@ match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 
-
-test_limit_cond = ' '  # 'LIMIT 10000'
+test_limit_cond = ' LIMIT 50000'  # 'LIMIT 10000'
 
 
 def get_dest_file(year):
@@ -93,10 +92,8 @@ def execute_02_data(year):
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
         where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and left(account_period,4) ='{year}'  
        {test_limit_cond}
-    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond).replace('\n',
-                                                                                            '').replace(
-        '\r',
-        '').strip()
+    """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond)
+    sql = sql.replace('\n', '').replace('\r', '').strip()
 
     log.info(sql)
     count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
@@ -163,7 +160,7 @@ def execute_02_data(year):
         log.info(f'* 查询日期 => {year}， 没有查询到任何数据')
 
 
-def operate_every_record(record):
+def operate_every_record_old(record):
     destin_name = str(record[0]) if record[0] else None  # 行程目的地
     sales_name = str(record[1]) if record[1] else None  # 开票公司
     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
@@ -244,6 +241,119 @@ def operate_every_record(record):
     return sales_address, receipt_city, receipt_province
 
 
+def operate_every_record(record):
+    destin_name = str(record[0]) if record[0] else None  # 行程目的地
+    sales_name = str(record[1]) if record[1] else None  # 开票公司
+    sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
+    sales_bank = str(record[3]) if record[3] else None  # 发票开户行
+    finance_travel_id = str(record[4]) if record[4] else None
+    origin_name = str(record[5]) if record[5] else None  # 行程出发地
+    invo_code = str(record[6]) if record[6] else None  # 发票代码
+    sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
+
+    sales_address, receipt_city = None, None  # 发票所在地的最小行政单位，发票所在地所在的市
+    receipt_province = None  # receipt_province 发票开票所在省
+
+    if (sales_taxno is None or len(sales_taxno) == 0) and (invo_code is None or len(invo_code) == 0):
+        sales_address = destin_name
+        receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
+                                                         sales_bank=None)
+        receipt_province = province_service.query_belong_province(area_name=receipt_city)
+        return sales_address, receipt_city, receipt_province
+    elif sales_taxno and len(sales_taxno) in [15, 20, 18]:
+        rst = finance_service.query_areas(sales_taxno=sales_taxno)
+        # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+        # log.info(type(rst))
+
+        # 情况1，没有从纳税人识别号获得，开票所在的 省，市，区/县
+        if rst[0] is None and rst[1] is None and rst[1] is None:
+            sales_address = match_area.query_sales_address_new(sales_name=sales_name,
+                                                                sales_addressphone=sales_addressphone,
+                                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
+            if sales_address is None:
+                sales_address = destin_name
+
+            receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
+                                                             sales_bank=None)
+            if sales_address is not None:
+                receipt_province = province_service.query_belong_province(area_name=sales_address)
+                if receipt_province is None:
+                    receipt_province = province_service.query_belong_province(area_name=receipt_city)
+            else:
+                receipt_province = province_service.query_belong_province(area_name=receipt_city)
+
+        # 情况2 开票所在省不为空
+        if rst[0] is not None:
+            receipt_province = rst[0]
+            sales_address = match_area.query_sales_address_new(sales_name=sales_name,
+                                                               sales_addressphone=sales_addressphone,
+                                                               sales_bank=sales_bank)  # 发票开票地(最小行政)
+            receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
+                                                             sales_bank=None)
+
+        # 情况3 开票所在的 市 或 区/县，有一个不为空
+        if rst[1] is not None or rst[2] is not None:
+            receipt_province = rst[0]
+
+            if rst[2] is not None:
+                sales_address = rst[2]
+                receipt_city = rst[1]
+            elif rst[1] is not None:
+                sales_address = rst[1]
+                sales_address2 = match_area.query_sales_address_new(sales_name=sales_name,
+                                                                    sales_addressphone=sales_addressphone,
+                                                                    sales_bank=sales_bank)  # 发票开票地(最小行政)
+                if sales_address2 is not None:
+                    sales_address = sales_address2
+
+                if sales_address is None:
+                    sales_address = destin_name
+
+                receipt_city = rst[1]
+
+            if receipt_province is None:
+                if sales_address is not None:
+                    receipt_province = province_service.query_belong_province(area_name=sales_address)
+                    if receipt_province is None:
+                        receipt_province = province_service.query_belong_province(area_name=receipt_city)
+                else:
+                    receipt_province = province_service.query_belong_province(area_name=receipt_city)
+
+            # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        return sales_address, receipt_city, receipt_province
+    # else:
+    #     sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+    #                                                        sales_bank=sales_bank)  # 发票开票地(最小行政)
+    #     if sales_address is None:
+    #         sales_address = destin_name
+    #
+    #     if sales_address and '市' in sales_address:
+    #         receipt_city = sales_address
+    #         receipt_province = province_service.query_belong_province(area_name=receipt_city)
+    #
+    #         return sales_address, receipt_city, receipt_province
+    #
+    #     receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+    #                                                      sales_bank=sales_bank)  # 发票开票所在市
+    #
+    #     """
+    #     1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市'
+    #     2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市'
+    #
+    #        如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位
+    #     """
+    #
+    #     if receipt_city is None:
+    #         receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
+    #                                                          sales_bank=None)
+    #
+    #     receipt_province = province_service.query_belong_province(area_name=receipt_city)
+    #     # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+    #     return sales_address, receipt_city, receipt_province
+
+    return None, None, None
+
+
 def exec_task(sql, year):
     dest_file = get_dest_file(year)
 
@@ -274,9 +384,10 @@ def exec_task(sql, year):
 
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
-            # 优化方法
-            destin_province = province_service.query_destin_province(invo_code=invo_code,
-                                                                     destin_name=destin_name)  # 行程目的地(省)
+            # 根据行程目的地和发票代码找到行程所在的省
+            # destin_province = province_service.query_destin_province(invo_code=invo_code,
+            #                                                          destin_name=destin_name)  # 行程目的地(省)
+            destin_province = province_service.query_belong_province(area_name=destin_name) # 行程目的地(省)
 
             consumed_time2 = round(time.perf_counter() - start_time1)
             if consumed_time2 >= 2:
@@ -345,8 +456,8 @@ def main():
 
     """
 
-    year = sys.argv[1]
-    # year = '2021'
+    # year = sys.argv[1]
+    year = '2021'
     execute_02_data(year)
 
     print('--- ok ---')

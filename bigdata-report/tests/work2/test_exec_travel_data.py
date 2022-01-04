@@ -8,17 +8,12 @@ from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 from report.commons.tools import MatchArea, process_invalid_content, is_chinese
 from report.services.common_services import ProvinceService, FinanceAdministrationService
-import threading
-from report.commons.settings import CONN_TYPE
+
 from report.works.full_add.exec_travel_data_gevent import *
 
 log = get_logger(__name__)
 
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
-
-match_area = MatchArea()
-province_service = ProvinceService()
-finance_service = FinanceAdministrationService()
 
 test_limit_cond = ' '  # 'LIMIT 10000'
 
@@ -45,17 +40,20 @@ def init_file(year):
 
 
 def test_execute_02_data(year):
+    init_file(year)
+
     columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
                   'invo_code', 'sales_taxno']
 
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-    where  finance_travel_id in ("" )
+    where  finance_travel_id in ("36e19b94-e91e-44e6-b22c-45a1afe550c4" )
        {test_limit_cond}
     """.format(columns_str=columns_str, year=year, test_limit_cond=test_limit_cond)
     sql = sql.replace('\n', '').replace('\r', '').strip()
 
+    print('====================================================================')
     log.info(sql)
 
     exec_task(sql, year)
