@@ -103,7 +103,9 @@ def demo2():
     #     select * from 01_datamart_layer_007_h_cw_df.finance_travel_bill where sales_taxno is NULL limit 5
     #     """
 
-    sql4 = f'SELECT * FROM 01_datamart_layer_007_h_cw_df.finance_data_process'
+    #sql4 = f'SELECT * FROM 01_datamart_layer_007_h_cw_df.finance_data_process'
+
+    sql4 = 'select * from 01_datamart_layer_007_h_cw_df.finance_data_process'
 
     #sql4 = 'select count(*) from 02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis'
     log.info(sql4)

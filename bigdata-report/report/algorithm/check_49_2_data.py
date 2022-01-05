@@ -181,12 +181,12 @@ def exec_sql(finance_id_ls, mean_val):
 (finance_id,bill_id,unusual_id,company_code,account_period,finance_number,profit_center,cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,
 company_name,check_amount,jzpz,target_classify,exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,apply_id,base_apply_date,tb_times,receipt_city,
 commodityname,iscompany,operation_time,doc_date,operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,invo_code,
-amounttax,totaltax,approve_name,mean,importdate)
+amounttax,taxtp_name,approve_name,mean,importdate)
 select 
 finance_offical_id,bill_id,'49',company_code,account_period,finance_number,profit_center,cart_head,bill_code,bill_beg_date,bill_end_date,apply_emp_name,
 company_name,check_amount,jzpz,'办公费',exp_type_name,appr_org_sfname,sales_address,jzpz_tax,billingdate,apply_id,base_apply_date,tb_times,receipt_city,
 commodityname,isCompany,operation_time,doc_date,operation_emp_name,invoice_type_name,taxt_amount,original_tax_amount,js_times,invo_number,invo_code,
-amounttax,totaltax,approve_name,{mean_val},importdate
+amounttax,taxtp_name,approve_name,{mean_val},importdate
 from 01_datamart_layer_007_h_cw_df.finance_official_bill
         WHERE {condition_sql}
             """.format(condition_sql=condition_sql, mean_val=mean_val)
