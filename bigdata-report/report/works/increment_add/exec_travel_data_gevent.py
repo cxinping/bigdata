@@ -77,7 +77,7 @@ def check_linshi_travel_data(query_date=query_date):
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) AND account_period >= '{query_date}'  
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) AND pstng_date  >= '{query_date}'  
         {test_limit_cond}
     """.format(columns_str=columns_str, query_date=query_date,
                test_limit_cond=test_limit_cond).replace('\n', '').replace('\r',
@@ -89,7 +89,7 @@ def check_linshi_travel_data(query_date=query_date):
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
-    max_size = 1 * 10001
+    max_size = 10 * 10000
     limit_size = 1 * 10000
     select_sql_ls = []
 
@@ -99,19 +99,19 @@ def check_linshi_travel_data(query_date=query_date):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) AND account_period >= '{query_date}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) AND pstng_date  >= '{query_date}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, query_date=query_date)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND account_period >= '{query_date}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND pstng_date  >= '{query_date}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, query_date=query_date)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND account_period >= '{query_date}'  {test_limit_cond} ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) AND pstng_date  >= '{query_date}'  {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond, query_date=query_date)
         select_sql_ls.append(tmp_sql)
 
@@ -160,68 +160,83 @@ def operate_every_record(record):
     invo_code = str(record[6]) if record[6] else None  # 发票代码
     sales_taxno = str(record[7]) if record[7] else None  # 纳税人识别号
 
-    rst = finance_service.query_areas(sales_taxno=sales_taxno)
-    # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
-    # log.info(type(rst))
-
-    sales_address = None  # 发票开票地(最小行政)
-    receipt_city = None  # 发票开票所在市
+    sales_address, receipt_city = None, None  # 发票所在地的最小行政单位，发票所在地所在的市
     receipt_province = None  # receipt_province 发票开票所在省
 
-    if rst[1] is not None or rst[2] is not None:
-        receipt_province = rst[0]
+    if (sales_taxno is None or len(sales_taxno) == 0) and (invo_code is None or len(invo_code) == 0):
+        sales_address = destin_name
+        receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
+                                                         sales_bank=None)
+        receipt_province = province_service.query_belong_province(area_name=receipt_city)
+        return sales_address, receipt_city, receipt_province
+    elif sales_taxno and len(sales_taxno) in [15, 20, 18]:
+        rst = finance_service.query_areas(sales_taxno=sales_taxno)
+        # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
+        # log.info(type(rst))
 
-        if rst[2] is not None:
-            sales_address = rst[2]
-            receipt_city = rst[1]
-        elif rst[1] is not None:
-            sales_address = rst[1]
-            sales_address2 = match_area.query_sales_address_new(sales_name=sales_name,
+        # 情况1，没有从纳税人识别号获得，开票所在的 省，市，区/县
+        if rst[0] is None and rst[1] is None and rst[1] is None:
+            sales_address = match_area.query_sales_address_new(sales_name=sales_name,
                                                                 sales_addressphone=sales_addressphone,
                                                                 sales_bank=sales_bank)  # 发票开票地(最小行政)
-            if sales_address2 is not None:
-                sales_address = sales_address2
+            # if sales_address is None:
+            #     sales_address = destin_name
 
-            if sales_address is None:
-                sales_address = destin_name
-
-            receipt_city = rst[1]
-
-        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
-    else:
-        sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                           sales_bank=sales_bank)  # 发票开票地(最小行政)
-        if sales_address is None:
-            sales_address = destin_name
-
-        if sales_address and '市' in sales_address:
-            receipt_city = sales_address
-
-            if receipt_province is None:
+            receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                             sales_bank=sales_bank)
+            if sales_address is not None:
+                receipt_province = province_service.query_belong_province(area_name=sales_address)
+                if receipt_province is None:
+                    receipt_province = province_service.query_belong_province(area_name=receipt_city)
+            else:
                 receipt_province = province_service.query_belong_province(area_name=receipt_city)
 
-            return sales_address, receipt_city, receipt_province
+        # 情况2 开票所在省不为空
+        if rst[0] is not None:
+            receipt_province = rst[0]
+            sales_address = match_area.query_sales_address_new(sales_name=sales_name,
+                                                               sales_addressphone=sales_addressphone,
+                                                               sales_bank=sales_bank)  # 发票开票地(最小行政)
+            # if sales_address is None:
+            #     sales_address = destin_name
 
-        receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
-                                                         sales_bank=sales_bank)  # 发票开票所在市
+            receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+                                                             sales_bank=sales_bank)
+            # if receipt_city is None:
+            #     receipt_city = sales_address
 
-        """
-        1，优先从 开票公司，开票地址及电话和发票开户行 求得sales_address发票开票地(最小行政) 找到'开票地所在的市' 
-        2，如果没有找到开票所在的市，就从'目的地'找到'开票所在的市' 
-        
-           如果没有找到从开票所在地最小的行政单位，找到开票所在地的市,会出现问题，比如多个市下可能会有相同的最小行政单位  
-        """
 
-        if receipt_city is None:
-            receipt_city = match_area.query_receipt_city_new(sales_name=destin_name, sales_addressphone=None,
-                                                             sales_bank=None)
+        # 情况3 开票所在的 市 或 区/县，有一个不为空
+        if rst[1] is not None or rst[2] is not None:
+            receipt_province = rst[0]
 
-        if receipt_province is None:
-            receipt_province = province_service.query_belong_province(area_name=receipt_city)
+            if rst[2] is not None:
+                sales_address = rst[2]
+                receipt_city = rst[1]
+            elif rst[1] is not None:
+                sales_address = rst[1]
+                sales_address2 = match_area.query_sales_address_new(sales_name=sales_name,
+                                                                    sales_addressphone=sales_addressphone,
+                                                                    sales_bank=sales_bank)  # 发票开票地(最小行政)
+                if sales_address2 is not None:
+                    sales_address = sales_address2
 
-        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+                # if sales_address is None:
+                #     sales_address = destin_name
 
-    return sales_address, receipt_city, receipt_province
+                receipt_city = rst[1]
+
+            if receipt_province is None:
+                if sales_address is not None:
+                    receipt_province = province_service.query_belong_province(area_name=sales_address)
+                    if receipt_province is None:
+                        receipt_province = province_service.query_belong_province(area_name=receipt_city)
+                else:
+                    receipt_province = province_service.query_belong_province(area_name=receipt_city)
+
+            # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        return sales_address, receipt_city, receipt_province
+    return None, None, None
 
 
 def exec_task(sql, year):
@@ -239,7 +254,7 @@ def exec_task(sql, year):
         result = []
 
         for idx, record in enumerate(records):
-            #start_time1 = time.perf_counter()
+            start_time1 = time.perf_counter()
 
             destin_name = str(record[0]) if record[0] else None  # 行程目的地
             sales_name = str(record[1]) if record[1] else None  # 开票公司
@@ -254,11 +269,13 @@ def exec_task(sql, year):
 
             origin_province = province_service.query_belong_province(area_name=origin_name)  # 行程出发地(省)
 
-            invo_code = filter_numbers(invo_code)
+            # 根据行程目的地和发票代码找到行程所在的省
+            # destin_province = province_service.query_destin_province(invo_code=invo_code,
+            #                                                          destin_name=destin_name)  # 行程目的地(省)
+            destin_province = province_service.query_belong_province(area_name=destin_name) # 行程目的地(省)
 
-            # 优化方法
-            destin_province = province_service.query_destin_province(invo_code=invo_code,
-                                                                     destin_name=destin_name)  # 行程目的地(省)
+            # origin_province = None
+            # destin_province = None
 
             origin_name = process_invalid_content(origin_name)  # 行程出发地(市)
             sales_name = process_invalid_content(sales_name)  # 开票公司
@@ -275,7 +292,7 @@ def exec_task(sql, year):
             sales_taxno = process_invalid_content(sales_taxno)
             account_period = year
 
-            # consumed_time1 = (time.perf_counter() - start_time1)
+            consumed_time1 = (time.perf_counter() - start_time1)
             # log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
             record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_province}\u0001{receipt_city}\u0001{account_period}'
@@ -296,6 +313,7 @@ def exec_task(sql, year):
                     file.write(item + "\n")
 
         del result
+
 
 
 def refresh_linshi_table():

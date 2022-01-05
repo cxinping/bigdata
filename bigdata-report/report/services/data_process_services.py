@@ -433,9 +433,9 @@ class FullAddProcess(BaseProcess):
 
         # self.exec_step05()
 
-        self.exec_step06()
+        #self.exec_step06()
 
-        # self.exec_step07()
+        self.exec_step07()
 
         #self.exec_step08()
 

@@ -27,7 +27,7 @@ from report.services.common_services import (insert_finance_shell_daily, update_
                                              operate_finance_category_sign, clean_finance_category_sign,
                                              query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
-from report.services.temp_api_bill_services import exec_temp_api_bill_sql
+from report.services.temp_api_bill_services import (exec_temp_api_bill_sql, insert_temp_api_bill, update_temp_api_bill, delete_temp_api_bill, pagination_temp_api_bill_records)
 from report.commons.db_helper import Pagination
 from report.commons.runengine import (execute_task, execute_py_shell, execute_kudu_sql)
 from report.services.travel_expense_service import get_travel_keyword
@@ -628,7 +628,7 @@ def finance_unusual_delete():
         return response
 
 
-executor = ThreadPoolExecutor(50)
+executor = ThreadPoolExecutor(100)
 
 
 # http://10.5.138.11:8004/report/finance_unusual/execute
@@ -1178,11 +1178,12 @@ def query_finance_shell_daily():
 
         return mk_utf8resp(result)
 
+############  【临时表相关】  ############
 
-# http://10.5.138.11:8004/report/temp/api
-@report_bp.route('/temp/api', methods=['POST', 'GET'])
-def exec_temp_api():
-    log.info('---- exec_temp_api ----')
+# http://10.5.138.11:8004/report/temp/api/execute
+@report_bp.route('/temp/api/execute', methods=['POST', 'GET'])
+def temp_api_execute():
+    log.info('---- temp_api_execute ----')
     target_classify = str(request.form.get('target_classify')) if request.form.get('target_classify') else None
     log.info(target_classify)
 
@@ -1207,6 +1208,175 @@ def exec_temp_api():
         result = {
             'result': 'error',
             'details': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+
+# http://10.5.138.11:8004/report/temp/api/add
+@report_bp.route('/temp/api/add', methods=['POST' ])
+def temp_api_add():
+    log.info('---- temp_api_add ----')
+    order_number = request.form.get('order_number') if request.form.get('order_number') else None
+    target_classify = request.form.get('target_classify') if request.form.get('target_classify') else None
+    api_sql = request.form.get('api_sql') if request.form.get('api_sql') else None
+
+    if order_number is None:
+        data = {"result": "error", "details": "输入的 order_number 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if target_classify is None:
+        data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if api_sql is None:
+        data = {"result": "error", "details": "输入的 api_sql 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    api_sql = transfer_content(api_sql)
+
+    try:
+        insert_temp_api_bill(order_number=order_number, target_classify=target_classify, api_sql=api_sql)
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功添加一条"临时表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
+
+# http://10.5.138.11:8004/report/temp/api/update
+@report_bp.route('/temp/api/update', methods=['POST' ])
+def temp_api_update():
+    log.info('---- temp_api_update ----')
+    tem_api_id = request.form.get('tem_api_id') if request.form.get('tem_api_id') else None
+    order_number = request.form.get('order_number') if request.form.get('order_number') else None
+    target_classify = request.form.get('target_classify') if request.form.get('target_classify') else None
+    api_sql = request.form.get('api_sql') if request.form.get('api_sql') else None
+
+    if tem_api_id is None:
+        data = {"result": "error", "details": "输入的 tem_api_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if order_number is None:
+        data = {"result": "error", "details": "输入的 order_number 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if target_classify is None:
+        data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if api_sql is None:
+        data = {"result": "error", "details": "输入的 api_sql 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    api_sql = transfer_content(api_sql)
+
+    try:
+        update_temp_api_bill(tem_api_id=tem_api_id, order_number=order_number, target_classify=target_classify, api_sql=api_sql)
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功修改一条"临时表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
+
+# http://10.5.138.11:8004/report/temp/api/query
+@report_bp.route('/temp/api/query', methods=['POST' ])
+def temp_api_query():
+    log.info('---- temp_api_query ----')
+    current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+    page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+
+    log.info(f'current_page={current_page},page_size={page_size}')
+
+    if current_page is None:
+        data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if page_size is None:
+        data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        count_records, sql, columns_ls = pagination_temp_api_bill_records()
+        page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
+        records = page_obj.exec_sql(sql, columns_ls)
+
+        result = {
+            'status': 'ok',
+            'current_page': current_page,
+            'total': count_records,
+            'data': records,
+            'code': 200
+        }
+        return mk_utf8resp(result)
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+# http://10.5.138.11:8004/report/temp/api/delete
+@report_bp.route('/temp/api/delete', methods=['POST' ])
+def temp_api_delete():
+    log.info('---- temp_api_delete ----')
+    tem_api_ids = request.form.get('tem_api_ids') if request.form.get('tem_api_ids') else None
+
+    if tem_api_ids is None or len(tem_api_ids) == 0:
+        data = {"result": "error", "details": "输入的 tem_api_ids 不能为空 或者 没有传递值", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        tem_api_ids = str(tem_api_ids).split(',')
+        #print(tem_api_ids)
+
+        delete_temp_api_bill(tem_api_ids)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': f'成功删除{len(tem_api_ids)}条"临时表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
             'code': 500
         }
         return mk_utf8resp(result)

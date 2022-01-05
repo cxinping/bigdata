@@ -65,7 +65,7 @@ def check_linshi_meeting_data(query_date=query_date):
     sql = """
         select {columns_str}
     from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-    where  !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) AND account_period >= '{query_date}'
+    where  !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) AND pstng_date >= '{query_date}'
         """.format(columns_str=columns_str, query_date=query_date)
 
     # log.info(sql)
@@ -88,7 +88,7 @@ def check_linshi_meeting_data(query_date=query_date):
                 tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) AND account_period >= '{query_date}'
+            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) AND pstng_date >= '{query_date}'
                 order by finance_meeting_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size,
                                query_date=query_date)
@@ -99,7 +99,7 @@ def check_linshi_meeting_data(query_date=query_date):
                 tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null ) AND account_period >= '{query_date}'
+            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null ) AND pstng_date >= '{query_date}'
                 order by finance_meeting_id limit {limit_size} offset {offset_size}
                     """.format(columns_str=columns_str, limit_size=limit_size, offset_size=offset_size,
                                query_date=query_date)
@@ -111,7 +111,7 @@ def check_linshi_meeting_data(query_date=query_date):
         tmp_sql = """
             select {columns_str}
             from 01_datamart_layer_007_h_cw_df.finance_meeting_bill 
-            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) AND account_period >= '{query_date}'
+            where !(sales_name is null and sales_addressphone is null and sales_bank is null and sales_taxno is null and meet_addr is null) AND pstng_date >= '{query_date}'
             """.format(columns_str=columns_str, query_date=query_date)
 
         select_sql_ls.append(tmp_sql)
