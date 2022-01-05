@@ -9,10 +9,10 @@ from report.commons.tools import list_of_groups
 from report.commons.runengine import execute_kudu_sql, execute_py_shell
 from report.commons.tools import get_current_time
 
-# from report.works.increment_add.exec_travel_data_gevent import check_linshi_travel_data
-# from report.works.increment_add.exec_offical_linshi_data import check_linshi_office_data
-# from report.works.increment_add.exec_meeting_linshi_data import check_linshi_meeting_data
-# from report.works.increment_add.exec_car_linshi_data import check_linshi_car_data
+from report.works.increment_add.exec_travel_data_gevent import check_linshi_travel_data
+from report.works.increment_add.exec_offical_linshi_data import check_linshi_office_data
+from report.works.increment_add.exec_meeting_linshi_data import check_linshi_meeting_data
+from report.works.increment_add.exec_car_linshi_data import check_linshi_car_data
 
 log = get_logger(__name__)
 
@@ -29,7 +29,7 @@ def insert_temp_performance_bill(order_number, describe_num, sign_status, perfor
         sql = f"""
         insert into 01_datamart_layer_007_h_cw_df.temp_performance_bill(performance_id, order_number, describe_num, sign_status, performance_sql) 
         values("{performance_id}", "{order_number}", "{describe_num}","{sign_status}", "{performance_sql}" )
-        """.replace('\n', '').replace('\r', '').strip()
+        """#.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return performance_id
@@ -42,7 +42,7 @@ def update_temp_performance_bill(performance_id, order_number, describe_num, sig
     try:
         sql = f"""
         UPDATE 01_datamart_layer_007_h_cw_df.temp_performance_bill SET order_number="{order_number}", describe_num="{describe_num}",sign_status="{sign_status}",performance_sql="{performance_sql}" WHERE performance_id="{performance_id}"
-        """.replace('\n', '').replace('\r', '').strip()
+        """#.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return performance_id
@@ -100,7 +100,7 @@ def query_temp_performance_bill(performance_ids):
                     condition_sql = condition_sql + ' OR ' + temp
 
             sql = sql + condition_sql
-            # log.info(sql)
+            log.info(sql)
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
             return records
         else:
@@ -211,9 +211,9 @@ class BaseProcess(metaclass=ABCMeta):
     def __init__(self):
         pass
 
-    # @abstractmethod
-    # def step001(self, data_date):
-    #     pass
+    @abstractmethod
+    def exec_steps(self, data_date):
+        pass
 
     def exec_step05(self):
         """
@@ -269,8 +269,8 @@ class BaseProcess(metaclass=ABCMeta):
             isalgorithm = str(record[1])
             unusual_id = str(record[2])
 
-            if unusual_id != '49':
-                continue
+            # if unusual_id != '49':
+            #     continue
 
             try:
                 if isalgorithm == '1':
@@ -284,8 +284,8 @@ class BaseProcess(metaclass=ABCMeta):
             except Exception as e:
                 daily_source = 'SQL' if isalgorithm == '1' else 'Python Shell'
                 log.error(f'* 执行第6步，unusual_id为{unusual_id}的{daily_source}报错')
-                raise RuntimeError(e)
-                #print(e)
+                # raise RuntimeError(e)
+                print(e)
 
     def exec_step07(self):
         """
@@ -322,33 +322,54 @@ class BaseProcess(metaclass=ABCMeta):
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
 
-
-
     def exec_step08(self):
         """
         执行第八步：
         8、绩效接口API（脚本）
         :return:
         """
-
+        daily_start_date = get_current_time()
         # 清空落地表数据
         sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_performance_api'
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+        log.info('* 第8步，清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
+        try:
+            records = query_temp_performance_bill(None)
 
-        records = query_temp_performance_bill(None)
+            for record in records:
+                sql = str(record[0])
+                order_number = str(record[1])
 
-        for record in records:
-            sql = str(record[0])
-            order_number = str(record[1])
-            log.info(f'* 开始执行第8步，序号为{order_number}的SQL')
-            # print(sql)
-            # print()
-            try:
+                if order_number in ['05', '06']:
+                    continue
+
                 prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-            except Exception as e:
-                log.error(f'* 执行第8步，序号为{order_number}的SQL报错')
-                print(e)
-                raise RuntimeError(e)
+                log.info(f'* 第8步，成功执行序号为 {order_number} 的SQL')
+
+            process_status = 'sucess'
+            daily_end_date = get_current_time()
+            step_number = '8'
+            operate_desc = ''
+            orgin_source = 'kudu分析表/落地表'
+            destin_source = '绩效API中间表'
+            importdate = get_current_time()
+            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+                                        orgin_source, destin_source, importdate)
+        except Exception as e:
+            log.error(f'* 执行第8步，序号为{order_number}的SQL报错')
+            print(sql)
+            print(e)
+
+            process_status = 'false'
+            daily_end_date = get_current_time()
+            step_number = '8'
+            operate_desc = str(e)
+            orgin_source = 'kudu分析表/落地表'
+            destin_source = '绩效API中间表'
+            importdate = get_current_time()
+            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+                                        orgin_source, destin_source, importdate)
+            # raise RuntimeError(e)
 
 
 class FullAddProcess(BaseProcess):
@@ -383,7 +404,7 @@ class FullAddProcess(BaseProcess):
                                         orgin_source, destin_source, importdate)
         except Exception as e:
             print(e)
-            #log.error(f'* 执行第6步的SQL或Python Shell报错')
+            # log.error(f'* 执行第6步的SQL或Python Shell报错')
 
             process_status = 'false'
             daily_end_date = get_current_time()
@@ -395,9 +416,6 @@ class FullAddProcess(BaseProcess):
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
             raise RuntimeError(e)
-
-
-
 
     def exec_step07(self):
         log.info('执行第7步，全量数据流程')
@@ -413,13 +431,13 @@ class FullAddProcess(BaseProcess):
         :return:
         """
 
-        #self.exec_step05()
+        # self.exec_step05()
 
         self.exec_step06()
 
         # self.exec_step07()
 
-        # self.exec_step08()
+        #self.exec_step08()
 
 
 class IncrementAddProcess(BaseProcess):
@@ -428,16 +446,20 @@ class IncrementAddProcess(BaseProcess):
     def __init__(self):
         pass
 
+    def exec_linshi_daily_data(self):
+        check_linshi_travel_data()
+        # check_linshi_office_data()
+        # check_linshi_meeting_data()
+        # check_linshi_car_data()
+        pass
+
     def exec_step05(self):
         """
         执行第五步
         5、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
         :return:
         """
-        # check_linshi_travel_data()
-        # check_linshi_office_data()
-        # check_linshi_meeting_data()
-        # check_linshi_car_data()
+
         pass
 
     def exec_step06(self):
@@ -466,4 +488,5 @@ if __name__ == '__main__':
     full_process = FullAddProcess()
     full_process.exec_steps()
 
-    # increment_process = IncrementAddProcess()
+    #increment_process = IncrementAddProcess()
+    #increment_process.exec_steps()

@@ -11,22 +11,6 @@ from report.commons.connect_kudu2 import prod_execute_sql
 log = get_logger(__name__)
 
 
-def get_date_month(mon=0):
-    """
-    :param mon: 获取当前时间X月之前的时间
-    :return: YYYY-MM
-    """
-    # 得到现在的时间
-    now = datetime.now()
-
-    # 当前时间X个月前
-    last_m = (int(now.year) * 12 + int(now.month) - mon) % 12
-    last_y = int((int(now.year) * 12 + int(now.month) - mon) / 12)
-    last_mon = '%s0%s' % (last_y, last_m)
-
-    return last_mon
-
-
 def process_invalid_content(word):
     """
     处理写入到文件的非法字符串

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from report.commons.tools import *
+from report.commons.commons import get_date_month
 import re
 
 
@@ -105,5 +106,8 @@ if __name__ == '__main__':
     # demo2()
     # demo3()
     # demo5()
-    demo6()
-    pass
+    #demo6()
+
+    demo4()
+
+    print('--- ok ---')

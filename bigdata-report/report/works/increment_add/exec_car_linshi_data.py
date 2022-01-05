@@ -6,7 +6,8 @@ from report.commons.connect_kudu2 import prod_execute_sql
 
 from report.commons.logging import get_logger
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import MatchArea, process_invalid_content, get_date_month
+from report.commons.tools import MatchArea, process_invalid_content
+from report.commons.commons import get_date_month
 from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
@@ -37,7 +38,7 @@ upload_hdfs_path = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/
 match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
-query_date = get_date_month(mon=1)
+query_date = get_date_month(n=1)
 
 
 def init_file():

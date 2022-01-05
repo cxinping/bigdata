@@ -13,7 +13,8 @@ import time
 import os
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
-from report.commons.tools import MatchArea, process_invalid_content, get_date_month, filter_numbers
+from report.commons.tools import MatchArea, process_invalid_content, filter_numbers
+from report.commons.commons import get_date_month
 from report.services.common_services import ProvinceService, FinanceAdministrationService
 import threading
 from report.commons.settings import CONN_TYPE
@@ -42,7 +43,7 @@ match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 
-query_date = get_date_month(mon=1)
+query_date = get_date_month(n=1)
 
 test_limit_cond = ' '  # 'LIMIT 10000'
 
@@ -139,9 +140,9 @@ def check_linshi_travel_data(query_date=query_date):
         log.info(f'* 处理 {count_records} 条记录，共操作耗时 {consumed_time} sec, year={query_date}')
 
         # 上传文件到HDFS
-        upload_hdfs_file(query_date)
+        #upload_hdfs_file(query_date)
 
-        refresh_linshi_table()
+        #refresh_linshi_table()
 
         #init_file(query_date, is_del=True)
 
