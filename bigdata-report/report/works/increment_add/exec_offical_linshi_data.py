@@ -65,7 +65,7 @@ def check_linshi_office_data(query_date=query_date):
     count_sql = 'select count(a.finance_offical_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
-    count_records = records[0][0]
+    count_records = int(records[0][0])
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 1 * 20000
@@ -112,21 +112,30 @@ def check_linshi_office_data(query_date=query_date):
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
-    start_time = time.perf_counter()
+    if count_records > 0:
+        threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+        start_time = time.perf_counter()
 
-    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
-    wait(all_task, return_when=ALL_COMPLETED)
+        all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+        wait(all_task, return_when=ALL_COMPLETED)
 
-    threadPool.shutdown(wait=True)
-    consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 操作耗时 {consumed_time} sec')
-    log.info('** 关闭线程池')
+        threadPool.shutdown(wait=True)
+        consumed_time = round(time.perf_counter() - start_time)
+        log.info(f'* 操作耗时 {consumed_time} sec')
+        log.info('** 关闭线程池')
 
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
-    print('--- 办公费临时表数据已经跑完数据了，ok ---')
+        test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+        test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+        print('--- 办公费临时表数据已经跑完数据了，ok ---')
 
+        refresh_linshi_table()
+
+        init_file()
+
+
+def refresh_linshi_table():
+    sql = 'REFRESH 02_logical_layer_007_h_lf_cw.finance_offical_linshi_analysis'
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 def operate_every_record(record):
     finance_offical_id = str(record[0])
@@ -190,13 +199,6 @@ def exec_task(sql):
             #                                              sales_bank=sales_bank)  # 发票开票所在市
 
             sales_address, receipt_city = operate_every_record(record)
-
-            # sales_taxno = sales_taxno.replace(',', ' ') if sales_taxno else '无'
-            # sales_name = sales_name.replace(',', ' ') if sales_name else '无'
-            # sales_addressphone = sales_addressphone.replace(',', ' ') if sales_addressphone else '无'
-            # sales_bank = sales_bank.replace(',', ' ') if sales_bank else '无'
-            # sales_address = sales_address.replace(',', ' ') if sales_address else '无'
-            # receipt_city = match_area.filter_area(receipt_city.replace(',', ' ')) if receipt_city else '无'
 
             sales_taxno = process_invalid_content(sales_taxno)
             sales_name = process_invalid_content(sales_name)

@@ -1189,7 +1189,7 @@ def query_finance_shell_daily():
 def temp_api_execute_by_target():
     log.info('---- temp_api_execute_by_target ----')
     target_classify = str(request.form.get('target_classify')) if request.form.get('target_classify') else None
-    log.info(target_classify)
+    #log.info(target_classify)
 
     if target_classify is None:
         data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
@@ -1436,10 +1436,10 @@ def temp_performance_bill_add():
     sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
     performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
 
-    log.info(f'order_number={order_number}')
-    log.info(f'describe_num={describe_num}')
-    log.info(f'sign_status={sign_status}')
-    log.info(f'performance_sql={performance_sql}')
+    # log.info(f'order_number={order_number}')
+    # log.info(f'describe_num={describe_num}')
+    # log.info(f'sign_status={sign_status}')
+    # log.info(f'performance_sql={performance_sql}')
 
     if order_number is None:
         data = {"result": "error", "details": "输入的 order_number 不能为空", "code": 500}
@@ -1591,7 +1591,7 @@ def temp_performance_bill_delete():
 
     try:
         performance_ids = str(performance_ids).split(',')
-        print(performance_ids)
+        #print(performance_ids)
 
         del_temp_performance_bill(performance_ids)
 

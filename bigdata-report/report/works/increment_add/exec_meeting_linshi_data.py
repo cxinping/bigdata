@@ -72,7 +72,7 @@ def check_linshi_meeting_data(query_date=query_date):
     count_sql = 'select count(a.finance_meeting_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
-    count_records = records[0][0]
+    count_records = int(records[0][0])
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 2 * 10000
@@ -125,22 +125,29 @@ def check_linshi_meeting_data(query_date=query_date):
     # wait(all_task, return_when=ALL_COMPLETED)
     # threadPool.shutdown(wait=True)
 
-    pool = Pool(30)
-    results = []
-    for sel_sql in select_sql_ls:
-        rst = pool.spawn(exec_task, sel_sql)
-        results.append(rst)
+    if count_records > 0:
+        pool = Pool(20)
+        results = []
+        for sel_sql in select_sql_ls:
+            rst = pool.spawn(exec_task, sel_sql)
+            results.append(rst)
 
-    gevent.joinall(results)
+        gevent.joinall(results)
 
-    consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 处理 {count_records} 条记录, 共操作耗时 {consumed_time} sec')
+        consumed_time = round(time.perf_counter() - start_time)
+        log.info(f'* 处理 {count_records} 条记录, 共操作耗时 {consumed_time} sec')
 
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+        test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+        test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    # init_file()
+        refresh_linshi_table()
 
+        init_file()
+
+
+def refresh_linshi_table():
+    sql = 'REFRESH 02_logical_layer_007_h_lf_cw.finance_meeting_linshi_analysis'
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 def operate_every_record(record):
     finance_meeting_id = str(record[0])

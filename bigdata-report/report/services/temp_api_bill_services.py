@@ -65,7 +65,7 @@ def exec_temp_api_bill_sql_by_target(target_classify):
         log.info(f'*** exec_temp_api_bill_sql_by_target, 执行 {target_classify} 的绩效SQL ***')
         sql = f"""
             select tem_api_id,target_classify,api_sql  from  01_datamart_layer_007_h_cw_df.temp_api_bill
-            where target_classify="{target_classify}" order by tem_api_id asc
+            where target_classify="{target_classify}" order by order_number asc
             """
         temp_api_sql_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         log.info(f'需要执行 {len(temp_api_sql_records)} 条SQL')

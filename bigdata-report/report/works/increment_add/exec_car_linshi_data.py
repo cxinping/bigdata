@@ -40,6 +40,9 @@ province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 query_date = get_date_month(n=1)
 
+def refresh_linshi_table():
+    sql = 'REFRESH 02_logical_layer_007_h_lf_cw.finance_car_linshi_analysis'
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 def init_file():
     if not os.path.exists(dest_dir):
@@ -67,7 +70,7 @@ def check_linshi_car_data(query_date=query_date):
     count_sql = 'select count(a.finance_car_id) from ({sql}) a'.format(sql=sql)
     log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
-    count_records = records[0][0]
+    count_records = int(records[0][0])
     log.info(f'* count_records ==> {count_records}')
 
     max_size = 1 * 1000
@@ -114,22 +117,27 @@ def check_linshi_car_data(query_date=query_date):
 
     log.info(f'*** 开始分页查询，一共 {len(select_sql_ls)} 页')
 
-    threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
-    start_time = time.perf_counter()
+    if count_records > 0:
+        threadPool = ThreadPoolExecutor(max_workers=10, thread_name_prefix="thr")
+        start_time = time.perf_counter()
 
-    all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
-    wait(all_task, return_when=ALL_COMPLETED)
-    threadPool.shutdown(wait=True)
+        all_task = [threadPool.submit(exec_task, (sel_sql)) for sel_sql in select_sql_ls]
+        wait(all_task, return_when=ALL_COMPLETED)
+        threadPool.shutdown(wait=True)
 
-    consumed_time = round(time.perf_counter() - start_time)
-    log.info(f'* 操作耗时 {consumed_time} sec')
-    log.info(f'* 处理 {count_records} 条记录，操作共耗时 {consumed_time} sec')
-    log.info('** 关闭线程池')
+        consumed_time = round(time.perf_counter() - start_time)
+        log.info(f'* 操作耗时 {consumed_time} sec')
+        log.info(f'* 处理 {count_records} 条记录，操作共耗时 {consumed_time} sec')
+        log.info('** 关闭线程池')
 
-    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
+        test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+        test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
-    # init_file()
+        refresh_linshi_table()
+
+        init_file()
+
+
     print('--- ok ---')
 
 

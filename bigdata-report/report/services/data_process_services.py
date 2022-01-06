@@ -484,10 +484,11 @@ class IncrementAddProcess(BaseProcess):
         增量更新临时表近两个月的数据
         :return:
         """
+        log.info('***** 在执行第5步前，增量数据流程，4个费用的前两个月数据入库 *****')
         check_linshi_travel_data()
-        # check_linshi_office_data()
-        # check_linshi_meeting_data()
-        # check_linshi_car_data()
+        #check_linshi_office_data()
+        #check_linshi_meeting_data()
+        #check_linshi_car_data()
 
     def exec_step05(self):
         """
@@ -508,32 +509,41 @@ class IncrementAddProcess(BaseProcess):
         log.info("*" * 30)
         log.info('***** 执行第6步，增量数据流程 *****')
         log.info("*" * 30)
+        super().exec_step06()
 
     def exec_step07(self):
         log.info("*" * 30)
         log.info('***** 执行第7步，增量数据流程 *****')
         log.info("*" * 30)
+        super().exec_step07()
 
     def exec_step08(self):
         log.info("*" * 30)
         log.info('***** 执行第8步，增量数据流程 *****')
         log.info("*" * 30)
+        super().exec_step08()
 
     def exec_steps(self):
         """
         执行步骤 5,6,7,8
         :return:
         """
-        # self.exec_linshi_daily_data()
+        self.exec_linshi_daily_data()
 
-        self.exec_step08()
+        #self.exec_step05()
+
+        #self.exec_step06()
+
+        #self.exec_step07()
+
+        #self.exec_step08()
 
 
 if __name__ == '__main__':
-    full_process = FullAddProcess()
-    full_process.exec_steps()
+    #full_process = FullAddProcess()
+    #full_process.exec_steps()
 
-    # increment_process = IncrementAddProcess()
-    # increment_process.exec_steps()
+    increment_process = IncrementAddProcess()
+    increment_process.exec_steps()
 
     print('--- ok ---')

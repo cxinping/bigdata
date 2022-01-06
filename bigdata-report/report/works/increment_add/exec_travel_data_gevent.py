@@ -140,11 +140,11 @@ def check_linshi_travel_data(query_date=query_date):
         log.info(f'* 处理 {count_records} 条记录，共操作耗时 {consumed_time} sec, year={query_date}')
 
         # 上传文件到HDFS
-        #upload_hdfs_file(query_date)
+        upload_hdfs_file(query_date)
 
-        #refresh_linshi_table()
+        refresh_linshi_table()
 
-        #init_file(query_date, is_del=True)
+        init_file(query_date, is_del=True)
 
     else:
         log.info(f'* 查询日期 => {query_date}， 没有查询到任何数据')
