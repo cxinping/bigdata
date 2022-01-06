@@ -4,7 +4,7 @@ from report.commons.tools import create_uuid
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
 from report.commons.connect_kudu2 import prod_execute_sql
-from report.services.temp_api_bill_services import exec_temp_api_bill_sql
+from report.services.temp_api_bill_services import exec_temp_api_bill_sql_by_target
 from report.commons.tools import list_of_groups
 from report.commons.runengine import execute_kudu_sql, execute_py_shell
 from report.commons.tools import get_current_time
@@ -298,7 +298,7 @@ class BaseProcess(metaclass=ABCMeta):
             daily_start_date = get_current_time()
             target_classify_ls = ['差旅费', '会议费', '办公费', '车辆使用费']
             for item in target_classify_ls:
-                exec_temp_api_bill_sql(item)
+                exec_temp_api_bill_sql_by_target(item)
 
             process_status = 'sucess'
             daily_end_date = get_current_time()

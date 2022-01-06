@@ -10,18 +10,57 @@ from report.commons.tools import create_uuid, list_of_groups
 log = get_logger(__name__)
 
 
-# CONN_TYPE = 'test'
-
-
-def exec_temp_api_bill_sql(target_classify):
+def exec_temp_api_bill_sql_by_ids(tem_api_ids):
     """
     执行临时表API表,
-    :param target_classify: 差旅费、会议费、办公费、车辆使用费
+    :param tem_api_ids : 临时表的主键ids
     :return:
     """
 
     try:
-        log.info(f'****** 执行 {target_classify} 的绩效SQL ******')
+        sql = "SELECT api_sql,tem_api_id FROM 01_datamart_layer_007_h_cw_df.temp_api_bill WHERE "
+
+        condition_sql = ''
+        in_codition = 'tem_api_id IN {temp}'
+
+        if tem_api_ids and len(tem_api_ids) > 0:
+            group_ls = list_of_groups(tem_api_ids, 1000)
+
+            for idx, group in enumerate(group_ls):
+                if len(group) == 1:
+                    temp = in_codition.format(temp=str('("' + group[0] + '")'))
+                else:
+                    temp = in_codition.format(temp=str(tuple(group)))
+
+                if idx == 0:
+                    condition_sql = temp
+                else:
+                    condition_sql = condition_sql + ' OR ' + temp
+
+            sql = sql + condition_sql
+            log.info(sql)
+            records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+            for record in records:
+                api_sql = str(record[0])
+                tem_api_id = str(record[1])
+
+                prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=api_sql)
+                log.info( f'---> 成功执行了tem_api_id为{tem_api_id}的临时表的SQL, 共有{len(records)}条SQL ')
+
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
+def exec_temp_api_bill_sql_by_target(target_classify):
+    """
+    执行临时表API表,
+    :param target_classify : 目标分类，主要包括：差旅费、会议费、办公费、车辆使用费
+    :return:
+    """
+
+    try:
+        log.info(f'*** exec_temp_api_bill_sql_by_target, 执行 {target_classify} 的绩效SQL ***')
         sql = f"""
             select tem_api_id,target_classify,api_sql  from  01_datamart_layer_007_h_cw_df.temp_api_bill
             where target_classify="{target_classify}" order by tem_api_id asc
