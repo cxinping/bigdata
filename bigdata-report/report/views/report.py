@@ -11,7 +11,7 @@ import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
 import traceback
-
+import time
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
@@ -35,7 +35,8 @@ from report.commons.runengine import (execute_task, execute_py_shell, execute_ku
 from report.services.travel_expense_service import get_travel_keyword
 from report.services.data_process_services import (insert_temp_performance_bill, update_temp_performance_bill,
                                                    del_temp_performance_bill, query_temp_performance_bill,
-                                                   pagination_temp_performance_bill_records)
+                                                   pagination_temp_performance_bill_records, exec_temp_performance_bill,
+                                                   query_finance_data_process)
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -630,7 +631,7 @@ def finance_unusual_delete():
         return response
 
 
-executor = ThreadPoolExecutor(100)
+executor = ThreadPoolExecutor(200)
 
 
 # http://10.5.138.11:8004/report/finance_unusual/execute
@@ -1219,6 +1220,7 @@ def temp_api_execute_by_target():
 # http://10.5.138.11:8004/report/temp/api/execute/ids
 @report_bp.route('/temp/api/execute/ids', methods=['POST', 'GET'])
 def temp_api_execute_by_ids():
+    import time
     log.info('---- temp_api_execute_by_ids ----')
     tem_api_ids = request.form.get('tem_api_ids') if request.form.get('tem_api_ids') else None
 
@@ -1230,7 +1232,6 @@ def temp_api_execute_by_ids():
         return response
 
     try:
-
         executor.submit(exec_temp_api_bill_sql_by_ids, tem_api_ids)
 
         result = {
@@ -1395,6 +1396,8 @@ def temp_api_delete():
     log.info('---- temp_api_delete ----')
     tem_api_ids = request.form.get('tem_api_ids') if request.form.get('tem_api_ids') else None
 
+    # log.info(f'111 tem_api_ids={tem_api_ids}')
+
     if tem_api_ids is None or len(tem_api_ids) == 0:
         data = {"result": "error", "details": "输入的 tem_api_ids 不能为空 或者 没有传递值", "code": 500}
         response = jsonify(data)
@@ -1402,7 +1405,6 @@ def temp_api_delete():
 
     try:
         tem_api_ids = str(tem_api_ids).split(',')
-        # print(tem_api_ids)
 
         delete_temp_api_bill(tem_api_ids)
 
@@ -1624,19 +1626,16 @@ def temp_performance_bill_execute():
 
     try:
         performance_ids = str(performance_ids).split(',')
-
-        records = query_temp_performance_bill(performance_ids)
-        # print(len(records), records)
-
-        for idx, record in enumerate(records):
-            performance_sql = record[0]
-            # print(performance_sql)
-            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=performance_sql)
+        if len(performance_ids) > 0:
+            start_time = time.perf_counter()
+            executor.submit(exec_temp_performance_bill, performance_ids)
+            consumed_time = round(time.perf_counter() - start_time)
 
         data = {
             'result': 'ok',
             'code': 200,
-            'details': f'成功执行{len(records)}条绩效临时表的SQL'
+            'details': f'正在执行{len(performance_ids)}条绩效临时表的SQL',
+            "consumed_time": consumed_time
         }
         response = jsonify(data)
         return response
@@ -1659,6 +1658,7 @@ def finance_data_process_query():
     log.info('---- finance_data_process_query ---- ')
 
     query_date = request.form.get('query_date') if request.form.get('query_date') else None
+    log.info(query_date)
 
     if query_date is None or len(query_date) == 0:
         data = {"result": "error", "details": "输入的 query_date 不能为空 或者 没有传递值", "code": 500}
@@ -1666,8 +1666,14 @@ def finance_data_process_query():
         return response
 
     try:
+        records = query_finance_data_process(query_date)
 
-        return '1111'
+        result = {
+            'status': 'ok',
+            'data': records,
+            'code': 200
+        }
+        return mk_utf8resp(result)
     except Exception as e:
         print(e)
         result = {
