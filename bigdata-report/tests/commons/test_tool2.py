@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from report.commons.commons import get_date_month
-
+from report.commons.commons import *
+from report.commons.tools import *
 
 # import datetime
 #
@@ -27,6 +27,9 @@ def demo1():
     time1 = get_date_month(1)
     print(time1)
 
+def demo2():
+    t = get_current_time()
+    print(t)
 
 if __name__ == '__main__':
-    demo1()
+    demo2()

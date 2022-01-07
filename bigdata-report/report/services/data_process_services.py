@@ -13,6 +13,7 @@ from report.works.increment_add.exec_travel_data_gevent import check_linshi_trav
 from report.works.increment_add.exec_offical_linshi_data import check_linshi_office_data
 from report.works.increment_add.exec_meeting_linshi_data import check_linshi_meeting_data
 from report.works.increment_add.exec_car_linshi_data import check_linshi_car_data
+from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 
 log = get_logger(__name__)
 
@@ -100,7 +101,7 @@ def query_temp_performance_bill(performance_ids):
                     condition_sql = condition_sql + ' OR ' + temp
 
             sql = sql + condition_sql
-            #log.info(sql)
+            # log.info(sql)
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
             return records
         else:
@@ -133,7 +134,8 @@ def query_finance_data_process(query_date):
     :return:
     """
     try:
-        columns_ls = ['process_id', 'process_status', 'daily_start_date', 'daily_end_date', 'step_number', 'operate_desc', 'orgin_source', 'destin_source', 'importdate']
+        columns_ls = ['process_id', 'process_status', 'daily_start_date', 'daily_end_date', 'step_number',
+                      'operate_desc', 'orgin_source', 'destin_source', 'importdate']
         columns_str = ",".join(columns_ls)
 
         sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
@@ -150,7 +152,7 @@ ORDER BY step_number ASC) zz) bb
 where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         """.format(query_date=query_date)
 
-        #log.info(sel_sql)
+        # log.info(sel_sql)
 
         records = db_fetch_to_dict(sel_sql, columns_ls)
         return records
@@ -224,6 +226,21 @@ def query_temp_receipt_address():
         raise RuntimeError(e)
 
 
+def query_temp_receipt_address_by_target_classify(target_classify):
+    """
+    根据目标分类查询发票地址sql表
+    :param query_date:
+    :return:
+    """
+    try:
+        sql = f'SELECT receipt_sql,receipt_id FROM 01_datamart_layer_007_h_cw_df.temp_receipt_address WHERE target_classify="{target_classify}" ORDER BY receipt_id ASC'
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        return records
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
 def query_finance_unusual():
     """
     查询差旅费异常明细表
@@ -254,27 +271,51 @@ class BaseProcess(metaclass=ABCMeta):
         :return:
         """
 
+        travel_fee = '差旅费'
+        meeting_fee = '会议费'
+        office_fee = '办公费'
+        car_fee = '车辆使用费'
+
+        travel_records = query_temp_receipt_address_by_target_classify(travel_fee)
+        meeting_records = query_temp_receipt_address_by_target_classify(meeting_fee)
+        office_records = query_temp_receipt_address_by_target_classify(office_fee)
+        car_records = query_temp_receipt_address_by_target_classify(car_fee)
+
+        threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
+        all_task = []
+        task1 = threadPool.submit(self.__exec_step05_task, travel_records, travel_fee)
+        task2 = threadPool.submit(self.__exec_step05_task, meeting_records, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step05_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step05_task, car_records, car_fee)
+        all_task.append(task1)
+        all_task.append(task2)
+        all_task.append(task3)
+        all_task.append(task4)
+
+        wait(all_task, return_when=ALL_COMPLETED)
+        threadPool.shutdown(wait=True)
+
+    def __exec_step05_task(self, records, target_classify):
         try:
             daily_start_date = get_current_time()
-            records = query_temp_receipt_address()
             for idx, record in enumerate(records):
                 sql = str(record[0])
                 receipt_id = str(record[1])
 
                 prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-                log.info(f'* 第5步，成功执行receipt_id为 {receipt_id} 的SQL')
+                log.info(f'* 第5步，成功执行 target_classify为 {target_classify},receipt_id为 {receipt_id} 的SQL')
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
             step_number = '5'
-            operate_desc = ''
+            operate_desc = f'成功执行目标分类为{target_classify}的SQL'
             orgin_source = '发票信息hive表'
             destin_source = 'kudu分析表'
             importdate = get_current_time()
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
         except Exception as e:
-            log.error(f'* 执行第5步，序号为{receipt_id}的SQL报错')
+            log.error(f'* 执行第5步，目标分类为{target_classify} ，序号为{receipt_id}的SQL报错')
             log.info(sql)
             print(e)
 
@@ -482,10 +523,10 @@ class IncrementAddProcess(BaseProcess):
         :return:
         """
         log.info('***** 在执行第5步前，增量数据流程，4个费用的前两个月数据入库 *****')
-        #check_linshi_travel_data()
-        check_linshi_office_data()
-        check_linshi_meeting_data()
-        check_linshi_car_data()
+        check_linshi_travel_data()
+        # check_linshi_office_data()
+        # check_linshi_meeting_data()
+        # check_linshi_car_data()
 
     def exec_step05(self):
         """
@@ -511,10 +552,10 @@ class IncrementAddProcess(BaseProcess):
 
         daily_start_date = get_current_time()
         # 删除结果表中的数据
-        #sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
+        # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
         try:
-            #prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-            #log.info('增量数据流程执行第6步，首先删除结果表中的数据')
+            # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+            # log.info('增量数据流程执行第6步，首先删除结果表中的数据')
 
             super().exec_step06()
 
@@ -560,20 +601,20 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 5,6,7,8
         :return:
         """
-        #self.exec_linshi_daily_data()
+        # self.exec_linshi_daily_data()
 
-        #self.exec_step05()
+        self.exec_step05()
 
-        self.exec_step06()
-
-        #self.exec_step07()
-
-        #self.exec_step08()
+        # self.exec_step06()
+        #
+        # self.exec_step07()
+        #
+        # self.exec_step08()
 
 
 if __name__ == '__main__':
-    #full_process = FullAddProcess()
-    #full_process.exec_steps()
+    # full_process = FullAddProcess()
+    # full_process.exec_steps()
 
     increment_process = IncrementAddProcess()
     increment_process.exec_steps()

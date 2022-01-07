@@ -202,7 +202,7 @@ def process_finance_unusual():
 
 
 def demo3():
-    sel_sql1 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+    sel_sql1 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220107' AND process_status = 'sucess'  ORDER BY step_number ASC  "
     sel_sql2 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process "
     sel_sql3 ="""
     select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
@@ -217,7 +217,7 @@ ORDER BY step_number ASC) zz) bb
 where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
     """
 
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql3)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql1)
     print(len(records))
 
     for record in records:
