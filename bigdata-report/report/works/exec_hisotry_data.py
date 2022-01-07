@@ -224,6 +224,8 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         print(record)
         print()
 
+def demo4():
+    sql= 'select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill where commodityname is not null and commodityname !='''
 
 if __name__ == '__main__':
     # del_history_exception_data()

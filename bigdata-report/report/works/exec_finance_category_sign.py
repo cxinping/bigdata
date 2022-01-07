@@ -8,7 +8,7 @@ from report.services.common_services import (insert_finance_shell_daily, update_
                                              query_finance_category_signs,
                                              query_finance_category_sign, pagination_finance_shell_daily_records)
 from report.services.vehicle_expense_service import query_checkpoint_55_commoditynames, get_car_bill_jiebaword
-from report.services.travel_expense_service import get_travel_keyword
+from report.services.travel_expense_service import (get_travel_keyword,query_travel_commoditynames)
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -20,51 +20,62 @@ def import_data():
         clean_finance_category_sign(unusual_id)
 
     # part1
+    log.info('* 初始化会议费的大类和关键字')
     unusual_id = '26'
-    category_classify = '01'
+    category_classify = '01'    # 商品大类
     type_str = '会议费'
     available_category_name = query_checkpoint_26_commoditynames()
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
     unusual_id = '26'
-    category_classify = '02'
+    category_classify = '02'    # 商品关键字
     type_str = '会议费'
     available_category_name = get_conference_bill_jiebaword()
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
     # part2
+    log.info('* 初始化办公费的大类和关键字')
     unusual_id = '42'
-    category_classify = '01'
+    category_classify = '01'    # 商品大类
     type_str = '办公费'
     available_category_name = query_checkpoint_42_commoditynames()
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
     unusual_id = '42'
-    category_classify = '02'
+    category_classify = '02'    # 商品关键字
     type_str = '办公费'
     available_category_name = get_office_bill_jiebaword()
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
     # part3
+    log.info('* 初始化车辆使用费的大类和关键字')
     unusual_id = '55'
-    category_classify = '01'
+    category_classify = '01'    # 商品大类
     type_str = '车辆使用费'
     available_category_name = query_checkpoint_55_commoditynames()
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
     unusual_id = '55'
-    category_classify = '02'
+    category_classify = '02'    # 商品关键字
     type_str = '车辆使用费'
     available_category_name = get_car_bill_jiebaword()
     operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
                                   category_classify=category_classify, sign_status='0')
 
     # part4
+    log.info('* 初始化差旅费的大类和关键字')
+    unusual_id = '16'
+    category_classify = '01'  # 商品大类
+    type_str = '差旅费'
+    available_category_name = query_travel_commoditynames()
+    operate_finance_category_sign(unusual_id=unusual_id, category_names=available_category_name,
+                                  category_classify=category_classify, sign_status='0')
+
     unusual_id = '16'
     category_classify = '02'  # 商品关键字
     type_str = '差旅费'

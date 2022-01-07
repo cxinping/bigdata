@@ -946,7 +946,7 @@ def query_all_finance_category_sign():
     log.info('---- query_finance_category_sign ----')
 
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
-    # category_classify 类别, 1 代表商品大类，2 代表商品关键字
+    # category_classify 类别, 01 代表商品大类，02 代表商品关键字
     category_classify = request.form.get('category_classify') if request.form.get('category_classify') else None
 
     if unusual_id is None:
@@ -963,6 +963,12 @@ def query_all_finance_category_sign():
         data = {"result": "error", "details": "输入的 category_classify 不能为空", "code": 500}
         response = jsonify(data)
         return response
+
+    if category_classify not in ['01', '02']:
+        data = {"result": "error", "details": "输入的 category_classify 只能为01或02", "code": 500}
+        response = jsonify(data)
+        return response
+
 
     try:
         log.info(f'unusual_id={unusual_id}, category_classify={category_classify}')

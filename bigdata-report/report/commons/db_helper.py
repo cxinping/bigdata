@@ -17,7 +17,7 @@ def query_kudu_data(sql=None, columns=[], conn_type=CONN_TYPE):
 
     records = prod_execute_sql(conn_type=conn_type, sqltype='select', sql=sql)
     # log.info('***' * 20)
-    log.info('*** query_kudu_data => ' + str(len(records)))
+    #log.info('*** query_kudu_data => ' + str(len(records)))
     # log.info('***' * 20)
     #print('')
 
