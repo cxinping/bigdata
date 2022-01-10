@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from apscheduler.schedulers.blocking import BlockingScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 import time
 import os
-from apscheduler.schedulers.background import BackgroundScheduler
+
 
 def job(text='job'):
     t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))

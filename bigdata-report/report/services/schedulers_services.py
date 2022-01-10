@@ -14,7 +14,7 @@ def exec_scheduler():
     """
     scheduler = BackgroundScheduler()
     # scheduler.add_job(tick, 'interval', seconds=3)
-    scheduler.add_job(show_time, 'interval', minutes=1, start_date='2022-01-07 08:51:00',
+    scheduler.add_job(show_time, 'interval', minutes=1, start_date='2022-01-07 00:00:00',
                       end_date='2200-03-29 14:00:10')
     scheduler.start()
 
@@ -29,7 +29,7 @@ def exec_scheduler():
 
 def show_time(text='task'):
     t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    log.info('{} ---> {}'.format(text, t))
+    log.info('*** {} ---> {}'.format(text, t))
 
 
 def exec_task():
@@ -38,3 +38,5 @@ def exec_task():
 
 if __name__ == '__main__':
     show_time()
+
+    #exec_scheduler()
