@@ -484,8 +484,8 @@ def finance_unusual_add():
     unusual_shell = transfer_content(unusual_shell)
 
     sql = f"""
-insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_type, unusual_point, unusual_content, unusual_shell, isalgorithm)
-values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' ,'{unusual_type}', '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}')
+insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_point, unusual_content, unusual_shell, isalgorithm)
+values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}')
     """.replace('\n', '')
 
     print(sql)
@@ -609,10 +609,10 @@ def finance_unusual_delete():
     try:
         sql = f"""
         delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
-            """.replace('\n', '')
+            """#.replace('\n', '')
         print(sql)
-
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+
         data = {
             'result': 'ok',
             'code': 200,
@@ -1203,8 +1203,8 @@ def temp_api_execute_by_target():
         return response
 
     try:
-        # exec_temp_api_bill_sql(target_classify)
-        executor.submit(exec_temp_api_bill_sql_by_target, target_classify)
+        is_log = True
+        executor.submit(exec_temp_api_bill_sql_by_target, target_classify, is_log)
 
         result = {
             'result': 'ok',
@@ -1441,6 +1441,7 @@ def temp_performance_bill_add():
     describe_num = request.form.get('describe_num') if request.form.get('describe_num') else ''
     sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
     performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
+    target_classify = request.form.get('target_classify') if request.form.get('target_classify') else None
 
     # log.info(f'order_number={order_number}')
     # log.info(f'describe_num={describe_num}')
@@ -1462,11 +1463,16 @@ def temp_performance_bill_add():
         response = jsonify(data)
         return response
 
+    if target_classify is None:
+        data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
     # 对输入的脚本进行转义
     performance_sql = transfer_content(performance_sql)
 
     try:
-        insert_temp_performance_bill(order_number=order_number, describe_num=describe_num, sign_status=sign_status,
+        insert_temp_performance_bill(order_number=order_number, target_classify=target_classify,describe_num=describe_num, sign_status=sign_status,
                                      performance_sql=performance_sql)
         data = {
             'result': 'ok',
@@ -1495,6 +1501,7 @@ def temp_performance_bill_update():
     describe_num = request.form.get('describe_num') if request.form.get('describe_num') else ''
     sign_status = request.form.get('sign_status') if request.form.get('sign_status') else None
     performance_sql = request.form.get('performance_sql') if request.form.get('performance_sql') else None
+    target_classify = request.form.get('target_classify') if request.form.get('target_classify') else None
 
     if performance_id is None:
         data = {"result": "error", "details": "输入的 performance_id 不能为空", "code": 500}
@@ -1516,11 +1523,17 @@ def temp_performance_bill_update():
         response = jsonify(data)
         return response
 
+    if target_classify is None:
+        data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
     # 对输入的脚本进行转义
     performance_sql = transfer_content(performance_sql)
 
     try:
         update_temp_performance_bill(performance_id=performance_id, order_number=order_number,
+                                     target_classify=target_classify,
                                      describe_num=describe_num, sign_status=sign_status,
                                      performance_sql=performance_sql)
         data = {

@@ -189,17 +189,25 @@ def exec_task(unusual_id, unusual_shell):
 
 
 def process_finance_unusual():
-    sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="1" '
-    sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="0" where unusual_id="46" '
-    log.info(sql)
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+    # sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="1" '
+    # sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="0" where unusual_id="46" '
+    # log.info(sql)
+    # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
-    # sql2 = 'select * from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id="15" '
+    for unusual_id in ['06', '07',   '10'   , '13', '14', '15',   '18', '19' ,'33' , '36','49' ,'60' , '61', '62']:
+        del_sql = f'delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = "{unusual_id}" '
+        #prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
+
+    sql2 = 'select unusual_point, unusual_id from 01_datamart_layer_007_h_cw_df.finance_unusual order by unusual_id asc '
     # log.info(sql2)
-    # records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
-    # for record in records:
-    #     print(record)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
+    print('总记录数 =>', len(records))
+    for record in records:
+        unusual_point = str(record[0])
+        unusual_id = str(record[1])
+        print(f'unusual_id={unusual_id},unusual_point={unusual_point}')
 
+        # print()
 
 def demo3():
     sel_sql1 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220107' AND process_status = 'sucess'  ORDER BY step_number ASC  "
@@ -226,14 +234,19 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
 
 def demo4():
     sql= 'select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill where commodityname is not null and commodityname !='''
+    sql2 = """
+    
+    
+    """
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 if __name__ == '__main__':
     # del_history_exception_data()
     # process_finance_shell_daily()
-    # process_finance_unusual()
+    process_finance_unusual()
     # demo1()
     # demo2()
     # exec_sql()
-
-    demo3()
+    #demo3()
+    #demo4()
     print('--- ok , executed 111 ---')

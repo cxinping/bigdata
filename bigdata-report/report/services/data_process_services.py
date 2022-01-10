@@ -23,14 +23,14 @@ log = get_logger(__name__)
 """
 
 
-def insert_temp_performance_bill(order_number, describe_num, sign_status, performance_sql):
+def insert_temp_performance_bill(order_number, target_classify, describe_num, sign_status, performance_sql):
     performance_id = create_uuid()
     try:
         # log.info('*** insert_finance_shell_daily ***')
         sql = f"""
-        insert into 01_datamart_layer_007_h_cw_df.temp_performance_bill(performance_id, order_number, describe_num, sign_status, performance_sql) 
-        values("{performance_id}", "{order_number}", "{describe_num}","{sign_status}", "{performance_sql}" )
-        """  # .replace('\n', '').replace('\r', '').strip()
+        insert into 01_datamart_layer_007_h_cw_df.temp_performance_bill(performance_id, order_number, target_classify, describe_num, sign_status, performance_sql) 
+        values("{performance_id}", "{order_number}", "{target_classify}", "{describe_num}","{sign_status}", "{performance_sql}" )
+        """
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return performance_id
@@ -39,11 +39,12 @@ def insert_temp_performance_bill(order_number, describe_num, sign_status, perfor
         raise RuntimeError(e)
 
 
-def update_temp_performance_bill(performance_id, order_number, describe_num, sign_status, performance_sql):
+def update_temp_performance_bill(performance_id, order_number, target_classify, describe_num, sign_status,
+                                 performance_sql):
     try:
         sql = f"""
-        UPDATE 01_datamart_layer_007_h_cw_df.temp_performance_bill SET order_number="{order_number}", describe_num="{describe_num}",sign_status="{sign_status}",performance_sql="{performance_sql}" WHERE performance_id="{performance_id}"
-        """  # .replace('\n', '').replace('\r', '').strip()
+        UPDATE 01_datamart_layer_007_h_cw_df.temp_performance_bill SET order_number="{order_number}", target_classify="{target_classify}",describe_num="{describe_num}",sign_status="{sign_status}",performance_sql="{performance_sql}" WHERE performance_id="{performance_id}"
+        """
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return performance_id
@@ -108,6 +109,17 @@ def query_temp_performance_bill(performance_ids):
             sql = sql + ' 1=1 order by order_number asc'
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
             return records
+    except Exception as e:
+        print(e)
+        raise RuntimeError(e)
+
+
+def query_temp_performance_bill_by_target_classify(target_classify):
+    try:
+        sql = f'SELECT performance_sql,order_number FROM 01_datamart_layer_007_h_cw_df.temp_performance_bill WHERE target_classify="{target_classify}" order by order_number asc'
+        # log.info(sql)
+        records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        return records
     except Exception as e:
         print(e)
         raise RuntimeError(e)
@@ -189,7 +201,7 @@ def pagination_temp_performance_bill_records():
 
     :return:
     """
-    columns_ls = ['performance_id', 'order_number', 'describe_num', 'sign_status', 'performance_sql']
+    columns_ls = ['performance_id', 'order_number', 'target_classify', 'describe_num', 'sign_status', 'performance_sql']
     columns_str = ",".join(columns_ls)
     sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.temp_performance_bill "
 
@@ -241,13 +253,20 @@ def query_temp_receipt_address_by_target_classify(target_classify):
         raise RuntimeError(e)
 
 
-def query_finance_unusual():
+def query_finance_unusual(cost_project=None):
     """
     查询差旅费异常明细表
     :return:
     """
     try:
-        sql = 'SELECT unusual_shell,isalgorithm,unusual_id FROM 01_datamart_layer_007_h_cw_df.finance_unusual WHERE sign_status="1" ORDER BY unusual_id ASC'
+        condition = None
+        if cost_project is not None:
+            condition = f' cost_project="{cost_project}" '
+        else:
+            condition = ' 1=1 '
+
+        sql = f'SELECT unusual_shell,isalgorithm,unusual_id FROM 01_datamart_layer_007_h_cw_df.finance_unusual WHERE {condition} AND sign_status="1" ORDER BY unusual_id ASC'
+        log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         return records
     except Exception as e:
@@ -328,7 +347,7 @@ class BaseProcess(metaclass=ABCMeta):
             importdate = get_current_time()
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
-            raise RuntimeError(e)
+            #raise RuntimeError(e)
 
     def exec_step06(self):
         """
@@ -336,7 +355,33 @@ class BaseProcess(metaclass=ABCMeta):
         6、稽查点sql将数据写到kudu落地表（脚本）
         :return:
         """
-        records = query_finance_unusual()
+
+        travel_fee = '差旅费'
+        meeting_fee = '会议费'
+        office_fee = '办公费'
+        car_fee = '车辆使用费'
+
+        travel_records = query_finance_unusual(cost_project=travel_fee)
+        meeting_records = query_finance_unusual(cost_project=meeting_fee)
+        office_records = query_finance_unusual(cost_project=office_fee)
+        car_records = query_finance_unusual(cost_project=car_fee)
+        threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
+        all_task = []
+        task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
+        task2 = threadPool.submit(self.__exec_step06_task, meeting_records, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
+        all_task.append(task1)
+        all_task.append(task2)
+        all_task.append(task3)
+        all_task.append(task4)
+
+        wait(all_task, return_when=ALL_COMPLETED)
+        threadPool.shutdown(wait=True)
+
+    def __exec_step06_task(self, records, cost_project):
+        daily_start_date = get_current_time()
+
         for record in records:
             unusual_shell = str(record[0])
             isalgorithm = str(record[1])
@@ -351,11 +396,30 @@ class BaseProcess(metaclass=ABCMeta):
                     ### 执行算法 python 脚本  ###
                     exec(unusual_shell, globals())
                     log.info(f'* 第6步，成功执行unusual_id为 {unusual_id} 的Python Shell')
+
+                process_status = 'sucess'
+                daily_end_date = get_current_time()
+                step_number = '6'
+                operate_desc = f'成功执行目标分类为{cost_project}的SQL'
+                orgin_source = 'kudu分析表'
+                destin_source = 'kudu落地表'
+                importdate = get_current_time()
+                insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+                                            orgin_source, destin_source, importdate)
             except Exception as e:
                 daily_source = 'SQL' if isalgorithm == '1' else 'Python Shell'
                 log.error(f'* 执行第6步，unusual_id为{unusual_id}的{daily_source}报错')
-                # raise RuntimeError(e)
                 print(e)
+                process_status = 'sucess'
+                daily_end_date = get_current_time()
+                step_number = '6'
+                operate_desc = str(e)
+                orgin_source = 'kudu分析表'
+                destin_source = 'kudu落地表'
+                importdate = get_current_time()
+                insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+                                            orgin_source, destin_source, importdate)
+                # raise RuntimeError(e)
 
     def exec_step07(self):
         """
@@ -363,17 +427,34 @@ class BaseProcess(metaclass=ABCMeta):
         7、差旅、会议、办公、车辆费聚合接口API（脚本）
         :return:
         """
+        travel_fee = '差旅费'
+        meeting_fee = '会议费'
+        office_fee = '办公费'
+        car_fee = '车辆使用费'
 
+        threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
+        all_task = []
+        task1 = threadPool.submit(self.__exec_step07_task, travel_fee)
+        task2 = threadPool.submit(self.__exec_step07_task, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step07_task, office_fee)
+        task4 = threadPool.submit(self.__exec_step07_task, car_fee)
+        all_task.append(task1)
+        all_task.append(task2)
+        all_task.append(task3)
+        all_task.append(task4)
+
+        wait(all_task, return_when=ALL_COMPLETED)
+        threadPool.shutdown(wait=True)
+
+    def __exec_step07_task(self, target_classify):
         try:
             daily_start_date = get_current_time()
-            target_classify_ls = ['差旅费', '会议费', '办公费', '车辆使用费']
-            for item in target_classify_ls:
-                exec_temp_api_bill_sql_by_target(item)
+            exec_temp_api_bill_sql_by_target(target_classify=target_classify, is_log=False)
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
             step_number = '7'
-            operate_desc = ''
+            operate_desc = f'成功执行聚合临时表API表的目标分类为{target_classify}的SQL'
             orgin_source = 'kudu分析表/落地表'
             destin_source = '汇总API中间表'
             importdate = get_current_time()
@@ -391,6 +472,7 @@ class BaseProcess(metaclass=ABCMeta):
             importdate = get_current_time()
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
+            # raise RuntimeError(e)
 
     def exec_step08(self):
         """
@@ -398,39 +480,61 @@ class BaseProcess(metaclass=ABCMeta):
         8、绩效接口API（脚本）
         :return:
         """
-        daily_start_date = get_current_time()
+
         # 清空落地表数据
         sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_performance_api'
         log.info('* 第8步，开始清空落地表数据')
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         log.info('* 第8步，成功清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
-        try:
-            records = query_temp_performance_bill(None)
 
+        travel_fee = '差旅费'
+        meeting_fee = '会议费'
+        office_fee = '办公费'
+        car_fee = '车辆使用费'
+
+        travel_records = query_temp_performance_bill_by_target_classify(travel_fee)
+        meeting_records = query_temp_performance_bill_by_target_classify(meeting_fee)
+        office_records = query_temp_performance_bill_by_target_classify(office_fee)
+        car_records = query_temp_performance_bill_by_target_classify(car_fee)
+
+        threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
+        all_task = []
+        task1 = threadPool.submit(self.__exec_step08_task, travel_records, travel_fee)
+        task2 = threadPool.submit(self.__exec_step08_task, meeting_records, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step08_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step08_task, car_records, car_fee)
+        all_task.append(task1)
+        all_task.append(task2)
+        all_task.append(task3)
+        all_task.append(task4)
+
+        wait(all_task, return_when=ALL_COMPLETED)
+        threadPool.shutdown(wait=True)
+
+    def __exec_step08_task(self, records, target_classify):
+        daily_start_date = get_current_time()
+
+        try:
             for record in records:
                 sql = str(record[0])
                 order_number = str(record[1])
 
-                # if order_number in ['05', '06']:
-                #     continue
-
                 prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-                log.info(f'* 第8步，成功执行序号为 {order_number} 的SQL')
+                log.info(f'* 第8步，成功执行序号为 {order_number} ,target_classify为 {target_classify} 的SQL')
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
             step_number = '8'
-            operate_desc = ''
+            operate_desc = f'成功执行绩效接口API表的目标分类为{target_classify}的SQL'
             orgin_source = 'kudu分析表/落地表'
             destin_source = '绩效API中间表'
             importdate = get_current_time()
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
         except Exception as e:
-            log.error(f'* 执行第8步，序号为{order_number}的SQL报错')
+            log.error(f'* 执行第8步，序号为 {order_number} 的SQL报错,target_classify为 {target_classify} 的SQL')
             # print(sql)
             print(e)
-
             process_status = 'false'
             daily_end_date = get_current_time()
             step_number = '8'
@@ -463,30 +567,10 @@ class FullAddProcess(BaseProcess):
             log.info('全量数据流程执行第6步，首先删除结果表中的数据')
 
             super().exec_step06()
-
-            process_status = 'sucess'
-            daily_end_date = get_current_time()
-            step_number = '6'
-            operate_desc = ''
-            orgin_source = 'kudu分析表'
-            destin_source = 'kudu落地表'
-            importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
-                                        orgin_source, destin_source, importdate)
         except Exception as e:
+            log.error(f'* 执行第6步的SQL或Python Shell报错')
             print(e)
-            # log.error(f'* 执行第6步的SQL或Python Shell报错')
-
-            process_status = 'false'
-            daily_end_date = get_current_time()
-            step_number = '6'
-            operate_desc = str(e)
-            orgin_source = 'kudu分析表'
-            destin_source = 'kudu落地表'
-            importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
-                                        orgin_source, destin_source, importdate)
-            raise RuntimeError(e)
+            # raise RuntimeError(e)
 
     def exec_step07(self):
         log.info('执行第7步，全量数据流程')
@@ -502,11 +586,11 @@ class FullAddProcess(BaseProcess):
         :return:
         """
 
-        # self.exec_step05()
+        self.exec_step05()
 
-        # self.exec_step06()
+        self.exec_step06()
 
-        # self.exec_step07()
+        self.exec_step07()
 
         self.exec_step08()
 
@@ -524,9 +608,9 @@ class IncrementAddProcess(BaseProcess):
         """
         log.info('***** 在执行第5步前，增量数据流程，4个费用的前两个月数据入库 *****')
         check_linshi_travel_data()
-        # check_linshi_office_data()
-        # check_linshi_meeting_data()
-        # check_linshi_car_data()
+        check_linshi_office_data()
+        check_linshi_meeting_data()
+        check_linshi_car_data()
 
     def exec_step05(self):
         """
@@ -550,36 +634,17 @@ class IncrementAddProcess(BaseProcess):
         log.info('***** 执行第6步，增量数据流程 *****')
         log.info("*" * 30)
 
-        daily_start_date = get_current_time()
-        # 删除结果表中的数据
-        # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
+
         try:
+            # 删除结果表中的数据
+            # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
             # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             # log.info('增量数据流程执行第6步，首先删除结果表中的数据')
 
             super().exec_step06()
-
-            process_status = 'sucess'
-            daily_end_date = get_current_time()
-            step_number = '6'
-            operate_desc = ''
-            orgin_source = 'kudu分析表'
-            destin_source = 'kudu落地表'
-            importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
-                                        orgin_source, destin_source, importdate)
         except Exception as e:
             # log.error(f'* 执行第6步的SQL或Python Shell报错')
             print(e)
-            process_status = 'false'
-            daily_end_date = get_current_time()
-            step_number = '6'
-            operate_desc = str(e)
-            orgin_source = 'kudu分析表'
-            destin_source = 'kudu落地表'
-            importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
-                                        orgin_source, destin_source, importdate)
             raise RuntimeError(e)
 
     def exec_step07(self):
@@ -601,15 +666,15 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 5,6,7,8
         :return:
         """
-        self.exec_linshi_daily_data()
+        #self.exec_linshi_daily_data()
 
-        #self.exec_step05()
+        # self.exec_step05()
 
         # self.exec_step06()
-        #
+
         # self.exec_step07()
-        #
-        # self.exec_step08()
+
+        self.exec_step08()
 
 
 if __name__ == '__main__':

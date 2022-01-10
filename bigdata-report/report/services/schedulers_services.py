@@ -12,16 +12,20 @@ def exec_scheduler():
     定时调度
     :return:
     """
+    show_time()
+
     scheduler = BackgroundScheduler()
     # scheduler.add_job(tick, 'interval', seconds=3)
-    scheduler.add_job(show_time, 'interval', minutes=1, start_date='2022-01-07 00:00:00',
+    scheduler.add_job(show_time, 'interval', minutes=1, start_date='2022-01-10 06:25:30',
                       end_date='2200-03-29 14:00:10')
     scheduler.start()
 
     try:
         # This is here to simulate application activity (which keeps the main thread alive).
         while True:
-            time.sleep(10)
+            time.sleep(60)
+            t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+            print(t)
     except (KeyboardInterrupt, SystemExit):
         # Not strictly necessary if daemonic mode is enabled but should be done if possible
         scheduler.shutdown()
@@ -37,6 +41,6 @@ def exec_task():
 
 
 if __name__ == '__main__':
-    show_time()
+    #show_time()
 
-    #exec_scheduler()
+    exec_scheduler()

@@ -54,7 +54,7 @@ def exec_temp_api_bill_sql_by_ids(tem_api_ids):
         raise RuntimeError(e)
 
 
-def exec_temp_api_bill_sql_by_target(target_classify):
+def exec_temp_api_bill_sql_by_target(target_classify, is_log=True):
     """
     执行临时表API表,
     :param target_classify : 目标分类，主要包括：差旅费、会议费、办公费、车辆使用费
@@ -69,12 +69,13 @@ def exec_temp_api_bill_sql_by_target(target_classify):
             """
         temp_api_sql_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         log.info(f'需要执行 {len(temp_api_sql_records)} 条SQL')
-        daily_start_date = get_current_time()
-        daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
-                                              daily_end_date='', unusual_point='',
-                                              daily_source='sql',
-                                              operate_desc=f'正在执行临时表API中类型为{target_classify}的SQL', unusual_infor='',
-                                              task_status='doing', daily_type='数据处理')
+        if is_log:
+            daily_start_date = get_current_time()
+            daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
+                                                  daily_end_date='', unusual_point='',
+                                                  daily_source='sql',
+                                                  operate_desc=f'正在执行临时表API中类型为{target_classify}的SQL', unusual_infor='',
+                                                  task_status='doing', daily_type='数据处理')
 
         for idx, record in enumerate(temp_api_sql_records):
             tem_api_id = str(record[0])
@@ -83,14 +84,16 @@ def exec_temp_api_bill_sql_by_target(target_classify):
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=api_sql)
             log.info(f'target_classify={target_classify},执行成功tem_api_id为 {tem_api_id} 的临时表的SQL,共有{len(temp_api_sql_records)}条SQL')
 
-        operate_desc = f'成功执行临时表API中类型为{target_classify}的SQL'
-        daily_end_date = get_current_time()
-        update_finance_shell_daily(daily_id, daily_end_date, task_status='done', operate_desc=operate_desc)
+        if is_log:
+            operate_desc = f'成功执行临时表API中类型为{target_classify}的SQL'
+            daily_end_date = get_current_time()
+            update_finance_shell_daily(daily_id, daily_end_date, task_status='done', operate_desc=operate_desc)
     except Exception as e:
         #print(e)
-        error_info = str(e)
-        daily_end_date = get_current_time()
-        update_finance_shell_daily(daily_id, daily_end_date, task_status='error', operate_desc=error_info)
+        if is_log:
+            error_info = str(e)
+            daily_end_date = get_current_time()
+            update_finance_shell_daily(daily_id, daily_end_date, task_status='error', operate_desc=error_info)
         raise RuntimeError(e)
 
 

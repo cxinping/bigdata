@@ -138,7 +138,7 @@ def check_linshi_car_data(query_date=query_date):
         init_file()
 
 
-    print('--- ok ---')
+    #print('--- ok ---')
 
 
 def operate_every_record(record):
