@@ -43,6 +43,7 @@ log = get_logger(__name__)
 
 report_bp = Blueprint('report', __name__)
 
+executor = ThreadPoolExecutor(200)
 
 ############  【费用标准（finance_standard）相关】  ############
 
@@ -631,7 +632,7 @@ def finance_unusual_delete():
         return response
 
 
-executor = ThreadPoolExecutor(200)
+
 
 
 # http://10.5.138.11:8004/report/finance_unusual/execute
@@ -772,8 +773,6 @@ def query_commoditynames():
             'unusual_id': unusual_id
         }
 
-        # response = jsonify(result)
-        # return response, 200
         return mk_utf8resp(result)
 
 

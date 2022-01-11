@@ -300,7 +300,7 @@ class BaseProcess(metaclass=ABCMeta):
         office_records = query_temp_receipt_address_by_target_classify(office_fee)
         car_records = query_temp_receipt_address_by_target_classify(car_fee)
 
-        threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
+        threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr_add")
         all_task = []
         task1 = threadPool.submit(self.__exec_step05_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step05_task, meeting_records, meeting_fee)
@@ -347,7 +347,7 @@ class BaseProcess(metaclass=ABCMeta):
             importdate = get_current_time()
             insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
-            #raise RuntimeError(e)
+            # raise RuntimeError(e)
 
     def exec_step06(self):
         """
@@ -634,7 +634,6 @@ class IncrementAddProcess(BaseProcess):
         log.info('***** 执行第6步，增量数据流程 *****')
         log.info("*" * 30)
 
-
         try:
             # 删除结果表中的数据
             # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
@@ -666,7 +665,7 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 5,6,7,8
         :return:
         """
-        #self.exec_linshi_daily_data()
+        self.exec_linshi_daily_data()
 
         # self.exec_step05()
 
@@ -674,7 +673,7 @@ class IncrementAddProcess(BaseProcess):
 
         # self.exec_step07()
 
-        self.exec_step08()
+        # self.exec_step08()
 
 
 if __name__ == '__main__':
