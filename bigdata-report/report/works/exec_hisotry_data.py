@@ -191,14 +191,19 @@ def exec_task(unusual_id, unusual_shell):
 def process_finance_unusual():
     # sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="1" '
     # sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set sign_status ="0" where unusual_id="46" '
-    # log.info(sql)
-    # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+    sql_lvl1 = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_level ="1" WHERE unusual_id in ("0100", "01", "03" , "04" , "05", "16" , "20", "23" , "2400", "25", "27" , "37" , "40" , "4100", "5400", "41", "43" ,"46" , "53" , "54", "56" , "63" , "66"    ) '
+    sql_lvl2 = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_level ="2" WHERE unusual_id in ("02", "11" , "12" , "22", "28" , "31", "39" , "42", "52", "65"  ) '
+    sql_lvl3 = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_level ="3" WHERE unusual_id in ("0101", "26" , "32" , "35", "44" , "48", "55" , "57", "59"   ) '
+    sql_lvl4 = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_level ="4" WHERE unusual_id in ("2401", "54", "01", "41", "47", "50", "51", "58", "64", "2401", "24" , "08" , "09", "17" , "21", "29" , "30", "34" , "38" , "45"  ) '
 
-    for unusual_id in ['06', '07', '10', '13', '14', '15', '18', '19', '33', '36', '49', '60', '61', '62']:
-        del_sql = f'delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = "{unusual_id}" '
-        # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
+    log.info(sql_lvl4)
+    # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql_lvl4)
 
-    sql2 = 'select unusual_point, unusual_id,sign_status from 01_datamart_layer_007_h_cw_df.finance_unusual order by unusual_id asc '
+    # for unusual_id in ['06', '07', '10', '13', '14', '15', '18', '19', '33', '36', '49', '60', '61', '62']:
+    #     del_sql = f'delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = "{unusual_id}" '
+    #     # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
+
+    sql2 = 'select unusual_point, unusual_id,sign_status,unusual_level from 01_datamart_layer_007_h_cw_df.finance_unusual order by unusual_id asc '
     # log.info(sql2)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
     print('总记录数 =>', len(records))
@@ -206,31 +211,35 @@ def process_finance_unusual():
         unusual_point = str(record[0])
         unusual_id = str(record[1])
         sign_status = str(record[2])
-        print(f'unusual_id={unusual_id},sign_status={sign_status},unusual_point={unusual_point}')
+        unusual_level = str(record[3])
+        print(
+            f'unusual_id={unusual_id},sign_status={sign_status},unusual_point={unusual_point},unusual_level={unusual_level}')
 
 
 def demo3():
-    sel_sql1 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220107' AND process_status = 'sucess'  ORDER BY step_number ASC  "
-    sel_sql2 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process "
-    sel_sql3 = """
-    select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
-(select distinct * from (
-select 
-step_number,
-first_value(daily_end_date) over(partition by step_number order by daily_end_date desc) max_end_date
-FROM 01_datamart_layer_007_h_cw_df.finance_data_process 
-WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' 
-AND process_status = 'sucess'  
-ORDER BY step_number ASC) zz) bb
-where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
-    """
-
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql1)
-    print(len(records))
+    #     sel_sql1 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220107' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+    #     sel_sql2 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process "
+    #     sel_sql3 = """
+    #     select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
+    # (select distinct * from (
+    # select
+    # step_number,
+    # first_value(daily_end_date) over(partition by step_number order by daily_end_date desc) max_end_date
+    # FROM 01_datamart_layer_007_h_cw_df.finance_data_process
+    # WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105'
+    # AND process_status = 'sucess'
+    # ORDER BY step_number ASC) zz) bb
+    # where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
+    #     """
+    sel_sql = 'SELECT unusual_shell,isalgorithm,unusual_id FROM 01_datamart_layer_007_h_cw_df.finance_unusual WHERE cost_project="会议费" AND sign_status="1" ORDER BY unusual_id ASC'
+    sel_sql2 = 'SELECT id,company_name,company_code,company_old_code,iscompany FROM 01_datamart_layer_007_h_cw_df.finance_company_code '
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql2)
+    print('records => ', len(records))
 
     for record in records:
+        #print('unusual_id=', record[2])
         print(record)
-        print()
+        # print()
 
 
 def demo4():
@@ -241,11 +250,11 @@ def demo4():
 if __name__ == '__main__':
     # del_history_exception_data()
     # process_finance_shell_daily()
-    process_finance_unusual()
+    # process_finance_unusual()
 
     # demo1()
     # demo2()
     # exec_sql()
-    # demo3()
+    demo3()
     # demo4()
     print('--- ok , executed 111 ---')

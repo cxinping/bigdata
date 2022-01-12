@@ -361,20 +361,20 @@ class BaseProcess(metaclass=ABCMeta):
         office_fee = '办公费'
         car_fee = '车辆使用费'
 
-        travel_records = query_finance_unusual(cost_project=travel_fee)
+        #travel_records = query_finance_unusual(cost_project=travel_fee)
         meeting_records = query_finance_unusual(cost_project=meeting_fee)
-        office_records = query_finance_unusual(cost_project=office_fee)
-        car_records = query_finance_unusual(cost_project=car_fee)
+        # office_records = query_finance_unusual(cost_project=office_fee)
+        # car_records = query_finance_unusual(cost_project=car_fee)
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
-        task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
+        # task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step06_task, meeting_records, meeting_fee)
-        task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
-        task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
-        all_task.append(task1)
+        #task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
+       # task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
+       #  all_task.append(task1)
         all_task.append(task2)
-        all_task.append(task3)
-        all_task.append(task4)
+        #all_task.append(task3)
+        #all_task.append(task4)
 
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
@@ -559,12 +559,12 @@ class FullAddProcess(BaseProcess):
 
     def exec_step06(self):
         log.info('执行第6步，全量数据流程')
-        daily_start_date = get_current_time()
-        # 删除结果表中的数据
-        sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
+
         try:
-            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-            log.info('全量数据流程执行第6步，首先删除结果表中的数据')
+            # 删除结果表中的数据
+            # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
+            # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+            # log.info('全量数据流程执行第6步，首先删除结果表中的数据')
 
             super().exec_step06()
         except Exception as e:
@@ -586,13 +586,13 @@ class FullAddProcess(BaseProcess):
         :return:
         """
 
-        self.exec_step05()
+        #self.exec_step05()
 
         self.exec_step06()
 
-        self.exec_step07()
+        #self.exec_step07()
 
-        self.exec_step08()
+        #self.exec_step08()
 
 
 class IncrementAddProcess(BaseProcess):
@@ -677,10 +677,10 @@ class IncrementAddProcess(BaseProcess):
 
 
 if __name__ == '__main__':
-    # full_process = FullAddProcess()
-    # full_process.exec_steps()
+    full_process = FullAddProcess()
+    full_process.exec_steps()
 
-    increment_process = IncrementAddProcess()
-    increment_process.exec_steps()
+    #increment_process = IncrementAddProcess()
+    #increment_process.exec_steps()
 
     print('--- ok，done ---')

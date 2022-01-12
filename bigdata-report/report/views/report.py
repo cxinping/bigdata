@@ -37,6 +37,7 @@ from report.services.data_process_services import (insert_temp_performance_bill,
                                                    del_temp_performance_bill, query_temp_performance_bill,
                                                    pagination_temp_performance_bill_records, exec_temp_performance_bill,
                                                    query_finance_data_process)
+from report.services.finance_company_code_services import (insert_finance_company_code, update_finance_company_code ,del_finance_company_code, pagination_finance_company_code_records)
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -465,6 +466,8 @@ def finance_unusual_add():
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
     isalgorithm = request.form.get('isalgorithm') if request.form.get('isalgorithm') else None
+    sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
+    unusual_level = str(request.form.get('unusual_level')) if request.form.get('unusual_level') else None
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'cost_project={cost_project}')
@@ -475,18 +478,26 @@ def finance_unusual_add():
     log.info(f'unusual_content={unusual_content}')
     log.info(f'unusual_shell={unusual_shell}')
     log.info(f'isalgorithm={isalgorithm}')
+    log.info(f'sign_status={sign_status}')
+    log.info(f'unusual_level={unusual_level}')
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
         response = jsonify(data)
         return response
 
+    # if unusual_level is None:
+    #     data = {"result": "error", "details": "输入的 unusual_level 不能为空", "code": 500}
+    #     response = jsonify(data)
+    #     return response
+
+
     # 对输入的python脚本进行转义
     unusual_shell = transfer_content(unusual_shell)
 
     sql = f"""
-insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_point, unusual_content, unusual_shell, isalgorithm)
-values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}')
+insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_point, unusual_content, unusual_shell, isalgorithm,sign_status, unusual_level)
+values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}', '{sign_status}', '{unusual_level}')
     """.replace('\n', '')
 
     print(sql)
@@ -524,6 +535,7 @@ def finance_unusual_update():
     isalgorithm = request.form.get('isalgorithm') if request.form.get('isalgorithm') else None
     # 是否执行，1为执行，0为不执行
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
+    unusual_level = str(request.form.get('unusual_level')) if request.form.get('unusual_level') else None
 
     # sign_status = ''
 
@@ -532,6 +544,7 @@ def finance_unusual_update():
     log.info(f'unusual_content={unusual_content}')
     log.info(f'isalgorithm={isalgorithm}')
     log.info(f'sign_status={sign_status}')
+    log.info(f'unusual_level={unusual_level}')
 
     unusual_shell = transfer_content(unusual_shell)
     # log.info(f'* unusual_shell=\n{unusual_shell}')
@@ -556,6 +569,12 @@ def finance_unusual_update():
         response = jsonify(data)
         return response
 
+    # if unusual_level is None:
+    #     data = {"result": "error", "details": "输入的 unusual_level 不能为空", "code": 500}
+    #     response = jsonify(data)
+    #     return response
+
+
     if isalgorithm is None or isalgorithm not in ['1', '2']:
         data = {"result": "error", "details": "输入的 isalgorithm 不能为空或者isalgorithm不等于'1'或'2'。当isalgorithm等于1为sql类, 2为算法类",
                 "code": 500}
@@ -569,7 +588,7 @@ def finance_unusual_update():
 
     sql = f"""
     update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}" ,
-    sign_status='{sign_status}'
+    sign_status='{sign_status}', unusual_level='{unusual_level}'
     where unusual_id='{unusual_id}'
     """
 
@@ -1692,6 +1711,188 @@ def finance_data_process_query():
             'code': 200
         }
         return mk_utf8resp(result)
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+############  【单位code表】  ############
+
+
+# http://10.5.138.11:8004/report/finance/company/code/query
+@report_bp.route('/finance/company/code/query', methods=['POST'])
+def finance_company_code_query():
+    log.info('---- finance_company_code_query ----')
+    current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+    page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+
+    log.info(f'current_page={current_page},page_size={page_size}')
+
+    if current_page is None:
+        data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if page_size is None:
+        data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        count_records, sql, columns_ls = pagination_finance_company_code_records()
+        page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
+        records = page_obj.exec_sql(sql, columns_ls)
+
+        result = {
+            'status': 'ok',
+            'current_page': current_page,
+            'total': count_records,
+            'data': records,
+            'code': 200
+        }
+        return mk_utf8resp(result)
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+
+# http://10.5.138.11:8004/report/finance/company/code/add
+@report_bp.route('/finance/company/code/add', methods=['POST'])
+def finance_company_code_add():
+    log.info('----- finance_company_code_add -----')
+    company_name = request.form.get('company_name') if request.form.get('company_name') else None
+    company_code = request.form.get('company_code') if request.form.get('company_code') else ''
+    company_old_code = request.form.get('company_old_code') if request.form.get('company_old_code') else None
+    iscompany = request.form.get('iscompany') if request.form.get('iscompany') else None
+
+    if company_name is None:
+        data = {"result": "error", "details": "输入的 company_name 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if company_code is None:
+        data = {"result": "error", "details": "输入的 company_code 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if company_old_code is None:
+        data = {"result": "error", "details": "输入的 company_old_code 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if iscompany is None:
+        data = {"result": "error", "details": "输入的 iscompany 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+    try:
+        insert_finance_company_code(company_name=company_name, company_code=company_code, company_old_code=company_old_code, iscompany=iscompany)
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功新增一条"单位code表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
+
+
+# http://10.5.138.11:8004/report/finance/company/code/update
+@report_bp.route('/finance/company/code/update', methods=['POST'])
+def finance_company_code_update():
+    log.info('----- finance_company_code_update -----')
+    id = request.form.get('id') if request.form.get('id') else None
+    company_name = request.form.get('company_name') if request.form.get('company_name') else None
+    company_code = request.form.get('company_code') if request.form.get('company_code') else ''
+    company_old_code = request.form.get('company_old_code') if request.form.get('company_old_code') else None
+    iscompany = request.form.get('iscompany') if request.form.get('iscompany') else None
+
+    if id is None:
+        data = {"result": "error", "details": "输入的 id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if company_name is None:
+        data = {"result": "error", "details": "输入的 company_name 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if company_code is None:
+        data = {"result": "error", "details": "输入的 company_code 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if company_old_code is None:
+        data = {"result": "error", "details": "输入的 company_old_code 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if iscompany is None:
+        data = {"result": "error", "details": "输入的 iscompany 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+    try:
+        update_finance_company_code(id=id, company_name=company_name, company_code=company_code, company_old_code=company_old_code, iscompany=iscompany)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': '成功新增一条"单位code表"记录'
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        data = {
+            'result': 'error',
+            'code': 500,
+            'details': str(e)
+        }
+        response = jsonify(data)
+        return response
+
+
+# http://10.5.138.11:8004/report/finance/company/code/delete
+@report_bp.route('/finance/company/code/delete', methods=['POST'])
+def finance_company_code_delete():
+    log.info('---- finance_company_code_delete ---- ')
+    ids = request.form.get('ids') if request.form.get('ids') else None
+    # print(ids)
+
+    if ids is None or len(ids) == 0:
+        data = {"result": "error", "details": "输入的 ids 不能为空 或者 没有传递值", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        ids = str(ids).split(',')
+        #print(ids)
+
+        del_finance_company_code(ids)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'details': f'成功删除{len(ids)}条单位code表"记录'
+        }
+        response = jsonify(data)
+        return response
     except Exception as e:
         print(e)
         result = {
