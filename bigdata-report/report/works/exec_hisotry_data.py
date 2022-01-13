@@ -342,8 +342,8 @@ if __name__ == '__main__':
     # process_finance_unusual()
 
     # demo1()
-    # demo2()
+    demo2()
     # exec_sql()
     #demo3()
-    demo4()
-    print('--- ok , executed 111 ---')
+    #demo4()
+    print('--- ok , executed 222 ---')

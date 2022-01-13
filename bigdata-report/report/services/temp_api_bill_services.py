@@ -68,7 +68,7 @@ def exec_temp_api_bill_sql_by_target(target_classify, is_log=True):
             where target_classify="{target_classify}" order by order_number asc
             """
         temp_api_sql_records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
-        log.info(f'需要执行 {len(temp_api_sql_records)} 条SQL')
+        #log.info(f'需要执行 {len(temp_api_sql_records)} 条SQL')
         if is_log:
             daily_start_date = get_current_time()
             daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
@@ -89,6 +89,7 @@ def exec_temp_api_bill_sql_by_target(target_classify, is_log=True):
             daily_end_date = get_current_time()
             update_finance_shell_daily(daily_id, daily_end_date, task_status='done', operate_desc=operate_desc)
     except Exception as e:
+        log.error(f'执行失败，target_classify={target_classify},tem_api_id为 {tem_api_id} 的临时表的SQL ')
         #print(e)
         if is_log:
             error_info = str(e)

@@ -151,6 +151,12 @@ def get_current_time():
     return time_str
 
 
+def get_current_year_month_day():
+    get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
+    time_str = get_datetime.strftime('%Y-%m-%d')
+    return time_str
+
+
 def get_running_date():
     get_datetime = datetime.now().replace(tzinfo=timezone.utc).astimezone(timezone(timedelta(hours=8)))
     time_str = get_datetime.strftime('%Y%m%d')

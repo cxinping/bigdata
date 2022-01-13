@@ -6,7 +6,6 @@ from report.commons.logging import get_logger
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.services.temp_api_bill_services import exec_temp_api_bill_sql_by_target
 from report.commons.tools import list_of_groups
-from report.commons.runengine import execute_kudu_sql, execute_py_shell
 from report.commons.tools import get_current_time
 from report.commons.db_helper import db_fetch_to_dict
 from report.works.increment_add.exec_travel_data_gevent import check_linshi_travel_data
@@ -14,6 +13,7 @@ from report.works.increment_add.exec_offical_linshi_data import check_linshi_off
 from report.works.increment_add.exec_meeting_linshi_data import check_linshi_meeting_data
 from report.works.increment_add.exec_car_linshi_data import check_linshi_car_data
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
+import time
 
 log = get_logger(__name__)
 
@@ -31,7 +31,7 @@ def insert_temp_performance_bill(order_number, target_classify, describe_num, si
         insert into 01_datamart_layer_007_h_cw_df.temp_performance_bill(performance_id, order_number, target_classify, describe_num, sign_status, performance_sql) 
         values("{performance_id}", "{order_number}", "{target_classify}", "{describe_num}","{sign_status}", "{performance_sql}" )
         """
-        log.info(sql)
+        #log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return performance_id
     except Exception as e:
@@ -45,7 +45,7 @@ def update_temp_performance_bill(performance_id, order_number, target_classify, 
         sql = f"""
         UPDATE 01_datamart_layer_007_h_cw_df.temp_performance_bill SET order_number="{order_number}", target_classify="{target_classify}",describe_num="{describe_num}",sign_status="{sign_status}",performance_sql="{performance_sql}" WHERE performance_id="{performance_id}"
         """
-        log.info(sql)
+        #log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return performance_id
     except Exception as e:
@@ -150,7 +150,7 @@ def query_finance_data_process(query_date):
                       'operate_desc', 'orgin_source', 'destin_source', 'importdate']
         columns_str = ",".join(columns_ls)
 
-        sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+        #sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
         sel_sql = """
             select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
 (select distinct * from (
@@ -173,7 +173,7 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         raise RuntimeError(e)
 
 
-def insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+def insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                 orgin_source, destin_source, importdate):
     """
     添加流程表的数据
@@ -184,10 +184,10 @@ def insert_finance_data_process(process_status, daily_start_date, daily_end_date
     try:
         # log.info('*** insert_finance_shell_daily ***')
         sql = f"""
-        insert into 01_datamart_layer_007_h_cw_df.finance_data_process(process_id, process_status, daily_start_date, daily_end_date, step_number,operate_desc, orgin_source, destin_source,importdate) 
-        values("{process_id}", "{process_status}", "{daily_start_date}","{daily_end_date}", "{step_number}", "{operate_desc}", "{orgin_source}", "{destin_source}", "{importdate}" )
+        insert into 01_datamart_layer_007_h_cw_df.finance_data_process(process_id, process_status, target_classify,daily_start_date, daily_end_date, step_number,operate_desc, orgin_source, destin_source,importdate) 
+        values("{process_id}", "{process_status}", "{target_classify}","{daily_start_date}","{daily_end_date}", "{step_number}", "{operate_desc}", "{orgin_source}", "{destin_source}", "{importdate}" )
         """.replace('\n', '').replace('\r', '').strip()
-        log.info(sql)
+        #log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         return process_id
     except Exception as e:
@@ -266,7 +266,7 @@ def query_finance_unusual(cost_project=None):
             condition = ' 1=1 '
 
         sql = f'SELECT unusual_shell,isalgorithm,unusual_id FROM 01_datamart_layer_007_h_cw_df.finance_unusual WHERE {condition} AND sign_status="1" ORDER BY unusual_id ASC'
-        log.info(sql)
+        #log.info(sql)
         records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
         return records
     except Exception as e:
@@ -283,10 +283,10 @@ class BaseProcess(metaclass=ABCMeta):
     def exec_steps(self, data_date):
         pass
 
-    def exec_step05(self):
+    def exec_step06(self):
         """
-        执行第五步
-        5、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
+        执行第6步
+        6、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
         :return:
         """
 
@@ -302,10 +302,10 @@ class BaseProcess(metaclass=ABCMeta):
 
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr_add")
         all_task = []
-        task1 = threadPool.submit(self.__exec_step05_task, travel_records, travel_fee)
-        task2 = threadPool.submit(self.__exec_step05_task, meeting_records, meeting_fee)
-        task3 = threadPool.submit(self.__exec_step05_task, office_records, office_fee)
-        task4 = threadPool.submit(self.__exec_step05_task, car_records, car_fee)
+        task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
+        task2 = threadPool.submit(self.__exec_step06_task, meeting_records, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
         all_task.append(task1)
         all_task.append(task2)
         all_task.append(task3)
@@ -314,7 +314,7 @@ class BaseProcess(metaclass=ABCMeta):
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
 
-    def __exec_step05_task(self, records, target_classify):
+    def __exec_step06_task(self, records, target_classify):
         try:
             daily_start_date = get_current_time()
             for idx, record in enumerate(records):
@@ -322,37 +322,37 @@ class BaseProcess(metaclass=ABCMeta):
                 receipt_id = str(record[1])
 
                 prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-                log.info(f'* 第5步，成功执行 target_classify为 {target_classify},receipt_id为 {receipt_id} 的SQL')
+                log.info(f'* 第6步，成功执行 target_classify为 {target_classify},receipt_id为 {receipt_id} 的SQL')
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
-            step_number = '5'
+            step_number = '6'
             operate_desc = f'成功执行目标分类为{target_classify}的SQL'
             orgin_source = '发票信息hive表'
             destin_source = 'kudu分析表'
             importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+            insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
         except Exception as e:
-            log.error(f'* 执行第5步，目标分类为{target_classify} ，序号为{receipt_id}的SQL报错')
+            log.error(f'* 执行第6步，目标分类为{target_classify} ，序号为{receipt_id}的SQL报错')
             log.info(sql)
             print(e)
 
             process_status = 'false'
             daily_end_date = get_current_time()
-            step_number = '5'
+            step_number = '6'
             operate_desc = str(e)
             orgin_source = '发票信息hive表'
             destin_source = 'kudu分析表'
             importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+            insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
             # raise RuntimeError(e)
 
-    def exec_step06(self):
+    def exec_step07(self):
         """
-        执行第七步
-        6、稽查点sql将数据写到kudu落地表（脚本）
+        执行第7步
+        7、稽查点sql将数据写到kudu落地表（脚本）
         :return:
         """
 
@@ -367,10 +367,10 @@ class BaseProcess(metaclass=ABCMeta):
         car_records = query_finance_unusual(cost_project=car_fee)
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
-        task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
-        task2 = threadPool.submit(self.__exec_step06_task, meeting_records, meeting_fee)
-        task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
-        task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
+        task1 = threadPool.submit(self.__exec_step07_task, travel_records, travel_fee)
+        task2 = threadPool.submit(self.__exec_step07_task, meeting_records, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step07_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step07_task, car_records, car_fee)
         all_task.append(task1)
         all_task.append(task2)
         all_task.append(task3)
@@ -379,7 +379,7 @@ class BaseProcess(metaclass=ABCMeta):
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
 
-    def __exec_step06_task(self, records, cost_project):
+    def __exec_step07_task(self, records, cost_project):
         daily_start_date = get_current_time()
 
         for record in records:
@@ -388,43 +388,47 @@ class BaseProcess(metaclass=ABCMeta):
             unusual_id = str(record[2])
 
             try:
+                #time.sleep(1)
+
                 if isalgorithm == '1':
                     ### 执行 SQL ###
                     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=unusual_shell)
-                    log.info(f'* 第6步，成功执行unusual_id为 {unusual_id} 的SQL')
+                    log.info(f'* 第7步，成功执行 cost_project为 {cost_project}, unusual_id为 {unusual_id} 的SQL')
                 elif isalgorithm == '2':
                     ### 执行算法 python 脚本  ###
                     exec(unusual_shell, globals())
-                    log.info(f'* 第6步，成功执行unusual_id为 {unusual_id} 的Python Shell')
+                    log.info(f'* 第7步，成功执行 cost_project为 {cost_project}, unusual_id为 {unusual_id} 的Python Shell')
 
                 process_status = 'sucess'
                 daily_end_date = get_current_time()
-                step_number = '6'
-                operate_desc = f'成功执行目标分类为{cost_project}的SQL'
+                step_number = '7'
+                operate_desc = f'成功执行目标分类为 {cost_project} 的SQL'
                 orgin_source = 'kudu分析表'
                 destin_source = 'kudu落地表'
                 importdate = get_current_time()
-                insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+                insert_finance_data_process(process_status, cost_project, daily_start_date, daily_end_date,
+                                            step_number, operate_desc,
                                             orgin_source, destin_source, importdate)
             except Exception as e:
                 daily_source = 'SQL' if isalgorithm == '1' else 'Python Shell'
-                log.error(f'* 执行第6步，unusual_id为{unusual_id}的{daily_source}报错')
+                log.error(f'* 执行第7步，目标分类为 {cost_project} ,unusual_id为 {unusual_id} 的 {daily_source} 报错')
                 print(e)
                 process_status = 'sucess'
                 daily_end_date = get_current_time()
-                step_number = '6'
+                step_number = '7'
                 operate_desc = str(e)
                 orgin_source = 'kudu分析表'
                 destin_source = 'kudu落地表'
                 importdate = get_current_time()
-                insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+                insert_finance_data_process(process_status, cost_project, daily_start_date, daily_end_date,
+                                            step_number, operate_desc,
                                             orgin_source, destin_source, importdate)
-                # raise RuntimeError(e)
+                #raise RuntimeError(e)
 
-    def exec_step07(self):
+    def exec_step09(self):
         """
-        执行第七步
-        7、差旅、会议、办公、车辆费聚合接口API（脚本）
+        执行第9步
+        9、差旅、会议、办公、车辆费聚合接口API（脚本）
         :return:
         """
         travel_fee = '差旅费'
@@ -434,10 +438,10 @@ class BaseProcess(metaclass=ABCMeta):
 
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
-        task1 = threadPool.submit(self.__exec_step07_task, travel_fee)
-        task2 = threadPool.submit(self.__exec_step07_task, meeting_fee)
-        task3 = threadPool.submit(self.__exec_step07_task, office_fee)
-        task4 = threadPool.submit(self.__exec_step07_task, car_fee)
+        task1 = threadPool.submit(self.__exec_step09_task, travel_fee)
+        task2 = threadPool.submit(self.__exec_step09_task, meeting_fee)
+        task3 = threadPool.submit(self.__exec_step09_task, office_fee)
+        task4 = threadPool.submit(self.__exec_step09_task, car_fee)
         all_task.append(task1)
         all_task.append(task2)
         all_task.append(task3)
@@ -446,37 +450,37 @@ class BaseProcess(metaclass=ABCMeta):
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
 
-    def __exec_step07_task(self, target_classify):
+    def __exec_step09_task(self, target_classify):
         try:
             daily_start_date = get_current_time()
             exec_temp_api_bill_sql_by_target(target_classify=target_classify, is_log=False)
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
-            step_number = '7'
+            step_number = '9'
             operate_desc = f'成功执行聚合临时表API表的目标分类为{target_classify}的SQL'
             orgin_source = 'kudu分析表/落地表'
             destin_source = '汇总API中间表'
             importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+            insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
         except Exception as e:
-            log.error(f'* 第7步，执行SQL报错')
+            log.error(f'* 第9步，执行SQL报错')
             print(e)
             process_status = 'false'
             daily_end_date = get_current_time()
-            step_number = '7'
+            step_number = '9'
             operate_desc = ''
             orgin_source = 'kudu分析表/落地表'
             destin_source = '汇总API中间表'
             importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+            insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
             # raise RuntimeError(e)
 
     def exec_step08(self):
         """
-        执行第八步：
+        执行第8步：
         8、绩效接口API（脚本）
         :return:
         """
@@ -487,23 +491,23 @@ class BaseProcess(metaclass=ABCMeta):
         # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
         # log.info('* 第8步，成功清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
 
-        #travel_fee = '差旅费'
+        travel_fee = '差旅费'
         meeting_fee = '会议费'
         office_fee = '办公费'
         car_fee = '车辆使用费'
 
-        #travel_records = query_temp_performance_bill_by_target_classify(travel_fee)
+        travel_records = query_temp_performance_bill_by_target_classify(travel_fee)
         meeting_records = query_temp_performance_bill_by_target_classify(meeting_fee)
         office_records = query_temp_performance_bill_by_target_classify(office_fee)
         car_records = query_temp_performance_bill_by_target_classify(car_fee)
 
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
-        #task1 = threadPool.submit(self.__exec_step08_task, travel_records, travel_fee)
+        task1 = threadPool.submit(self.__exec_step08_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step08_task, meeting_records, meeting_fee)
         task3 = threadPool.submit(self.__exec_step08_task, office_records, office_fee)
         task4 = threadPool.submit(self.__exec_step08_task, car_records, car_fee)
-        #all_task.append(task1)
+        all_task.append(task1)
         all_task.append(task2)
         all_task.append(task3)
         all_task.append(task4)
@@ -519,9 +523,8 @@ class BaseProcess(metaclass=ABCMeta):
                 sql = str(record[0])
                 order_number = str(record[1])
 
-                if order_number == '13':
-                    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-                    log.info(f'* 第8步，成功执行序号为 {order_number} ,target_classify为 {target_classify} 的SQL')
+                prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+                log.info(f'* 第8步，成功执行序号为 {order_number} ,target_classify为 {target_classify} 的SQL')
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
@@ -530,10 +533,10 @@ class BaseProcess(metaclass=ABCMeta):
             orgin_source = 'kudu分析表/落地表'
             destin_source = '绩效API中间表'
             importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+            insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
         except Exception as e:
-            log.error(f'* 执行第8步，序号为 {order_number} 的SQL报错,target_classify为 {target_classify} 的SQL')
+            log.error(f'* 执行第9步，序号为 {order_number} 的SQL报错,target_classify为 {target_classify} 的SQL')
             # print(sql)
             print(e)
             process_status = 'false'
@@ -543,7 +546,7 @@ class BaseProcess(metaclass=ABCMeta):
             orgin_source = 'kudu分析表/落地表'
             destin_source = '绩效API中间表'
             importdate = get_current_time()
-            insert_finance_data_process(process_status, daily_start_date, daily_end_date, step_number, operate_desc,
+            insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
             # raise RuntimeError(e)
 
@@ -554,46 +557,46 @@ class FullAddProcess(BaseProcess):
     def __init__(self):
         pass
 
-    def exec_step05(self):
-        log.info('执行第5步，全量数据流程')
-        super().exec_step05()
-
     def exec_step06(self):
         log.info('执行第6步，全量数据流程')
-
-        try:
-            # 删除结果表中的数据
-            # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
-            # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-            # log.info('全量数据流程执行第6步，首先删除结果表中的数据')
-
-            super().exec_step06()
-        except Exception as e:
-            log.error(f'* 执行第6步的SQL或Python Shell报错')
-            print(e)
-            # raise RuntimeError(e)
+        super().exec_step06()
 
     def exec_step07(self):
         log.info('执行第7步，全量数据流程')
-        super().exec_step07()
+
+        try:
+            # 删除结果表中的数据
+            sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+            log.info('全量数据流程执行第7步，首先删除结果表中的数据')
+
+            super().exec_step07()
+        except Exception as e:
+            #log.error(f'* 执行第7步的SQL或Python Shell报错')
+            #print(e)
+            raise RuntimeError(e)
 
     def exec_step08(self):
         log.info('执行第8步，全量数据流程')
         super().exec_step08()
 
+    def exec_step09(self):
+        log.info('执行第9步，全量数据流程')
+        super().exec_step09()
+
     def exec_steps(self):
         """
-        执行步骤 5,6,7,8
+        执行步骤 6,7,8,9
         :return:
         """
-
-        #self.exec_step05()
 
         #self.exec_step06()
 
         #self.exec_step07()
 
-        self.exec_step08()
+        #self.exec_step08()
+
+        self.exec_step09()
 
 
 class IncrementAddProcess(BaseProcess):
@@ -613,26 +616,26 @@ class IncrementAddProcess(BaseProcess):
         check_linshi_meeting_data()
         check_linshi_car_data()
 
-    def exec_step05(self):
-        """
-        执行第五步
-        5、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
-        :return:
-        """
-        log.info("*" * 30)
-        log.info('***** 执行第5步，增量数据流程 *****')
-        log.info("*" * 30)
-
-        super().exec_step05()
-
     def exec_step06(self):
         """
-        执行第六步
-        6、稽查点sql将数据写到kudu落地表（脚本）
+        执行第五步
+        6、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
         :return:
         """
         log.info("*" * 30)
         log.info('***** 执行第6步，增量数据流程 *****')
+        log.info("*" * 30)
+
+        super().exec_step06()
+
+    def exec_step07(self):
+        """
+        执行第六步
+        7、稽查点sql将数据写到kudu落地表（脚本）
+        :return:
+        """
+        log.info("*" * 30)
+        log.info('***** 执行第7步，增量数据流程 *****')
         log.info("*" * 30)
 
         try:
@@ -641,18 +644,11 @@ class IncrementAddProcess(BaseProcess):
             # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
             # log.info('增量数据流程执行第6步，首先删除结果表中的数据')
 
-            super().exec_step06()
+            super().exec_step07()
         except Exception as e:
-            # log.error(f'* 执行第6步的SQL或Python Shell报错')
-            print(e)
+            # log.error(f'* 执行第7步的SQL或Python Shell报错')
+            #print(e)
             raise RuntimeError(e)
-
-    def exec_step07(self):
-        log.info("*" * 30)
-        log.info('***** 执行第7步，增量数据流程 *****')
-        log.info("*" * 30)
-
-        super().exec_step07()
 
     def exec_step08(self):
         log.info("*" * 30)
@@ -661,9 +657,16 @@ class IncrementAddProcess(BaseProcess):
 
         super().exec_step08()
 
+    def exec_step09(self):
+        log.info("*" * 30)
+        log.info('***** 执行第9步，增量数据流程 *****')
+        log.info("*" * 30)
+
+        super().exec_step09()
+
     def exec_steps(self):
         """
-        执行步骤 5,6,7,8
+        执行步骤 6,7,8,9
         :return:
         """
         self.exec_linshi_daily_data()
@@ -678,10 +681,10 @@ class IncrementAddProcess(BaseProcess):
 
 
 if __name__ == '__main__':
-    full_process = FullAddProcess()
-    full_process.exec_steps()
+    #full_process = FullAddProcess()
+    #full_process.exec_steps()
 
-    #increment_process = IncrementAddProcess()
-    #increment_process.exec_steps()
+    increment_process = IncrementAddProcess()
+    increment_process.exec_steps()
 
     print('--- ok，done ---')

@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import time
-from apscheduler.schedulers.blocking import BlockingScheduler
-from apscheduler.schedulers.background import BackgroundScheduler
+#from apscheduler.schedulers.blocking import BlockingScheduler
+#from apscheduler.schedulers.background import BackgroundScheduler
 from report.commons.logging import get_logger
 import threading
 import time
-from report.commons.tools import get_current_time
+from report.commons.tools import get_current_time,get_current_year_month_day
+from report.services.data_process_services import IncrementAddProcess
+from report.commons.connect_kudu2 import prod_execute_sql
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 
@@ -17,13 +20,39 @@ class Scheduler(threading.Thread):
         self.delay = delay
 
     def run(self):
-        print("开始线程：" + self.name)
+        #print("开始线程：" + self.name)
         while True:
-            self.show_time(self.name)
+            #self.show_time(self.name)
+            self.check_current_finance_data_process()
 
-            time.sleep(60 * 3)
+            time.sleep(60 * 5)
 
         print("退出线程：" + self.name)
+
+    def check_current_finance_data_process(self):
+        """
+        判断流程表中已经执行了第5步
+        :return:
+        """
+
+        try:
+            columns_ls = ['process_id', 'process_status', 'daily_start_date', 'daily_end_date', 'step_number',
+                          'operate_desc', 'orgin_source', 'destin_source', 'importdate']
+            columns_str = ",".join(columns_ls)
+
+            t = get_current_time()
+            data = t.split(' ')
+            year_month_day = str(data[0]).replace('-','')
+            #print(year_month_day)
+
+            sel_sql = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+
+            records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
+            for record in records:
+                print(record)
+                print()
+        except Exception as e:
+            print(e)
 
     def show_time(self, text='task'):
         # t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
@@ -43,7 +72,11 @@ class Scheduler(threading.Thread):
         print()
 
     def task(self):
-        pass
+        log.info("*" * 30)
+        log.info('***** 开始执行第6步，增量数据流程 *****')
+        log.info("*" * 30)
+        increment_process = IncrementAddProcess()
+        increment_process.exec_steps()
 
 
 def exec_scheduler():
@@ -51,22 +84,6 @@ def exec_scheduler():
     定时调度
     :return:
     """
-    # show_time()
-
-    # scheduler = BackgroundScheduler()
-    # scheduler.add_job(show_time, 'interval', seconds=60)
-    # # scheduler.add_job(show_time, 'interval', minutes=1, start_date='2022-01-12 01:35:26',end_date='2200-03-29 14:00:10')
-    # scheduler.start()
-    #
-    # try:
-    #     # This is here to simulate application activity (which keeps the main thread alive).
-    #     while True:
-    #         time.sleep(60)
-    #         t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    #         print(t)
-    # except (KeyboardInterrupt, SystemExit):
-    #     # Not strictly necessary if daemonic mode is enabled but should be done if possible
-    #     scheduler.shutdown()
     schedule = Scheduler('thr', 10)
     schedule.start()
 
@@ -82,3 +99,4 @@ if __name__ == '__main__':
     # show_time()
 
     exec_scheduler()
+
