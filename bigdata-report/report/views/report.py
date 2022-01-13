@@ -461,7 +461,7 @@ def finance_unusual_add():
     cost_project = request.form.get('cost_project') if request.form.get('cost_project') else None
     unusual_number = request.form.get('unusual_number') if request.form.get('unusual_number') else None
     number_name = request.form.get('number_name') if request.form.get('number_name') else None
-    unusual_type = request.form.get('unusual_type') if request.form.get('unusual_type') else None
+    #unusual_type = request.form.get('unusual_type') if request.form.get('unusual_type') else None
     unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
@@ -473,7 +473,7 @@ def finance_unusual_add():
     log.info(f'cost_project={cost_project}')
     log.info(f'unusual_number={unusual_number}')
     log.info(f'number_name={number_name}')
-    log.info(f'unusual_type={unusual_type}')
+    #log.info(f'unusual_type={unusual_type}')
     log.info(f'unusual_point={unusual_point}')
     log.info(f'unusual_content={unusual_content}')
     log.info(f'unusual_shell={unusual_shell}')
@@ -536,8 +536,6 @@ def finance_unusual_update():
     # 是否执行，1为执行，0为不执行
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
     unusual_level = str(request.form.get('unusual_level')) if request.form.get('unusual_level') else None
-
-    # sign_status = ''
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
@@ -1695,7 +1693,7 @@ def finance_data_process_query():
     log.info('---- finance_data_process_query ---- ')
 
     query_date = request.form.get('query_date') if request.form.get('query_date') else None
-    log.info(query_date)
+    #log.info(query_date)
 
     if query_date is None or len(query_date) == 0:
         data = {"result": "error", "details": "输入的 query_date 不能为空 或者 没有传递值", "code": 500}
@@ -1729,8 +1727,9 @@ def finance_company_code_query():
     log.info('---- finance_company_code_query ----')
     current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
     page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+    company_name = request.form.get('company_name') if request.form.get('company_name') else None
 
-    log.info(f'current_page={current_page},page_size={page_size}')
+    log.info(f'current_page={current_page},page_size={page_size},company_name={company_name}')
 
     if current_page is None:
         data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
@@ -1743,7 +1742,7 @@ def finance_company_code_query():
         return response
 
     try:
-        count_records, sql, columns_ls = pagination_finance_company_code_records()
+        count_records, sql, columns_ls = pagination_finance_company_code_records(company_name=company_name)
         page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
         records = page_obj.exec_sql(sql, columns_ls)
 
@@ -1773,6 +1772,11 @@ def finance_company_code_add():
     company_code = request.form.get('company_code') if request.form.get('company_code') else ''
     company_old_code = request.form.get('company_old_code') if request.form.get('company_old_code') else None
     iscompany = request.form.get('iscompany') if request.form.get('iscompany') else None
+
+    # print(f'company_name={company_name}')
+    # print(f'company_code={company_code}')
+    # print(f'company_old_code={company_old_code}')
+    # print(f'iscompany={iscompany}')
 
     if company_name is None:
         data = {"result": "error", "details": "输入的 company_name 不能为空", "code": 500}
@@ -1847,13 +1851,14 @@ def finance_company_code_update():
         data = {"result": "error", "details": "输入的 iscompany 不能为空", "code": 500}
         response = jsonify(data)
         return response
+
     try:
         update_finance_company_code(id=id, company_name=company_name, company_code=company_code, company_old_code=company_old_code, iscompany=iscompany)
 
         data = {
             'result': 'ok',
             'code': 200,
-            'details': '成功新增一条"单位code表"记录'
+            'details': '成功修改一条"单位code表"记录'
         }
         response = jsonify(data)
         return response
@@ -1901,3 +1906,4 @@ def finance_company_code_delete():
             'code': 500
         }
         return mk_utf8resp(result)
+

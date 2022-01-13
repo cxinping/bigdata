@@ -14,7 +14,7 @@ from flask import Flask, jsonify
 from .views.report import report_bp
 from .views.test import test_bp
 from report.services.common_services import update_finance_shell_daily_doing_status
-#from report.services.schedulers_services import exec_scheduler
+from report.services.schedulers_services import exec_scheduler
 from report.commons.tools import get_current_time
 from report.commons.logging import get_logger
 

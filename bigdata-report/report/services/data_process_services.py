@@ -361,20 +361,20 @@ class BaseProcess(metaclass=ABCMeta):
         office_fee = '办公费'
         car_fee = '车辆使用费'
 
-        #travel_records = query_finance_unusual(cost_project=travel_fee)
+        travel_records = query_finance_unusual(cost_project=travel_fee)
         meeting_records = query_finance_unusual(cost_project=meeting_fee)
-        # office_records = query_finance_unusual(cost_project=office_fee)
-        # car_records = query_finance_unusual(cost_project=car_fee)
+        office_records = query_finance_unusual(cost_project=office_fee)
+        car_records = query_finance_unusual(cost_project=car_fee)
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
-        # task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
+        task1 = threadPool.submit(self.__exec_step06_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step06_task, meeting_records, meeting_fee)
-        #task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
-       # task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
-       #  all_task.append(task1)
+        task3 = threadPool.submit(self.__exec_step06_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step06_task, car_records, car_fee)
+        all_task.append(task1)
         all_task.append(task2)
-        #all_task.append(task3)
-        #all_task.append(task4)
+        all_task.append(task3)
+        all_task.append(task4)
 
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
@@ -482,28 +482,28 @@ class BaseProcess(metaclass=ABCMeta):
         """
 
         # 清空落地表数据
-        sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_performance_api'
-        log.info('* 第8步，开始清空落地表数据')
-        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-        log.info('* 第8步，成功清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
+        # sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_performance_api'
+        # log.info('* 第8步，开始清空落地表数据')
+        # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+        # log.info('* 第8步，成功清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
 
-        travel_fee = '差旅费'
+        #travel_fee = '差旅费'
         meeting_fee = '会议费'
         office_fee = '办公费'
         car_fee = '车辆使用费'
 
-        travel_records = query_temp_performance_bill_by_target_classify(travel_fee)
+        #travel_records = query_temp_performance_bill_by_target_classify(travel_fee)
         meeting_records = query_temp_performance_bill_by_target_classify(meeting_fee)
         office_records = query_temp_performance_bill_by_target_classify(office_fee)
         car_records = query_temp_performance_bill_by_target_classify(car_fee)
 
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
-        task1 = threadPool.submit(self.__exec_step08_task, travel_records, travel_fee)
+        #task1 = threadPool.submit(self.__exec_step08_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step08_task, meeting_records, meeting_fee)
         task3 = threadPool.submit(self.__exec_step08_task, office_records, office_fee)
         task4 = threadPool.submit(self.__exec_step08_task, car_records, car_fee)
-        all_task.append(task1)
+        #all_task.append(task1)
         all_task.append(task2)
         all_task.append(task3)
         all_task.append(task4)
@@ -519,8 +519,9 @@ class BaseProcess(metaclass=ABCMeta):
                 sql = str(record[0])
                 order_number = str(record[1])
 
-                prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-                log.info(f'* 第8步，成功执行序号为 {order_number} ,target_classify为 {target_classify} 的SQL')
+                if order_number == '13':
+                    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+                    log.info(f'* 第8步，成功执行序号为 {order_number} ,target_classify为 {target_classify} 的SQL')
 
             process_status = 'sucess'
             daily_end_date = get_current_time()
@@ -588,11 +589,11 @@ class FullAddProcess(BaseProcess):
 
         #self.exec_step05()
 
-        self.exec_step06()
+        #self.exec_step06()
 
         #self.exec_step07()
 
-        #self.exec_step08()
+        self.exec_step08()
 
 
 class IncrementAddProcess(BaseProcess):

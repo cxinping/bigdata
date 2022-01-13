@@ -5,6 +5,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from report.commons.logging import get_logger
 import threading
 import time
+from report.commons.tools import get_current_time
 
 log = get_logger(__name__)
 
@@ -18,16 +19,28 @@ class Scheduler(threading.Thread):
     def run(self):
         print("开始线程：" + self.name)
         while True:
-            self.show_time(self.name )
-            time.sleep(5)
+            self.show_time(self.name)
+
+            time.sleep(60 * 3)
 
         print("退出线程：" + self.name)
 
     def show_time(self, text='task'):
-        t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        # t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+        t = get_current_time()
+        data = t.split(' ')
+        hour_minute = data[1].split(':')
+        hour = hour_minute[0]
+        minute = hour_minute[1]
+
+        # print('hour_minute=> ', hour_minute)
+        # print('hour=> ', hour)
+        # print('minute=> ', minute)
+
         log.info('*' * 30)
         log.info('*** {} ---> {}'.format(text, t))
         log.info('*' * 30)
+        print()
 
     def task(self):
         pass
@@ -66,6 +79,6 @@ def show_time(text='task'):
 
 
 if __name__ == '__main__':
-    #show_time()
+    # show_time()
 
     exec_scheduler()

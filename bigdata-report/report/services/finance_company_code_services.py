@@ -14,16 +14,16 @@ def insert_finance_company_code(company_name, company_code, company_old_code, is
     添加单位code表的数据
     :return:
     """
-    process_id = create_uuid()
+    id = create_uuid()
     try:
-        # log.info('*** insert_finance_company_code ***')
+        log.info('*** insert_finance_company_code ***')
         sql = f"""
-        insert into 01_datamart_layer_007_h_cw_df.insert_finance_company_code(company_name, company_code, company_old_code, iscompany) 
-        values("{company_name}", "{company_code}", "{company_old_code}","{iscompany}"  )
+        insert into 01_datamart_layer_007_h_cw_df.finance_company_code(id, company_name, company_code, company_old_code, iscompany) 
+        values("{id}", "{company_name}", "{company_code}", "{company_old_code}","{iscompany}"  )
         """.replace('\n', '').replace('\r', '').strip()
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-        return process_id
+        return id
     except Exception as e:
         print(e)
         raise RuntimeError(e)
@@ -63,36 +63,58 @@ def del_finance_company_code(ids):
                     condition_sql = condition_sql + ' OR ' + temp
 
             sql = sql + condition_sql
-            # log.info(sql)
+
+            #log.info(sql)
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
     except Exception as e:
         print(e)
         raise RuntimeError(e)
 
 
-def pagination_finance_company_code_records():
+def pagination_finance_company_code_records(company_name=None):
     """
     分页查询单位code表的记录
 
     :return:
     """
-    columns_ls = ['id', 'company_name', 'company_code', 'company_old_code', 'iscompany' ]
-    columns_str = ",".join(columns_ls)
-    sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_company_code "
 
-    count_sql = 'SELECT count(1) FROM ({sql}) a'.format(sql=sql)
-    log.info(count_sql)
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
-    count_records = records[0][0]
+
+    #sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_company_code "
+
+    # count_sql = 'SELECT count(1) FROM ({sql}) a'.format(sql=sql)
+    # log.info(count_sql)
+    # records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
+    # count_records = records[0][0]
     # print('* count_records => ', count_records)
 
     ###### 拼装查询SQL
+    # where_sql = 'WHERE '
+    # condition_sql = ''
+    #
+    # where_sql = where_sql + ' 1=1 '
+    #
+    # order_sql = ' ORDER BY id ASC '
+    # sql = sql + where_sql + order_sql
+
+    columns_ls = ['id', 'company_name', 'company_code', 'company_old_code', 'iscompany' ]
+    columns_str = ",".join(columns_ls)
+
+    ###### 拼装查询SQL
+
     where_sql = 'WHERE '
-    condition_sql = ''
 
-    where_sql = where_sql + ' 1=1 '
+    if company_name is None:
+        where_sql = where_sql + f' 1=1  '
+    elif company_name:
+        where_sql = where_sql + f' company_name like "%{company_name}%"   '
 
+    sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_company_code "
     order_sql = ' ORDER BY id ASC '
     sql = sql + where_sql + order_sql
+
+    count_sql = 'SELECT count(a.id) FROM ({sql}) a'.format(sql=sql)
+    #log.info(count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
+    count_records = records[0][0]
 
     return count_records, sql, columns_ls

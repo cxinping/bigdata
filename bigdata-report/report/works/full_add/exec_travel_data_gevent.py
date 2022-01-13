@@ -26,6 +26,7 @@ select * from  02_logical_layer_007_h_lf_cw.finance_travel_linshi_analysis
 
 cd /you_filed_algos/app
 
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent.py 2022 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent.py 2021 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent.py 2020 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent.py 2019 &
@@ -160,6 +161,8 @@ def execute_02_data(year):
 
         # 刷新临时表
         refresh_linshi_table()
+
+        init_file(year)
     else:
         log.info(f'* 查询日期 => {year}， 没有查询到任何数据')
 

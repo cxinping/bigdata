@@ -230,6 +230,8 @@ def main():
     test_hdfs.uploadFile2(hdfsDirPath=upload_hdfs_path, localPath=dest_file)
 
     refresh_linshi_table()
+
+    init_file()
     print('--- ok ---')
 
 
