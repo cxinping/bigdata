@@ -14,6 +14,8 @@ from report.works.increment_add.exec_meeting_linshi_data import check_linshi_mee
 from report.works.increment_add.exec_car_linshi_data import check_linshi_car_data
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
 import time
+from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily)
+
 
 log = get_logger(__name__)
 
@@ -125,8 +127,17 @@ def query_temp_performance_bill_by_target_classify(target_classify):
         raise RuntimeError(e)
 
 
-def exec_temp_performance_bill(performance_ids):
+def exec_temp_performance_bill(performance_ids, is_log=True):
     try:
+        daily_start_date = get_current_time()
+
+        if is_log:
+            daily_id = insert_finance_shell_daily(daily_status='ok', daily_start_date=daily_start_date,
+                                                  daily_end_date='', unusual_point='',
+                                                  daily_source='sql',
+                                                  operate_desc=f'doing', unusual_infor='',
+                                                  task_status='doing', daily_type='绩效')
+
         records = query_temp_performance_bill(performance_ids)
         # print(len(records), records)
 
@@ -134,8 +145,18 @@ def exec_temp_performance_bill(performance_ids):
             performance_sql = record[0]
             # print(performance_sql)
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=performance_sql)
+
+        if is_log:
+            operate_desc = f'成功执行绩效表中的SQL'
+            daily_end_date = get_current_time()
+            update_finance_shell_daily(daily_id, daily_end_date, task_status='done', operate_desc=operate_desc)
     except Exception as e:
         print(e)
+        if is_log:
+            error_info = str(e)
+            daily_end_date = get_current_time()
+            update_finance_shell_daily(daily_id, daily_end_date, task_status='error', operate_desc=error_info)
+
         raise RuntimeError(e)
 
 
@@ -145,7 +166,7 @@ def query_finance_data_process(query_date):
     :param query_date:
     :return:
 
-                select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
+    select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
 (select distinct * from (
 select
 step_number,
@@ -164,7 +185,7 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
 
         sel_sql = """
-            select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
+    select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
 (select distinct * from (
 select 
 step_number,
@@ -651,9 +672,9 @@ class IncrementAddProcess(BaseProcess):
 
         try:
             # 删除结果表中的数据
-            # sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
-            # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-            # log.info('增量数据流程执行第6步，首先删除结果表中的数据')
+            sql = 'delete from analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets'
+            prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+            log.info('增量数据流程执行第7步，首先删除结果表中的数据')
 
             super().exec_step07()
         except Exception as e:
@@ -684,11 +705,11 @@ class IncrementAddProcess(BaseProcess):
 
         # self.exec_step06()
 
-        # self.exec_step07()
+        self.exec_step07()
 
-        self.exec_step08()
+        #self.exec_step08()
 
-        # self.exec_step09()
+        self.exec_step09()
 
 
 

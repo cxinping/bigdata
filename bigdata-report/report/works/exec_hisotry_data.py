@@ -196,8 +196,11 @@ def process_finance_unusual():
     sql_lvl3 = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_level ="3" WHERE unusual_id in ("0101", "26" , "32" , "35", "44" , "48", "55" , "57", "59"   ) '
     sql_lvl4 = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_level ="4" WHERE unusual_id in ("2401", "54", "01", "41", "47", "50", "51", "58", "64", "2401", "24" , "08" , "09", "17" , "21", "29" , "30", "34" , "38" , "45"  ) '
 
-    log.info(sql_lvl4)
-    # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql_lvl4)
+    log.info(sql_lvl1)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql_lvl1)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql_lvl2)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql_lvl3)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql_lvl4)
 
     # for unusual_id in ['06', '07', '10', '13', '14', '15', '18', '19', '33', '36', '49', '60', '61', '62']:
     #     del_sql = f'delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id = "{unusual_id}" '
@@ -254,11 +257,11 @@ def demo4():
 if __name__ == '__main__':
     # del_history_exception_data()
     # process_finance_shell_daily()
-    # process_finance_unusual()
+    process_finance_unusual()
 
     # demo1()
     #demo2()
     # exec_sql()
     #demo3()
-    demo4()
-    print('--- ok , executed 111 ---')
+    #demo4()
+    print('--- ok , executed 222 ---')
