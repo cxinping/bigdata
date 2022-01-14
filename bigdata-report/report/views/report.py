@@ -1691,7 +1691,6 @@ def temp_performance_bill_execute():
 @report_bp.route('/finance_data/data/process/query', methods=['POST'])
 def finance_data_process_query():
     log.info('---- finance_data_process_query ---- ')
-
     query_date = request.form.get('query_date') if request.form.get('query_date') else None
     #log.info(query_date)
 

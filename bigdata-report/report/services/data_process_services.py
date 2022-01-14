@@ -144,13 +144,25 @@ def query_finance_data_process(query_date):
     查询流程表中的数据,查询当天的每步骤最新数据
     :param query_date:
     :return:
+
+                select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
+(select distinct * from (
+select
+step_number,
+first_value(daily_end_date) over(partition by step_number order by daily_end_date desc) max_end_date
+FROM 01_datamart_layer_007_h_cw_df.finance_data_process
+WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{query_date}'
+AND process_status = 'sucess'
+ORDER BY step_number ASC) zz) bb
+where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
+
     """
     try:
         columns_ls = ['process_id', 'process_status', 'daily_start_date', 'daily_end_date', 'step_number',
                       'operate_desc', 'orgin_source', 'destin_source', 'importdate']
         columns_str = ",".join(columns_ls)
+        sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
 
-        #sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
         sel_sql = """
             select cc.* from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
 (select distinct * from (
@@ -159,12 +171,11 @@ step_number,
 first_value(daily_end_date) over(partition by step_number order by daily_end_date desc) max_end_date
 FROM 01_datamart_layer_007_h_cw_df.finance_data_process 
 WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{query_date}' 
-AND process_status = 'sucess'  
 ORDER BY step_number ASC) zz) bb
 where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         """.format(query_date=query_date)
 
-        # log.info(sel_sql)
+        log.info(sel_sql)
 
         records = db_fetch_to_dict(sel_sql, columns_ls)
         return records
@@ -536,7 +547,7 @@ class BaseProcess(metaclass=ABCMeta):
             insert_finance_data_process(process_status, target_classify,daily_start_date, daily_end_date, step_number, operate_desc,
                                         orgin_source, destin_source, importdate)
         except Exception as e:
-            log.error(f'* 执行第9步，序号为 {order_number} 的SQL报错,target_classify为 {target_classify} 的SQL')
+            log.error(f'* 执行第8步，序号为 {order_number} 的SQL报错,target_classify为 {target_classify} 的SQL')
             # print(sql)
             print(e)
             process_status = 'false'
@@ -669,15 +680,16 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        self.exec_linshi_daily_data()
-
-        # self.exec_step05()
+        #self.exec_linshi_daily_data()
 
         # self.exec_step06()
 
         # self.exec_step07()
 
-        # self.exec_step08()
+        self.exec_step08()
+
+        # self.exec_step09()
+
 
 
 if __name__ == '__main__':

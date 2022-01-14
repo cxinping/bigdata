@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import time
-#from apscheduler.schedulers.blocking import BlockingScheduler
-#from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.schedulers.blocking import BlockingScheduler
+# from apscheduler.schedulers.background import BackgroundScheduler
 from report.commons.logging import get_logger
 import threading
 import time
-from report.commons.tools import get_current_time,get_current_year_month_day
+from report.commons.tools import get_current_time
 from report.services.data_process_services import IncrementAddProcess
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
@@ -20,16 +20,16 @@ class Scheduler(threading.Thread):
         self.delay = delay
 
     def run(self):
-        #print("开始线程：" + self.name)
+        # print("开始线程：" + self.name)
         while True:
-            #self.show_time(self.name)
-            self.check_current_finance_data_process()
+            # self.show_time(self.name)
+            self.check_execute_step05()
 
-            time.sleep(60 * 5)
+            time.sleep(60 * 1)
 
         print("退出线程：" + self.name)
 
-    def check_current_finance_data_process(self):
+    def check_execute_step05(self):
         """
         判断流程表中已经执行了第5步
         :return:
@@ -42,11 +42,9 @@ class Scheduler(threading.Thread):
 
             t = get_current_time()
             data = t.split(' ')
-            year_month_day = str(data[0]).replace('-','')
-            #print(year_month_day)
-
+            year_month_day = str(data[0]).replace('-', '')
             sel_sql = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' AND process_status = 'sucess'  ORDER BY step_number ASC  "
-
+            # log.info(sel_sql)
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
             for record in records:
                 print(record)
@@ -99,4 +97,3 @@ if __name__ == '__main__':
     # show_time()
 
     exec_scheduler()
-

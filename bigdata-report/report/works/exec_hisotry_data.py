@@ -246,92 +246,7 @@ def demo4():
     sql = 'select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill where commodityname is not null and commodityname !='''
 
     sql2 ="""
-    insert into 01_datamart_layer_007_h_cw_df.finance_performance_api
-(id,interface_id,account_period,company_code,company_name,receipt_city,iscompany,
-original_tax_amount,last_original_tax_amount,taxt_amount,last_taxt_amount)
-select uuid(),
-       '46',
-     concat(substr(a.account_period,1,4),substr(a.account_period,6,2)) as account_period,
-       a.company_code,
-       a.company_name,
-       a.receipt_city,
-     a.iscompany,
-       a.original_tax_amount,
-       nvl(b.original_tax_amount,0) as last_original_tax_amount,
-       a.taxt_amount,
-       nvl(b.taxt_amount,0) as last_taxt_amount 
-from
-(select 
-account_period,
-company_code,
-company_name,
-receipt_city,
-iscompany,
-sum(original_tax_amount) as original_tax_amount,
-sum(taxt_amount) as  taxt_amount
-from 
-(select distinct bill_code,
-from_unixtime(unix_timestamp(concat(substr(account_period,1,4),
-if(cast(substr(account_period,6,2) as int)>12,'12',substr(account_period,6,2)),'01'),'yyyyMMdd'),'yyyy-MM-dd') as account_period,
-company_code,
-company_name,
-receipt_city,
-iscompany,
-original_tax_amount,
-taxt_amount
-from 01_datamart_layer_007_h_cw_df.finance_meeting_bill
-where invoice_type_name='增值税专用发票' and 
-      account_period is not null and 
-      receipt_city is not null and 
-      invo_code is not null and 
-    iscompany is not null and 
-      invo_number is not null and 
-      invo_code != '' and 
-      invo_number != '' and 
-      company_name is not null and 
-      company_name != '' )zz
-group by account_period,company_code,company_name,receipt_city,iscompany)a
-
-left join
-
-(select 
-account_period,
-company_code,
-company_name,
-receipt_city,
-iscompany, 
-sum(original_tax_amount) as original_tax_amount,
-sum(taxt_amount) as  taxt_amount
-from 
-(select distinct bill_code,
-from_unixtime(unix_timestamp(concat(substr(account_period,1,4),
-if(cast(substr(account_period,6,2) as int)>12,'12',substr(account_period,6,2)),'01'),'yyyyMMdd'),'yyyy-MM-dd') as account_period,
-company_code,
-company_name,
-receipt_city,
-iscompany, 
-original_tax_amount,
-taxt_amount
-from 01_datamart_layer_007_h_cw_df.finance_meeting_bill
-where invoice_type_name='增值税专用发票' and 
-      account_period is not null and 
-      receipt_city is not null and 
-    iscompany is not null and 
-      invo_code is not null and 
-      invo_number is not null and 
-      invo_code != '' and 
-      invo_number != '' and 
-      company_name is not null and 
-      company_name != '' )zz
-group by account_period,company_code,company_name,receipt_city,iscompany )b
-
-on a.receipt_city=b.receipt_city and 
-   a.company_name=b.company_name and 
-   a.account_period is not null and 
-   a.iscompany=b.iscompany and 
-   day(a.account_period)=day(b.account_period) and 
-   month(a.account_period)=month(b.account_period) and
-   year(a.account_period)-1=year(b.account_period)
+    delete from 01_datamart_layer_007_h_cw_df.finance_performance_api
     """
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql2)
 
@@ -342,8 +257,8 @@ if __name__ == '__main__':
     # process_finance_unusual()
 
     # demo1()
-    demo2()
+    #demo2()
     # exec_sql()
     #demo3()
-    #demo4()
-    print('--- ok , executed 222 ---')
+    demo4()
+    print('--- ok , executed 111 ---')
