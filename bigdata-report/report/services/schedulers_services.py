@@ -25,7 +25,7 @@ class Scheduler(threading.Thread):
             # self.show_time(self.name)
             self.check_execute_step05()
 
-            time.sleep(60 * 1)
+            time.sleep(60 * 10)
 
         print("退出线程：" + self.name)
 
@@ -44,7 +44,7 @@ class Scheduler(threading.Thread):
             data = t.split(' ')
             year_month_day = str(data[0]).replace('-', '')
             sel_sql = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' AND process_status = 'sucess'  ORDER BY step_number ASC  "
-            # log.info(sel_sql)
+            log.info(sel_sql)
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
             for record in records:
                 print(record)

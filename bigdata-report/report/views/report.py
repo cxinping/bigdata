@@ -44,7 +44,7 @@ log = get_logger(__name__)
 
 report_bp = Blueprint('report', __name__)
 
-executor = ThreadPoolExecutor(200)
+executor = ThreadPoolExecutor(10)
 
 ############  【费用标准（finance_standard）相关】  ############
 

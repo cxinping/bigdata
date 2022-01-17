@@ -6,6 +6,8 @@ from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
 from report.commons.settings import CONN_TYPE
+from report.exts import executor
+import time
 
 log = get_logger(__name__)
 test_bp = Blueprint('test', __name__)
@@ -54,3 +56,26 @@ def finance_unusual_update():
         }
         response = jsonify(data)
         return response
+
+
+@test_bp.route('/jobs')
+def run_jobs():
+    start_time = time.perf_counter()
+
+    executor.submit(some_long_task2, 'hello', 100)
+
+    consumed_time = round(time.perf_counter() - start_time)
+
+    data = {
+        'result' : 'Two jobs was launched in background!',
+        "consumed_time": consumed_time
+    }
+    response = jsonify(data)
+    return response
+
+
+def some_long_task2(arg1, arg2):
+    print("Task #2 started with args: %s %s!" % (arg1, arg2))
+    time.sleep(30)
+    print("Task #2 is done!")
+

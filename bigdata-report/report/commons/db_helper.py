@@ -27,7 +27,7 @@ def query_kudu_data(sql=None, columns=[], conn_type=CONN_TYPE):
         if columns:
             # for idx in range(len(columns)):
             for idx, _ in enumerate(columns):
-                # print(item[idx], type(item[idx]))
+                #print(item[idx], type(item[idx]))
 
                 if str(item[idx]) == "None":
                     record.append(None)
