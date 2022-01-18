@@ -395,10 +395,72 @@ class BaseProcess(metaclass=ABCMeta):
         office_fee = '办公费'
         car_fee = '车辆使用费'
 
-        travel_records = query_finance_unusual(cost_project=travel_fee)
-        meeting_records = query_finance_unusual(cost_project=meeting_fee)
-        office_records = query_finance_unusual(cost_project=office_fee)
-        car_records = query_finance_unusual(cost_project=car_fee)
+        daily_start_date = get_current_time()
+
+        try:
+            travel_records = query_finance_unusual(cost_project=travel_fee)
+        except Exception as e:
+            log.error(f'* 执行第7步，查询目标分类为 {travel_fee} 的SQL报错')
+            print(e)
+            process_status = 'false'
+            daily_end_date = get_current_time()
+            step_number = '7'
+            operate_desc = str(e)
+            orgin_source = 'kudu分析表'
+            destin_source = 'kudu落地表'
+            importdate = get_yyyymmdd_date()
+            insert_finance_data_process(process_status, travel_fee, daily_start_date, daily_end_date,
+                                        step_number, operate_desc,
+                                        orgin_source, destin_source, importdate)
+
+        try:
+            meeting_records = query_finance_unusual(cost_project=meeting_fee)
+        except Exception as e:
+            log.error(f'* 执行第7步，查询目标分类为 {travel_fee} 的SQL报错')
+            print(e)
+            process_status = 'false'
+            daily_end_date = get_current_time()
+            step_number = '7'
+            operate_desc = str(e)
+            orgin_source = 'kudu分析表'
+            destin_source = 'kudu落地表'
+            importdate = get_yyyymmdd_date()
+            insert_finance_data_process(process_status, travel_fee, daily_start_date, daily_end_date,
+                                        step_number, operate_desc,
+                                        orgin_source, destin_source, importdate)
+
+        try:
+            office_records = query_finance_unusual(cost_project=office_fee)
+        except Exception as e:
+            log.error(f'* 执行第7步，查询目标分类为 {travel_fee} 的SQL报错')
+            print(e)
+            process_status = 'false'
+            daily_end_date = get_current_time()
+            step_number = '7'
+            operate_desc = str(e)
+            orgin_source = 'kudu分析表'
+            destin_source = 'kudu落地表'
+            importdate = get_yyyymmdd_date()
+            insert_finance_data_process(process_status, travel_fee, daily_start_date, daily_end_date,
+                                        step_number, operate_desc,
+                                        orgin_source, destin_source, importdate)
+
+        try:
+            car_records = query_finance_unusual(cost_project=car_fee)
+        except Exception as e:
+            log.error(f'* 执行第7步，查询目标分类为 {travel_fee} 的SQL报错')
+            print(e)
+            process_status = 'false'
+            daily_end_date = get_current_time()
+            step_number = '7'
+            operate_desc = str(e)
+            orgin_source = 'kudu分析表'
+            destin_source = 'kudu落地表'
+            importdate = get_yyyymmdd_date()
+            insert_finance_data_process(process_status, travel_fee, daily_start_date, daily_end_date,
+                                        step_number, operate_desc,
+                                        orgin_source, destin_source, importdate)
+
         threadPool = ThreadPoolExecutor(max_workers=4, thread_name_prefix="thr")
         all_task = []
         task1 = threadPool.submit(self.__exec_step07_task, travel_records, travel_fee)
@@ -522,10 +584,10 @@ class BaseProcess(metaclass=ABCMeta):
         """
 
         # 清空落地表数据
-        # sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_performance_api'
-        # log.info('* 第8步，开始清空落地表数据')
-        # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
-        # log.info('* 第8步，成功清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
+        sql = 'delete from 01_datamart_layer_007_h_cw_df.finance_performance_api'
+        log.info('* 第8步，开始清空落地表数据')
+        prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
+        log.info('* 第8步，成功清空落地表数据 ==> 01_datamart_layer_007_h_cw_df.finance_performance_api')
 
         travel_fee = '差旅费'
         meeting_fee = '会议费'

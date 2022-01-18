@@ -273,13 +273,31 @@ order by step_number
 def demo4():
     sql = 'select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill where commodityname is not null and commodityname !='''
 
-    sql2 = """
-    select * from 01_datamart_layer_007_h_cw_df.finance_unusual
+    year_month_day = '20220118'
+
+    del_sql = f"""
+    delete from 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' )
+    AND step_number in ('6', '7', '8', '9')
+    """
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
+
+    sel_sql = f"""
+    select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND 
+    process_status = 'sucess'  ORDER BY step_number ASC
     """
 
-    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
     for record in records:
-        # print('unusual_id=', record[2])
+        print(record)
+        # print()
+
+
+def demo5():
+    sel_sql = """
+    select unusual_id,number_name from 01_datamart_layer_007_h_cw_df.finance_unusual
+    """
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
+    for record in records:
         print(record)
         # print()
 
@@ -294,6 +312,7 @@ if __name__ == '__main__':
     # exec_sql()
 
     # demo3()
-    demo4()
+    #demo4()
+    demo5()
 
     print('--- ok , executed 111 ---')

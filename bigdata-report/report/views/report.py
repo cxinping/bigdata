@@ -707,7 +707,7 @@ def finance_unusual_delete():
 def finance_unusual_execute():
     log.info('----- finance_unusual execute -----')
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
-    log.info(f'unusual_id={unusual_id},{type(unusual_id)}')
+    log.info(f'unusual_id={unusual_id} ')
 
     if unusual_id is None:
         log.info('*** unusual_id is None')
@@ -720,9 +720,20 @@ def finance_unusual_execute():
             select unusual_id,unusual_shell,isalgorithm from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
                 """.replace('\n', '')
 
-        # log.info(sql)
+        log.info(sql)
 
         result = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql)
+        if len(result) == 0:
+            data = {
+                'result': 'error',
+                'code': 500,
+                'details': f'没有找到检查点unusual_id为{unusual_id}的脚本'
+            }
+            response = jsonify(data)
+            return response
+
+        log.info(result)
+
         unusual_shell = str(result[0][1])
         # "1为sql类, 2为算法类"
         isalgorithm = str(result[0][2])

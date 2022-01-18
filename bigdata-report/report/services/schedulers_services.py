@@ -23,7 +23,7 @@ class Scheduler(threading.Thread):
             # self.show_time(self.name)
             self.check_execute_step05()
 
-            time.sleep(60 * 2)
+            time.sleep(60 * 5)
 
         print("退出线程：" + self.name)
 
@@ -40,9 +40,10 @@ class Scheduler(threading.Thread):
 
             t = get_current_time()
             data = t.split(' ')
-            #year_month_day = str(data[0]).replace('-', '')
+            year_month_day = str(data[0]).replace('-', '')
 
-            year_month_day = '20220117'
+            #year_month_day = '20220118'
+
             sel_sql = f"""
             select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND 
             process_status = 'sucess'  ORDER BY step_number ASC
@@ -54,7 +55,8 @@ class Scheduler(threading.Thread):
             is_excute_step6789 = False
             if len(records) > 0:
                 for record in records:
-                    print(record)
+                    #print(record)
+
                     step_number = str(record[4])
                     if step_number == '5':
                         is_execute_step05 = True
@@ -62,7 +64,6 @@ class Scheduler(threading.Thread):
                     if step_number in ['6', '7', '8', '9']:
                         is_excute_step6789 = True
 
-                    print()
             else:
                 log.info('*** 没有查询数据 ***')
 
@@ -96,8 +97,8 @@ class Scheduler(threading.Thread):
         log.info("*" * 30)
         log.info('***** 开始执行第6步，增量数据流程 *****')
         log.info("*" * 30)
-        # increment_process = IncrementAddProcess()
-        # increment_process.exec_steps()
+        increment_process = IncrementAddProcess()
+        increment_process.exec_steps()
 
 
 def exec_scheduler():

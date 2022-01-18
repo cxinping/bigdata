@@ -4,13 +4,20 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from pyramid.arima import auto_arima
+#from pyramid.arima import auto_arima
 from report.commons.logging import get_logger
 import os
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.db_helper import query_kudu_data
 import sys
+import six
+
+sys.modules['sklearn.externals.six'] = six
+import joblib
+
+sys.modules['sklearn.externals.joblib'] = joblib
+from pyramid.arima import auto_arima
 
 sys.path.append('/you_filed_algos/app')
 
