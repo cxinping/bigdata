@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import time
+
 from report.commons.logging import get_logger
 import threading
 import time

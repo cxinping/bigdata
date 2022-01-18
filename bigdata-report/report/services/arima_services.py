@@ -21,8 +21,6 @@ log = get_logger(__name__)
 dest_dir = '/you_filed_algos/prod_kudu_data/temp'
 dest_file = dest_dir + '/arima_data.txt'
 
-test_limit_cond = ''  # 'LIMIT 1000'``
-
 
 def init_file(dest_file):
     if not os.path.exists(dest_dir):

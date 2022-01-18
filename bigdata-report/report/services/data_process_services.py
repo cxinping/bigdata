@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from abc import ABCMeta, abstractmethod
 from report.commons.tools import create_uuid
-from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.services.temp_api_bill_services import exec_temp_api_bill_sql_by_target
@@ -13,8 +12,8 @@ from report.works.increment_add.exec_offical_linshi_data import check_linshi_off
 from report.works.increment_add.exec_meeting_linshi_data import check_linshi_meeting_data
 from report.works.increment_add.exec_car_linshi_data import check_linshi_car_data
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
-import time
 from report.services.common_services import (insert_finance_shell_daily, update_finance_shell_daily)
+from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
 
@@ -312,7 +311,7 @@ class BaseProcess(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def exec_steps(self, data_date):
+    def exec_steps(self):
         pass
 
     def exec_step06(self):
