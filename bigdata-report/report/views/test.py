@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
+
 from flask import Blueprint, jsonify, request
-
 from report.commons.connect_kudu2 import prod_execute_sql
-
 from report.commons.logging import get_logger
 from report.commons.tools import transfer_content
 from report.commons.settings import CONN_TYPE

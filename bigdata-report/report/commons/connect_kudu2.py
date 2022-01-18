@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import sys
-
 sys.path.append("/usr/local/lib64/python3.6/site-packages")
 
 import jaydebeapi
