@@ -769,9 +769,9 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        self.exec_linshi_daily_data()
+        #self.exec_linshi_daily_data()
 
-        self.exec_step06()
+        #self.exec_step06()
 
         self.exec_step07()
 

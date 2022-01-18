@@ -4,20 +4,15 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-#from pyramid.arima import auto_arima
 from report.commons.logging import get_logger
 import os
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.db_helper import query_kudu_data
 import sys
-import six
 
-sys.modules['sklearn.externals.six'] = six
-import joblib
-
-sys.modules['sklearn.externals.joblib'] = joblib
 from pyramid.arima import auto_arima
+from datetime import datetime
 
 sys.path.append('/you_filed_algos/app')
 
@@ -144,6 +139,8 @@ def query_data2():
                         names=["bill_beg_date", "between_date", "member_cont"])
     # print(rd_df)
 
+    init_file(dest_file)
+
     return rd_df
 
 
@@ -184,12 +181,32 @@ def exec_arima(query_date=None):
     model = auto_arima(train_data, trace=True, error_action='ignore', suppress_warnings=True)
     model.fit(train_data)
 
+    dt_index = pd.to_datetime(
+        ['2022-01', '2022-02', '2022-03', '2022-04', '2022-05', '2022-06', '2022-07', '2022-08', '2022-09', '2022-10',
+         '2022-11', '2022-12'])
+    test_data2 = pd.DataFrame({'Prediction': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, index=dt_index)
     # 预测数据
-    forecast = model.predict(n_periods=len(test_data))
-    forecast = pd.DataFrame(forecast, index=test_data.index, columns=['Prediction'])
+    forecast = model.predict(n_periods=len(test_data2))
+    forecast = pd.DataFrame(forecast, index=test_data2.index, columns=['Prediction'])
 
+    print('***  显示预测值 ********')
+    print(len(forecast))
     print(forecast)
 
+    # 展示预测曲线
+    # plt.plot(train_data)
+    # plt.plot(test_data, label='Valid')
+    # plt.plot(forecast, label='Prediction')
+    # plt.show()
+
+    forecast.reset_index(level=0, inplace=True)
+    forecast = forecast.rename(columns={'index': 'date'})
+    forecast['date'] = forecast['date'].dt.strftime('%Y-%m')
+    print(forecast)
+
+    result = forecast.to_dict('records')
+    print(result)
+    return result
 
 if __name__ == '__main__':
     exec_arima()

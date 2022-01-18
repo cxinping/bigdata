@@ -37,8 +37,11 @@ from report.services.data_process_services import (insert_temp_performance_bill,
                                                    del_temp_performance_bill, query_temp_performance_bill,
                                                    pagination_temp_performance_bill_records, exec_temp_performance_bill,
                                                    query_finance_data_process)
-from report.services.finance_company_code_services import (insert_finance_company_code, update_finance_company_code ,del_finance_company_code, pagination_finance_company_code_records)
+from report.services.finance_company_code_services import (insert_finance_company_code, update_finance_company_code,
+                                                           del_finance_company_code,
+                                                           pagination_finance_company_code_records)
 from report.services.finance_unusual_services import pagination_finance_unusual_records
+from report.services.arima_services import exec_arima
 from report.commons.tools import create_uuid
 from report.commons.settings import CONN_TYPE
 
@@ -47,6 +50,7 @@ log = get_logger(__name__)
 report_bp = Blueprint('report', __name__)
 
 executor = ThreadPoolExecutor(10)
+
 
 ############  【费用标准（finance_standard）相关】  ############
 
@@ -535,7 +539,6 @@ def finance_unusual_add():
     #     response = jsonify(data)
     #     return response
 
-
     # 对输入的python脚本进行转义
     unusual_shell = transfer_content(unusual_shell)
     finance_id = create_uuid()
@@ -585,6 +588,7 @@ def finance_unusual_update():
     log.info(f'finance_id={finance_id}')
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
+    log.info(f'unusual_shell={type(unusual_shell)}')
     log.info(f'unusual_content={unusual_content}')
     log.info(f'isalgorithm={isalgorithm}')
     log.info(f'sign_status={sign_status}')
@@ -676,8 +680,8 @@ def finance_unusual_delete():
 
     try:
         sql = f"""
-        delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{finance_id}'
-            """#.replace('\n', '')
+        delete from 01_datamart_layer_007_h_cw_df.finance_unusual where finance_id='{finance_id}'
+            """  # .replace('\n', '')
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
@@ -697,9 +701,6 @@ def finance_unusual_delete():
         }
         response = jsonify(data)
         return response
-
-
-
 
 
 # http://10.5.138.11:8004/report/finance_unusual/execute
@@ -1046,7 +1047,6 @@ def query_all_finance_category_sign():
         response = jsonify(data)
         return response
 
-
     try:
         log.info(f'unusual_id={unusual_id}, category_classify={category_classify}')
 
@@ -1272,7 +1272,7 @@ def query_finance_shell_daily():
 def temp_api_execute_by_target():
     log.info('---- temp_api_execute_by_target ----')
     target_classify = str(request.form.get('target_classify')) if request.form.get('target_classify') else None
-    #log.info(target_classify)
+    # log.info(target_classify)
 
     if target_classify is None:
         data = {"result": "error", "details": "输入的 target_classify 不能为空", "code": 500}
@@ -1549,7 +1549,8 @@ def temp_performance_bill_add():
     performance_sql = transfer_content(performance_sql)
 
     try:
-        insert_temp_performance_bill(order_number=order_number, target_classify=target_classify,describe_num=describe_num, sign_status=sign_status,
+        insert_temp_performance_bill(order_number=order_number, target_classify=target_classify,
+                                     describe_num=describe_num, sign_status=sign_status,
                                      performance_sql=performance_sql)
         data = {
             'result': 'ok',
@@ -1687,7 +1688,7 @@ def temp_performance_bill_delete():
 
     try:
         performance_ids = str(performance_ids).split(',')
-        #print(performance_ids)
+        # print(performance_ids)
 
         del_temp_performance_bill(performance_ids)
 
@@ -1753,7 +1754,7 @@ def temp_performance_bill_execute():
 def finance_data_process_query():
     log.info('---- finance_data_process_query ---- ')
     query_date = request.form.get('query_date') if request.form.get('query_date') else None
-    #log.info(query_date)
+    # log.info(query_date)
 
     if query_date is None or len(query_date) == 0:
         data = {"result": "error", "details": "输入的 query_date 不能为空 或者 没有传递值", "code": 500}
@@ -1777,6 +1778,7 @@ def finance_data_process_query():
             'code': 500
         }
         return mk_utf8resp(result)
+
 
 ############  【单位code表】  ############
 
@@ -1858,7 +1860,8 @@ def finance_company_code_add():
         response = jsonify(data)
         return response
     try:
-        insert_finance_company_code(company_name=company_name, company_code=company_code, company_old_code=company_old_code, iscompany=iscompany)
+        insert_finance_company_code(company_name=company_name, company_code=company_code,
+                                    company_old_code=company_old_code, iscompany=iscompany)
         data = {
             'result': 'ok',
             'code': 200,
@@ -1913,7 +1916,8 @@ def finance_company_code_update():
         return response
 
     try:
-        update_finance_company_code(id=id, company_name=company_name, company_code=company_code, company_old_code=company_old_code, iscompany=iscompany)
+        update_finance_company_code(id=id, company_name=company_name, company_code=company_code,
+                                    company_old_code=company_old_code, iscompany=iscompany)
 
         data = {
             'result': 'ok',
@@ -1947,7 +1951,7 @@ def finance_company_code_delete():
 
     try:
         ids = str(ids).split(',')
-        #print(ids)
+        # print(ids)
 
         del_finance_company_code(ids)
 
@@ -1967,3 +1971,28 @@ def finance_company_code_delete():
         }
         return mk_utf8resp(result)
 
+
+############  预测  ############
+
+# http://10.5.138.11:8004/report/finance/prediction
+@report_bp.route('/finance/prediction', methods=['POST'])
+def finance_prediction():
+    log.info('---- finance_prediction ---- ')
+
+    try:
+        records = exec_arima()
+        data = {
+            'result': 'ok',
+            'code': 200,
+            'data': records
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)

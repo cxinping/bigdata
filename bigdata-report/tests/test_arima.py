@@ -1,14 +1,24 @@
+# import sys
+# sys.path.append("/usr/local/lib64/python3.6/site-packages")
+
+
 import numpy as np
 import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
-import six
+
 import sys
 
-sys.modules['sklearn.externals.six'] = six
-import joblib
+# import six
+# sys.modules['sklearn.externals.six'] = six
+# import joblib
+# sys.modules['sklearn.externals.joblib'] = joblib
 
-sys.modules['sklearn.externals.joblib'] = joblib
+#import importlib
+# import pyramid as pyramid
+#
+# importlib.reload(pyramid)
+
 from pyramid.arima import auto_arima
 
 import warnings
@@ -17,7 +27,7 @@ print('--- ok ---')
 
 
 def query_data2():
-    dest_file = 'D:/test5/arima_data.txt'
+    dest_file = '/you_filed_algos/prod_kudu_data/temp/arima_data.txt'
     rd_df = pd.read_csv(dest_file, sep=",", header=None,
                         names=["bill_beg_date", "between_date", "member_cont"])
     # print(rd_df)
@@ -76,8 +86,10 @@ def exec_arima(query_date=None):
     model = auto_arima(train_data, trace=True, error_action='ignore', suppress_warnings=True, seasonal=True, m=12)
     model.fit(train_data)
 
-    dt_index = pd.to_datetime(['2022-01', '2022-02', '2022-03', '2022-04', '2022-05', '2022-06', '2022-07', '2022-08', '2022-09', '2022-10', '2022-11', '2022-12'])
-    test_data2 = pd.DataFrame({'Prediction': [0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0]}, index=dt_index)
+    dt_index = pd.to_datetime(
+        ['2022-01', '2022-02', '2022-03', '2022-04', '2022-05', '2022-06', '2022-07', '2022-08', '2022-09', '2022-10',
+         '2022-11', '2022-12'])
+    test_data2 = pd.DataFrame({'Prediction': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, index=dt_index)
     # 预测数据
     forecast = model.predict(n_periods=len(test_data2))
     forecast = pd.DataFrame(forecast, index=test_data2.index, columns=['Prediction'])

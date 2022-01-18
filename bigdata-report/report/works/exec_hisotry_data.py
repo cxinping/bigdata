@@ -294,12 +294,89 @@ def demo4():
 
 def demo5():
     sel_sql = """
-    select unusual_id,number_name from 01_datamart_layer_007_h_cw_df.finance_unusual
+    select unusual_id,number_name,unusual_shell from 01_datamart_layer_007_h_cw_df.finance_unusual ORDER BY unusual_id  
     """
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
     for record in records:
         print(record)
-        # print()
+        print()
+
+
+def process_finance_unusual2():
+    sql = """
+    insert into analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets 
+(finance_id,bill_id,unusual_id,unusual_level, cart_head,company_code,
+company_name,account_period,finance_number,profit_center,bill_code,
+bill_beg_date,bill_end_date,beg_date,end_date,apply_emp_name,
+check_amount,jzpz,target_classify,sales_address,jzpz_tax,base_apply_date,
+importdate,receipt_city,tb_times,js_times,diff_met_date_avg,offset_day,
+approve_name,iscompany,invo_code,invo_number,invoice_type_name,billingdate,
+commodityname,amounttax,taxtp_name,focus_amount,taxt_amount) 
+select uuid(),zz.* from 
+( SELECT distinct  
+a.bill_id,     
+'40', 
+'1', 
+a.cart_head,     
+a.company_code, 
+a.company_name,     
+a.account_period,     
+a.finance_number,     
+a.profit_center,     
+a.bill_code, 
+a.bill_beg_date, 
+a.bill_end_date,     
+a.met_bgdate, 
+a.met_endate, 
+a.apply_emp_name,     
+a.check_amount,     
+a.jzpz,     
+'会议费',     
+a.sales_address,     
+a.jzpz_tax, 
+a.base_apply_date, 
+a.importdate, 
+a.receipt_city, 
+a.tb_times,     
+a.js_times, 
+b.avg_between, 
+c.offset_day, 
+a.approve_name, 
+a.iscompany, 
+a.invo_code,     
+a.invo_number,     
+a.invoice_type_name,     
+a.billingdate,     
+a.commodityname,     
+a.amounttax,
+a.taxtp_name, 
+a.jzpz as focus_amount, 
+a.taxt_amount 
+from 01_datamart_layer_007_h_cw_df.finance_meeting_bill a,      
+(select round (avg(between_day)) as avg_between       
+from           
+(             
+select tb_times,js_times,                    
+(datediff(from_unixtime(unix_timestamp(js_times,'yyyyMMdd'),'yyyy-MM-dd'),from_unixtime(unix_timestamp(tb_times,'yyyyMMdd'),'yyyy-MM-dd'))+1) as between_day             
+from  01_datamart_layer_007_h_cw_df.finance_official_bill             
+where tb_times is not null and                    
+js_times is not null         )z     ) b,     
+01_datamart_layer_007_h_cw_df.finance_offset c 
+where (datediff(from_unixtime(unix_timestamp(a.js_times,'yyyyMMdd'),'yyyy-MM-dd'), from_unixtime(unix_timestamp(a.tb_times,'yyyyMMdd'),'yyyy-MM-dd'))+1)>(cast(b.avg_between as int)+cast(c.offset_day as int)) 
+and  a.company_code=c.company_code     
+and a.bill_code is not null  
+and a.bill_code != ''   
+and a.account_period is not null  
+and a.receipt_city is not null 
+and a.receipt_city != '市'   
+and a.receipt_city !=''   
+and a.receipt_city != '#N/A'          
+and a.company_code != ''      
+and a.company_code is not null  )zz
+    """
+
+    log.info(sql)
+    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 
 if __name__ == '__main__':
@@ -312,7 +389,9 @@ if __name__ == '__main__':
     # exec_sql()
 
     # demo3()
-    #demo4()
-    demo5()
+    # demo4()
+    #demo5()
 
-    print('--- ok , executed 111 ---')
+    process_finance_unusual2()
+
+    print('--- ok , executed 222 ---')
