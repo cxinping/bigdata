@@ -6,7 +6,7 @@ from report.commons.logging import get_logger
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.services.temp_api_bill_services import exec_temp_api_bill_sql_by_target
 from report.commons.tools import list_of_groups
-from report.commons.tools import get_current_time,get_yyyymmdd_date
+from report.commons.tools import get_current_time, get_yyyymmdd_date
 from report.commons.db_helper import db_fetch_to_dict
 from report.works.increment_add.exec_travel_data_gevent import check_linshi_travel_data
 from report.works.increment_add.exec_offical_linshi_data import check_linshi_office_data
@@ -181,7 +181,7 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         columns_ls = ['process_id', 'process_status', 'daily_start_date', 'daily_end_date', 'step_number',
                       'operate_desc', 'orgin_source', 'destin_source', 'importdate', 'target_classify']
         columns_str = ",".join(columns_ls)
-        sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+        #sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
 
         sel_sql = """
     select cc.process_id, cc.process_status, cc.daily_start_date, cc.daily_end_date, cc.step_number, cc.operate_desc, cc.orgin_source, cc.destin_source, cc.importdate, cc.target_classify from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
@@ -769,13 +769,13 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        #self.exec_linshi_daily_data()
+        # self.exec_linshi_daily_data()
 
-        #self.exec_step06()
+        # self.exec_step06()
 
         self.exec_step07()
 
-        self.exec_step08()
+        # self.exec_step08()
 
         self.exec_step09()
 

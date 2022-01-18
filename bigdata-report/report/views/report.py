@@ -7,7 +7,6 @@ Created on 2021-08-02
 """
 
 from concurrent.futures import ThreadPoolExecutor
-import datetime
 import json
 from flask import Blueprint, jsonify, request, make_response
 import traceback

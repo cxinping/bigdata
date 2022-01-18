@@ -42,7 +42,7 @@ class Scheduler(threading.Thread):
             data = t.split(' ')
             year_month_day = str(data[0]).replace('-', '')
 
-            #year_month_day = '20220118'
+            # year_month_day = '20220118'
 
             sel_sql = f"""
             select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND 
@@ -55,7 +55,7 @@ class Scheduler(threading.Thread):
             is_excute_step6789 = False
             if len(records) > 0:
                 for record in records:
-                    #print(record)
+                    # print(record)
 
                     step_number = str(record[4])
                     if step_number == '5':
@@ -108,13 +108,6 @@ def exec_scheduler():
     """
     schedule = Scheduler('thr', 10)
     schedule.start()
-
-
-def show_time(text='task'):
-    t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
-    log.info('*' * 30)
-    log.info('*** {} ---> {}'.format(text, t))
-    log.info('*' * 30)
 
 
 if __name__ == '__main__':

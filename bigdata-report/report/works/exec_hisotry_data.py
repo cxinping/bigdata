@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from gevent import monkey;
-
-monkey.patch_all(thread=False)
-
-import gevent
-from gevent.pool import Pool
+# from gevent import monkey;
+# monkey.patch_all(thread=False)
+# import gevent
+# from gevent.pool import Pool
 
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
@@ -389,9 +387,9 @@ if __name__ == '__main__':
     # exec_sql()
 
     # demo3()
-    # demo4()
+    demo4()
     #demo5()
 
-    process_finance_unusual2()
+    #process_finance_unusual2()
 
     print('--- ok , executed 222 ---')

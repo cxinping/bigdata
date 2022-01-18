@@ -2,7 +2,7 @@
 
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 
 from report.commons.logging import get_logger
 import os
@@ -207,6 +207,7 @@ def exec_arima(query_date=None):
     result = forecast.to_dict('records')
     print(result)
     return result
+
 
 if __name__ == '__main__':
     exec_arima()
