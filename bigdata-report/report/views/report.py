@@ -572,7 +572,6 @@ def finance_unusual_update():
     #     response = jsonify(data)
     #     return response
 
-
     if isalgorithm is None or isalgorithm not in ['1', '2']:
         data = {"result": "error", "details": "输入的 isalgorithm 不能为空或者isalgorithm不等于'1'或'2'。当isalgorithm等于1为sql类, 2为算法类",
                 "code": 500}
@@ -586,7 +585,7 @@ def finance_unusual_update():
 
     sql = f"""
     update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}" ,
-    sign_status='{sign_status}', unusual_level='{unusual_level}'
+    sign_status='{sign_status}', unusual_level='{unusual_level}' 
     where unusual_id='{unusual_id}'
     """
 
@@ -628,7 +627,7 @@ def finance_unusual_delete():
         sql = f"""
         delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
             """#.replace('\n', '')
-        print(sql)
+        log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
         data = {
@@ -639,7 +638,7 @@ def finance_unusual_delete():
         response = jsonify(data)
         return response
     except Exception as e:
-        print(e)
+        log.info(e)
         data = {
             'result': 'error',
             'code': 500,

@@ -23,3 +23,10 @@ c = alist + blist
 s = set(c)
 c = list(s)
 print(c)
+
+print('#' * 30)
+
+if not False:
+    print('111')
+else:
+    print('222')

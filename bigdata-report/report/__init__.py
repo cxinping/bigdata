@@ -68,6 +68,6 @@ def init_app(config_object='config.default'):
 
     update_finance_shell_daily_doing_status()
 
-    #exec_scheduler()
+    exec_scheduler()
 
     return app

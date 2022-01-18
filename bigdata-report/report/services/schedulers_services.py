@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 import time
-# from apscheduler.schedulers.blocking import BlockingScheduler
-# from apscheduler.schedulers.background import BackgroundScheduler
 from report.commons.logging import get_logger
 import threading
 import time
@@ -25,7 +23,7 @@ class Scheduler(threading.Thread):
             # self.show_time(self.name)
             self.check_execute_step05()
 
-            time.sleep(60 * 10)
+            time.sleep(60 * 2)
 
         print("退出线程：" + self.name)
 
@@ -43,12 +41,29 @@ class Scheduler(threading.Thread):
             t = get_current_time()
             data = t.split(' ')
             year_month_day = str(data[0]).replace('-', '')
-            sel_sql = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+            sel_sql = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND process_status = 'sucess'  ORDER BY step_number ASC  "
             log.info(sel_sql)
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
-            for record in records:
-                print(record)
-                print()
+
+            is_execute_step05 = False
+            is_excute_step6789 = False
+            if len(records) > 0:
+                for record in records:
+                    print(record)
+                    step_number = str(record[4])
+                    if step_number == '5':
+                        is_execute_step05 = True
+
+                    if step_number in ['6', '7', '8', '9']:
+                        is_excute_step6789 = True
+
+                    print()
+            else:
+                log.info('*** 没有查询数据 ***')
+
+            if is_execute_step05 and is_excute_step6789:
+                self.task()
+
         except Exception as e:
             print(e)
 
@@ -73,8 +88,8 @@ class Scheduler(threading.Thread):
         log.info("*" * 30)
         log.info('***** 开始执行第6步，增量数据流程 *****')
         log.info("*" * 30)
-        increment_process = IncrementAddProcess()
-        increment_process.exec_steps()
+        # increment_process = IncrementAddProcess()
+        # increment_process.exec_steps()
 
 
 def exec_scheduler():

@@ -243,15 +243,23 @@ ORDER BY step_number ASC
     """
 
     sel_sql4 = """
-select cc.target_classify, cc.step_number,cc.process_id, cc.process_status, cc.daily_start_date, cc.daily_end_date, cc.operate_desc, cc.orgin_source, cc.destin_source, cc.importdate, cc.target_classify from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
-(select distinct * from (
+select * from (
 select
-step_number,target_classify,
-row_number() over(partition by step_number,target_classify order by daily_end_date desc)as numbers
-FROM 01_datamart_layer_007_h_cw_df.finance_data_process
-WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220117'
-ORDER BY step_number desc) zz where zz.numbers=1) bb
-where cc.step_number=bb.step_number and cc.daily_end_date = bb.numbers
+   step_number,
+   row_number() over (partition by target_classify,step_number order by daily_end_date desc) as numbers,
+   process_id,       
+   process_status,   
+   target_classify,   
+   daily_start_date,
+   daily_end_date,   
+   operate_desc,   
+   orgin_source,   
+   destin_source,   
+   importdate  
+from 
+   01_datamart_layer_007_h_cw_df.finance_data_process
+) y where y.numbers=1 
+order by step_number
             """
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql4)
     print('records => ', len(records))
@@ -268,7 +276,8 @@ def demo4():
     sql2 ="""
     delete from 01_datamart_layer_007_h_cw_df.finance_performance_api
     """
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql2)
+
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
 
 
 if __name__ == '__main__':
@@ -279,6 +288,8 @@ if __name__ == '__main__':
     # demo1()
     #demo2()
     # exec_sql()
+
     demo3()
     #demo4()
-    print('--- ok , executed 111 ---')
+
+    print('--- ok , executed 222 ---')
