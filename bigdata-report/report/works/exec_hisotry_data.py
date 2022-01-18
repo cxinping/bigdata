@@ -265,7 +265,7 @@ order by step_number
     print('records => ', len(records))
 
     for record in records:
-        #print('unusual_id=', record[2])
+        # print('unusual_id=', record[2])
         print(record)
         # print()
 
@@ -273,23 +273,27 @@ order by step_number
 def demo4():
     sql = 'select distinct commodityname from 01_datamart_layer_007_h_cw_df.finance_travel_bill where commodityname is not null and commodityname !='''
 
-    sql2 ="""
-    delete from 01_datamart_layer_007_h_cw_df.finance_performance_api
+    sql2 = """
+    select * from 01_datamart_layer_007_h_cw_df.finance_unusual
     """
 
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
+    for record in records:
+        # print('unusual_id=', record[2])
+        print(record)
+        # print()
 
 
 if __name__ == '__main__':
     # del_history_exception_data()
     # process_finance_shell_daily()
-    #process_finance_unusual()
+    # process_finance_unusual()
 
     # demo1()
-    #demo2()
+    # demo2()
     # exec_sql()
 
-    demo3()
-    #demo4()
+    # demo3()
+    demo4()
 
-    print('--- ok , executed 222 ---')
+    print('--- ok , executed 111 ---')

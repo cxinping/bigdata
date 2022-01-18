@@ -38,6 +38,8 @@ from report.services.data_process_services import (insert_temp_performance_bill,
                                                    pagination_temp_performance_bill_records, exec_temp_performance_bill,
                                                    query_finance_data_process)
 from report.services.finance_company_code_services import (insert_finance_company_code, update_finance_company_code ,del_finance_company_code, pagination_finance_company_code_records)
+from report.services.finance_unusual_services import pagination_finance_unusual_records
+from report.commons.tools import create_uuid
 from report.commons.settings import CONN_TYPE
 
 log = get_logger(__name__)
@@ -453,15 +455,59 @@ def finance_person_delete():
 
 ############  【检查点（finance_unusual）相关】  ############
 
+# http://10.5.138.11:8004/report/finance_unusual/query
+@report_bp.route('/finance_unusual/query', methods=['POST'])
+def finance_unusual_query():
+    log.info('---- finance_unusual_query ----')
+    current_page = int(request.form.get('current_page')) if request.form.get('current_page') else None
+    page_size = int(request.form.get('page_size')) if request.form.get('page_size') else None
+    unusual_point = str(request.form.get('unusual_point')) if request.form.get('unusual_point') else None
+
+    # log.info(f'current_page={current_page}')
+    # log.info(f'page_size={page_size}')
+    # log.info(f'unusual_point={unusual_point}')
+
+    if current_page is None:
+        data = {"result": "error", "details": "输入的 current_page 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    if page_size is None:
+        data = {"result": "error", "details": "输入的 page_size 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
+
+    try:
+        count_records, sql, columns_ls = pagination_finance_unusual_records(unusual_point)
+        page_obj = Pagination(current_page=current_page, all_count=count_records, per_page_num=page_size)
+        records = page_obj.exec_sql(sql, columns_ls)
+
+        result = {
+            'status': 'ok',
+            'current_page': current_page,
+            'total': count_records,
+            'data': records,
+            'code': 200
+        }
+        return mk_utf8resp(result)
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+
 # http://10.5.138.11:8004/report/finance_unusual/add
 @report_bp.route('/finance_unusual/add', methods=['POST'])
 def finance_unusual_add():
     log.info('----- finance_unusual add -----')
+
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
     cost_project = request.form.get('cost_project') if request.form.get('cost_project') else None
-    unusual_number = request.form.get('unusual_number') if request.form.get('unusual_number') else None
     number_name = request.form.get('number_name') if request.form.get('number_name') else None
-    #unusual_type = request.form.get('unusual_type') if request.form.get('unusual_type') else None
     unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
@@ -471,9 +517,7 @@ def finance_unusual_add():
 
     log.info(f'unusual_id={unusual_id}')
     log.info(f'cost_project={cost_project}')
-    log.info(f'unusual_number={unusual_number}')
     log.info(f'number_name={number_name}')
-    #log.info(f'unusual_type={unusual_type}')
     log.info(f'unusual_point={unusual_point}')
     log.info(f'unusual_content={unusual_content}')
     log.info(f'unusual_shell={unusual_shell}')
@@ -494,10 +538,10 @@ def finance_unusual_add():
 
     # 对输入的python脚本进行转义
     unusual_shell = transfer_content(unusual_shell)
-
+    finance_id = create_uuid()
     sql = f"""
-insert into 01_datamart_layer_007_h_cw_df.finance_unusual(unusual_id ,cost_project, unusual_number, number_name, unusual_point, unusual_content, unusual_shell, isalgorithm,sign_status, unusual_level)
-values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}', '{sign_status}', '{unusual_level}')
+insert into 01_datamart_layer_007_h_cw_df.finance_unusual(finance_id, unusual_id ,cost_project , number_name, unusual_point, unusual_content, unusual_shell, isalgorithm,sign_status, unusual_level)
+values('{finance_id}','{unusual_id}','{cost_project}' ,'{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}', '{sign_status}', '{unusual_level}')
     """.replace('\n', '')
 
     print(sql)
@@ -527,6 +571,7 @@ values('{unusual_id}','{cost_project}','{unusual_number}','{number_name}' , '{un
 @report_bp.route('/finance_unusual/update', methods=['POST'])
 def finance_unusual_update():
     log.info('----- finance_unusual update -----')
+    finance_id = request.form.get('finance_id') if request.form.get('finance_id') else None
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
     unusual_point = request.form.get('unusual_point') if request.form.get('unusual_point') else None
     unusual_content = request.form.get('unusual_content') if request.form.get('unusual_content') else None
@@ -537,6 +582,7 @@ def finance_unusual_update():
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
     unusual_level = str(request.form.get('unusual_level')) if request.form.get('unusual_level') else None
 
+    log.info(f'finance_id={finance_id}')
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
     log.info(f'unusual_content={unusual_content}')
@@ -546,6 +592,11 @@ def finance_unusual_update():
 
     unusual_shell = transfer_content(unusual_shell)
     # log.info(f'* unusual_shell=\n{unusual_shell}')
+
+    if finance_id is None:
+        data = {"result": "error", "details": "输入的 finance_id 不能为空", "code": 500}
+        response = jsonify(data)
+        return response
 
     if unusual_id is None:
         data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
@@ -585,8 +636,8 @@ def finance_unusual_update():
 
     sql = f"""
     update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}" ,
-    sign_status='{sign_status}', unusual_level='{unusual_level}' 
-    where unusual_id='{unusual_id}'
+    sign_status='{sign_status}', unusual_level='{unusual_level}' ,unusual_id='{unusual_id}'
+    where finance_id='{finance_id}'
     """
 
     log.info(sql)
@@ -616,16 +667,16 @@ def finance_unusual_update():
 @report_bp.route('/finance_unusual/delete', methods=['POST'])
 def finance_unusual_delete():
     log.info('----- finance_unusual delete -----')
-    unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
+    finance_id = request.form.get('finance_id') if request.form.get('finance_id') else None
 
-    if unusual_id is None:
-        data = {"result": "error", "details": "输入的 unusual_id 不能为空", "code": 500}
+    if finance_id is None:
+        data = {"result": "error", "details": "输入的 finance_id 不能为空", "code": 500}
         response = jsonify(data)
         return response
 
     try:
         sql = f"""
-        delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{unusual_id}'
+        delete from 01_datamart_layer_007_h_cw_df.finance_unusual where unusual_id='{finance_id}'
             """#.replace('\n', '')
         log.info(sql)
         prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)

@@ -181,6 +181,8 @@ def exec_arima(query_date=None):
     forecast = model.predict(n_periods=len(test_data))
     forecast = pd.DataFrame(forecast, index=test_data.index, columns=['Prediction'])
 
+    print(forecast)
+
 
 if __name__ == '__main__':
     exec_arima()

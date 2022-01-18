@@ -40,8 +40,13 @@ class Scheduler(threading.Thread):
 
             t = get_current_time()
             data = t.split(' ')
-            year_month_day = str(data[0]).replace('-', '')
-            sel_sql = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND process_status = 'sucess'  ORDER BY step_number ASC  "
+            #year_month_day = str(data[0]).replace('-', '')
+
+            year_month_day = '20220117'
+            sel_sql = f"""
+            select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND 
+            process_status = 'sucess'  ORDER BY step_number ASC
+            """
             log.info(sel_sql)
             records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
 
@@ -61,8 +66,11 @@ class Scheduler(threading.Thread):
             else:
                 log.info('*** 没有查询数据 ***')
 
-            if is_execute_step05 and is_excute_step6789:
+            # 执行了前5步，但是没有执行过 6,7,8,9步，就开始执行任务
+            if is_execute_step05 and not is_excute_step6789:
                 self.task()
+            else:
+                log.info('*** 不执行第6,7,8,9 步的任务 ***')
 
         except Exception as e:
             print(e)
