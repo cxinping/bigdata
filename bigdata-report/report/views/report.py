@@ -508,6 +508,7 @@ def finance_unusual_query():
 def finance_unusual_add():
     log.info('----- finance_unusual add -----')
 
+    unusual_code = request.form.get('unusual_code') if request.form.get('unusual_code') else ''
     unusual_id = request.form.get('unusual_id') if request.form.get('unusual_id') else None
     cost_project = request.form.get('cost_project') if request.form.get('cost_project') else None
     number_name = request.form.get('number_name') if request.form.get('number_name') else None
@@ -518,6 +519,7 @@ def finance_unusual_add():
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
     unusual_level = str(request.form.get('unusual_level')) if request.form.get('unusual_level') else None
 
+    log.info(f'unusual_code={unusual_code}')
     log.info(f'unusual_id={unusual_id}')
     log.info(f'cost_project={cost_project}')
     log.info(f'number_name={number_name}')
@@ -542,8 +544,8 @@ def finance_unusual_add():
     unusual_shell = transfer_content(unusual_shell)
     finance_id = create_uuid()
     sql = f"""
-insert into 01_datamart_layer_007_h_cw_df.finance_unusual(finance_id, unusual_id ,cost_project , number_name, unusual_point, unusual_content, unusual_shell, isalgorithm,sign_status, unusual_level)
-values('{finance_id}','{unusual_id}','{cost_project}' ,'{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}', '{sign_status}', '{unusual_level}')
+insert into 01_datamart_layer_007_h_cw_df.finance_unusual(finance_id, unusual_id ,cost_project , unusual_code, number_name, unusual_point, unusual_content, unusual_shell, isalgorithm,sign_status, unusual_level)
+values('{finance_id}','{unusual_id}','{cost_project}' ,'{unusual_code}','{number_name}' , '{unusual_point}' , '{unusual_content}', '{unusual_shell}', '{isalgorithm}', '{sign_status}', '{unusual_level}')
     """.replace('\n', '')
 
     print(sql)
@@ -583,7 +585,9 @@ def finance_unusual_update():
     # 是否执行，1为执行，0为不执行
     sign_status = str(request.form.get('sign_status')) if request.form.get('sign_status') else None
     unusual_level = str(request.form.get('unusual_level')) if request.form.get('unusual_level') else None
+    unusual_code = request.form.get('unusual_code') if request.form.get('unusual_code') else None
 
+    log.info(f'unusual_code={unusual_code}')
     log.info(f'finance_id={finance_id}')
     log.info(f'unusual_id={unusual_id}')
     log.info(f'unusual_point={unusual_point}')
@@ -639,7 +643,7 @@ def finance_unusual_update():
 
     sql = f"""
     update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_point='{unusual_point}', unusual_content='{unusual_content}', unusual_shell='{unusual_shell}', isalgorithm="{isalgorithm}" ,
-    sign_status='{sign_status}', unusual_level='{unusual_level}' ,unusual_id='{unusual_id}'
+    sign_status='{sign_status}', unusual_level='{unusual_level}' ,unusual_id='{unusual_id}', unusual_code='{unusual_code}'
     where finance_id='{finance_id}'
     """
 

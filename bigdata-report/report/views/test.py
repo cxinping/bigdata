@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+"""
+Created on 2022-01-18
+
+@author: WangShuo
+"""
+
 from flask import Blueprint, jsonify, request
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.logging import get_logger
@@ -11,6 +17,7 @@ import time
 log = get_logger(__name__)
 test_bp = Blueprint('test', __name__)
 
+
 # http://10.5.138.11:8004/test/finance_unusual/update
 @test_bp.route('/finance_unusual/update', methods=['POST'])
 def finance_unusual_update():
@@ -19,7 +26,7 @@ def finance_unusual_update():
     unusual_shell = request.form.get('unusual_shell') if request.form.get('unusual_shell') else None
 
     log.info(f'unusual_id={unusual_id}')
-    #log.info(f'unusual_shell={unusual_shell}')
+    # log.info(f'unusual_shell={unusual_shell}')
 
     unusual_shell = transfer_content(unusual_shell)
     log.info(unusual_shell)
@@ -66,7 +73,7 @@ def run_jobs():
     consumed_time = round(time.perf_counter() - start_time)
 
     data = {
-        'result' : 'Two jobs was launched in background!',
+        'result': 'Two jobs was launched in background!',
         "consumed_time": consumed_time
     }
     response = jsonify(data)
@@ -77,4 +84,3 @@ def some_long_task2(arg1, arg2):
     print("Task #2 started with args: %s %s!" % (arg1, arg2))
     time.sleep(30)
     print("Task #2 is done!")
-

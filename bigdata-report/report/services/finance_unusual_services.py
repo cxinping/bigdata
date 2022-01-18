@@ -25,7 +25,7 @@ def pagination_finance_unusual_records(unusual_point):
 
     order_sql = ' ORDER BY unusual_id ASC '
 
-    columns_ls = ['finance_id', 'cost_project', 'unusual_id', 'number_name', 'unusual_point', 'unusual_content',
+    columns_ls = ['finance_id', 'cost_project', 'unusual_id', 'unusual_code','number_name', 'unusual_point', 'unusual_content',
                   'unusual_shell', 'isalgorithm',
                   'importdate', 'sign_status', 'unusual_level']
     columns_str = ",".join(columns_ls)

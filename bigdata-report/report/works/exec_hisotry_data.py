@@ -293,7 +293,7 @@ def demo4():
 
 def demo5():
     sel_sql = """
-    select unusual_id,number_name,unusual_shell from 01_datamart_layer_007_h_cw_df.finance_unusual ORDER BY unusual_id  
+    select   from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 2 
     """
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
     for record in records:
@@ -378,6 +378,26 @@ and a.company_code is not null  )zz
     prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
 
 
+def query_travel():
+    year = '2021'
+    test_limit_cond = ''
+    columns_ls = ['destin_name', 'sales_name', 'sales_addressphone', 'sales_bank', 'finance_travel_id', 'origin_name',
+                  'invo_code', 'sales_taxno']
+
+    columns_str = ",".join(columns_ls)
+    sql = """
+    select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) AND left(account_period,4)  >= '{year}'  
+        {test_limit_cond}
+    """.format(columns_str=columns_str, year=year,
+               test_limit_cond=test_limit_cond).replace('\n', '').replace('\r', '').strip()
+    count_sql = 'select count(a.finance_travel_id) from ({sql}) a'.format(sql=sql)
+    log.info(count_sql)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
+    count_records = records[0][0]
+    log.info(f'* count_records ==> {count_records}')
+
+
 if __name__ == '__main__':
     # del_history_exception_data()
     # process_finance_shell_daily()
@@ -386,11 +406,13 @@ if __name__ == '__main__':
     # demo1()
     # demo2()
     # exec_sql()
-
     # demo3()
-    demo4()
-    #demo5()
+    # demo4()
+    # demo5()
+    # process_finance_unusual2()
+    #query_travel()
 
-    #process_finance_unusual2()
+    r = '2021012'
+    print(r[0:4])
 
     print('--- ok , executed 222 ---')
