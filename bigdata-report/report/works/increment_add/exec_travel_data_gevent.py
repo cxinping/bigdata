@@ -331,6 +331,8 @@ def upload_hdfs_file(year):
 def main():
     """
     处理 50000 条记录，共操作耗时 314 sec, year=2021
+    处理 10000 条记录，共操作耗时 65 sec, year=202112
+
 
     """
 
