@@ -241,7 +241,8 @@ def demo3():
 ORDER BY step_number ASC
     """
 
-    sel_sql4 = """
+    query_date = '20220118'
+    sel_sql4 = f"""
 select * from (
 select
    step_number,
@@ -258,8 +259,12 @@ select
 from 
    01_datamart_layer_007_h_cw_df.finance_data_process
 ) y where y.numbers=1 
+AND    importdate = '{query_date}'  
 order by step_number
             """
+
+    print(sel_sql4)
+
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql4)
     print('records => ', len(records))
 
@@ -278,7 +283,7 @@ def demo4():
     delete from 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' )
     AND step_number in ('6', '7', '8', '9')
     """
-    prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
+   # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
 
     sel_sql = f"""
     select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND 
@@ -303,75 +308,7 @@ def demo5():
 
 def process_finance_unusual2():
     sql = """
-    insert into analytic_layer_zbyy_cwyy_014_cwzbbg.finance_all_targets 
-(finance_id,bill_id,unusual_id,unusual_level, cart_head,company_code,
-company_name,account_period,finance_number,profit_center,bill_code,
-bill_beg_date,bill_end_date,beg_date,end_date,apply_emp_name,
-check_amount,jzpz,target_classify,sales_address,jzpz_tax,base_apply_date,
-importdate,receipt_city,tb_times,js_times,diff_met_date_avg,offset_day,
-approve_name,iscompany,invo_code,invo_number,invoice_type_name,billingdate,
-commodityname,amounttax,taxtp_name,focus_amount,taxt_amount) 
-select uuid(),zz.* from 
-( SELECT distinct  
-a.bill_id,     
-'40', 
-'1', 
-a.cart_head,     
-a.company_code, 
-a.company_name,     
-a.account_period,     
-a.finance_number,     
-a.profit_center,     
-a.bill_code, 
-a.bill_beg_date, 
-a.bill_end_date,     
-a.met_bgdate, 
-a.met_endate, 
-a.apply_emp_name,     
-a.check_amount,     
-a.jzpz,     
-'会议费',     
-a.sales_address,     
-a.jzpz_tax, 
-a.base_apply_date, 
-a.importdate, 
-a.receipt_city, 
-a.tb_times,     
-a.js_times, 
-b.avg_between, 
-c.offset_day, 
-a.approve_name, 
-a.iscompany, 
-a.invo_code,     
-a.invo_number,     
-a.invoice_type_name,     
-a.billingdate,     
-a.commodityname,     
-a.amounttax,
-a.taxtp_name, 
-a.jzpz as focus_amount, 
-a.taxt_amount 
-from 01_datamart_layer_007_h_cw_df.finance_meeting_bill a,      
-(select round (avg(between_day)) as avg_between       
-from           
-(             
-select tb_times,js_times,                    
-(datediff(from_unixtime(unix_timestamp(js_times,'yyyyMMdd'),'yyyy-MM-dd'),from_unixtime(unix_timestamp(tb_times,'yyyyMMdd'),'yyyy-MM-dd'))+1) as between_day             
-from  01_datamart_layer_007_h_cw_df.finance_official_bill             
-where tb_times is not null and                    
-js_times is not null         )z     ) b,     
-01_datamart_layer_007_h_cw_df.finance_offset c 
-where (datediff(from_unixtime(unix_timestamp(a.js_times,'yyyyMMdd'),'yyyy-MM-dd'), from_unixtime(unix_timestamp(a.tb_times,'yyyyMMdd'),'yyyy-MM-dd'))+1)>(cast(b.avg_between as int)+cast(c.offset_day as int)) 
-and  a.company_code=c.company_code     
-and a.bill_code is not null  
-and a.bill_code != ''   
-and a.account_period is not null  
-and a.receipt_city is not null 
-and a.receipt_city != '市'   
-and a.receipt_city !=''   
-and a.receipt_city != '#N/A'          
-and a.company_code != ''      
-and a.company_code is not null  )zz
+    
     """
 
     log.info(sql)
@@ -406,13 +343,13 @@ if __name__ == '__main__':
     # demo1()
     # demo2()
     # exec_sql()
-    # demo3()
-    # demo4()
+    #demo3()
+    demo4()
     # demo5()
-    # process_finance_unusual2()
+    #process_finance_unusual2()
     #query_travel()
 
-    r = '2021012'
-    print(r[0:4])
+    # r = '2021012'
+    # print(r[0:4])
 
-    print('--- ok , executed 222 ---')
+    print('--- ok , executed 111 ---')

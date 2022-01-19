@@ -141,7 +141,7 @@ def execute_02_data(year_month):
         # 刷新临时表
         refresh_linshi_table()
 
-        #init_file(year_month)
+        init_file(year_month)
     else:
         log.info(f'* 查询日期 => {year_month}， 没有查询到任何数据')
 

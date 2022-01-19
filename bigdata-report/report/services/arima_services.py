@@ -2,7 +2,10 @@
 
 import numpy as np
 import pandas as pd
-#import matplotlib.pyplot as plt
+
+# import matplotlib.pyplot as plt
+# import matplotlib as mpl
+# mpl.rcParams['font.sans-serif'] = 'Lato'
 
 from report.commons.logging import get_logger
 import os
@@ -143,6 +146,8 @@ def query_data2():
 
 
 def exec_arima(query_date=None):
+
+
     # init_file(dest_file)
     df = query_data2()
     # log.info(df.info())

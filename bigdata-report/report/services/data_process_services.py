@@ -183,15 +183,25 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         #sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
 
         sel_sql = """
-    select cc.process_id, cc.process_status, cc.daily_start_date, cc.daily_end_date, cc.step_number, cc.operate_desc, cc.orgin_source, cc.destin_source, cc.importdate, cc.target_classify from 01_datamart_layer_007_h_cw_df.finance_data_process cc,
-(select distinct * from (
-select 
-step_number,
-first_value(daily_end_date) over(partition by step_number order by daily_end_date desc) max_end_date
-FROM 01_datamart_layer_007_h_cw_df.finance_data_process 
-WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{query_date}' 
-ORDER BY step_number ASC) zz) bb
-where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
+select  y.process_id, y.process_status, y.daily_start_date, y.daily_end_date, y.step_number, y.operate_desc, 
+y.orgin_source, y.destin_source, y.importdate, y.target_classify from (
+select
+   step_number,
+   row_number() over (partition by target_classify,step_number order by daily_end_date desc) as numbers,
+   process_id,       
+   process_status,   
+   target_classify,   
+   daily_start_date,
+   daily_end_date,   
+   operate_desc,   
+   orgin_source,   
+   destin_source,   
+   importdate  
+from 
+   01_datamart_layer_007_h_cw_df.finance_data_process
+) y where y.numbers=1 
+AND    importdate = '{query_date}'  
+order by step_number
         """.format(query_date=query_date)
 
         log.info(sel_sql)
@@ -768,13 +778,13 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        # self.exec_linshi_daily_data()
+        self.exec_linshi_daily_data()
 
-        # self.exec_step06()
+        self.exec_step06()
 
         self.exec_step07()
 
-        # self.exec_step08()
+        self.exec_step08()
 
         self.exec_step09()
 
