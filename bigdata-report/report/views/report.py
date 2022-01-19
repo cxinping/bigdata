@@ -1977,8 +1977,8 @@ def finance_company_code_delete():
 
 ############  预测  ############
 
-# http://10.5.138.11:8004/report/finance/prediction
-@report_bp.route('/finance/prediction', methods=['POST'])
+# http://10.5.138.11:8004/report/finance/prediction/betweendate
+@report_bp.route('/finance/prediction/betweendate', methods=['POST'])
 def finance_prediction():
     log.info('---- finance_prediction ---- ')
 

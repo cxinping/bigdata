@@ -206,10 +206,10 @@ def exec_task(sql):
             sales_bank = process_invalid_content(sales_bank)
             sales_address = match_area.filter_area(process_invalid_content(sales_address))
             receipt_city = match_area.filter_area(process_invalid_content(receipt_city))
-            account_period = '无'
+            pstng_date = '无'
 
             # log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{account_period}'
+            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
             result.append(record_str)
 
             # print(record_str)

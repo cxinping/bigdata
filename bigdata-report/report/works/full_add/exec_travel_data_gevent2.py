@@ -22,20 +22,19 @@ from report.commons.settings import CONN_TYPE
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 /root/anaconda3/bin/python /you_filed_algos/app/report/works/exec_travel_data_gevent.py 2020
 
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021012 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021011 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021010 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021009 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021008 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021007 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021006 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021005 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021004 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021003 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021002 &
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 2021001 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202112 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202111 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202110 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202109 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202108 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202107 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202106 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202105 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202104 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202103 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202102 &
+PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_gevent2.py 202101 &
 
 
 """
@@ -80,7 +79,7 @@ def execute_02_data(year_month):
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' 
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and pstng_date ='{year_month}' 
        {test_limit_cond}
     """.format(columns_str=columns_str, year_month=year_month, test_limit_cond=test_limit_cond).replace('\n',
                                                                                                         '').replace(
@@ -102,19 +101,19 @@ def execute_02_data(year_month):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and pstng_date ='{year_month}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and pstng_date ='{year_month}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  {test_limit_cond} ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and pstng_date ='{year_month}'  {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond, year_month=year_month)
         select_sql_ls.append(tmp_sql)
         # print('*** tmp_sql => ', tmp_sql)

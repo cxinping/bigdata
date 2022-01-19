@@ -146,8 +146,6 @@ def query_data2():
 
 
 def exec_arima(query_date=None):
-
-
     # init_file(dest_file)
     df = query_data2()
     # log.info(df.info())
@@ -185,9 +183,8 @@ def exec_arima(query_date=None):
     model.fit(train_data)
 
     dt_index = pd.to_datetime(
-        ['2022-01', '2022-02', '2022-03', '2022-04', '2022-05', '2022-06', '2022-07', '2022-08', '2022-09', '2022-10',
-         '2022-11', '2022-12'])
-    test_data2 = pd.DataFrame({'Prediction': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]}, index=dt_index)
+        ['2022-02', '2022-03', '2022-04'])
+    test_data2 = pd.DataFrame({'Prediction': [0, 0, 0]}, index=dt_index)
     # 预测数据
     forecast = model.predict(n_periods=len(test_data2))
     forecast = pd.DataFrame(forecast, index=test_data2.index, columns=['Prediction'])

@@ -9,6 +9,7 @@ from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger
 from concurrent.futures import ThreadPoolExecutor, wait, ALL_COMPLETED
+from report.commons.test_hdfs_tools import HDFSTools as Test_HDFSTools
 
 log = get_logger(__name__)
 
@@ -283,7 +284,7 @@ def demo4():
     delete from 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' )
     AND step_number in ('6', '7', '8', '9')
     """
-   # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
+    # prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=del_sql)
 
     sel_sql = f"""
     select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE ( from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '{year_month_day}' OR importdate = '{year_month_day}' ) AND 
@@ -335,21 +336,24 @@ def query_travel():
     log.info(f'* count_records ==> {count_records}')
 
 
+def check_prod_hdfs():
+    test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
+    test_hdfs.ls('hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis')
+
+
 if __name__ == '__main__':
     # del_history_exception_data()
     # process_finance_shell_daily()
     # process_finance_unusual()
-
     # demo1()
     # demo2()
     # exec_sql()
-    #demo3()
-    #demo4()
-    demo5()
-    #process_finance_unusual2()
-    #query_travel()
+    # demo3()
+    # demo4()
+    # demo5()
+    # process_finance_unusual2()
+    # query_travel()
 
-    # r = '2021012'
-    # print(r[0:4])
+    check_prod_hdfs()
 
-    print('--- ok , executed 111 ---')
+    print('--- ok , executed 123 ---')

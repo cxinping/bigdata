@@ -4,7 +4,6 @@ source /etc/profile
 
 cd /you_filed_algos/app
 
-PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_thread.py 202013 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_thread.py 202012 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_thread.py 202011 &
 PYTHONIOENCODING=utf-8 nohup /root/anaconda3/bin/python /you_filed_algos/app/report/works/full_add/exec_travel_data_thread.py 202010 &
