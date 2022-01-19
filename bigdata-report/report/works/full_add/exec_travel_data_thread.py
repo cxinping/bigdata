@@ -46,7 +46,7 @@ match_area = MatchArea()
 province_service = ProvinceService()
 finance_service = FinanceAdministrationService()
 
-test_limit_cond = ''  # 'LIMIT 10000'
+test_limit_cond = ' '  # 'LIMIT 10000'
 
 
 def get_dest_file(year):
@@ -77,7 +77,7 @@ def execute_02_data(year_month):
     columns_str = ",".join(columns_ls)
     sql = """
     select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill 
-        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' 
+        where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and destin_name is  null and sales_taxno is null ) and pstng_date ='{year_month}' 
        {test_limit_cond}
     """.format(columns_str=columns_str, year_month=year_month, test_limit_cond=test_limit_cond).replace('\n',
                                                                                                         '').replace(
@@ -99,19 +99,19 @@ def execute_02_data(year_month):
         while offset_size <= count_records:
             if offset_size + limit_size > count_records:
                 limit_size = count_records - offset_size
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and account_period ='{year_month}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is  null and sales_taxno is null ) and pstng_date ='{year_month}' order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
 
                 select_sql_ls.append(tmp_sql)
                 break
             else:
-                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
+                tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and pstng_date ='{year_month}'  order by jour_beg_date limit {limit_size} offset {offset_size}".format(
                     columns_str=columns_str, limit_size=limit_size, offset_size=offset_size, year_month=year_month)
                 select_sql_ls.append(tmp_sql)
 
             offset_size = offset_size + limit_size
     else:
-        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and account_period ='{year_month}'  {test_limit_cond} ".format(
+        tmp_sql = "select {columns_str} from 01_datamart_layer_007_h_cw_df.finance_travel_bill where !(sales_name is  null and  sales_addressphone is null and sales_bank is null and origin_name is  null and  destin_name is null and sales_taxno is null ) and pstng_date ='{year_month}'  {test_limit_cond} ".format(
             columns_str=columns_str, test_limit_cond=test_limit_cond, year_month=year_month)
         select_sql_ls.append(tmp_sql)
 
@@ -141,7 +141,7 @@ def execute_02_data(year_month):
         # 刷新临时表
         refresh_linshi_table()
 
-        init_file(year_month)
+        #init_file(year_month)
     else:
         log.info(f'* 查询日期 => {year_month}， 没有查询到任何数据')
 
@@ -298,12 +298,12 @@ def exec_task(sql, year_month):
 
             destin_name = process_invalid_content(destin_name)
             sales_taxno = process_invalid_content(sales_taxno)
-            account_period = year_month[0:4]
+            pstng_date = year_month
 
             #consumed_time1 = (time.perf_counter() - start_time1)
             # log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
-            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_province}\u0001{receipt_city}\u0001{account_period}'
+            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_province}\u0001{receipt_city}\u0001{pstng_date}'
             # print(record_str)
             # print('')
 

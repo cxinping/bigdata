@@ -298,7 +298,7 @@ def demo4():
 
 def demo5():
     sel_sql = """
-    select   from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 2 
+    select pstng_date, account_period  from 01_datamart_layer_007_h_cw_df.finance_travel_bill limit 5 
     """
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sel_sql)
     for record in records:
@@ -344,8 +344,8 @@ if __name__ == '__main__':
     # demo2()
     # exec_sql()
     #demo3()
-    demo4()
-    # demo5()
+    #demo4()
+    demo5()
     #process_finance_unusual2()
     #query_travel()
 

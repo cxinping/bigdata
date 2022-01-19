@@ -290,12 +290,12 @@ def exec_task(sql, year):
 
             destin_name = process_invalid_content(destin_name)
             sales_taxno = process_invalid_content(sales_taxno)
-            account_period = year
+            pstng_date = year
 
             consumed_time1 = (time.perf_counter() - start_time1)
             # log.info(f'* {threading.current_thread().name} 生成每行数据耗时 => {consumed_time1} sec, idx={idx}, year={year}')
 
-            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_province}\u0001{receipt_city}\u0001{account_period}'
+            record_str = f'{finance_travel_id}\u0001{origin_name}\u0001{destin_name}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{invo_code}\u0001{sales_taxno}\u0001{sales_address}\u0001{origin_province}\u0001{destin_province}\u0001{receipt_province}\u0001{receipt_city}\u0001{pstng_date}'
             # print(record_str)
             # print('')
 
