@@ -107,7 +107,7 @@ def execute_02_data(year):
     count_records = records[0][0]
 
     max_size = 1 * 10001
-    limit_size = 1 * 10000
+    limit_size = 1 * 20000
     select_sql_ls = []
 
     log.info(f'* count_records ==> {count_records}')
@@ -162,11 +162,13 @@ def execute_02_data(year):
         # 刷新临时表
         refresh_linshi_table()
 
-        init_file(year)
+        #init_file(year)
     else:
         log.info(f'* 查询日期 => {year}， 没有查询到任何数据')
 
+
 def operate_every_record(record):
+
     destin_name = str(record[0]) if record[0] else None  # 行程目的地
     sales_name = str(record[1]) if record[1] else None  # 开票公司
     sales_addressphone = str(record[2]) if record[2] else None  # 开票地址及电话
@@ -193,12 +195,13 @@ def operate_every_record(record):
         # 情况1，没有从纳税人识别号获得，开票所在的 省，市，区/县
         if rst[0] is None and rst[1] is None and rst[1] is None:
             sales_address = match_area.query_sales_address_new(sales_name=sales_name,
-                                                                sales_addressphone=sales_addressphone,
-                                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
+                                                               sales_addressphone=sales_addressphone,
+                                                               sales_bank=sales_bank)  # 发票开票地(最小行政)
             # if sales_address is None:
             #     sales_address = destin_name
 
-            receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            receipt_city = match_area.query_receipt_city_new(sales_name=sales_name,
+                                                             sales_addressphone=sales_addressphone,
                                                              sales_bank=sales_bank)
             if sales_address is not None:
                 receipt_province = province_service.query_belong_province(area_name=sales_address)
@@ -216,11 +219,11 @@ def operate_every_record(record):
             # if sales_address is None:
             #     sales_address = destin_name
 
-            receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
+            receipt_city = match_area.query_receipt_city_new(sales_name=sales_name,
+                                                             sales_addressphone=sales_addressphone,
                                                              sales_bank=sales_bank)
             # if receipt_city is None:
             #     receipt_city = sales_address
-
 
         # 情况3 开票所在的 市 或 区/县，有一个不为空
         if rst[1] is not None or rst[2] is not None:
@@ -264,6 +267,8 @@ def exec_task(sql, year):
     consumed_time0 = (time.perf_counter() - start_time0)
     log.info(f'* 取数耗时 => {consumed_time0} sec, records={len(records)}')
 
+    log.info('当前正在执行 线程=>' + threading.current_thread().name + f'的任务,一批任务数量是{len(records)}')
+
     # gevent.sleep(1)
 
     if records and len(records) > 0:
@@ -288,7 +293,7 @@ def exec_task(sql, year):
             # 根据行程目的地和发票代码找到行程所在的省
             # destin_province = province_service.query_destin_province(invo_code=invo_code,
             #                                                          destin_name=destin_name)  # 行程目的地(省)
-            destin_province = province_service.query_belong_province(area_name=destin_name) # 行程目的地(省)
+            destin_province = province_service.query_belong_province(area_name=destin_name)  # 行程目的地(省)
 
             consumed_time2 = round(time.perf_counter() - start_time1)
             if consumed_time2 >= 2:
@@ -354,11 +359,14 @@ def refresh_linshi_table():
 
 def main():
     """
+处理 100000 条记录，共操作耗时 1896 sec, year=2021
+处理 10000 条记录，共操作耗时 171 sec, year=2021
+
 
     """
 
     year = sys.argv[1]
-    #year = '2021'
+    # year = '2021'
     execute_02_data(year)
 
     print('--- ok ---')
