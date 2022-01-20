@@ -3,7 +3,8 @@
 import numpy as np
 import pandas as pd
 
-# import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
+
 # import matplotlib as mpl
 # mpl.rcParams['font.sans-serif'] = 'Lato'
 
@@ -12,12 +13,11 @@ import os
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.db_helper import query_kudu_data
-import sys
-
 from pyramid.arima import auto_arima
 from datetime import datetime
 from report.commons.report_enums import ArimaType
 
+import sys
 sys.path.append('/you_filed_algos/app')
 
 log = get_logger(__name__)
@@ -229,3 +229,5 @@ if __name__ == '__main__':
     # query_data2()
 
     print('--- ok ---')
+
+

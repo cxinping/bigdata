@@ -9,3 +9,5 @@ travel_city_name = 'aaa '.strip()
 travel_city_names = travel_city_name.split(' ')
 
 print(travel_city_name, len(travel_city_names))
+
+print(type(1.1))

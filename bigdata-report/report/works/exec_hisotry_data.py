@@ -1,10 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# from gevent import monkey;
-# monkey.patch_all(thread=False)
-# import gevent
-# from gevent.pool import Pool
-
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.logging import get_logger

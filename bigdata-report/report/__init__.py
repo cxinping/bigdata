@@ -7,7 +7,6 @@ Created on 2021-08-02
 """
 
 from http import HTTPStatus
-
 import os
 from flask import Flask, jsonify
 

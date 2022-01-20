@@ -9,4 +9,4 @@ Created on 2022-01-17
 
 from concurrent.futures import ThreadPoolExecutor
 
-executor = ThreadPoolExecutor(10)
+executor = ThreadPoolExecutor(20)

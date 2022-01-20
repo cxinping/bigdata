@@ -64,7 +64,7 @@ def del_finance_company_code(ids):
 
             sql = sql + condition_sql
 
-            #log.info(sql)
+            # log.info(sql)
             prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=sql)
     except Exception as e:
         print(e)
@@ -78,8 +78,7 @@ def pagination_finance_company_code_records(company_name=None):
     :return:
     """
 
-
-    #sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_company_code "
+    # sql = f"SELECT {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_company_code "
 
     # count_sql = 'SELECT count(1) FROM ({sql}) a'.format(sql=sql)
     # log.info(count_sql)
@@ -96,7 +95,7 @@ def pagination_finance_company_code_records(company_name=None):
     # order_sql = ' ORDER BY id ASC '
     # sql = sql + where_sql + order_sql
 
-    columns_ls = ['id', 'company_name', 'company_code', 'company_old_code', 'iscompany' ]
+    columns_ls = ['id', 'company_name', 'company_code', 'company_old_code', 'iscompany']
     columns_str = ",".join(columns_ls)
 
     ###### 拼装查询SQL
@@ -113,7 +112,7 @@ def pagination_finance_company_code_records(company_name=None):
     sql = sql + where_sql + order_sql
 
     count_sql = 'SELECT count(a.id) FROM ({sql}) a'.format(sql=sql)
-    #log.info(count_sql)
+    # log.info(count_sql)
     records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=count_sql)
     count_records = records[0][0]
 
