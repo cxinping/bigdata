@@ -719,7 +719,10 @@ class IncrementAddProcess(BaseProcess):
         增量更新临时表近两个月的数据
         :return:
         """
+        log.info("*" * 30)
         log.info('***** 在执行第5步前，增量数据流程，4个费用的前两个月数据入库 *****')
+        log.info("*" * 30)
+
         check_linshi_travel_data()
         check_linshi_office_data()
         check_linshi_meeting_data()
@@ -784,9 +787,9 @@ class IncrementAddProcess(BaseProcess):
 
         self.exec_step07()
 
-        self.exec_step08()
+        #self.exec_step08()
 
-        self.exec_step09()
+        #self.exec_step09()
 
 
 if __name__ == '__main__':

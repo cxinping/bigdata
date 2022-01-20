@@ -144,7 +144,7 @@ def check_linshi_travel_data(query_date=query_date):
 
         refresh_linshi_table()
 
-        init_file(query_date, is_del=True)
+        #init_file(query_date, is_del=True)
 
     else:
         log.info(f'* 查询日期 => {query_date}， 没有查询到任何数据')

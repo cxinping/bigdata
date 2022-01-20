@@ -225,7 +225,10 @@ def exec_task(sql):
 
 
 def main():
-    # 一共 44888  条记录 , 消耗时间 2210 sec
+    """
+
+
+    """
     check_linshi_office_data()
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
@@ -239,3 +242,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+

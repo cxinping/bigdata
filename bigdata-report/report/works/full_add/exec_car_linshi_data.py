@@ -223,7 +223,10 @@ def exec_task(sql):
 
 
 def main():
-    # 一共  5398  条记录 , 消耗时间 1036  sec
+    """
+    处理 22304 条记录，操作共耗时 12 sec
+
+    """
     check_car_linshi_data()
 
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)

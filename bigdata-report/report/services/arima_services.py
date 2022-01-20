@@ -16,6 +16,7 @@ import sys
 
 from pyramid.arima import auto_arima
 from datetime import datetime
+from report.commons.report_enums import ArimaType
 
 sys.path.append('/you_filed_algos/app')
 
@@ -145,7 +146,7 @@ def query_data2():
     return rd_df
 
 
-def exec_arima(query_date=None):
+def exec_arima(data_type=ArimaType.BETWEEN_DATE, query_date=None):
     # init_file(dest_file)
     df = query_data2()
     # log.info(df.info())
@@ -171,11 +172,24 @@ def exec_arima(query_date=None):
     print(type(between_date))
     print(between_date.head())
 
-    # 设定样本和测试数据
-    train_data = between_date[:int(0.7 * (len(between_date)))]
-    test_data = between_date[int(0.7 * (len(between_date))):]
+    if data_type == ArimaType.BETWEEN_DATE:
+        calculate_data(between_date)
+    elif data_type == ArimaType.BETWEEN_DATE:
+        calculate_data(member_cont)
 
-    print(len(between_date), len(train_data), len(test_data))
+    return None
+
+
+def calculate_data(cal_data):
+    """
+    计算数据
+    :return:
+    """
+    # 设定样本和测试数据
+    train_data = cal_data[:int(0.7 * (len(cal_data)))]
+    test_data = cal_data[int(0.7 * (len(cal_data))):]
+
+    print(len(cal_data), len(train_data), len(test_data))
     print(type(train_data))
 
     # 自动判断序列的p/d/q，建立Arima预测模型
@@ -189,9 +203,9 @@ def exec_arima(query_date=None):
     forecast = model.predict(n_periods=len(test_data2))
     forecast = pd.DataFrame(forecast, index=test_data2.index, columns=['Prediction'])
 
-    print('***  显示预测值 ********')
-    print(len(forecast))
-    print(forecast)
+    # print('***  显示预测值 ********')
+    # print(len(forecast))
+    # print(forecast)
 
     # 展示预测曲线
     # plt.plot(train_data)
@@ -201,7 +215,7 @@ def exec_arima(query_date=None):
 
     forecast.reset_index(level=0, inplace=True)
     forecast = forecast.rename(columns={'index': 'date'})
-    forecast['date'] = forecast['date'].dt.strftime('%Y-%m')
+    forecast['date'] = forecast['date'].dt.strftime('%Y%m')
     print(forecast)
 
     result = forecast.to_dict('records')

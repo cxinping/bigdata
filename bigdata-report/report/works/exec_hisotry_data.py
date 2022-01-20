@@ -338,7 +338,10 @@ def query_travel():
 
 def check_prod_hdfs():
     test_hdfs = Test_HDFSTools(conn_type=CONN_TYPE)
-    test_hdfs.ls('hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis')
+    travel_url = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_travel_linshi_analysis'
+    office_url = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_offical_linshi_analysis'
+    car_url = 'hdfs:///user/hive/warehouse/02_logical_layer_007_h_lf_cw.db/finance_car_linshi_analysis/car_data.txt'
+    test_hdfs.ls(travel_url)
 
 
 if __name__ == '__main__':
@@ -356,4 +359,4 @@ if __name__ == '__main__':
 
     check_prod_hdfs()
 
-    print('--- ok , executed 123 ---')
+    print('--- ok , executed 111 ---')
