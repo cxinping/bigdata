@@ -5,7 +5,6 @@
 @author: WangShuo
 """
 
-
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.db_helper import query_kudu_data
 from report.commons.logging import get_logger

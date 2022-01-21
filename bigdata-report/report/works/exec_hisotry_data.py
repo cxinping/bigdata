@@ -214,6 +214,19 @@ def process_finance_unusual():
             f'unusual_id={unusual_id},sign_status={sign_status},unusual_point={unusual_point},unusual_level={unusual_level}')
 
 
+def process_finance_unusual2():
+    update_sql = 'update 01_datamart_layer_007_h_cw_df.finance_unusual set unusual_code= unusual_id '
+    #log.info(update_sql)
+    #prod_execute_sql(conn_type=CONN_TYPE, sqltype='insert', sql=update_sql)
+
+    sql2 = 'select unusual_code,unusual_id from 01_datamart_layer_007_h_cw_df.finance_unusual order by unusual_id asc '
+    # log.info(sql2)
+    records = prod_execute_sql(conn_type=CONN_TYPE, sqltype='select', sql=sql2)
+    print('总记录数 =>', len(records))
+    for record in records:
+        print(record)
+
+
 def demo3():
     #     sel_sql1 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220107' AND process_status = 'sucess'  ORDER BY step_number ASC  "
     #     sel_sql2 = "select * FROM 01_datamart_layer_007_h_cw_df.finance_data_process "
@@ -302,7 +315,7 @@ def demo5():
         print()
 
 
-def process_finance_unusual2():
+def process_finance_unusual3():
     sql = """
     
     """
@@ -349,9 +362,11 @@ if __name__ == '__main__':
     # demo3()
     # demo4()
     # demo5()
-    # process_finance_unusual2()
+
+    process_finance_unusual2()
+
     # query_travel()
 
-    check_prod_hdfs()
+    # check_prod_hdfs()
 
-    print('--- ok , executed 111 ---')
+    print('--- ok , executed 222 ---')

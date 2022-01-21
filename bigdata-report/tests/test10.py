@@ -30,3 +30,7 @@ if not False:
     print('111')
 else:
     print('222')
+
+print('--------------------------')
+for i in range(3):
+    print(i)

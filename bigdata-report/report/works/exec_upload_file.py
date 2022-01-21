@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from report.commons.hdfs_tools import HDFSTools as Prod_HDFSTools
 from report.commons.settings import CONN_TYPE
 

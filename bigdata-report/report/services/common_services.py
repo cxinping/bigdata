@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from report.commons.tools import create_uuid
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE

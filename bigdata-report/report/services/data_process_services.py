@@ -474,12 +474,12 @@ class BaseProcess(metaclass=ABCMeta):
         all_task = []
         task1 = threadPool.submit(self.__exec_step07_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step07_task, meeting_records, meeting_fee)
-        task3 = threadPool.submit(self.__exec_step07_task, office_records, office_fee)
-        task4 = threadPool.submit(self.__exec_step07_task, car_records, car_fee)
+        # task3 = threadPool.submit(self.__exec_step07_task, office_records, office_fee)
+        # task4 = threadPool.submit(self.__exec_step07_task, car_records, car_fee)
         all_task.append(task1)
         all_task.append(task2)
-        all_task.append(task3)
-        all_task.append(task4)
+        # all_task.append(task3)
+        # all_task.append(task4)
 
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
@@ -785,13 +785,13 @@ class IncrementAddProcess(BaseProcess):
         #
         # self.exec_step06()
         #
-        # self.exec_step07()
+        self.exec_step07()
         #
         # self.exec_step08()
         #
         # self.exec_step09()
 
-        pass
+        print('--- ok，done ---')
 
 
 if __name__ == '__main__':
@@ -800,6 +800,4 @@ if __name__ == '__main__':
 
     increment_process = IncrementAddProcess()
     increment_process.exec_steps()
-
-    print('--- ok，done ---')
 
