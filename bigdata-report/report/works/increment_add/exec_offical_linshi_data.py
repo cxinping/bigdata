@@ -51,7 +51,7 @@ def init_file():
 def check_linshi_office_data(query_date=query_date):
     init_file()
 
-    columns_ls = ['finance_offical_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno']
+    columns_ls = ['finance_offical_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno', 'invo_code']
     columns_str = ",".join(columns_ls)
 
     sql = """
@@ -191,6 +191,7 @@ def exec_task(sql):
             sales_addressphone = str(record[2])  # 开票地址及电话
             sales_bank = str(record[3])  # 发票开会行
             sales_taxno = str(record[4])  # 纳税人识别号
+            invo_code = str(record[5])  # 发票代码
 
             # sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
             #                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
@@ -209,7 +210,7 @@ def exec_task(sql):
             pstng_date = '无'
 
             # log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
+            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{invo_code}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
             result.append(record_str)
 
             # print(record_str)

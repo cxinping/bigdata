@@ -783,9 +783,9 @@ class IncrementAddProcess(BaseProcess):
         """
         # self.exec_linshi_daily_data()
         #
-        # self.exec_step06()
+        self.exec_step06()
         #
-        self.exec_step07()
+        #self.exec_step07()
         #
         # self.exec_step08()
         #

@@ -52,7 +52,7 @@ def init_file():
 def check_linshi_office_data():
     init_file()
 
-    columns_ls = ['finance_offical_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno']
+    columns_ls = ['finance_offical_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno', 'invo_code']
     columns_str = ",".join(columns_ls)
 
     sql = """
@@ -149,7 +149,7 @@ def operate_every_record(record):
 
             receipt_city = rst[1]
 
-        # log.info(f'111 sales_address={sales_address},receipt_city={receipt_city}')
+        log.info(f'111 finance_offical_id={finance_offical_id},sales_address={sales_address},receipt_city={receipt_city}')
 
     else:
         sales_address = match_area.query_sales_address_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
@@ -162,7 +162,7 @@ def operate_every_record(record):
         receipt_city = match_area.query_receipt_city_new(sales_name=sales_name, sales_addressphone=sales_addressphone,
                                                          sales_bank=sales_bank)  # 发票开票所在市
 
-        # log.info(f'222 sales_address={sales_address},receipt_city={receipt_city}')
+        log.info(f'222 finance_offical_id={finance_offical_id},sales_address={sales_address},receipt_city={receipt_city}')
 
     return sales_address, receipt_city
 
@@ -178,6 +178,7 @@ def exec_task(sql):
             sales_addressphone = str(record[2])  # 开票地址及电话
             sales_bank = str(record[3])  # 发票开会行
             sales_taxno = str(record[4])  # 纳税人识别号
+            invo_code = str(record[5])  # 发票代码
 
             # sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
             #                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
@@ -203,7 +204,7 @@ def exec_task(sql):
             pstng_date = '无'
 
             # log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
+            record_str = f'{finance_offical_id}\u0001{sales_taxno}\u0001{invo_code}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
             result.append(record_str)
 
             # print(record_str)

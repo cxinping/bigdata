@@ -1,5 +1,4 @@
-
-Flink学习资料
+# Flink学习资料
 
 
 
@@ -12,8 +11,6 @@ Flink学习资料
 > 
 
 > https://www.ververica.com/blog/kafka-flink-a-practical-how-to
-
-
 
 
 

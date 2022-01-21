@@ -55,7 +55,7 @@ def init_file():
 def check_car_linshi_data():
     init_file()
 
-    columns_ls = ['finance_car_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno']
+    columns_ls = ['finance_car_id', 'sales_name', 'sales_addressphone', 'sales_bank', 'sales_taxno' , 'invo_code']
     columns_str = ",".join(columns_ls)
 
     sql = """
@@ -132,6 +132,7 @@ def operate_every_record(record):
     sales_addressphone = str(record[2])  # 开票地址及电话
     sales_bank = str(record[3])  # 发票开会行
     sales_taxno = str(record[4])  # 纳税人识别号
+    invo_code = str(record[5]) # 发票代码
 
     rst = finance_service.query_areas(sales_taxno=sales_taxno)
     # log.info(f'000 rst={rst}, rst[0]={rst[0]}, rst[1]={rst[1]}, rst[2]={rst[2]} ')
@@ -182,6 +183,7 @@ def exec_task(sql):
             sales_addressphone = str(record[2])  # 开票地址及电话
             sales_bank = str(record[3])  # 发票开会行
             sales_taxno = str(record[4])  # 纳税人识别号
+            invo_code = str(record[5])  # 发票代码
 
             # sales_address = match_area.query_sales_address(sales_name=sales_name, sales_addressphone=sales_addressphone,
             #                                                sales_bank=sales_bank)  # 发票开票地(最小行政)
@@ -199,7 +201,7 @@ def exec_task(sql):
             pstng_date = '无'
 
             # log.info(f" {threading.current_thread().name} is running ")
-            record_str = f'{finance_car_id}\u0001{sales_taxno}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
+            record_str = f'{finance_car_id}\u0001{sales_taxno}\u0001{invo_code}\u0001{sales_name}\u0001{sales_addressphone}\u0001{sales_bank}\u0001{sales_address}\u0001{receipt_city}\u0001{pstng_date}'
             result.append(record_str)
 
             # print(record_str)
