@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import dateutil.relativedelta
 
 
 def get_date_month(n=0):
@@ -17,3 +18,14 @@ def get_date_month(n=0):
         else:
             month -= 1
     return datetime.date(year, month, 1).strftime('%Y%m')
+
+
+def get_cal_date(n, fmt='%Y%m'):
+    """
+    获得经过计算的时间，当n为正数是，表示查询下几月的时间。当n为负数时，表示计算前几个月的时间
+    :return:
+    """
+    now = datetime.datetime.now()
+    date = now + dateutil.relativedelta.relativedelta(months=n)
+
+    return date.strftime(fmt)
