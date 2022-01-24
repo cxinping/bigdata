@@ -126,7 +126,7 @@ def check_linshi_meeting_data(query_date=query_date):
     # threadPool.shutdown(wait=True)
 
     if count_records > 0:
-        pool = Pool(20)
+        pool = Pool(10)
         results = []
         for sel_sql in select_sql_ls:
             rst = pool.spawn(exec_task, sel_sql)

@@ -125,7 +125,7 @@ def check_meeting_data():
     # wait(all_task, return_when=ALL_COMPLETED)
     # threadPool.shutdown(wait=True)
 
-    pool = Pool(30)
+    pool = Pool(10)
     results = []
     for sel_sql in select_sql_ls:
         rst = pool.spawn(exec_task, sel_sql)

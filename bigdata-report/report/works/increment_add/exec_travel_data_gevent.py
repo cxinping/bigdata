@@ -116,7 +116,7 @@ def check_linshi_travel_data(query_date=query_date):
         select_sql_ls.append(tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 20
+        max_workers = 10
     else:
         max_workers = 5
 

@@ -133,7 +133,7 @@ def execute_02_data(year):
         select_sql_ls.append(tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 30
+        max_workers = 10
     else:
         max_workers = 5
 

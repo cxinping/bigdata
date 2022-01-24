@@ -1,3 +1,8 @@
+kill掉所有的python进程
+> ps aux|grep python|grep -v grep|cut -c 9-15|xargs kill -15
+
+> ps aux|grep python|grep -v grep|cut -c 9-15|xargs kill -9
+
 
 欢迎页面
 > http://127.0.0.1:8004/hello

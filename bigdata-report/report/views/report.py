@@ -35,7 +35,7 @@ from report.services.travel_expense_service import get_travel_keyword
 from report.services.data_process_services import (insert_temp_performance_bill, update_temp_performance_bill,
                                                    del_temp_performance_bill, query_temp_performance_bill,
                                                    pagination_temp_performance_bill_records, exec_temp_performance_bill,
-                                                   query_finance_data_process)
+                                                   query_finance_data_process, exec_process)
 from report.services.finance_company_code_services import (insert_finance_company_code, update_finance_company_code,
                                                            del_finance_company_code,
                                                            pagination_finance_company_code_records)
@@ -1988,6 +1988,41 @@ def finance_prediction():
             'result': 'ok',
             'code': 200,
             'data': records
+        }
+        response = jsonify(data)
+        return response
+    except Exception as e:
+        print(e)
+        result = {
+            'status': 'error',
+            'desc': str(e),
+            'code': 500
+        }
+        return mk_utf8resp(result)
+
+
+############  执行流程  ############
+
+# http://10.5.138.11:8004/report/finance/exec/process
+@report_bp.route('/finance/exec/process', methods=['POST'])
+def finance_exec_process():
+    log.info('---- exec_process ---- ')
+    ids = request.form.get('ids') if request.form.get('ids') else None
+
+    if ids is None or len(ids) == 0:
+        data = {"result": "error", "details": "输入的 ids 不能为空 或者 没有传递值", "code": 500}
+        response = jsonify(data)
+        return response
+
+    ids = str(ids).split(',')
+    log.info(ids)
+
+    try:
+        executor.submit(exec_process, ids)
+
+        data = {
+            'result': 'ok',
+            'code': 200,
         }
         response = jsonify(data)
         return response

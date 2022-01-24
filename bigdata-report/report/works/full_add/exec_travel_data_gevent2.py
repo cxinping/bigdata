@@ -119,7 +119,7 @@ def execute_02_data(year_month):
         # print('*** tmp_sql => ', tmp_sql)
 
     if count_records >= 20000:
-        max_workers = 30
+        max_workers = 10
     else:
         max_workers = 5
 
@@ -129,7 +129,7 @@ def execute_02_data(year_month):
         init_file(year_month)
 
         start_time = time.perf_counter()
-        pool = Pool(30)
+        pool = Pool(10)
 
         results = []
         for sel_sql in select_sql_ls:

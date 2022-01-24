@@ -31,6 +31,14 @@ if not False:
 else:
     print('222')
 
-print('--------------------------')
-for i in range(3):
-    print(i)
+print('------------------------------------------')
+
+import os
+
+os.system('ps aux|grep python|grep -v grep|cut -c 9-15|xargs kill -15')
+
+
+
+
+
+

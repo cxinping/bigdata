@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 from abc import ABCMeta, abstractmethod
 from report.commons.tools import create_uuid
 from report.commons.logging import get_logger
@@ -180,7 +181,7 @@ where cc.step_number=bb.step_number and cc.daily_end_date=bb.max_end_date
         columns_ls = ['process_id', 'process_status', 'daily_start_date', 'daily_end_date', 'step_number',
                       'operate_desc', 'orgin_source', 'destin_source', 'importdate', 'target_classify']
         columns_str = ",".join(columns_ls)
-        #sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
+        # sel_sql1 = f"select {columns_str} FROM 01_datamart_layer_007_h_cw_df.finance_data_process WHERE from_unixtime(unix_timestamp(to_date(importdate),'yyyy-MM-dd'),'yyyyMMdd') = '20220105' AND process_status = 'sucess'  ORDER BY step_number ASC  "
 
         sel_sql = """
 select  y.process_id, y.process_status, y.daily_start_date, y.daily_end_date, y.step_number, y.operate_desc, 
@@ -781,17 +782,36 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        # self.exec_linshi_daily_data()
-        #
+        self.exec_linshi_daily_data()
+
         self.exec_step06()
-        #
-        #self.exec_step07()
-        #
-        # self.exec_step08()
-        #
-        # self.exec_step09()
+
+        self.exec_step07()
+
+        self.exec_step08()
+
+        self.exec_step09()
 
         print('--- ok，done ---')
+
+
+def exec_process(ids):
+    increment_process = IncrementAddProcess()
+    increment_process.exec_linshi_daily_data()
+
+    for id in ids:
+        if id == '6':
+            log.info('执行第6步流程')
+            #increment_process.exec_step06()
+        elif id == '7':
+            log.info('执行第7步流程')
+            #increment_process.exec_step07()
+        elif id == '8':
+            log.info('执行第8步流程')
+            #increment_process.exec_step08()
+        elif id == '9':
+            log.info('执行第9步流程')
+            #increment_process.exec_step09()
 
 
 if __name__ == '__main__':
