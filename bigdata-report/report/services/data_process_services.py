@@ -802,16 +802,16 @@ def exec_process(ids):
     for id in ids:
         if id == '6':
             log.info('执行第6步流程')
-            #increment_process.exec_step06()
+            increment_process.exec_step06()
         elif id == '7':
             log.info('执行第7步流程')
-            #increment_process.exec_step07()
+            increment_process.exec_step07()
         elif id == '8':
             log.info('执行第8步流程')
-            #increment_process.exec_step08()
+            increment_process.exec_step08()
         elif id == '9':
             log.info('执行第9步流程')
-            #increment_process.exec_step09()
+            increment_process.exec_step09()
 
 
 if __name__ == '__main__':
