@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package quickstart;
+package com.dxtd.flink.chapter01;
 
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
