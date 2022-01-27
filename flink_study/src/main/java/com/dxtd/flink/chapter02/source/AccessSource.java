@@ -25,7 +25,8 @@ public class AccessSource implements SourceFunction<Access> {
                 ctx.collect(access);
             }
 
-            Thread.sleep(1000);
+            Thread.sleep(10*1000);
+            System.out.println("");
         }
     }
 
