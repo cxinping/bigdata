@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-//import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.NumberSequenceIterator;
 
 import java.util.Properties;
@@ -18,25 +18,25 @@ public class SourceApp {
         // 创建上下文
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        test01(env);
+       // test01(env);
 //        test02(env);
-//        test03(env);
+        test03(env);
 //        test04(env);
  //       test05(env);
         env.execute("SourceApp");
     }
 
-//    public static void test05(StreamExecutionEnvironment env ) {
-//
-//        Properties properties = new Properties();
-//        properties.setProperty("bootstrap.servers", "ruozedata001:9092,ruozedata001:9093,ruozedata001:9094");
-//        properties.setProperty("group.id", "test");
-//        DataStream<String> stream = env
-//                .addSource(new FlinkKafkaConsumer<>("flinktopic", new SimpleStringSchema(), properties));
-//
-//        System.out.println(stream.getParallelism());
-//        stream.print();
-//    }
+    public static void test05(StreamExecutionEnvironment env ) {
+
+        Properties properties = new Properties();
+        properties.setProperty("bootstrap.servers", "ruozedata001:9092,ruozedata001:9093,ruozedata001:9094");
+        properties.setProperty("group.id", "test");
+        DataStream<String> stream = env
+                .addSource(new FlinkKafkaConsumer<>("flinktopic", new SimpleStringSchema(), properties));
+
+        System.out.println(stream.getParallelism());
+        stream.print();
+    }
 
     public static void test04(StreamExecutionEnvironment env ) {
         DataStreamSource<Student> source = env.addSource(new StudentSource()).setParallelism(3);
@@ -44,14 +44,14 @@ public class SourceApp {
         source.print();
     }
 
-//    public static void test03(StreamExecutionEnvironment env ) {
-//
-////        DataStreamSource<Access> source = env.addSource(new AccessSource())
-////                .setParallelism(2);
-//        DataStreamSource<Access> source = env.addSource(new AccessSourceV2()).setParallelism(3);
-//        System.out.println(source.getParallelism());
-//        source.print();
-//    }
+    public static void test03(StreamExecutionEnvironment env ) {
+
+        DataStreamSource<Access> source = env.addSource(new AccessSource())
+                .setParallelism(1);
+        //DataStreamSource<Access> source = env.addSource(new AccessSourceV2()).setParallelism(3);
+        System.out.println(source.getParallelism());
+        source.print();
+    }
 
     public static void test02(StreamExecutionEnvironment env ){
 

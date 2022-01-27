@@ -11,12 +11,12 @@ public class AccessSource implements SourceFunction<Access> {
     @Override
     public void run(SourceContext<Access> ctx) throws Exception {
 
-        String[] domains = {"imooc.com", "a.com","b.com"};
+        String[] domains = {"d.com", "a.com","b.com"};
 
         Random random = new Random();
 
         while (running) {
-            for (int i = 0; i < 10 ; i++) {
+            for (int i = 0; i < 5 ; i++) {
                 Access access = new Access();
                 access.setTime(1234567L);
                 access.setDomain(domains[random.nextInt(domains.length)]);
@@ -25,7 +25,7 @@ public class AccessSource implements SourceFunction<Access> {
                 ctx.collect(access);
             }
 
-            Thread.sleep(5000);
+            Thread.sleep(1000);
         }
     }
 
