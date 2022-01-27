@@ -19,9 +19,7 @@ public class TransformationApp {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
-
-        map(env);
+      //  map(env);
 //        filter(env);
 //        flatMap(env);
 //        keyBy(env);
@@ -29,7 +27,7 @@ public class TransformationApp {
 
 //        richMap(env);
 //        union(env);
-//        connect(env);
+        connect(env);
 //        coMap(env);
         //coFlatMap(env);
 

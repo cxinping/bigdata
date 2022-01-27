@@ -13,12 +13,12 @@ public class AccessSourceV2 implements ParallelSourceFunction<Access> {
     @Override
     public void run(SourceContext<Access> ctx) throws Exception {
 
-        String[] domains = {"imooc.com", "a.com","b.com"};
+        String[] domains = {"c.com", "a.com","b.com"};
 
         Random random = new Random();
 
         while (running) {
-            for (int i = 0; i < 10 ; i++) {
+            for (int i = 0; i < 5 ; i++) {
                 Access access = new Access();
                 access.setTime(1234567L);
                 access.setDomain(domains[random.nextInt(domains.length)]);
@@ -28,6 +28,8 @@ public class AccessSourceV2 implements ParallelSourceFunction<Access> {
             }
 
             Thread.sleep(5000);
+
+            System.out.println("");
         }
     }
 

@@ -46,9 +46,9 @@ public class SourceApp {
 
     public static void test03(StreamExecutionEnvironment env ) {
 
-        DataStreamSource<Access> source = env.addSource(new AccessSource())
-                .setParallelism(1);
-        //DataStreamSource<Access> source = env.addSource(new AccessSourceV2()).setParallelism(3);
+//        DataStreamSource<Access> source = env.addSource(new AccessSource())
+//                .setParallelism(1);
+        DataStreamSource<Access> source = env.addSource(new AccessSourceV2()).setParallelism(3);
         System.out.println(source.getParallelism());
         source.print();
     }
