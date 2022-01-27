@@ -191,7 +191,6 @@ clickhouse-client -h 127.0.0.1 -d default -m -u default --password mCcteXsK
 
 
 
-
 3, 重启服务
 
 ```
