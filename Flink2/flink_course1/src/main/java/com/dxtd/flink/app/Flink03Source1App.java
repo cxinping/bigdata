@@ -28,12 +28,12 @@ public class Flink03Source1App {
         env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
 
         //相同类型元素的数据流 source
-        DataStream<String> ds1 = env.fromElements("java,SpringBoot", "spring cloud,redis", "kafka,小滴课堂");
-        ds1.print("ds1:");
+       // DataStream<String> ds1 = env.fromElements("java,SpringBoot", "spring cloud,redis", "kafka,小滴课堂");
+        //ds1.print("ds1:");
 
         //相同类型元素的数据流 source
-        //DataStream<String> ds2 = env.fromCollection(Arrays.asList("java,SpringBoot", "spring cloud,redis", "kafka,小滴课堂"));
-        //ds2.print("ds2:");
+        DataStream<String> ds2 = env.fromCollection(Arrays.asList("java,SpringBoot", "spring cloud,redis", "kafka,小滴课堂"));
+        ds2.print("ds2:");
 
 //        DataStream<Long> ds3 = env.fromSequence(1,10);
 //        ds3.print("ds3:");
