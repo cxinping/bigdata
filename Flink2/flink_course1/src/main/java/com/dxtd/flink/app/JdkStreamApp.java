@@ -24,7 +24,6 @@ public class JdkStreamApp {
                 new VideoOrder("2019323542411", "Git+Jenkins持续集成", 7),
                 new VideoOrder("2019323542424", "Idea全套教程", 21));
 
-
         //平均价格
         double videoOrder1Avg1 = videoOrders1.stream().
                 collect(Collectors.averagingInt(VideoOrder::getMoney))
