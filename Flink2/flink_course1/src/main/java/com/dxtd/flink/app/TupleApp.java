@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TupleApp {
-
     public static void main(String [] args){
         //tuple测试
         tupleTest();
@@ -52,6 +51,5 @@ public class TupleApp {
 
         System.out.println(result);
     }
-
 
 }
