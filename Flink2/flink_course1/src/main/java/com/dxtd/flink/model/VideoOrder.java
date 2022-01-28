@@ -4,6 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * 订单实体类
+ *
+ * */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
