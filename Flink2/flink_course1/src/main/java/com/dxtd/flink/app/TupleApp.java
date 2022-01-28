@@ -1,4 +1,5 @@
 package com.dxtd.flink.app;
+
 import org.apache.flink.api.java.tuple.Tuple3;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,8 +19,7 @@ public class TupleApp {
     }
 
     private static void tupleTest(){
-        Tuple3<Integer,String,Long> tuple3 =  Tuple3.of(1,"cnblogs.com",120L);
-
+        Tuple3<Integer,String,Long> tuple3 =  Tuple3.of(1,"cnblogs.com",120L );
         System.out.println(tuple3.f0);
         System.out.println(tuple3.f1);
         System.out.println(tuple3.f2);
