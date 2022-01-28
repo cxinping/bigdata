@@ -10,15 +10,15 @@ public class TupleApp {
 
     public static void main(String [] args){
         //tuple测试
-        //tupleTest();
+        tupleTest();
 
         //mapTest();
 
-       flatMapTest();
+       //flatMapTest();
     }
 
     private static void tupleTest(){
-        Tuple3<Integer,String,Long> tuple3 =  Tuple3.of(1,"xdclass.net",120L);
+        Tuple3<Integer,String,Long> tuple3 =  Tuple3.of(1,"cnblogs.com",120L);
 
         System.out.println(tuple3.f0);
         System.out.println(tuple3.f1);
@@ -52,8 +52,6 @@ public class TupleApp {
 
         System.out.println(result);
     }
-
-
 
 
 }

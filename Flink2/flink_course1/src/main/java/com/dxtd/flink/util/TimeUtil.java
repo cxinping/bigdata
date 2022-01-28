@@ -5,18 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-/**
- * 小滴课堂,愿景：让技术不再难学
- *
- * @Description
- * @Author 二当家小D
- * @Remark 有问题直接联系我，源码-笔记-技术交流群
- * @Version 1.0
- **/
-
 public class TimeUtil {
-
-
     /**
      *  time 转 字符串
      * @param time
@@ -32,7 +21,7 @@ public class TimeUtil {
     /**
      * timestamp 转 字符串
      *
-     * @param time
+     * @param timestamp
      * @return
      */
     public static String format(long timestamp) {
@@ -55,4 +44,5 @@ public class TimeUtil {
         return Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 
     }
+
 }
