@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 public class TupleApp {
     public static void main(String [] args){
         //tuple测试
-        tupleTest();
+        //tupleTest();
 
         //mapTest();
 
-       //flatMapTest();
+       flatMapTest();
     }
 
     private static void tupleTest(){
@@ -24,6 +24,7 @@ public class TupleApp {
         System.out.println(tuple3.f2);
     }
 
+    //一对一转换
     private static void mapTest(){
         List<String> list1 = new ArrayList<>();
         list1.add("springboot,springcloud");
@@ -38,6 +39,7 @@ public class TupleApp {
         System.out.println(result);
     }
 
+    //一对多转换
     private static void flatMapTest(){
         List<String> list1 = new ArrayList<>();
         list1.add("springboot,springcloud");
