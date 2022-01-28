@@ -25,10 +25,10 @@ public class Flink01App {
         env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
 
         //设置并行度
-        env.setParallelism(1);
+        //env.setParallelism(1);
 
         //相同类型元素的数据流 source
-        DataStream<String> stringDS = env.fromElements("java,SpringBoot", "spring cloud,redis", "kafka,小滴课堂");
+        DataStream<String> stringDS = env.fromElements("java,SpringBoot", "spring cloud,redis", "kafka,hadoop");
         stringDS.print("处理前");
 
         // FlatMapFunction<String, String>, key是输入类型，value是Collector响应的收集的类型，看源码注释，也是 DataStream<String>里面泛型类型

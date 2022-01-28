@@ -27,7 +27,7 @@ public class Flink02DataSetApp {
         env.setParallelism(1);
 
         //相同类型元素的数据集 source
-        DataSet<String> stringDS = env.fromElements("java,SpringBoot", "spring cloud,redis", "kafka,小滴课堂");
+        DataSet<String> stringDS = env.fromElements("java,SpringBoot", "spring cloud,redis", "kafka,hadoop");
 
         stringDS.print("处理前");
 
