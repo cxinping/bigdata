@@ -12,7 +12,6 @@ import java.util.Arrays;
  *
  *
  **/
-
 public class Flink03Source1App {
 
     /**

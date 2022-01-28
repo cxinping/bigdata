@@ -21,7 +21,6 @@ public class Flink02DataSetApp {
      * @param args
      */
     public static void main(String [] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
         //设置并行度
