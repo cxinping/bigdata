@@ -42,6 +42,6 @@ public class JdkStreamApp {
 
         System.out.println("total1="+total1);
         System.out.println("total2="+total2);
-
     }
+
 }
