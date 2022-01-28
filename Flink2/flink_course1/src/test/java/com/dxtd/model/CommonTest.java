@@ -1,8 +1,9 @@
 package com.dxtd.model;
 
+import com.dxtd.flink.model.ProductOrder;
+
 public class CommonTest {
     public static void testLombok(){
-
         ProductOrder productOrder = new ProductOrder();
         productOrder.setId(1);
         productOrder.setTitle("微服务课程 flink");
@@ -15,6 +16,7 @@ public class CommonTest {
 
     public static void main(String[] args) {
         testLombok();
+
     }
 
 }

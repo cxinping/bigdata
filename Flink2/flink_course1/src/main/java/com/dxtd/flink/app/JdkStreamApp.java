@@ -1,7 +1,6 @@
-package com.dxtd.app;
+package com.dxtd.flink.app;
 
-import com.dxtd.model.VideoOrder;
-
+import com.dxtd.flink.model.VideoOrder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
