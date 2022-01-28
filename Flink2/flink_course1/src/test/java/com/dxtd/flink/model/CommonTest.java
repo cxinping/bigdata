@@ -1,4 +1,4 @@
-package com.dxtd.model;
+package com.dxtd.flink.model;
 
 import com.dxtd.flink.model.ProductOrder;
 
