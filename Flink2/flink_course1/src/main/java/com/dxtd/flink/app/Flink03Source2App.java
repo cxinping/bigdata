@@ -23,7 +23,7 @@ public class Flink03Source2App {
         env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
         env.setParallelism(1);
 
-        DataStream<String> ds = env.readTextFile("D:\\quant2\\bigdata\\Flink2\\flink_course1\\data\\access.log");
+        DataStream<String> ds = env.readTextFile("src\\data\\access.log");
         ds.print();
 
         //  DataStream<String> textDS = env.readTextFile("hdfs://xdclass_node:8010/file/log/words.txt");
