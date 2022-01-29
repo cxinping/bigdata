@@ -23,7 +23,7 @@ public class Flink04CustomSourceApp {
         //StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
-        env.setParallelism(2);
+        env.setParallelism(3);
 
         DataStream<VideoOrder2> videoOrderDS =  env.addSource(new VideoOrderSource());
         DataStream<VideoOrder2> filterDS = videoOrderDS.filter(new FilterFunction<VideoOrder2>() {
