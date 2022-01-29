@@ -11,7 +11,6 @@ import org.apache.flink.util.Collector;
  *
  *
  * */
-
 public class Flink01App {
     /**
      * source
