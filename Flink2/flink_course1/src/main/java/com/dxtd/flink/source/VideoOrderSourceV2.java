@@ -8,8 +8,6 @@ import java.util.*;
 
 
 public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder2> {
-
-
     private volatile Boolean flag = true;
 
     private Random random = new Random();
@@ -53,7 +51,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder2> 
      */
     @Override
     public void run(SourceContext<VideoOrder2> ctx) throws Exception {
-
         while (flag){
             Thread.sleep(1000);
             String id = UUID.randomUUID().toString().substring(30);
@@ -67,7 +64,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder2> 
             ctx.collect(videoOrder);
         }
 
-
     }
 
     /**
@@ -75,7 +71,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder2> 
      */
     @Override
     public void cancel() {
-
         flag = false;
     }
 }
