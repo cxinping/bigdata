@@ -475,12 +475,12 @@ class BaseProcess(metaclass=ABCMeta):
         all_task = []
         task1 = threadPool.submit(self.__exec_step07_task, travel_records, travel_fee)
         task2 = threadPool.submit(self.__exec_step07_task, meeting_records, meeting_fee)
-        # task3 = threadPool.submit(self.__exec_step07_task, office_records, office_fee)
-        # task4 = threadPool.submit(self.__exec_step07_task, car_records, car_fee)
+        task3 = threadPool.submit(self.__exec_step07_task, office_records, office_fee)
+        task4 = threadPool.submit(self.__exec_step07_task, car_records, car_fee)
         all_task.append(task1)
         all_task.append(task2)
-        # all_task.append(task3)
-        # all_task.append(task4)
+        all_task.append(task3)
+        all_task.append(task4)
 
         wait(all_task, return_when=ALL_COMPLETED)
         threadPool.shutdown(wait=True)
@@ -721,7 +721,7 @@ class IncrementAddProcess(BaseProcess):
         :return:
         """
         log.info("*" * 30)
-        log.info('***** 在执行第5步前，增量数据流程，4个费用的前两个月数据入库 *****')
+        log.info('***** 在执行第6步前，增量数据流程，4个费用的前两个月数据入库 *****')
         log.info("*" * 30)
 
         check_linshi_travel_data()
@@ -782,7 +782,7 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        self.exec_linshi_daily_data()
+        #self.exec_linshi_daily_data()
 
         self.exec_step06()
 
