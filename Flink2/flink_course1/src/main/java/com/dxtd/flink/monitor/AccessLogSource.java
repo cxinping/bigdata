@@ -39,10 +39,6 @@ public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
         codeList.add(403);
     }
 
-
-
-
-
     @Override
     public void run(SourceContext<AccessLogDO> ctx) throws Exception {
 

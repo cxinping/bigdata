@@ -59,13 +59,11 @@ public class XdclassMonitorApp {
             }
         });
 
-
         //开窗
         WindowedStream<AccessLogDO, String, TimeWindow> windowedStream = keyedStream.window(SlidingEventTimeWindows.of(Time.seconds(60), Time.seconds(5)))
                 //允许有1分钟延迟
                 .allowedLateness(Time.minutes(1))
                 .sideOutputLateData(lateData);
-
 
         SingleOutputStreamOperator<ResultCount> aggregate = windowedStream.aggregate(new AggregateFunction<AccessLogDO, Long, Long>() {
             @Override

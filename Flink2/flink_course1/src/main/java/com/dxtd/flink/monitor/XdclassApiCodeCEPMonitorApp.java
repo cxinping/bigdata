@@ -94,7 +94,6 @@ public class XdclassApiCodeCEPMonitorApp {
             }
         });
 
-
         CEPResult.print("接口告警");
 
         env.execute("XdclassMonitorCEPApp");

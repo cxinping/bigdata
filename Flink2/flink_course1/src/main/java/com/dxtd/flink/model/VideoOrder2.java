@@ -4,7 +4,6 @@ import com.dxtd.flink.util.TimeUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import java.util.Date;
 
 @Data
