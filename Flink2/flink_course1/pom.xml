@@ -110,6 +110,13 @@
             <version>1.12.0</version>
         </dependency>
 
+        <!--redis connector-->
+        <dependency>
+            <groupId>org.apache.bahir</groupId>
+            <artifactId>flink-connector-redis_2.11</artifactId>
+            <version>1.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>
