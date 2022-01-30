@@ -80,7 +80,6 @@ public class Flink17AggWindowApp {
 
         aggregate.print();
 
-
         //DataStream需要调用execute,可以取个名称
         env.execute("sliding window job");
     }
