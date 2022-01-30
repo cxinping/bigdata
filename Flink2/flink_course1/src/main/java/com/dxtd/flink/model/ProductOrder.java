@@ -1,4 +1,4 @@
-package  com.dxtd.flink.model;
+package com.dxtd.flink.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
