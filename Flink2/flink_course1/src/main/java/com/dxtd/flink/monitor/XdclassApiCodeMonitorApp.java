@@ -52,7 +52,6 @@ public class XdclassApiCodeMonitorApp {
         OutputTag<AccessLogDO> lateData = new OutputTag<AccessLogDO>("lateDataLog") {
         };
 
-
         //多个字段分组
         KeyedStream<AccessLogDO, Tuple2<String, Integer>> keyedStream = watermarkDS.keyBy(new KeySelector<AccessLogDO, Tuple2<String, Integer>>() {
             @Override
