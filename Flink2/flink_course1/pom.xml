@@ -117,6 +117,13 @@
             <version>1.0</version>
         </dependency>
 
+        <!--kafka connector-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka_${scala.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
