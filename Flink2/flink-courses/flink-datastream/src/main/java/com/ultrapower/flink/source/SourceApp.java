@@ -79,7 +79,6 @@ public class SourceApp {
         System.out.println("filterStream:" + filterStream.getParallelism());
 
         filterStream.print();
-
     }
 
     public static void test01(StreamExecutionEnvironment env) {
@@ -87,7 +86,7 @@ public class SourceApp {
          * $ sudo nc -l 9527
          *
          * */
-        env.setParallelism(5);
+        //env.setParallelism(5);
 
 //        StreamExecutionEnvironment.createLocalEnvironment();
 //        StreamExecutionEnvironment.createLocalEnvironment(3);
@@ -104,11 +103,10 @@ public class SourceApp {
             public boolean filter(String value) throws Exception {
                 return !"pk".equals(value);
             }
-        }).setParallelism(6);
+        }).setParallelism(3);
 
         System.out.println("filter...." + filterStream.getParallelism());
-
-        filterStream.print();
+        filterStream.print("filter");
     }
 
 }
