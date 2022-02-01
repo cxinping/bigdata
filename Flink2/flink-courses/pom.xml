@@ -12,8 +12,9 @@
 		<module>flink-clickhouse</module>
 		<module>flink-project</module>
 		<module>link-upgrade</module>
+        <module>flink-web</module>
 
-	</modules>
+    </modules>
 	<packaging>pom</packaging>
 
 	<properties>
