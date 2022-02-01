@@ -147,7 +147,6 @@ public class TransformationApp {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
         SingleOutputStreamOperator<Access> mapStream = source.map(new PKMapFunction());
         mapStream.print();
-
     }
 
     /**
