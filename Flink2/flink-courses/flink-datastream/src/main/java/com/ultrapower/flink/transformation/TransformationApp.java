@@ -92,7 +92,6 @@ public class TransformationApp {
      * connect 双流  数据结构可以不同， 更加灵活
      */
     public static void connect(StreamExecutionEnvironment env) {
-
         DataStreamSource<Access> stream1 = env.addSource(new AccessSource());
         DataStreamSource<Access> stream2 = env.addSource(new AccessSource());
 
@@ -133,7 +132,6 @@ public class TransformationApp {
 
 
     public static void union(StreamExecutionEnvironment env) {
-
         DataStreamSource<String> stream1 = env.socketTextStream("192.168.11.12", 9527);
         DataStreamSource<String> stream2 = env.socketTextStream("192.168.11.12", 9528);
 
