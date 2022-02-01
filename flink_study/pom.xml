@@ -59,32 +59,18 @@ under the License.
 			<version>${flink.version}</version>
 		</dependency>
 
-		<!-- This dependency is provided, because it should not be packaged into the JAR file. -->
+		<!-- Flink 基本模块 -->
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
 			<version>${flink.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-clients_${scala.binary.version}</artifactId>
 			<version>${flink.version}</version>
-			<scope>provided</scope>
 		</dependency>
 
-		<!-- Add connector dependencies here. They must be in the default scope (compile). -->
-
-		<!-- Example:
-
-		<dependency>
-		    <groupId>org.apache.flink</groupId>
-		    <artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
-		    <version>${flink.version}</version>
-		</dependency>
-		-->
-
-		<!-- Add logging framework, to produce console output when running in the IDE. -->
 		<!-- These dependencies are excluded from the application JAR by default. -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

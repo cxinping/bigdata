@@ -1,4 +1,4 @@
-package com.imooc.flink.state;
+package com.dxtd.flink.chapter02.state;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
