@@ -11,11 +11,11 @@ import org.apache.flink.streaming.connectors.redis.RedisSink;
 import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
 
 public class SinkApp {
-
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        toMySQL(env);
+        print(env);
+        //toMySQL(env);
 
         env.execute("SinkApp");
     }
@@ -55,10 +55,13 @@ public class SinkApp {
            .addSink(new RedisSink<Tuple2<String, Double>>(conf, new PKRedisSink()));
     }
 
-
     public static void print(StreamExecutionEnvironment env) {
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9527);
+        DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
+
         System.out.println("source:" + source.getParallelism());
-        source.print().setParallelism(2);
+
+        source.print("test").setParallelism(4);
+
     }
+
 }
