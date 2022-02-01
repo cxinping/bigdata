@@ -9,6 +9,9 @@
 		<module>flink-basic</module>
 		<module>flink-datastream</module>
 		<module>flink-sql</module>
+		<module>flink-clickhouse</module>
+		<module>flink-project</module>
+		<module>link-upgrade</module>
 
 	</modules>
 	<packaging>pom</packaging>
