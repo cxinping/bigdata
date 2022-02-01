@@ -19,17 +19,17 @@ public class TransformationApp {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        map(env);
+       // map(env);
+//        map2(env);
 //        filter(env);
-//        flatMap(env);
-//        keyBy(env);
+        //flatMap(env);
+        keyBy(env);
 //        reduce(env);
-
 //        richMap(env);
 //        union(env);
 //        connect(env);
 //        coMap(env);
-        //coFlatMap(env);
+//        coFlatMap(env);
 
         env.execute("SourceApp");
     }
@@ -43,7 +43,7 @@ public class TransformationApp {
                     @Override
                     public void flatMap1(String value, Collector<String> out) throws Exception {
                         String[] splits = value.split(" ");
-                        for(String split : splits) {
+                        for (String split : splits) {
                             out.collect(split);
                         }
                     }
@@ -51,7 +51,7 @@ public class TransformationApp {
                     @Override
                     public void flatMap2(String value, Collector<String> out) throws Exception {
                         String[] splits = value.split(",");
-                        for(String split : splits) {
+                        for (String split : splits) {
                             out.collect(split);
                         }
                     }
@@ -59,8 +59,8 @@ public class TransformationApp {
     }
 
     public static void coMap(StreamExecutionEnvironment env) {
-        DataStreamSource<String> stream1 = env.socketTextStream("localhost", 9527);
-        SingleOutputStreamOperator<Integer> stream2 = env.socketTextStream("localhost", 9528) // 数值类型
+        DataStreamSource<String> stream1 = env.socketTextStream("192.168.11.12", 9527);
+        SingleOutputStreamOperator<Integer> stream2 = env.socketTextStream("192.168.11.12", 9528) // 数值类型
                 .map(new MapFunction<String, Integer>() {
                     @Override
                     public Integer map(String value) throws Exception {
@@ -70,7 +70,6 @@ public class TransformationApp {
 
         // 将2个流连接在一起
         stream1.connect(stream2).map(new CoMapFunction<String, Integer, String>() {
-
             // 处理第一个流的业务逻辑
             @Override
             public String map1(String value) throws Exception {
@@ -86,9 +85,9 @@ public class TransformationApp {
     }
 
     /**
-         * union 多流合并  数据结构必须相同
-         * connect 双流  数据结构可以不同， 更加灵活
-         */
+     * union 多流合并  数据结构必须相同
+     * connect 双流  数据结构可以不同， 更加灵活
+     */
     public static void connect(StreamExecutionEnvironment env) {
 
         DataStreamSource<Access> stream1 = env.addSource(new AccessSource());
@@ -101,7 +100,7 @@ public class TransformationApp {
             }
         });
 
-        stream1.connect(stream2new).map(new CoMapFunction<Access, Tuple2<String,Access>, String>() {
+        stream1.connect(stream2new).map(new CoMapFunction<Access, Tuple2<String, Access>, String>() {
             @Override
             public String map1(Access value) throws Exception {
                 return value.toString();
@@ -132,8 +131,8 @@ public class TransformationApp {
 
     public static void union(StreamExecutionEnvironment env) {
 
-        DataStreamSource<String> stream1 = env.socketTextStream("localhost", 9527);
-        DataStreamSource<String> stream2 = env.socketTextStream("localhost", 9528);
+        DataStreamSource<String> stream1 = env.socketTextStream("192.168.11.12", 9527);
+        DataStreamSource<String> stream2 = env.socketTextStream("192.168.11.12", 9528);
 
         DataStream<String> union = stream1.union(stream2);
 //        stream1.union(stream2).print();
@@ -149,29 +148,27 @@ public class TransformationApp {
 
     }
 
-        /**
-         * wc： socket
-         *
-         * 进来的数据：pk,pk,flink   pk,spark,spark
-         *
-         *
-         * wc需求分析：
-         * 1) 读进来数据
-         * 2) 按照指定分隔符进行拆分  pk pk flink pk spark spark
-         * 3) 为每个单词赋上一个出现次数为1的值 (pk,1) (pk,1) ...
-         * 4) 按照单词进行keyBy
-         * 5) 分组求和
-         *
-         */
+    /**
+     * wc： socket
+     * <p>
+     * 进来的数据：pk,pk,flink   pk,spark,spark
+     * <p>
+     * <p>
+     * wc需求分析：
+     * 1) 读进来数据
+     * 2) 按照指定分隔符进行拆分  pk pk flink pk spark spark
+     * 3) 为每个单词赋上一个出现次数为1的值 (pk,1) (pk,1) ...
+     * 4) 按照单词进行keyBy
+     * 5) 分组求和
+     */
     public static void reduce(StreamExecutionEnvironment env) {
-
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9527);
+        DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
 
         source.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String value, Collector<String> out) throws Exception {
                 String[] splits = value.split(",");
-                for(String word : splits) {
+                for (String word : splits) {
                     out.collect(word);
                 }
             }
@@ -181,18 +178,41 @@ public class TransformationApp {
                 return Tuple2.of(value, 1);
             }
         }).keyBy(x -> x.f0) // word相同的都会分到一个task中去执行
-           .reduce(new ReduceFunction<Tuple2<String, Integer>>() {
-               @Override
-               public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2) throws Exception {
-                   return Tuple2.of(value1.f0, value1.f1 + value2.f1);
-               }
-           }).print();
+                .reduce(new ReduceFunction<Tuple2<String, Integer>>() {
+                    @Override
+                    public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2) throws Exception {
+                        return Tuple2.of(value1.f0, value1.f1 + value2.f1);
+                    }
+                }).print();
     }
 
-        /**
-         * 按照domain分组，求traffic和
-         */
+    /**
+     * 按照domain分组，求traffic和
+     *
+     */
     public static void keyBy(StreamExecutionEnvironment env) {
+        DataStreamSource<String> source = env.readTextFile("data/access.log");
+
+        SingleOutputStreamOperator<Access> mapStream = source.map(new MapFunction<String, Access>() {
+            @Override
+            public Access map(String value) throws Exception {
+                String[] splits = value.split(",");
+                Long time = Long.parseLong(splits[0].trim());
+                String domain = splits[1].trim();
+                Double traffic = Double.parseDouble(splits[2].trim());
+
+                return new Access(time, domain, traffic);
+            }
+        });
+
+        mapStream.keyBy("domain").sum("traffic").print("keyBy");
+    }
+
+    /**
+     * 按照domain分组，求traffic和
+     *
+     */
+    public static void keyBy2(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
 
         SingleOutputStreamOperator<Access> mapStream = source.map(new MapFunction<String, Access>() {
@@ -218,19 +238,19 @@ public class TransformationApp {
         keyedStream.sum("traffic").print();
     }
 
-        /**
-         * 进来是一行行的数据： pk,pk,flink   pk,spark,spark
-         * 需求：
-         * 1) 把一行数据按照逗号进行分割
-         * 2) 过滤掉pk
-         */
+    /**
+     * 进来是一行行的数据： pk,pk,flink   pk,spark,spark
+     * 需求：
+     * 1) 把一行数据按照逗号进行分割
+     * 2) 过滤掉pk
+     */
     public static void flatMap(StreamExecutionEnvironment env) {
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9527);
+        DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
         source.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String value, Collector<String> out) throws Exception {
                 String[] splits = value.split(",");
-                for(String split : splits) {
+                for (String split : splits) {
                     out.collect(split);
                 }
             }
@@ -241,10 +261,11 @@ public class TransformationApp {
             }
         }).print();
     }
-        /**
-         * filter 就是对DataStream中的数据进行过滤操作
-         * 保留true
-         */
+
+    /**
+     * filter 就是对DataStream中的数据进行过滤操作
+     * 保留true
+     */
     public static void filter(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
 
@@ -272,13 +293,12 @@ public class TransformationApp {
 
     /**
      * 读进来的数据是一行行的，也字符串类型
-     *
+     * <p>
      * 每一行数据 ==> Access
-     *
+     * <p>
      * 将map算子对应的函数作用到DataStream，产生一个新的DataStream
-     *
+     * <p>
      * map会作用到已有的DataStream这个数据集中的每一个元素上
-     *
      */
     public static void map(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
@@ -296,18 +316,22 @@ public class TransformationApp {
 
         mapStream.print("map");
 
-//        ArrayList<Integer> list = new ArrayList<>();
-//        list.add(1);  // map  * 2 = 2
-//        list.add(2);  // map  * 2 = 4
-//        list.add(3);  // map  * 2 = 6
-//        DataStreamSource<Integer> source = env.fromCollection(list);
-//
-//        source.map(new MapFunction<Integer, Integer>() {
-//            @Override
-//            public Integer map(Integer value) throws Exception {
-//                return value * 2;
-//            }
-//        }).print();
+
+    }
+
+    public static void map2(StreamExecutionEnvironment env) {
+        ArrayList<Integer> list = new ArrayList<>();
+        list.add(1);  // map  * 2 = 2
+        list.add(2);  // map  * 2 = 4
+        list.add(3);  // map  * 2 = 6
+        DataStreamSource<Integer> source = env.fromCollection(list);
+
+        source.map(new MapFunction<Integer, Integer>() {
+            @Override
+            public Integer map(Integer value) throws Exception {
+                return value * 2;
+            }
+        }).print("map");
 
     }
 }
