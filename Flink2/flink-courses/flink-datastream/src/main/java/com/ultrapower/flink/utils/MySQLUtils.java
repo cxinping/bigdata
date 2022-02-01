@@ -8,14 +8,12 @@ import java.sql.SQLException;
 public class MySQLUtils {
 
     public static Connection getConnection() {
-
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            return DriverManager.getConnection("jdbc:mysql://localhost:3306/pk_flink_imooc", "root", "root");
+            return DriverManager.getConnection("jdbc:mysql://192.168.11.12:3306/flink", "root", "123456");
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return null;
     }
 

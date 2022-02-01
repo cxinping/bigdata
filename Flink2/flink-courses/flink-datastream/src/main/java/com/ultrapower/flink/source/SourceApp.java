@@ -9,12 +9,9 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.NumberSequenceIterator;
-
 import java.util.Properties;
 
 /**
- *
- *
  *
  *
  * */
@@ -34,7 +31,6 @@ public class SourceApp {
     }
 
     public static void test05(StreamExecutionEnvironment env) {
-
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "ruozedata001:9092,ruozedata001:9093,ruozedata001:9094");
         properties.setProperty("group.id", "test");
@@ -52,7 +48,6 @@ public class SourceApp {
     }
 
     public static void test03(StreamExecutionEnvironment env) {
-
 //        DataStreamSource<Access> source = env.addSource(new AccessSource())
 //                .setParallelism(2);
         DataStreamSource<Access> source = env.addSource(new AccessSourceV2()).setParallelism(3);
@@ -61,7 +56,6 @@ public class SourceApp {
     }
 
     public static void test02(StreamExecutionEnvironment env) {
-
         env.setParallelism(5); // 对于env设置的并行度 是一个全局的概念
 
         DataStreamSource<Long> source = env.fromParallelCollection(

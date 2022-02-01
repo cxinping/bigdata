@@ -6,14 +6,11 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import java.util.Random;
 
 public class AccessSourceV2 implements ParallelSourceFunction<Access> {
-
     boolean running = true;
 
     @Override
     public void run(SourceContext<Access> ctx) throws Exception {
-
-        String[] domains = {"imooc.com", "a.com","b.com"};
-
+        String[] domains = {"ultrapower.com", "a.com","b.com"};
         Random random = new Random();
 
         while (running) {

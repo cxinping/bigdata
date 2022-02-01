@@ -29,7 +29,6 @@ public class WindowApp {
                 .print();
     }
 
-
     public static void test02(StreamExecutionEnvironment env) {
         env.socketTextStream("localhost", 9527)
                 .map(new MapFunction<String, Tuple2<String,Integer>>() {
@@ -50,7 +49,6 @@ public class WindowApp {
                 })
                 .print();
     }
-
 
     public static void test01(StreamExecutionEnvironment env) {
 //        env.socketTextStream("localhost", 9527)

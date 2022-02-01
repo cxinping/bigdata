@@ -2,7 +2,6 @@ package com.ultrapower.flink.source;
 
 import com.ultrapower.flink.transformation.Access;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
-
 import java.util.Random;
 
 public class AccessSource implements SourceFunction<Access> {
@@ -11,9 +10,7 @@ public class AccessSource implements SourceFunction<Access> {
 
     @Override
     public void run(SourceContext<Access> ctx) throws Exception {
-
         String[] domains = {"imooc.com", "a.com","b.com"};
-
         Random random = new Random();
 
         while (running) {
