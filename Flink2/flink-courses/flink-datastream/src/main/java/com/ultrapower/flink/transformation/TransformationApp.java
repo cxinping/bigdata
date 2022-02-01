@@ -23,7 +23,10 @@ public class TransformationApp {
 //        map2(env);
 //        filter(env);
         //flatMap(env);
-        keyBy(env);
+        
+        ///keyBy(env);
+        keyBy2(env);
+
 //        reduce(env);
 //        richMap(env);
 //        union(env);
@@ -205,6 +208,7 @@ public class TransformationApp {
             }
         });
 
+        //过时的
         mapStream.keyBy("domain").sum("traffic").print("keyBy");
     }
 
@@ -214,7 +218,6 @@ public class TransformationApp {
      */
     public static void keyBy2(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
-
         SingleOutputStreamOperator<Access> mapStream = source.map(new MapFunction<String, Access>() {
             @Override
             public Access map(String value) throws Exception {
@@ -227,13 +230,16 @@ public class TransformationApp {
             }
         });
 
-//        mapStream.keyBy("domain").sum("traffic").print();
-//        mapStream.keyBy(new KeySelector<Access, String>() {
-//            @Override
-//            public String getKey(Access value) throws Exception {
-//                return value.getDomain();
-//            }
-//        }).sum("traffic").print();
+        //过时的
+        //mapStream.keyBy("domain").sum("traffic").print();
+
+        //最新的
+        mapStream.keyBy(new KeySelector<Access, String>() {
+            @Override
+            public String getKey(Access value) throws Exception {
+                return value.getDomain();
+            }
+        }).sum("traffic").print();
         KeyedStream<Access, String> keyedStream = mapStream.keyBy(x -> x.getDomain());
         keyedStream.sum("traffic").print();
     }
