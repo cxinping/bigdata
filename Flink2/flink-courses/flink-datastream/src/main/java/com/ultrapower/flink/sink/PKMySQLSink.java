@@ -13,12 +13,9 @@ import java.sql.PreparedStatement;
  * domain traffic
  */
 public class PKMySQLSink extends RichSinkFunction<Tuple2<String, Double>> {
-
-
     Connection connection;
     PreparedStatement insertPstmt;
     PreparedStatement updatePstmt;
-
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -33,14 +30,14 @@ public class PKMySQLSink extends RichSinkFunction<Tuple2<String, Double>> {
     @Override
     public void close() throws Exception {
         super.close();
-        if(insertPstmt != null) insertPstmt.close();
-        if(updatePstmt != null) updatePstmt.close();
-        if(connection != null) connection.close();
+        if (insertPstmt != null) insertPstmt.close();
+        if (updatePstmt != null) updatePstmt.close();
+        if (connection != null) connection.close();
     }
 
     /**
      * 来一条数据就执行一次
-     *
+     * <p>
      * 1000w的数据  1000w次
      */
     @Override
@@ -48,10 +45,10 @@ public class PKMySQLSink extends RichSinkFunction<Tuple2<String, Double>> {
         System.out.println("=====invoke======" + value.f0 + "-->" + value.f1);
 
         updatePstmt.setDouble(1, value.f1);
-        updatePstmt.setString(2 , value.f0);
+        updatePstmt.setString(2, value.f0);
         updatePstmt.execute();
 
-        if(updatePstmt.getUpdateCount() == 0) {
+        if (updatePstmt.getUpdateCount() == 0) {
             insertPstmt.setString(1, value.f0);
             insertPstmt.setDouble(2, value.f1);
             insertPstmt.execute();

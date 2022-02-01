@@ -12,6 +12,12 @@ import org.apache.flink.util.NumberSequenceIterator;
 
 import java.util.Properties;
 
+/**
+ *
+ *
+ *
+ *
+ * */
 public class SourceApp {
 
     public static void main(String[] args) throws Exception {
@@ -77,6 +83,10 @@ public class SourceApp {
     }
 
     public static void test01(StreamExecutionEnvironment env) {
+        /**
+         * $ sudo nc -l 9527
+         *
+         * */
         env.setParallelism(5);
 
 //        StreamExecutionEnvironment.createLocalEnvironment();
@@ -85,7 +95,7 @@ public class SourceApp {
 //        StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
 //        StreamExecutionEnvironment.createRemoteEnvironment()
 
-        DataStreamSource<String> source = env.socketTextStream("localhost", 9527);
+        DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
         System.out.println("source...." + source.getParallelism()); // ?  1
 
         // 接收socket过来的数据，一行一个单词， 把pk的过滤掉
@@ -96,10 +106,9 @@ public class SourceApp {
             }
         }).setParallelism(6);
 
-
         System.out.println("filter...." + filterStream.getParallelism());
-
 
         filterStream.print();
     }
+
 }
