@@ -15,14 +15,12 @@ public class SinkApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-
         toMySQL(env);
 
         env.execute("SinkApp");
     }
 
     public static void toMySQL(StreamExecutionEnvironment env) {
-
         DataStreamSource<String> source = env.readTextFile("data/access.log");
 
         SingleOutputStreamOperator<Access> mapStream = source.map(new MapFunction<String, Access>() {
@@ -46,7 +44,6 @@ public class SinkApp {
 
         result.print();
 
-
         FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("127.0.0.1").build();
 
         result.map(new MapFunction<Access, Tuple2<String, Double>>() {
@@ -61,9 +58,7 @@ public class SinkApp {
 
     public static void print(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.socketTextStream("localhost", 9527);
-
         System.out.println("source:" + source.getParallelism());
-
         source.print().setParallelism(2);
     }
 }

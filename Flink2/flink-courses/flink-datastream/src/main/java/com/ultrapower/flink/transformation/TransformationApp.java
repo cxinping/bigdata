@@ -19,15 +19,15 @@ public class TransformationApp {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // map(env);
+//        map(env);
 //        map2(env);
 //        filter(env);
-        //flatMap(env);
+//        flatMap(env);
+//
+//        keyBy(env);
+//        keyBy2(env);
 
-        ///keyBy(env);
-        //keyBy2(env);
-
-       // reduce(env);
+//        reduce(env);
 //        richMap(env);
 //        union(env);
 //        connect(env);

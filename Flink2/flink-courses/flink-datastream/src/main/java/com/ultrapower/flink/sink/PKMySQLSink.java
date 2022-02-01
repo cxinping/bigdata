@@ -23,7 +23,6 @@ public class PKMySQLSink extends RichSinkFunction<Tuple2<String, Double>> {
         connection = MySQLUtils.getConnection();
         insertPstmt = connection.prepareStatement("insert into pk_traffic(domain,traffic) values (?,?)");
         updatePstmt = connection.prepareStatement("update pk_traffic set traffic=? where domain=?");
-
     }
 
     @Override
