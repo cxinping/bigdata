@@ -19,15 +19,15 @@ public class TransformationApp {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-       // map(env);
+        // map(env);
 //        map2(env);
 //        filter(env);
         //flatMap(env);
-        
-        ///keyBy(env);
-        keyBy2(env);
 
-//        reduce(env);
+        ///keyBy(env);
+        //keyBy2(env);
+
+        reduce(env);
 //        richMap(env);
 //        union(env);
 //        connect(env);
@@ -152,6 +152,8 @@ public class TransformationApp {
     }
 
     /**
+     *  sudo nc -l 9527
+     *  
      * wc： socket
      * <p>
      * 进来的数据：pk,pk,flink   pk,spark,spark
@@ -191,7 +193,6 @@ public class TransformationApp {
 
     /**
      * 按照domain分组，求traffic和
-     *
      */
     public static void keyBy(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
@@ -214,7 +215,6 @@ public class TransformationApp {
 
     /**
      * 按照domain分组，求traffic和
-     *
      */
     public static void keyBy2(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.readTextFile("data/access.log");
