@@ -8,6 +8,7 @@
 	<modules>
 		<module>flink-basic</module>
 		<module>flink-datastream</module>
+		<module>flink-sql</module>
 
 	</modules>
 	<packaging>pom</packaging>
