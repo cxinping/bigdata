@@ -9,6 +9,7 @@ import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.flink.util.NumberSequenceIterator;
+
 import java.util.Properties;
 
 public class SourceApp {
@@ -21,11 +22,12 @@ public class SourceApp {
 //        test02(env);
 //        test03(env);
 //        test04(env);
-       // test05(env);
+        // test05(env);
+
         env.execute("SourceApp");
     }
 
-    public static void test05(StreamExecutionEnvironment env ) {
+    public static void test05(StreamExecutionEnvironment env) {
 
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", "ruozedata001:9092,ruozedata001:9093,ruozedata001:9094");
@@ -37,13 +39,13 @@ public class SourceApp {
         stream.print();
     }
 
-    public static void test04(StreamExecutionEnvironment env ) {
+    public static void test04(StreamExecutionEnvironment env) {
         DataStreamSource<Student> source = env.addSource(new StudentSource()).setParallelism(3);
         System.out.println(source.getParallelism());
         source.print();
     }
 
-    public static void test03(StreamExecutionEnvironment env ) {
+    public static void test03(StreamExecutionEnvironment env) {
 
 //        DataStreamSource<Access> source = env.addSource(new AccessSource())
 //                .setParallelism(2);
@@ -52,7 +54,7 @@ public class SourceApp {
         source.print();
     }
 
-    public static void test02(StreamExecutionEnvironment env ){
+    public static void test02(StreamExecutionEnvironment env) {
 
         env.setParallelism(5); // 对于env设置的并行度 是一个全局的概念
 
@@ -74,10 +76,7 @@ public class SourceApp {
 
     }
 
-
-
-        public static void test01(StreamExecutionEnvironment env ){
-
+    public static void test01(StreamExecutionEnvironment env) {
         env.setParallelism(5);
 
 //        StreamExecutionEnvironment.createLocalEnvironment();
