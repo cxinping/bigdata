@@ -1,6 +1,5 @@
 package com.ultrapower.flink.source;
 
-
 public class Student {
     private int id;
     private String name;

@@ -1,9 +1,10 @@
 package com.ultrapower.flink.source;
 
+import com.ultrapower.flink.utils.MySQLUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
-import com.ultrapower.flink.source.Student
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
