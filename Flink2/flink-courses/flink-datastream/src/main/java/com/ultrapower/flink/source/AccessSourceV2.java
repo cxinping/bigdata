@@ -2,7 +2,6 @@ package com.ultrapower.flink.source;
 
 import com.ultrapower.flink.transformation.Access;
 import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
-import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import java.util.Random;
 
 public class AccessSourceV2 implements ParallelSourceFunction<Access> {

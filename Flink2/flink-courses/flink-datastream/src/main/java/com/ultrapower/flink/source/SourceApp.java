@@ -21,23 +21,27 @@ public class SourceApp {
         // 创建上下文
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        test01(env);
-//        test02(env);
+       // test01(env);
+        test02(env);
 //        test03(env);
 //        test04(env);
-        // test05(env);
+         //test05(env);
 
         env.execute("SourceApp");
     }
 
     public static void test05(StreamExecutionEnvironment env) {
+        /**
+         /usr/local/kafka/bin/kafka-topics.sh --create --bootstrap-server  kafka1:9092  --replication-factor 1 --partitions 1 --topic flinktopic
+
+         * */
         Properties properties = new Properties();
-        properties.setProperty("bootstrap.servers", "ruozedata001:9092,ruozedata001:9093,ruozedata001:9094");
+        properties.setProperty("bootstrap.servers", "192.168.11.12:9092");
         properties.setProperty("group.id", "test");
         DataStream<String> stream = env
                 .addSource(new FlinkKafkaConsumer<>("flinktopic", new SimpleStringSchema(), properties));
 
-        System.out.println(stream.getParallelism());
+        System.out.println("* stream.getParallelism()="+stream.getParallelism());
         stream.print();
     }
 
@@ -56,11 +60,11 @@ public class SourceApp {
     }
 
     public static void test02(StreamExecutionEnvironment env) {
-        env.setParallelism(5); // 对于env设置的并行度 是一个全局的概念
+        //env.setParallelism(5); // 对于env设置的并行度 是一个全局的概念
 
         DataStreamSource<Long> source = env.fromParallelCollection(
                 new NumberSequenceIterator(1, 10), Long.class
-        );//.setParallelism(4);
+        ).setParallelism(4);   // 这是局部的概念
 
         System.out.println("source:" + source.getParallelism());
 
@@ -72,7 +76,7 @@ public class SourceApp {
         }).setParallelism(3); // 对于算子层面的并行度，如果全局设置，以本算子的并行度为准
         System.out.println("filterStream:" + filterStream.getParallelism());
 
-        filterStream.print();
+        filterStream.print("filter");
     }
 
     public static void test01(StreamExecutionEnvironment env) {
@@ -86,7 +90,7 @@ public class SourceApp {
 //        StreamExecutionEnvironment.createLocalEnvironment(3);
 //        StreamExecutionEnvironment.createLocalEnvironment(new Configuration());
 //        StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
-//        StreamExecutionEnvironment.createRemoteEnvironment()
+//        StreamExecutionEnvironment.createRemoteEnvironment();
 
         DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
         System.out.println("source...." + source.getParallelism()); // ?  1
@@ -97,8 +101,9 @@ public class SourceApp {
             public boolean filter(String value) throws Exception {
                 return !"pk".equals(value);
             }
-        }).setParallelism(3);
+        });//.setParallelism(6);
 
+        // 打印当前CPU的数量
         System.out.println("filter...." + filterStream.getParallelism());
         filterStream.print("filter");
     }
