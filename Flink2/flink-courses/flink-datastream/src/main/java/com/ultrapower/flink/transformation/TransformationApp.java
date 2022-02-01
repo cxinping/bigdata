@@ -27,7 +27,7 @@ public class TransformationApp {
         ///keyBy(env);
         //keyBy2(env);
 
-        reduce(env);
+       // reduce(env);
 //        richMap(env);
 //        union(env);
 //        connect(env);
@@ -153,7 +153,7 @@ public class TransformationApp {
 
     /**
      *  sudo nc -l 9527
-     *  
+     *
      * wc： socket
      * <p>
      * 进来的数据：pk,pk,flink   pk,spark,spark
