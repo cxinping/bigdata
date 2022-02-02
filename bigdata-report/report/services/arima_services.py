@@ -13,7 +13,7 @@ import os
 from report.commons.connect_kudu2 import prod_execute_sql
 from report.commons.settings import CONN_TYPE
 from report.commons.db_helper import query_kudu_data
-from pyramid.arima import auto_arima
+#from pyramid.arima import auto_arima
 from datetime import datetime
 from report.commons.report_enums import ArimaType
 

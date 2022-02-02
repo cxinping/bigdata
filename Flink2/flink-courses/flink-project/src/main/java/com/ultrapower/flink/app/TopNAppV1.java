@@ -1,10 +1,9 @@
 //package com.ultrapower.flink.app;
 //
 //import com.alibaba.fastjson.JSON;
-//import com.imooc.flink.domain.Access;
-//import com.imooc.flink.domain.EventCatagoryProductCount;
-//import com.imooc.flink.udf.TopNAggregateFunction;
-//import com.imooc.flink.udf.TopNWindowFunction;
+//import com.ultrapower.flink.domain.Access;
+//import com.ultrapower.flink.domain.EventCatagoryProductCount;
+//import com.ultrapower.flink.udf.TopNAggregateFunction;
 //import org.apache.flink.api.common.functions.FilterFunction;
 //import org.apache.flink.api.common.functions.MapFunction;
 //import org.apache.flink.api.common.state.ListState;
@@ -14,7 +13,6 @@
 //import org.apache.flink.api.java.tuple.Tuple3;
 //import org.apache.flink.api.java.tuple.Tuple4;
 //import org.apache.flink.configuration.Configuration;
-//import org.apache.flink.shaded.guava18.com.google.common.collect.Lists;
 //import org.apache.flink.streaming.api.datastream.KeyedStream;
 //import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 //import org.apache.flink.streaming.api.datastream.WindowedStream;
