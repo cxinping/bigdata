@@ -46,7 +46,7 @@ public class SinkApp {
         result.print();
 
 //        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("192.168.11.12").build();
-//
+
         result.map(new MapFunction<Access, Tuple2<String, Double>>() {
             @Override
             public Tuple2<String, Double> map(Access value) throws Exception {
