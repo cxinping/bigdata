@@ -12,7 +12,9 @@ public class WindowApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        test03(env);
+        test01(env);
+        //test02(env);
+        //test03(env);
         env.execute("WindowApp");
     }
 
@@ -51,7 +53,11 @@ public class WindowApp {
     }
 
     public static void test01(StreamExecutionEnvironment env) {
-//        env.socketTextStream("localhost", 9527)
+        /**
+         *  sudo nc -l 9527
+         *
+         * **/
+//        env.socketTextStream("192.168.11.12", 9527)
 //                .map(new MapFunction<String, Integer>() {
 //                    @Override
 //                    public Integer map(String value) throws Exception {
@@ -62,29 +68,30 @@ public class WindowApp {
 //                .sum(0)
 //                .print();
 
-//        env.socketTextStream("localhost", 9527)
-//                .map(new MapFunction<String, Integer>() {
-//                    @Override
-//                    public Integer map(String value) throws Exception {
-//                        return Integer.parseInt(value);
-//                    }
-//                })
-//                .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(5)))
-//                .sum(0)
-//                .print();
+        // 输入 1 2 3 
+        env.socketTextStream("192.168.11.12", 9527)
+                .map(new MapFunction<String, Integer>() {
+                    @Override
+                    public Integer map(String value) throws Exception {
+                        return Integer.parseInt(value);
+                    }
+                })
+                .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(5)))
+                .sum(0)
+                .print();
 
 
         // hadoop,1  spark,1
-        env.socketTextStream("localhost", 9527)
-            .map(new MapFunction<String, Tuple2<String,Integer>>() {
-                @Override
-                public Tuple2<String, Integer> map(String value) throws Exception {
-                    String[] splits = value.split(",");
-                    return Tuple2.of(splits[0].trim(), Integer.parseInt(splits[1].trim()));
-                }
-            }).keyBy(x -> x.f0)
-            .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
-                .sum(1)
-            .print();
+//        env.socketTextStream("localhost", 9527)
+//            .map(new MapFunction<String, Tuple2<String,Integer>>() {
+//                @Override
+//                public Tuple2<String, Integer> map(String value) throws Exception {
+//                    String[] splits = value.split(",");
+//                    return Tuple2.of(splits[0].trim(), Integer.parseInt(splits[1].trim()));
+//                }
+//            }).keyBy(x -> x.f0)
+//            .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
+//                .sum(1)
+//            .print();
     }
 }
