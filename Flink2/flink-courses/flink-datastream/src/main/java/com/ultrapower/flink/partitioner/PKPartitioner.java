@@ -8,7 +8,7 @@ public class PKPartitioner implements Partitioner<String>{
 
         System.out.println("numPartitions:" + numPartitions);
 
-        if("imooc.com".equals(key)) {
+        if("ultrapower.com".equals(key)) {
             return 0;
         } else if("a.com".equals(key)) {
             return 1;

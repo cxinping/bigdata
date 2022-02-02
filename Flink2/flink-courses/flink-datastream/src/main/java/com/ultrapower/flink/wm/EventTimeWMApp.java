@@ -33,11 +33,11 @@ public class EventTimeWMApp {
          *  sudo nc -l 9527
          *
          *  输入
-         1000,a,1
-         2000,a,1
-         3000,a,1
-         4000,a,1
-         5000,a,1
+1000,a,1
+2000,a,1
+3000,a,1
+4000,a,1
+5000,a,1
          * **/
 
         OutputTag<Tuple2<String,Integer>> outputTag = new OutputTag<Tuple2<String, Integer>>("late-data"){};
@@ -89,5 +89,8 @@ public class EventTimeWMApp {
          * WM >= 上一个窗口的结束边界 就会触发窗口的执行
          * 6999 - 2000  = 4999 >= 上一个窗口的结束边界
          */
+        
+
+
     }
 }

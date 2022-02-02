@@ -16,7 +16,6 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
  *
  */
 public class PKRedisSink implements RedisMapper<Tuple2<String, Double>> {
-
     @Override
     public RedisCommandDescription getCommandDescription() {
         return new RedisCommandDescription(RedisCommand.HSET, "pk-traffic");
