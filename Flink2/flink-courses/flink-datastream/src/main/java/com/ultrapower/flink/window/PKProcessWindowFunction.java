@@ -14,7 +14,6 @@ import org.apache.flink.util.Collector;
 public class PKProcessWindowFunction extends ProcessWindowFunction<Tuple2<String,Integer>, String, String, TimeWindow> {
     @Override
     public void process(String s, Context context, Iterable<Tuple2<String, Integer>> elements, Collector<String> out) throws Exception {
-
         System.out.println("----process invoked...----");
 
         int maxValue = Integer.MIN_VALUE;
