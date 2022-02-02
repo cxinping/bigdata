@@ -16,7 +16,6 @@ public class GaodeApp {
     public static void main(String[] args) {
         String ip = "114.247.50.2";
 
-
         String province = "-";
         String city = "-";
 
@@ -33,7 +32,6 @@ public class GaodeApp {
             if(statusCode == 200) {
                 HttpEntity entity = response.getEntity();
                 String result = EntityUtils.toString(entity, "UTF-8");
-
 
                 JSONObject jsonObject = JSON.parseObject(result);
                 province = jsonObject.getString("province");

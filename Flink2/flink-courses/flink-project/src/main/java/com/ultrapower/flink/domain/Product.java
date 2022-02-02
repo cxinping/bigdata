@@ -1,7 +1,6 @@
 package com.ultrapower.flink.domain;
 
 public class Product {
-
     public String category;
     public String name;
 
@@ -12,4 +11,5 @@ public class Product {
                 ", name='" + name + '\'' +
                 '}';
     }
+
 }

@@ -1,7 +1,6 @@
 package com.ultrapower.flink.domain;
 
 public class Access {
-
     public String device;
     public String deviceType;
     public String os;
