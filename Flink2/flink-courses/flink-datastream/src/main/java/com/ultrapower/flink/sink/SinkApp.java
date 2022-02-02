@@ -94,7 +94,6 @@ public class SinkApp {
         DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
         System.out.println("source:" + source.getParallelism());
         source.print("test").setParallelism(4);
-
     }
 
 }
