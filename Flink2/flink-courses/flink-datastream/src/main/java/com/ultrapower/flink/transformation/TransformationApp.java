@@ -28,11 +28,14 @@ public class TransformationApp {
 //        keyBy2(env);
 
 //        reduce(env);
-          richMap(env);
-//        union(env);
-//        connect(env);
-//        coMap(env);
-//        coFlatMap(env);
+          //richMap(env);
+        //union(env);
+
+        //connect(env);
+        //connect2(env);
+
+      //  coMap(env);
+        coFlatMap(env);
 
         env.execute("SourceApp");
     }
@@ -95,6 +98,26 @@ public class TransformationApp {
         DataStreamSource<Access> stream1 = env.addSource(new AccessSource());
         DataStreamSource<Access> stream2 = env.addSource(new AccessSource());
 
+        ConnectedStreams<Access, Access> connect = stream1.connect(stream2);
+
+        connect.map(new CoMapFunction<Access, Access, Access>() {
+            @Override
+            public Access map1(Access value) throws Exception {
+                return value;
+            }
+
+            @Override
+            public Access map2(Access value) throws Exception {
+                return value;
+            }
+        }).print();
+
+    }
+
+    public static void connect2(StreamExecutionEnvironment env) {
+        DataStreamSource<Access> stream1 = env.addSource(new AccessSource());
+        DataStreamSource<Access> stream2 = env.addSource(new AccessSource());
+
         SingleOutputStreamOperator<Tuple2<String, Access>> stream2new = stream2.map(new MapFunction<Access, Tuple2<String, Access>>() {
             @Override
             public Tuple2<String, Access> map(Access value) throws Exception {
@@ -102,42 +125,37 @@ public class TransformationApp {
             }
         });
 
-        stream1.connect(stream2new).map(new CoMapFunction<Access, Tuple2<String, Access>, String>() {
+        ConnectedStreams<Access, Access> connect = stream1.connect(stream2);
+
+        connect.map(new CoMapFunction<Access, Access, Access>() {
             @Override
-            public String map1(Access value) throws Exception {
-                return value.toString();
+            public Access map1(Access value) throws Exception {
+                return value;
             }
 
             @Override
-            public String map2(Tuple2<String, Access> value) throws Exception {
-                return value.f0 + "==>" + value.f1.toString();
+            public Access map2(Access value) throws Exception {
+                return value;
             }
         }).print();
 
-//        ConnectedStreams<Access, Access> connect = stream1.connect(stream2);
-//
-//        connect.map(new CoMapFunction<Access, Access, Access>() {
-//            @Override
-//            public Access map1(Access value) throws Exception {
-//                return value;
-//            }
-//
-//            @Override
-//            public Access map2(Access value) throws Exception {
-//                return value;
-//            }
-//        }).print();
 
     }
 
-
     public static void union(StreamExecutionEnvironment env) {
+        /**
+         * $ sudo nc -l 9527
+         * $ sudo nc -l 9528
+         * */
+
         DataStreamSource<String> stream1 = env.socketTextStream("192.168.11.12", 9527);
         DataStreamSource<String> stream2 = env.socketTextStream("192.168.11.12", 9528);
 
-        DataStream<String> union = stream1.union(stream2);
+   //     DataStream<String> union = stream1.union(stream2);
 //        stream1.union(stream2).print();
-        stream1.union(stream1).print();
+
+        // 方法一
+        stream1.union(stream2).print();
     }
 
     public static void richMap(StreamExecutionEnvironment env) {
