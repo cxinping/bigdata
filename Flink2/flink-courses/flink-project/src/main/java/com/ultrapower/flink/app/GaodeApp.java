@@ -17,11 +17,9 @@ public class GaodeApp {
         String ip = "114.247.50.2";
         String province = "-";
         String city = "-";
-
         String url = "https://restapi.amap.com/v3/ip?ip="+ip+"&output=json&key="+ StringUtils.GAODE_KEY;
 
         CloseableHttpClient httpClient = HttpClients.createDefault();
-
         CloseableHttpResponse response = null;
 
         try {
@@ -31,7 +29,6 @@ public class GaodeApp {
             if(statusCode == 200) {
                 HttpEntity entity = response.getEntity();
                 String result = EntityUtils.toString(entity, "UTF-8");
-
                 JSONObject jsonObject = JSON.parseObject(result);
                 province = jsonObject.getString("province");
                 city = jsonObject.getString("city");
@@ -48,4 +45,5 @@ public class GaodeApp {
             }
         }
     }
+
 }
