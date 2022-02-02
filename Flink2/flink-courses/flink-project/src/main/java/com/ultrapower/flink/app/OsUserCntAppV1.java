@@ -65,7 +65,6 @@ public class OsUserCntAppV1 {
          * (iOS,0,17)
          * (Android,0,16)
          */
-
         FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("192.168.11.12").build();
 
         result.addSink(new RedisSink<Tuple3<String, Integer,Integer>>(conf, new RedisExampleMapper()));
