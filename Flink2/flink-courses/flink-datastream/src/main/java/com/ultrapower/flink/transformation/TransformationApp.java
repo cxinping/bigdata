@@ -111,7 +111,6 @@ public class TransformationApp {
                 return value;
             }
         }).print();
-
     }
 
     public static void connect2(StreamExecutionEnvironment env) {
@@ -138,8 +137,6 @@ public class TransformationApp {
                 return value;
             }
         }).print();
-
-
     }
 
     public static void union(StreamExecutionEnvironment env) {
