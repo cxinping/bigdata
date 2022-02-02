@@ -12,14 +12,17 @@ public class WindowApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        test01(env);
+        //test01(env);
         //test02(env);
-        //test03(env);
+        test03(env);
         env.execute("WindowApp");
     }
 
     public static void test03(StreamExecutionEnvironment env) {
-        env.socketTextStream("localhost", 9527)
+        /**
+         * 输入 1 2 3
+         * */
+        env.socketTextStream("192.168.11.12", 9527)
                 .map(new MapFunction<String, Tuple2<String,Integer>>() {
                     @Override
                     public Tuple2<String, Integer> map(String value) throws Exception {
@@ -32,7 +35,7 @@ public class WindowApp {
     }
 
     public static void test02(StreamExecutionEnvironment env) {
-        env.socketTextStream("localhost", 9527)
+        env.socketTextStream("192.168.11.12", 9527)
                 .map(new MapFunction<String, Tuple2<String,Integer>>() {
                     @Override
                     public Tuple2<String, Integer> map(String value) throws Exception {
@@ -44,7 +47,6 @@ public class WindowApp {
                 .reduce(new ReduceFunction<Tuple2<String, Integer>>() {
                     @Override
                     public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2) throws Exception {
-
                         System.out.println("value1 = [" + value1 + "], value2 = [" + value2 + "]");
                         return Tuple2.of(value1.f0, value1.f1+value2.f1);
                     }
