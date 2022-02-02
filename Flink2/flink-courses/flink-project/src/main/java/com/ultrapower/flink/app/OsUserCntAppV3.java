@@ -1,7 +1,7 @@
 //package com.ultrapower.flink.app;
 //
 //import com.alibaba.fastjson.JSON;
-//import com.imooc.flink.domain.Access;
+//import com.ultrapower.flink.domain.Access;
 //import org.apache.flink.api.common.functions.FilterFunction;
 //import org.apache.flink.api.common.functions.MapFunction;
 //import org.apache.flink.api.common.state.ValueState;
