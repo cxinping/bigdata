@@ -9,8 +9,10 @@
 //import org.apache.flink.api.common.typeinfo.TypeHint;
 //import org.apache.flink.api.common.typeinfo.TypeInformation;
 //import org.apache.flink.configuration.Configuration;
-//import org.apache.flink.shaded.guava18.com.google.common.hash.BloomFilter;
-//import org.apache.flink.shaded.guava18.com.google.common.hash.Funnels;
+////import org.apache.flink.shaded.guava18.com.google.common.hash.BloomFilter;
+////import org.apache.flink.shaded.guava18.com.google.common.hash.Funnels;
+//import org.apache.flink.hadoop.shaded.com.google.common.hash.BloomFilter;
+//import org.apache.flink.shaded.com.google.common.hash.Funnels;
 //import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 //import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 //import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
@@ -54,7 +56,6 @@
 //                        return "startup".equals(value.event);
 //                    }
 //                });
-//
 //
 //        cleanStream.keyBy(x -> x.deviceType)
 //                .process(new KeyedProcessFunction<String, Access, Access>() {
