@@ -37,7 +37,6 @@ public class OsUserCntAppV1 {
                             e.printStackTrace(); // 写到某个地方
                             return null;
                         }
-
                     }
                 }).filter(x -> x != null)
                 .filter(new FilterFunction<Access>() {
@@ -67,14 +66,13 @@ public class OsUserCntAppV1 {
          * (Android,0,16)
          */
 
-        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("127.0.0.1").build();
+        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("192.168.11.12").build();
 
         result.addSink(new RedisSink<Tuple3<String, Integer,Integer>>(conf, new RedisExampleMapper()));
 
         environment.execute("OsUserCntAppV1");
 
     }
-
 
     static class RedisExampleMapper implements RedisMapper<Tuple3<String, Integer, Integer>> {
 
