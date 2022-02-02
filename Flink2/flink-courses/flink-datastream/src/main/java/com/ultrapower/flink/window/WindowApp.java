@@ -20,6 +20,8 @@ public class WindowApp {
 
     public static void test03(StreamExecutionEnvironment env) {
         /**
+         * sudo nc -l 9527
+         *
          * 输入 1 2 3
          * */
         env.socketTextStream("192.168.11.12", 9527)
