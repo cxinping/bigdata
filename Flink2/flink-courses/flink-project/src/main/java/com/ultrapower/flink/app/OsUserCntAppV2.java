@@ -54,7 +54,6 @@ public class OsUserCntAppV2 {
         }).keyBy(x -> x.f0)
                 .sum(1).print("总的新老用户:").setParallelism(1);
 
-
         /**
          * (iOS,1,38)
          * (Android,1,29)
@@ -65,7 +64,6 @@ public class OsUserCntAppV2 {
          * (1, 67)
          * (0, 33)
          */
-
         environment.execute("OsUserCntAppV2");
 
     }
