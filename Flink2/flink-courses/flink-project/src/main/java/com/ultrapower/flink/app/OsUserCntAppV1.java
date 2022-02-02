@@ -19,9 +19,7 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
  * 按照操作系统维度进行新老用户的统计分析
  */
 public class OsUserCntAppV1 {
-
     public static void main(String[] args) throws Exception {
-
         StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
 
         SingleOutputStreamOperator<Access> cleanStream = environment.readTextFile("data/access.json")
@@ -66,11 +64,9 @@ public class OsUserCntAppV1 {
          * (Android,0,16)
          */
         FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("192.168.11.12").build();
-
         result.addSink(new RedisSink<Tuple3<String, Integer,Integer>>(conf, new RedisExampleMapper()));
 
         environment.execute("OsUserCntAppV1");
-
     }
 
     static class RedisExampleMapper implements RedisMapper<Tuple3<String, Integer, Integer>> {

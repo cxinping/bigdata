@@ -16,7 +16,6 @@ import org.apache.http.util.EntityUtils;
 import java.io.IOException;
 
 public class GaodeLocationMapFunction extends RichMapFunction<Access, Access> {
-
     CloseableHttpClient httpClient;
 
     @Override
@@ -32,7 +31,6 @@ public class GaodeLocationMapFunction extends RichMapFunction<Access, Access> {
     @Override
     public Access map(Access value) throws Exception {
         String url = "https://restapi.amap.com/v3/ip?ip="+value.ip+"&output=json&key="+ StringUtils.GAODE_KEY;
-
         CloseableHttpResponse response = null;
 
         String province = "-";
@@ -45,8 +43,6 @@ public class GaodeLocationMapFunction extends RichMapFunction<Access, Access> {
             if(statusCode == 200) {
                 HttpEntity entity = response.getEntity();
                 String result = EntityUtils.toString(entity, "UTF-8");
-
-
                 JSONObject jsonObject = JSON.parseObject(result);
                 province = jsonObject.getString("province");
                 city = jsonObject.getString("city");
