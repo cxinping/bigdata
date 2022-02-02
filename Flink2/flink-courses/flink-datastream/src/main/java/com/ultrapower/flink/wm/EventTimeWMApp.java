@@ -33,8 +33,11 @@ public class EventTimeWMApp {
          *  sudo nc -l 9527
          *
          *  输入
-         0,5000
-         5000,10000
+         1000,a,1
+         2000,a,1
+         3000,a,1
+         4000,a,1
+         5000,a,1
          * **/
 
         OutputTag<Tuple2<String,Integer>> outputTag = new OutputTag<Tuple2<String, Integer>>("late-data"){};
@@ -67,7 +70,6 @@ public class EventTimeWMApp {
                         return Tuple2.of(value1.f0, value1.f1 + value2.f1);
                     }
                 }, new ProcessWindowFunction<Tuple2<String, Integer>, String, String, TimeWindow>() {
-
                     FastDateFormat format = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
                     @Override
