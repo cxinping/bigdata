@@ -28,8 +28,8 @@ public class TransformationApp {
 //        keyBy2(env);
 
 //        reduce(env);
-          //richMap(env);
-        //union(env);
+//        richMap(env);
+//        union(env);
 
         //connect(env);
         //connect2(env);
