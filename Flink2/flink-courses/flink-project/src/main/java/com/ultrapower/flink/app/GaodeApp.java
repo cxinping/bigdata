@@ -15,7 +15,6 @@ public class GaodeApp {
 
     public static void main(String[] args) {
         String ip = "114.247.50.2";
-
         String province = "-";
         String city = "-";
 
