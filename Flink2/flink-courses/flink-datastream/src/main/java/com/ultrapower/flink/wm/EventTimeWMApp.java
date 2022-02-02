@@ -29,9 +29,17 @@ public class EventTimeWMApp {
     }
 
     public static void test01(StreamExecutionEnvironment env) {
+        /**
+         *  sudo nc -l 9527
+         *
+         *  输入
+         0,5000
+         5000,10000
+         * **/
+
         OutputTag<Tuple2<String,Integer>> outputTag = new OutputTag<Tuple2<String, Integer>>("late-data"){};
 
-        SingleOutputStreamOperator<String> lines = env.socketTextStream("localhost", 9527)
+        SingleOutputStreamOperator<String> lines = env.socketTextStream("192.168.11.12", 9527)
                 .assignTimestampsAndWatermarks(
                         new BoundedOutOfOrdernessTimestampExtractor<String>(Time.seconds(0)) {
                             @Override
