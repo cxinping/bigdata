@@ -14,8 +14,9 @@ public class SinkApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        print(env);
-        //toMySQL(env);
+        //print(env);
+        toMySQL(env);
+        //toRedis(env);
 
         env.execute("SinkApp");
     }
@@ -44,22 +45,54 @@ public class SinkApp {
 
         result.print();
 
-        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("127.0.0.1").build();
+//        FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("192.168.11.12").build();
+//
+        result.map(new MapFunction<Access, Tuple2<String, Double>>() {
+            @Override
+            public Tuple2<String, Double> map(Access value) throws Exception {
+                return Tuple2.of(value.getDomain(), value.getTraffic());
+            }
+        }).addSink(new PKMySQLSink());
+//           .addSink(new RedisSink<Tuple2<String, Double>>(conf, new PKRedisSink()));
+    }
+
+    public static void toRedis(StreamExecutionEnvironment env) {
+        DataStreamSource<String> source = env.readTextFile("data/access.log");
+
+        SingleOutputStreamOperator<Access> mapStream = source.map(new MapFunction<String, Access>() {
+            @Override
+            public Access map(String value) throws Exception {
+                String[] splits = value.split(",");
+                Long time = Long.parseLong(splits[0].trim());
+                String domain = splits[1].trim();
+                Double traffic = Double.parseDouble(splits[2].trim());
+
+                return new Access(time, domain, traffic);
+            }
+        });
+
+        SingleOutputStreamOperator<Access> result = mapStream.keyBy(new KeySelector<Access, String>() {
+            @Override
+            public String getKey(Access value) throws Exception {
+                return value.getDomain();
+            }
+        }).sum("traffic");
+
+        result.print();
+
+       FlinkJedisPoolConfig conf = new FlinkJedisPoolConfig.Builder().setHost("192.168.11.12").build();
 
         result.map(new MapFunction<Access, Tuple2<String, Double>>() {
             @Override
             public Tuple2<String, Double> map(Access value) throws Exception {
                 return Tuple2.of(value.getDomain(), value.getTraffic());
             }
-        }) // .addSink(new PKMySQLSink());
-           .addSink(new RedisSink<Tuple2<String, Double>>(conf, new PKRedisSink()));
+        }).addSink(new RedisSink<Tuple2<String, Double>>(conf, new PKRedisSink()));
     }
 
     public static void print(StreamExecutionEnvironment env) {
         DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
-
         System.out.println("source:" + source.getParallelism());
-
         source.print("test").setParallelism(4);
 
     }

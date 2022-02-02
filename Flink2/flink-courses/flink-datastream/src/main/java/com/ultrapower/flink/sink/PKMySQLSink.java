@@ -51,6 +51,6 @@ public class PKMySQLSink extends RichSinkFunction<Tuple2<String, Double>> {
             insertPstmt.setDouble(2, value.f1);
             insertPstmt.execute();
         }
-
     }
+
 }

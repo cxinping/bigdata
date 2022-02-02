@@ -30,7 +30,6 @@ public class PartitionerApp {
                     }
                 }).print();
 
-
         env.execute("PartitionerApp");
     }
 }
