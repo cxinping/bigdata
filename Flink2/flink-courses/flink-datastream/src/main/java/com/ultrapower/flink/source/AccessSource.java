@@ -22,7 +22,7 @@ public class AccessSource implements SourceFunction<Access> {
                 ctx.collect(access);
             }
 
-            Thread.sleep(5000);
+            Thread.sleep(5 * 1000);
         }
     }
 

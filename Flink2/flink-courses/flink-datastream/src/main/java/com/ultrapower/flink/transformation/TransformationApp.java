@@ -141,7 +141,7 @@ public class TransformationApp {
     }
 
     public static void richMap(StreamExecutionEnvironment env) {
-        env.setParallelism(3);
+        env.setParallelism(4);
         DataStreamSource<String> source = env.readTextFile("data/access.log");
         SingleOutputStreamOperator<Access> mapStream = source.map(new PKMapFunction());
         mapStream.print();

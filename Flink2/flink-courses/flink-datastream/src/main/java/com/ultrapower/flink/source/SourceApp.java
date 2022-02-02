@@ -22,9 +22,9 @@ public class SourceApp {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
        // test01(env);
-        test02(env);
-//        test03(env);
-//        test04(env);
+      //  test02(env);
+       // test03(env);
+        test04(env);
          //test05(env);
 
         env.execute("SourceApp");
@@ -46,17 +46,19 @@ public class SourceApp {
     }
 
     public static void test04(StreamExecutionEnvironment env) {
-        DataStreamSource<Student> source = env.addSource(new StudentSource()).setParallelism(3);
+        DataStreamSource<Student> source = env.addSource(new StudentSource()).setParallelism(1);
         System.out.println(source.getParallelism());
         source.print();
     }
 
     public static void test03(StreamExecutionEnvironment env) {
-//        DataStreamSource<Access> source = env.addSource(new AccessSource())
-//                .setParallelism(2);
+        // 单并行度
+        //DataStreamSource<Access> source = env.addSource(new AccessSource()).setParallelism(1);
+
+        // 多并行度
         DataStreamSource<Access> source = env.addSource(new AccessSourceV2()).setParallelism(3);
-        System.out.println(source.getParallelism());
-        source.print();
+        System.out.println("*** Parallelism=>"+source.getParallelism());
+        source.print("source");
     }
 
     public static void test02(StreamExecutionEnvironment env) {
