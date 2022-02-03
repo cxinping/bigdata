@@ -10,7 +10,6 @@ import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
-
 import java.util.concurrent.TimeUnit;
 
 public class CheckpointApp {
@@ -74,7 +73,6 @@ public class CheckpointApp {
         }).keyBy(x -> x.f0)
                 .sum(1)
                 .print();
-
 
         env.execute("CheckpointApp");
     }

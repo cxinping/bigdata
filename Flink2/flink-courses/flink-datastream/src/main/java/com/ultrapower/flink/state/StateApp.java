@@ -12,7 +12,6 @@ import org.apache.flink.configuration.Configuration;
 //import org.apache.flink.shaded.guava18.com.google.common.collect.Lists;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +20,6 @@ public class StateApp {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
 
         test01(env);
 
@@ -45,10 +43,8 @@ public class StateApp {
                 //.flatMap(new AvgWithValueState())
                 .flatMap(new AvgWithMapState())
                 .print();
-
     }
 }
-
 
 class AvgWithMapState extends RichFlatMapFunction <Tuple2<Long,Long>,Tuple2<Long,Double>> {
 
@@ -100,7 +96,6 @@ class AvgWithValueState extends RichFlatMapFunction<Tuple2<Long,Long>,Tuple2<Lon
     @Override
     public void flatMap(Tuple2<Long, Long> value, Collector<Tuple2<Long, Double>> out) throws Exception {
         // TODO... ==> state   次数 和 总和
-
         Tuple2<Long, Long> currentState = sum.value();
 
         if(null == currentState) {
@@ -109,7 +104,6 @@ class AvgWithValueState extends RichFlatMapFunction<Tuple2<Long,Long>,Tuple2<Lon
 
         currentState.f0 += 1; // 次数
         currentState.f1 += value.f1; // 求和
-
 
         sum.update(currentState);
 
