@@ -23,8 +23,8 @@ import org.apache.flink.util.OutputTag;
 public class EventTimeWMApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
         test01(env);
+
         env.execute("EventTimeWMApp");
     }
 
