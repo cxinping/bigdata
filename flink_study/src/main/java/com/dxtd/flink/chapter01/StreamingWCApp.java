@@ -15,7 +15,6 @@ import org.apache.flink.util.Collector;
  */
 public class StreamingWCApp {
     public static void main(String[] args) throws Exception {
-
         // 创建上下文
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
