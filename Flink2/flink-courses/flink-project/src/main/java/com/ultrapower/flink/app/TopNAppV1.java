@@ -30,7 +30,6 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommand;
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisCommandDescription;
 import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
 import org.apache.flink.util.Collector;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,7 +82,6 @@ public class TopNAppV1 {
                 return Tuple4.of(value.event, value.catagory, value.start, value.end);
             }
         }).process(new KeyedProcessFunction<Tuple4<String,String,Long,Long>, EventCatagoryProductCount, List<EventCatagoryProductCount>>() {
-
             private transient ListState<EventCatagoryProductCount> listState;
 
             @Override
@@ -98,7 +96,6 @@ public class TopNAppV1 {
                 // 注册一个定时器
                 ctx.timerService().registerEventTimeTimer(value.end + 1);
             }
-
 
             // 在这里完成TopN操作
             @Override
@@ -119,6 +116,7 @@ public class TopNAppV1 {
         }).print().setParallelism(1);
 
         env.execute();
+
     }
 
 }
