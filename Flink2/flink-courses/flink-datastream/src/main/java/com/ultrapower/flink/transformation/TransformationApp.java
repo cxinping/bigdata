@@ -12,7 +12,6 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.CoFlatMapFunction;
 import org.apache.flink.streaming.api.functions.co.CoMapFunction;
 import org.apache.flink.util.Collector;
-
 import java.util.ArrayList;
 
 public class TransformationApp {
@@ -332,8 +331,6 @@ public class TransformationApp {
         });
 
         mapStream.print("map");
-
-
     }
 
     public static void map2(StreamExecutionEnvironment env) {

@@ -29,6 +29,7 @@ public class CheckpointApp {
          * 1) code
          * 2) yaml
          *
+         * sudo nc -l 9527
          */
         env.enableCheckpointing(5000);
 //        env.enableCheckpointing(5000, CheckpointingMode.EXACTLY_ONCE);
@@ -47,7 +48,7 @@ public class CheckpointApp {
                 Time.of(5, TimeUnit.SECONDS) // 间隔
         ));
 
-        DataStreamSource<String> source = env.socketTextStream("ruozedata001", 9527);
+        DataStreamSource<String> source = env.socketTextStream("192.168.11.12", 9527);
         source.map(new MapFunction<String, String>() {
             @Override
             public String map(String value) throws Exception {
