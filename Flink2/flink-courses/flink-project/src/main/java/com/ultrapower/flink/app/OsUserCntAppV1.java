@@ -70,7 +70,6 @@ public class OsUserCntAppV1 {
     }
 
     static class RedisExampleMapper implements RedisMapper<Tuple3<String, Integer, Integer>> {
-
         @Override
         public RedisCommandDescription getCommandDescription() {
             return new RedisCommandDescription(RedisCommand.HSET, "os-user-cnt:20301002");
@@ -87,4 +86,5 @@ public class OsUserCntAppV1 {
         }
 
     }
+
 }

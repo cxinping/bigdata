@@ -17,7 +17,9 @@ createDate DateTime
 
 # 项目的架构图
 
-> Kafka Source ==> Flink ==> ClickHouse(大宽表)
+> Kafka Source ==> Flink ==> ClickHouse(大宽表) <== SQL
+
+架构没有对错直说，关键在于是否合适你公司的业务场景
 
 
 
