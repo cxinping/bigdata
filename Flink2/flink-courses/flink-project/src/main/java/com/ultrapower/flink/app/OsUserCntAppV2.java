@@ -19,9 +19,7 @@ import org.apache.flink.streaming.connectors.redis.common.mapper.RedisMapper;
  * 新老用户的统计分析
  */
 public class OsUserCntAppV2 {
-
     public static void main(String[] args) throws Exception {
-
         StreamExecutionEnvironment environment = StreamExecutionEnvironment.getExecutionEnvironment();
 
         SingleOutputStreamOperator<Access> cleanStream = environment.readTextFile("data/access.json")
