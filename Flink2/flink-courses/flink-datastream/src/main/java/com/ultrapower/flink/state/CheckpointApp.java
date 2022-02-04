@@ -15,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 public class CheckpointApp {
     public static void main(String[] args) throws Exception {
 //        System.setProperty("HADOOP_USER_NAME", "hadoop");
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         /**
