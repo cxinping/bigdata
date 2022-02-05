@@ -30,17 +30,12 @@ import java.time.Duration;
  **/
 
 public class XdclassMonitorApp {
-
     public static void main(String[] args) throws Exception {
-
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(1);
 
         DataStreamSource<AccessLogDO> ds = env.addSource(new AccessLogSource());
-
-
         //过滤
         SingleOutputStreamOperator<AccessLogDO> filterDS = ds.filter(new FilterFunction<AccessLogDO>() {
             @Override

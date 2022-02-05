@@ -17,7 +17,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class ResultCount {
-
     private String url;
 
     private Integer httpCode;

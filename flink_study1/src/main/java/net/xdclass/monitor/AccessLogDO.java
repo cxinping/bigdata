@@ -19,7 +19,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AccessLogDO {
-
     private String title;
 
     private String url;

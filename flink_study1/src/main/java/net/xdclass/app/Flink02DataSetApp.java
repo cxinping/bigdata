@@ -41,7 +41,6 @@ public class Flink02DataSetApp {
         DataSet<String> flatMapDS = stringDS.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String value, Collector<String> collector) throws Exception {
-
                 String [] arr =  value.split(",");
                 for(String str : arr){
                     collector.collect(str);
