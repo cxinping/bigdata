@@ -33,7 +33,6 @@ public class Flink17ApplyWindowApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -50,12 +49,10 @@ public class Flink17ApplyWindowApp {
             }
         });
 
-
         SingleOutputStreamOperator<VideoOrder> apply = keyByDS.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
                 .apply(new WindowFunction<VideoOrder, VideoOrder, String, TimeWindow>() {
                     @Override
                     public void apply(String key, TimeWindow window, Iterable<VideoOrder> input, Collector<VideoOrder> out) throws Exception {
-
                         List<VideoOrder> list = IteratorUtils.toList(input.iterator());
                         int total = list.stream().collect(Collectors.summingInt(VideoOrder::getMoney)).intValue();
                         VideoOrder videoOrder = new VideoOrder();
@@ -64,12 +61,10 @@ public class Flink17ApplyWindowApp {
                         videoOrder.setCreateTime(list.get(0).getCreateTime());
 
                         out.collect(videoOrder);
-
                     }
                 });
 
-        apply.print();
-
+        apply.print("apply");
 
         //DataStream需要调用execute,可以取个名称
         env.execute("sliding window job");

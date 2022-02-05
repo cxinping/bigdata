@@ -54,7 +54,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder> {
      */
     @Override
     public void run(SourceContext<VideoOrder> ctx) throws Exception {
-
         while (flag){
             Thread.sleep(1000);
             String id = UUID.randomUUID().toString().substring(30);

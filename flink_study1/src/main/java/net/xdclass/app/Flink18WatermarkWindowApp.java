@@ -35,7 +35,6 @@ public class Flink18WatermarkWindowApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
@@ -59,9 +58,6 @@ public class Flink18WatermarkWindowApp {
                 //指定POJO事件时间列，毫秒
                 .withTimestampAssigner((event, timestamp) -> TimeUtil.strToDate(event.f1).getTime()));
 
-
-
-
         //最后的兜底数据
         OutputTag<Tuple3<String, String, Integer>> lateData = new OutputTag<Tuple3<String, String, Integer>>("lateDataOrder"){};
 
@@ -83,7 +79,6 @@ public class Flink18WatermarkWindowApp {
                 .apply(new WindowFunction<Tuple3<String, String, Integer>, String, String, TimeWindow>() {
                     @Override
                     public void apply(String key, TimeWindow window, Iterable<Tuple3<String, String, Integer>> input, Collector<String> out) throws Exception {
-
                         //准备list，存储窗口的事件时间
                         List<String> timeList = new ArrayList<>();
                         int total = 0;
