@@ -47,4 +47,5 @@ public class FraudDetectionJob {
 
 		env.execute("Fraud Detection");
 	}
+
 }

@@ -13,8 +13,6 @@ import java.sql.PreparedStatement;
  * domain traffic
  */
 public class PKMySQLSink extends RichSinkFunction<Tuple2<String, Double>> {
-
-
     Connection connection;
     PreparedStatement insertPstmt;
     PreparedStatement updatePstmt;
