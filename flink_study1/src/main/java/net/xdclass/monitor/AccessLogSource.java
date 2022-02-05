@@ -9,12 +9,8 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * 小滴课堂,愿景：让技术不再难学
  *
- * @Description
- * @Author 二当家小D
- * @Remark 有问题直接联系我，源码-笔记-技术交流群
- * @Version 1.0
+ * 
  **/
 
 public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
@@ -27,11 +23,11 @@ public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
     static {
         urlList.add(new AccessLogDO("首页","/pub/api/v1/web/index_card","GET",200,"",new Date(),"",""));
         urlList.add(new AccessLogDO("个人信息","/pub/api/v1/web/user_info","GET",200,"",new Date(),"",""));
-//        urlList.add(new AccessLogDO("分类列表","/pub/api/v1/web/all_category","GET",200,"",new Date(),"",""));
-//        urlList.add(new AccessLogDO("分页视频","/pub/api/v1/web/page_video","GET",200,"",new Date(),"",""));
-//        urlList.add(new AccessLogDO("收藏","/user/api/v1/favorite/save","POST",200,"",new Date(),"",""));
-//        urlList.add(new AccessLogDO("下单","/user/api/v1/product/order/save","POST",200,"",new Date(),"",""));
-//        urlList.add(new AccessLogDO("异常url","","POST",200,"",new Date(),"",""));
+        urlList.add(new AccessLogDO("分类列表","/pub/api/v1/web/all_category","GET",200,"",new Date(),"",""));
+        urlList.add(new AccessLogDO("分页视频","/pub/api/v1/web/page_video","GET",200,"",new Date(),"",""));
+        urlList.add(new AccessLogDO("收藏","/user/api/v1/favorite/save","POST",200,"",new Date(),"",""));
+        urlList.add(new AccessLogDO("下单","/user/api/v1/product/order/save","POST",200,"",new Date(),"",""));
+        urlList.add(new AccessLogDO("异常url","","POST",200,"",new Date(),"",""));
     }
 
     //状态码
@@ -47,7 +43,6 @@ public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
     @Override
     public void run(SourceContext<AccessLogDO> ctx) throws Exception {
         while (flag){
-
             Thread.sleep(1000);
             int userId = random.nextInt(50);
             int httpCodeNum = random.nextInt(codeList.size());

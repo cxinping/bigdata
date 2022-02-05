@@ -17,7 +17,6 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
-
 import java.time.Duration;
 
 /**
@@ -44,11 +43,9 @@ public class XdclassMonitorApp {
                 WatermarkStrategy.<AccessLogDO>forBoundedOutOfOrderness(Duration.ofSeconds(3))
                         .withTimestampAssigner((event, timestamp) -> event.getCreateTime().getTime()));
 
-
         //最后兜底数据
         OutputTag<AccessLogDO> lateData = new OutputTag<AccessLogDO>("lateDataLog") {
         };
-
 
         //分组
         KeyedStream<AccessLogDO, String> keyedStream = watermarkDS.keyBy(new KeySelector<AccessLogDO, String>() {
@@ -58,13 +55,11 @@ public class XdclassMonitorApp {
             }
         });
 
-
         //开窗
         WindowedStream<AccessLogDO, String, TimeWindow> windowedStream = keyedStream.window(SlidingEventTimeWindows.of(Time.seconds(60), Time.seconds(5)))
                 //允许有1分钟延迟
                 .allowedLateness(Time.minutes(1))
                 .sideOutputLateData(lateData);
-
 
         SingleOutputStreamOperator<ResultCount> aggregate = windowedStream.aggregate(new AggregateFunction<AccessLogDO, Long, Long>() {
             @Override
