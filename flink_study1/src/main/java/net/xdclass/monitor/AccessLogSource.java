@@ -22,7 +22,6 @@ public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
 
     private Random random = new Random();
 
-
     //接口
     private static List<AccessLogDO> urlList = new ArrayList<>();
     static {
@@ -35,7 +34,6 @@ public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
 //        urlList.add(new AccessLogDO("异常url","","POST",200,"",new Date(),"",""));
     }
 
-
     //状态码
     private static List<Integer> codeList = new ArrayList<>();
     static {
@@ -46,13 +44,8 @@ public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
         codeList.add(403);
     }
 
-
-
-
-
     @Override
     public void run(SourceContext<AccessLogDO> ctx) throws Exception {
-
         while (flag){
 
             Thread.sleep(1000);
