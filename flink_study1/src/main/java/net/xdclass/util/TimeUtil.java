@@ -12,7 +12,6 @@ import java.util.Date;
 
 public class TimeUtil {
 
-
     /**
      *  time 转 字符串
      * @param time

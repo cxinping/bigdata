@@ -29,7 +29,7 @@ public class MysqlSink extends RichSinkFunction<VideoOrder> {
     @Override
     public void open(Configuration parameters) throws Exception {
         System.out.println("open=======");
-        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/xd_order?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Shanghai", "root", "xdclass.net");
+        conn = DriverManager.getConnection("jdbc:mysql://192.168.11.12:3306/xd_order?useUnicode=true&characterEncoding=utf8&allowMultiQueries=true&serverTimezone=Asia/Shanghai", "root", "123456");
 
         String sql = "INSERT INTO `video_order` (`user_id`, `money`, `title`, `trade_no`, `create_time`) VALUES(?,?,?,?,?);";
         ps = conn.prepareStatement(sql);
