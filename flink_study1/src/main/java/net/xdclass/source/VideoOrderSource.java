@@ -12,8 +12,6 @@ import java.util.*;
  **/
 
 public class VideoOrderSource extends RichParallelSourceFunction<VideoOrder> {
-
-
     private volatile Boolean flag = true;
 
     private Random random = new Random();
@@ -29,7 +27,6 @@ public class VideoOrderSource extends RichParallelSourceFunction<VideoOrder> {
         list.add("工业级微服务项目大课训练营");
         list.add("Linux课程");
     }
-
 
     /**
      * run 方法调用前 用于初始化连接
@@ -50,7 +47,6 @@ public class VideoOrderSource extends RichParallelSourceFunction<VideoOrder> {
         System.out.println("-----close-----");
     }
 
-
     /**
      * 产生数据的逻辑
      * @param ctx
@@ -70,8 +66,6 @@ public class VideoOrderSource extends RichParallelSourceFunction<VideoOrder> {
 
             ctx.collect(videoOrder);
         }
-
-
     }
 
     /**

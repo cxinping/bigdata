@@ -13,8 +13,6 @@ import java.util.*;
  **/
 
 public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder> {
-
-
     private volatile Boolean flag = true;
 
     private Random random = new Random();
@@ -29,7 +27,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder> {
 //        list.add(new VideoOrder("","项目大课",1,0,null));
 //        list.add(new VideoOrder("","kafka",300,0,null));
     }
-
 
     /**
      * run 方法调用前 用于初始化连接
@@ -49,7 +46,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder> {
     public void close() throws Exception {
         System.out.println("-----close-----");
     }
-
 
     /**
      * 产生数据的逻辑
@@ -71,8 +67,6 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder> {
             System.out.println("产生:"+videoOrder.getTitle()+"，价格:"+videoOrder.getMoney()+", 时间:"+ TimeUtil.format(videoOrder.getCreateTime()));
             ctx.collect(videoOrder);
         }
-
-
     }
 
     /**
