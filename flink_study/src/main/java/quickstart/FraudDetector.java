@@ -16,36 +16,33 @@
  * limitations under the License.
  */
 
-package com.dxtd.flink.chapter01;
+package quickstart;
 
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.walkthrough.common.sink.AlertSink;
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
+import org.apache.flink.util.Collector;
 import org.apache.flink.walkthrough.common.entity.Alert;
 import org.apache.flink.walkthrough.common.entity.Transaction;
-import org.apache.flink.walkthrough.common.source.TransactionSource;
 
 /**
- * Skeleton code for the datastream walkthrough
+ * Skeleton code for implementing a fraud detector.
  */
-public class FraudDetectionJob {
-	public static void main(String[] args) throws Exception {
-		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+public class FraudDetector extends KeyedProcessFunction<Long, Transaction, Alert> {
 
-		DataStream<Transaction> transactions = env
-			.addSource(new TransactionSource())
-			.name("transactions");
+	private static final long serialVersionUID = 1L;
 
-		DataStream<Alert> alerts = transactions
-			.keyBy(Transaction::getAccountId)
-			.process(new FraudDetector())
-			.name("fraud-detector");
+	private static final double SMALL_AMOUNT = 1.00;
+	private static final double LARGE_AMOUNT = 500.00;
+	private static final long ONE_MINUTE = 60 * 1000;
 
-		alerts
-			.addSink(new AlertSink())
-			.name("send-alerts");
+	@Override
+	public void processElement(
+			Transaction transaction,
+			Context context,
+			Collector<Alert> collector) throws Exception {
 
-		env.execute("Fraud Detection");
+		Alert alert = new Alert();
+		alert.setId(transaction.getAccountId());
+
+		collector.collect(alert);
 	}
-
 }
