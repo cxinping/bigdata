@@ -30,6 +30,7 @@ public class XdclassMonitorApp {
         env.setParallelism(1);
 
         DataStreamSource<AccessLogDO> ds = env.addSource(new AccessLogSource());
+
         //过滤
         SingleOutputStreamOperator<AccessLogDO> filterDS = ds.filter(new FilterFunction<AccessLogDO>() {
             @Override

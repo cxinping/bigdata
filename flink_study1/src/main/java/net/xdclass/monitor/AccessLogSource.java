@@ -10,7 +10,7 @@ import java.util.Random;
 
 /**
  *
- * 
+ *
  **/
 
 public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
