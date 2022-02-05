@@ -23,7 +23,6 @@ public class Flink05Sink1App {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -35,13 +34,12 @@ public class Flink05Sink1App {
         DataStream<VideoOrder> filterDS = videoOrderDS.filter(new FilterFunction<VideoOrder>() {
             @Override
             public boolean filter(VideoOrder videoOrder) throws Exception {
-                return videoOrder.getMoney()>5;
+                return videoOrder.getMoney() > 5;
             }
         });
 
         filterDS.printToErr();
         filterDS.print();
-
 
         //DataStream需要调用execute,可以取个名称
         env.execute("sink job");

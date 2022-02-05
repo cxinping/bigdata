@@ -21,11 +21,11 @@ public class VideoOrderSourceV2 extends RichParallelSourceFunction<VideoOrder> {
     static {
         list.add(new VideoOrder("","java",10,0,null));
         list.add(new VideoOrder("","spring boot",15,0,null));
-//        list.add(new VideoOrder("","springc loud",20,0,null));
-//        list.add(new VideoOrder("","flink",45,0,null));
-//        list.add(new VideoOrder("","面试专题第一季",50,0,null));
-//        list.add(new VideoOrder("","项目大课",1,0,null));
-//        list.add(new VideoOrder("","kafka",300,0,null));
+        list.add(new VideoOrder("","springc loud",20,0,null));
+        list.add(new VideoOrder("","flink",45,0,null));
+        list.add(new VideoOrder("","面试专题第一季",50,0,null));
+        list.add(new VideoOrder("","项目大课",1,0,null));
+        list.add(new VideoOrder("","kafka",300,0,null));
     }
 
     /**
