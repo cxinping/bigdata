@@ -152,12 +152,10 @@
 			<version>1.2.44</version>
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
 		<plugins>
-
 			<!-- Java Compiler -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
