@@ -56,7 +56,7 @@ public class VideoOrderSource extends RichParallelSourceFunction<VideoOrder> {
     public void run(SourceContext<VideoOrder> ctx) throws Exception {
 
         while (flag){
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             String id = UUID.randomUUID().toString();
             int userId = random.nextInt(10);
             int money = random.nextInt(100);
