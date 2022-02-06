@@ -33,10 +33,7 @@ import java.util.Map;
  **/
 
 public class XdclassApiCodeCEPMonitorApp {
-
     public static void main(String[] args) throws Exception {
-
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(1);

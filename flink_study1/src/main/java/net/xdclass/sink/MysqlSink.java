@@ -15,11 +15,9 @@ import java.sql.PreparedStatement;
  **/
 
 public class MysqlSink extends RichSinkFunction<VideoOrder> {
-
     private Connection conn;
 
     private PreparedStatement ps;
-
 
     /**
      * 初始化连接
@@ -33,7 +31,6 @@ public class MysqlSink extends RichSinkFunction<VideoOrder> {
 
         String sql = "INSERT INTO `video_order` (`user_id`, `money`, `title`, `trade_no`, `create_time`) VALUES(?,?,?,?,?);";
         ps = conn.prepareStatement(sql);
-
     }
 
     /**
@@ -50,7 +47,6 @@ public class MysqlSink extends RichSinkFunction<VideoOrder> {
             ps.close();;
         }
     }
-
 
     /**
      * 执行对应的sql

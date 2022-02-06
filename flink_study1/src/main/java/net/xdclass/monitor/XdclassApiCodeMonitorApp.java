@@ -29,8 +29,6 @@ import java.time.Duration;
 public class XdclassApiCodeMonitorApp {
 
     public static void main(String[] args) throws Exception {
-
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setParallelism(1);
