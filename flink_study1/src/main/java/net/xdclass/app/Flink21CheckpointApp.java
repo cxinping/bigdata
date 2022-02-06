@@ -22,7 +22,6 @@ import org.apache.flink.util.Collector;
  **/
 
 public class Flink21CheckpointApp {
-
     /**
      * source
      * transformation
@@ -31,7 +30,6 @@ public class Flink21CheckpointApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -59,12 +57,8 @@ public class Flink21CheckpointApp {
         //设置同一时刻有多少个checkpoint可以同时执行，默认为1就行，以避免占用太多正常数据处理资源
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
 
-
         //设置了重启策略, 作业在失败后能自动恢复,失败后最多重启3次，每次重启间隔10s
         env.setRestartStrategy(RestartStrategies.fixedDelayRestart(3, 10000));
-
-
-
 
         env.execute("watermark job");
 

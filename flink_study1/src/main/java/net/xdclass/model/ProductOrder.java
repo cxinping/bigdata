@@ -12,13 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductOrder {
-
     private int id;
 
     private String title;
 
     private Long amount;
-
 
 }
 

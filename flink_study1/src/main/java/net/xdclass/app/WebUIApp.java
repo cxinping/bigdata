@@ -10,12 +10,9 @@ import org.apache.flink.util.Collector;
  *
  *
  **/
-
 public class WebUIApp {
 
     public static void main(String[] args) throws Exception {
-
-
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.createLocalEnvironmentWithWebUI(new Configuration());
         env.setParallelism(1);
 
@@ -36,6 +33,5 @@ public class WebUIApp {
 
         //DataStream需要调用execute,可以取个名称
         env.execute("data stream job");
-
     }
 }

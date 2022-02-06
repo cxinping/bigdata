@@ -100,6 +100,5 @@ public class XdclassMonitorApp {
         aggregate.print("实时1分钟接口访问量");
 
         env.execute("XdclassMonitorApp");
-
     }
 }

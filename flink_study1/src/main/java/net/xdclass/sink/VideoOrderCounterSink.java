@@ -28,7 +28,6 @@ public class VideoOrderCounterSink implements RedisMapper<Tuple2<String, Integer
      */
     @Override
     public String getKeyFromData(Tuple2<String, Integer> data) {
-
         System.out.println("getKeyFromData=" + data.f0);
         return data.f0;
     }

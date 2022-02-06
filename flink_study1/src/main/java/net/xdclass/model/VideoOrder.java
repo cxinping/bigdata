@@ -36,7 +36,6 @@ public class VideoOrder {
         videoOrder.setUserId(1001);
         videoOrder.setCreateTime(new Date());
         System.out.println(videoOrder);
-
     }
 
 }

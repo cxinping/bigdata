@@ -31,7 +31,6 @@ import java.util.Map;
  *
  *
  **/
-
 public class XdclassApiCodeCEPMonitorApp {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -58,7 +57,6 @@ public class XdclassApiCodeCEPMonitorApp {
         OutputTag<AccessLogDO> lateData = new OutputTag<AccessLogDO>("lateDataLog") {
         };
 
-
         //多个字段分组
         KeyedStream<AccessLogDO, Tuple2<String, Integer>> keyedStream = watermarkDS.keyBy(new KeySelector<AccessLogDO, Tuple2<String, Integer>>() {
             @Override
@@ -66,7 +64,6 @@ public class XdclassApiCodeCEPMonitorApp {
                 return Tuple2.of(value.getUrl(),value.getHttpCode());
             }
         });
-
 
         //定义好模式
         Pattern<AccessLogDO, AccessLogDO> pattern = Pattern.<AccessLogDO>begin("errorCode").where(new SimpleCondition<AccessLogDO>() {
@@ -95,7 +92,6 @@ public class XdclassApiCodeCEPMonitorApp {
                 return resultCount;
             }
         });
-
 
         CEPResult.print("接口告警");
 

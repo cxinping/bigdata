@@ -54,7 +54,6 @@ public class MysqlSink extends RichSinkFunction<VideoOrder> {
      */
     @Override
     public void invoke(VideoOrder value, Context context) throws Exception {
-
         ps.setInt(1,value.getUserId());
         ps.setInt(2,value.getMoney());
         ps.setString(3,value.getTitle());

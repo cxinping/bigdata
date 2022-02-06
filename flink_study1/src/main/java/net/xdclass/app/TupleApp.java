@@ -13,14 +13,12 @@ import java.util.stream.Stream;
  **/
 
 public class TupleApp {
-
     public static void main(String [] args){
 
         //tuple测试
         //tupleTest();
         mapTest();
         flatMapTest();
-
     }
 
     private static void tupleTest(){
@@ -30,7 +28,6 @@ public class TupleApp {
         System.out.println(tuple3.f1);
         System.out.println(tuple3.f2);
     }
-
 
     private static void mapTest(){
         List<String> list1 = new ArrayList<>();
@@ -52,7 +49,6 @@ public class TupleApp {
         list1.add("springboot,springcloud");
         list1.add("redis6,docker");
         list1.add("kafka,rabbitmq");
-
 
         List<String> result =  list1.stream().flatMap(obj->{
             Stream<String> stream =  Arrays.stream( obj.split(","));

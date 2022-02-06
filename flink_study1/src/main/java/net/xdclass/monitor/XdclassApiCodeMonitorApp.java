@@ -48,7 +48,6 @@ public class XdclassApiCodeMonitorApp {
                 WatermarkStrategy.<AccessLogDO>forBoundedOutOfOrderness(Duration.ofSeconds(3))
                         .withTimestampAssigner((event, timestamp) -> event.getCreateTime().getTime()));
 
-
         //最后兜底数据
         OutputTag<AccessLogDO> lateData = new OutputTag<AccessLogDO>("lateDataLog") {
         };
@@ -109,6 +108,5 @@ public class XdclassApiCodeMonitorApp {
         aggregateDS.getSideOutput(lateData).print("late data");
 
         env.execute("XdclassMonitorApp");
-
     }
 }

@@ -12,7 +12,6 @@ import java.util.Random;
  *
  *
  **/
-
 public class AccessLogSource extends RichParallelSourceFunction<AccessLogDO> {
     private volatile Boolean flag = true;
 
