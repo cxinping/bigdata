@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import net.xdclass.util.TimeUtil;
-
 import java.util.Date;
 
 /**
