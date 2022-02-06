@@ -40,7 +40,7 @@ public class Flink18WatermarkWindowApp {
         env.setParallelism(1);
 
         //java,2022-11-11 09-10-10,15
-        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
+        DataStream<String> ds = env.socketTextStream("192.168.11.12", 8888);
 
         SingleOutputStreamOperator<Tuple3<String, String, Integer>> flatMapDS = ds.flatMap(new FlatMapFunction<String, Tuple3<String, String, Integer>>() {
             @Override
