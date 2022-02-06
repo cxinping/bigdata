@@ -24,9 +24,7 @@ import java.util.List;
  *
  *
  **/
-
 public class Flink18WatermarkWindowApp {
-
     /**
      * source
      * transformation
@@ -47,7 +45,6 @@ public class Flink18WatermarkWindowApp {
             public void flatMap(String value, Collector<Tuple3<String, String, Integer>> out) throws Exception {
                 String[] arr = value.split(",");
                 out.collect(Tuple3.of(arr[0], arr[1], Integer.parseInt(arr[2])));
-
             }
         });
 
@@ -101,5 +98,4 @@ public class Flink18WatermarkWindowApp {
         env.execute("watermark job");
 
     }
-
 }

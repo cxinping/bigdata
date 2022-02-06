@@ -30,8 +30,6 @@ public class JdkStreamApp {
 //                new VideoOrder("2019323542411", "Git+Jenkins持续集成", 7),
 //                new VideoOrder("2019323542424", "Idea全套教程", 21));
 //
-//
-//
 //        // 一定配置idea的 jdk8编译
 //        //平均价格
 //        double videoOrder1Avg1 = videoOrders1.stream().
@@ -44,8 +42,6 @@ public class JdkStreamApp {
 //
 //        System.out.println("videoOrder1Avg1="+videoOrder1Avg1);
 //        System.out.println("videoOrder1Avg2="+videoOrder1Avg2);
-
-
 
 //
 //        //订单总价

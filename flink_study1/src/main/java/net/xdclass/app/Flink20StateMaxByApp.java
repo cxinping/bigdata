@@ -28,9 +28,7 @@ import java.util.List;
  *
  *
  **/
-
 public class Flink20StateMaxByApp {
-
     /**
      * source
      * transformation
@@ -45,7 +43,7 @@ public class Flink20StateMaxByApp {
         env.setParallelism(1);
 
         //java,2022-11-11 09-10-10,15
-        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
+        DataStream<String> ds = env.socketTextStream("192.168.11.12", 8888);
 
 
         DataStream<Tuple3<String, String, Integer>> flatMap = ds.flatMap(new FlatMapFunction<String, Tuple3<String, String, Integer>>() {

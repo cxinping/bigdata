@@ -27,9 +27,7 @@ import java.util.List;
  *
  *
  **/
-
 public class Flink19StateBackendApp {
-
     /**
      * source
      * transformation
@@ -38,7 +36,6 @@ public class Flink19StateBackendApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
@@ -51,7 +48,7 @@ public class Flink19StateBackendApp {
         //作业单独配置checkpoints
         //env.getCheckpointConfig().setCheckpointStorage("hdfs:///checkpoints-data/");
         //java,2022-11-11 09-10-10,15
-        DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
+        DataStream<String> ds = env.socketTextStream("192.168.11.12", 8888);
 
         SingleOutputStreamOperator<Tuple3<String, String, Integer>> flatMapDS = ds.flatMap(new FlatMapFunction<String, Tuple3<String, String, Integer>>() {
             @Override
