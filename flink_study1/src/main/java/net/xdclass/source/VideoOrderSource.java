@@ -3,14 +3,13 @@ package net.xdclass.source;
 import net.xdclass.model.VideoOrder;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
-
 import java.util.*;
+
 
 /**
  *
  *
  **/
-
 public class VideoOrderSource extends RichParallelSourceFunction<VideoOrder> {
     private volatile Boolean flag = true;
 

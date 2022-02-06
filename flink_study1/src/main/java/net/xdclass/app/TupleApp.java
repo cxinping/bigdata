@@ -1,7 +1,6 @@
 package net.xdclass.app;
 
 import org.apache.flink.api.java.tuple.Tuple3;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -46,9 +45,7 @@ public class TupleApp {
         }).collect(Collectors.toList());
 
         System.out.println(result);
-
     }
-
 
     private static void flatMapTest(){
         List<String> list1 = new ArrayList<>();
@@ -63,12 +60,6 @@ public class TupleApp {
         }).collect(Collectors.toList());
 
         System.out.println(result);
-
-
-
     }
-
-
-
 
 }

@@ -3,7 +3,6 @@ package net.xdclass.sink;
 import net.xdclass.model.VideoOrder;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -13,7 +12,6 @@ import java.sql.PreparedStatement;
  *
  *
  **/
-
 public class MysqlSink extends RichSinkFunction<VideoOrder> {
     private Connection conn;
 
