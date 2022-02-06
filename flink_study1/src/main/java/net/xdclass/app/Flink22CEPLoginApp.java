@@ -31,7 +31,6 @@ import java.util.Map;
  *
  **/
 public class Flink22CEPLoginApp {
-
     /**
      * source
      * transformation
@@ -40,14 +39,12 @@ public class Flink22CEPLoginApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
         //AA,2022-11-11 12:01:01,-1
         DataStream<String> ds = env.socketTextStream("127.0.0.1", 8888);
-
 
         DataStream<Tuple3<String, String, Integer>> flatMap = ds.flatMap(new FlatMapFunction<String, Tuple3<String, String, Integer>>() {
             @Override
