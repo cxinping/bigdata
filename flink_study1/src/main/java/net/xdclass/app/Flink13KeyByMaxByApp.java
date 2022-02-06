@@ -26,12 +26,11 @@ public class Flink13KeyByMaxByApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         env.setRuntimeMode(RuntimeExecutionMode.AUTOMATIC);
-        //env.setParallelism(1);
+        env.setParallelism(4);
 
         //数据源 source
         DataStream<VideoOrder> ds = env.fromElements(
@@ -51,11 +50,10 @@ public class Flink13KeyByMaxByApp {
             }
         });
 
-        //SingleOutputStreamOperator<VideoOrder> money = keyByDS.max("money");
-        SingleOutputStreamOperator<VideoOrder> money = keyByDS.maxBy("money");
+        SingleOutputStreamOperator<VideoOrder> money = keyByDS.max("money");
+        //SingleOutputStreamOperator<VideoOrder> money = keyByDS.maxBy("money");
 
         money.print();
-
 
         //DataStream需要调用execute,可以取个名称
         env.execute("map job");
