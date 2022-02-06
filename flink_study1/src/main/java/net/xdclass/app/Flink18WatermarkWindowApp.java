@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  *
- *
+ * sudo nc -l 8888
  **/
 public class Flink18WatermarkWindowApp {
     /**
