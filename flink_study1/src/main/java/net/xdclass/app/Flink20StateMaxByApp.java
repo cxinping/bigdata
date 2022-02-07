@@ -45,7 +45,6 @@ public class Flink20StateMaxByApp {
         //java,2022-11-11 09-10-10,15
         DataStream<String> ds = env.socketTextStream("192.168.11.12", 8888);
 
-
         DataStream<Tuple3<String, String, Integer>> flatMap = ds.flatMap(new FlatMapFunction<String, Tuple3<String, String, Integer>>() {
             @Override
             public void flatMap(String value, Collector<Tuple3<String, String, Integer>> out) throws Exception {
@@ -55,14 +54,12 @@ public class Flink20StateMaxByApp {
             }
         });
 
-
         SingleOutputStreamOperator<Tuple2<String, Integer>> maxVideoOrderDS = flatMap.keyBy(new KeySelector<Tuple3<String, String, Integer>, String>() {
             @Override
             public String getKey(Tuple3<String, String, Integer> value) throws Exception {
                 return value.f0;
             }
         }).map(new RichMapFunction<Tuple3<String, String, Integer>, Tuple2<String, Integer>>() {
-
             private ValueState<Integer> maxVideoOrderState = null;
 
             @Override
@@ -94,8 +91,6 @@ public class Flink20StateMaxByApp {
         });
 
         maxVideoOrderDS.print("最大订单：");
-
-
 
         env.execute("watermark job");
 

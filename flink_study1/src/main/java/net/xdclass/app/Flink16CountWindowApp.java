@@ -16,7 +16,6 @@ import org.apache.flink.streaming.api.windowing.time.Time;
  **/
 
 public class Flink16CountWindowApp {
-
     /**
      * source
      * transformation

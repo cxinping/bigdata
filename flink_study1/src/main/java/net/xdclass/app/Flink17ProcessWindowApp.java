@@ -34,7 +34,6 @@ public class Flink17ProcessWindowApp {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-
         //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -44,16 +43,12 @@ public class Flink17ProcessWindowApp {
         //数据源 source
         DataStream<VideoOrder> ds = env.addSource(new VideoOrderSourceV2());
 
-
-
-
         KeyedStream<VideoOrder, String> keyByDS = ds.keyBy(new KeySelector<VideoOrder, String>() {
             @Override
             public String getKey(VideoOrder value) throws Exception {
                 return value.getTitle();
             }
         });
-
 
         SingleOutputStreamOperator<VideoOrder> process = keyByDS
                 .window( TumblingProcessingTimeWindows.of(Time.seconds(5)))
@@ -69,13 +64,10 @@ public class Flink17ProcessWindowApp {
                         videoOrder.setCreateTime(list.get(0).getCreateTime());
                         videoOrder.setTitle(list.get(0).getTitle());
 
-
                         out.collect(videoOrder);
-
                     }
                 });
         process.print();
-
 
         //DataStream需要调用execute,可以取个名称
         env.execute("sliding window job");

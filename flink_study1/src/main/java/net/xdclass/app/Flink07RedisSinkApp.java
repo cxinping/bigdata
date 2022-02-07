@@ -53,8 +53,6 @@ public class Flink07RedisSinkApp {
 //        );
         DataStream<VideoOrder> ds = env.addSource(new VideoOrderSource());
 
-
-
         //transformation
        DataStream<Tuple2<String,Integer>> mapDS =  ds.map(new MapFunction<VideoOrder, Tuple2<String,Integer>>() {
             @Override
@@ -62,7 +60,6 @@ public class Flink07RedisSinkApp {
                 return new Tuple2<>(value.getTitle(),1);
             }
         });
-
 
 
 //        DataStream<Tuple2<String,Integer>> mapDS = ds.flatMap(new FlatMapFunction<VideoOrder, Tuple2<String,Integer>>() {

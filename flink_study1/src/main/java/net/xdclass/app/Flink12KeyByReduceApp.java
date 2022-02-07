@@ -56,7 +56,6 @@ public class Flink12KeyByReduceApp {
             }
         });
 
-
         SingleOutputStreamOperator<VideoOrder> reduce = videoOrderStringKeyedStream.reduce(new ReduceFunction<VideoOrder>() {
             @Override
             public VideoOrder reduce(VideoOrder value1, VideoOrder value2) throws Exception {

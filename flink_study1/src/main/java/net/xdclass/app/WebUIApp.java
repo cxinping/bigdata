@@ -18,7 +18,6 @@ public class WebUIApp {
 
         DataStream<String> stringDataStream = env.socketTextStream("127.0.0.1",8888);
 
-
         DataStream<String> flatMapDataStream = stringDataStream.flatMap(new FlatMapFunction<String, String>() {
             @Override
             public void flatMap(String value, Collector<String> out) throws Exception {

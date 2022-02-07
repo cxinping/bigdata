@@ -35,7 +35,6 @@ public class Flink11FilterChainApp {
 
         DataStreamSource<VideoOrder> ds = env.addSource(new VideoOrderSourceV2());
 
-
         DataStream<VideoOrder> sumDS = ds.filter(new FilterFunction<VideoOrder>() {
             @Override
             public boolean filter(VideoOrder value) throws Exception {

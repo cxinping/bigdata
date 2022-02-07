@@ -57,18 +57,14 @@ public class Flink08KafkaSourceApp {
         //有后台线程每隔10s检测一下Kafka的分区变化情况
         props.setProperty("flink.partition-discovery.interval-millis","10000");
 
-
         FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<String>("xdclass-topic", new SimpleStringSchema(),props);
 
         //设置从记录的消费者组内的offset开始消费
         consumer.setStartFromGroupOffsets();
 
-
         DataStream<String> kafkaDS = env.addSource(consumer);
 
         kafkaDS.print("kafka:");
-
-
 
        DataStream<String> mapDS = kafkaDS.map(new MapFunction<String, String>() {
             @Override

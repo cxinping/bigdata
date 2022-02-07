@@ -72,7 +72,6 @@ public class Flink22CEPLoginApp {
             }
         });
 
-
         //cep 1、定义模式pattern
         Pattern<Tuple3<String, String, Integer>, Tuple3<String, String, Integer>> pattern = Pattern
 
@@ -94,7 +93,6 @@ public class Flink22CEPLoginApp {
                     }
                 })
                 .within(Time.seconds(5));
-
 
         //cep 2、匹配数据流
         PatternStream<Tuple3<String, String, Integer>> patternStream = CEP.pattern(keyedStream, pattern);
