@@ -31,16 +31,21 @@ public class UserLogSource implements SourceFunction<UserLog>{
     }
 
     public static void main(String[] args) throws IOException {
-
         String fileName = "data/user_log1.csv";
         File file = new File(fileName);
 
         // 读取文件内容到Stream流中，按行读取
         Stream<String> lines = Files.lines(Paths.get(fileName));
 
-        // 随机行顺序进行数据处理
+        // 按照顺序进行数据处理
         lines.forEachOrdered(ele -> {
-            System.out.println(ele);
+            String[] line =ele.split(",");
+            String user_id = line[0];
+
+            if( !user_id.equals("user_id")) { //买家id在每行日志代码的第0个元素,去除第一行表头
+                System.out.println(ele);
+            }
+
         });
 
     }
