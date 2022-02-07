@@ -29,7 +29,23 @@ public class Flink08KafkaSourceAppV02 {
         DataStream<UserLog> kafkaDS = env.addSource(new UserLogSource());
         kafkaDS.print("kafka:");
 
-//        //beginning
+        //beginning
+        Properties props = new Properties();
+        //kafka地址
+        props.setProperty("bootstrap.servers", "192.168.11.12:9092");
+        //组名
+        props.setProperty("group.id", "video-order-group");
+        //字符串序列化和反序列化规则
+        props.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        //offset重置规则
+        props.setProperty("auto.offset.reset", "latest");
+        //自动提交
+        props.setProperty("enable.auto.commit", "true");
+        props.setProperty("auto.commit.interval.ms", "2000");
+        //有后台线程每隔10s检测一下Kafka的分区变化情况
+        props.setProperty("flink.partition-discovery.interval-millis", "10000");
+
 //       DataStream<String> mapDS = kafkaDS.map(new MapFunction<String, String>() {
 //            @Override
 //            public String map(String value) throws Exception {
