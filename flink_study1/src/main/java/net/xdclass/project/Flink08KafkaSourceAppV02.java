@@ -14,7 +14,7 @@ import java.util.Properties;
  *
  **/
 
-public class Flink08KafkaSourceApp02 {
+public class Flink08KafkaSourceAppV02 {
     /**
      * source
      * transformation
