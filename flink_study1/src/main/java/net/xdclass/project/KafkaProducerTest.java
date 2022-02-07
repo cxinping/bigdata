@@ -14,7 +14,7 @@ public class KafkaProducerTest {
     /**
      *
      * */
-    public static final String TOPIC_NAME = "test2";
+    public static final String TOPIC_NAME = "sex";
 
     public Properties getProperties(){
         Properties props = new Properties();
@@ -73,4 +73,5 @@ public class KafkaProducerTest {
         KafkaProducerTest producer = new KafkaProducerTest();
         producer.testSend();
     }
+    
 }
