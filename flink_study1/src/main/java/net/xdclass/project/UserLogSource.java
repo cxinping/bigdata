@@ -32,7 +32,7 @@ public class UserLogSource implements SourceFunction<UserLog>{
 
     public static void main(String[] args) throws IOException {
 
-        String fileName = "data/user_log.csv";
+        String fileName = "data/user_log1.csv";
         File file = new File(fileName);
 
         // 读取文件内容到Stream流中，按行读取
