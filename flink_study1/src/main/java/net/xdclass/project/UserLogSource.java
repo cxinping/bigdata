@@ -1,5 +1,6 @@
 package net.xdclass.project;
 
+import org.apache.flink.streaming.api.functions.source.ParallelSourceFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
 import java.io.File;
@@ -10,7 +11,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-public class UserLogSource implements SourceFunction<UserLog>{
+public class UserLogSource implements ParallelSourceFunction<UserLog> {
     boolean running = true;
 
     @Override
@@ -35,11 +36,12 @@ public class UserLogSource implements SourceFunction<UserLog>{
                     userLog.setMonth(line[5]);
                     userLog.setDay(line[6]);
                     userLog.setGender(line[9]);
+                    userLog.setProvince(line[10]);
 
                     ctx.collect(userLog);
 
                     try {
-                        Thread.sleep(5 * 1000);
+                        Thread.sleep(3 * 1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
