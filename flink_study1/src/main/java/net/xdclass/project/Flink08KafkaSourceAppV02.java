@@ -1,8 +1,12 @@
 package net.xdclass.project;
 
+import net.xdclass.model.VideoOrder;
 import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
@@ -23,13 +27,6 @@ public class Flink08KafkaSourceAppV02 {
      * @param args
      */
     public static void main(String[] args) throws Exception {
-        //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // 多并行度
-        DataStream<UserLog> kafkaDS = env.addSource(new UserLogSource());
-        kafkaDS.print("kafka:");
-
-        //beginning
         Properties props = new Properties();
         //kafka地址
         props.setProperty("bootstrap.servers", "192.168.11.12:9092");
@@ -45,6 +42,31 @@ public class Flink08KafkaSourceAppV02 {
         props.setProperty("auto.commit.interval.ms", "2000");
         //有后台线程每隔10s检测一下Kafka的分区变化情况
         props.setProperty("flink.partition-discovery.interval-millis", "10000");
+
+        //构建执行任务环境以及任务的启动的入口, 存储全局相关的参数
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // 多并行度
+        DataStream<UserLog> kafkaDS = env.addSource(new UserLogSource());
+        kafkaDS.print("kafka:");
+
+        //beginning
+        //transformation
+//        DataStream<Tuple2<String,Integer>> mapDS =  kafkaDS.map(new RichMapFunction<UserLog, Tuple2<String,Integer>>() {
+//            @Override
+//            public void open(Configuration parameters) throws Exception {
+//                System.out.println("========open");
+//            }
+//
+//            @Override
+//            public void close() throws Exception {
+//                System.out.println("========close");
+//            }
+//
+//            @Override
+//            public Tuple2<String, Integer> map(UserLog value) throws Exception {
+//                return new Tuple2<>(value.getGender(),1);
+//            }
+//        });
 
 //       DataStream<String> mapDS = kafkaDS.map(new MapFunction<String, String>() {
 //            @Override
