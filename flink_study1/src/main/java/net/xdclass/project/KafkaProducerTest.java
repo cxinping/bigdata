@@ -6,9 +6,14 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Stream;
 
 public class KafkaProducerTest {
     /**
@@ -69,9 +74,52 @@ public class KafkaProducerTest {
         producer.close();
     }
 
-    public static void main(String[] args) {
-        KafkaProducerTest producer = new KafkaProducerTest();
-        producer.testSend();
+    public void testSendDemo() throws IOException {
+        Properties properties = getProperties();
+        Producer<String,String> producer = new KafkaProducer<>(properties);
+
+        String fileName = "data/user_log1.csv";
+        File file = new File(fileName);
+        // 读取文件内容到Stream流中，按行读取
+        Stream<String> lines = Files.lines(Paths.get(fileName));
+
+        lines.forEachOrdered(ele -> {
+            String[] line =ele.split(",");
+            String user_id = line[0];
+
+            if( !user_id.equals("user_id")) { //买家id在每行日志代码的第0个元素,去除第一行表头
+                System.out.println(ele);
+//                UserLog userLog = new UserLog();
+//                userLog.setUser_id(line[0]);
+//                userLog.setItem_id(line[1]);
+//                userLog.setCat_id(line[2]);
+//                userLog.setMonth(line[5]);
+//                userLog.setDay(line[6]);
+//                userLog.setGender(line[9]);
+//                userLog.setProvince(line[10]);
+
+                try {
+                    // 每隔0.1秒发送一行数据, 1秒10条记录
+                    long sleep_time = Double.valueOf(0.1 * 1000).longValue() ;
+                    Thread.sleep(sleep_time);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                producer.send(new ProducerRecord<>(TOPIC_NAME,line[9]));
+            }
+
+        });
+
+        producer.close();
+
     }
-    
+
+    public static void main(String[] args) throws IOException {
+        KafkaProducerTest producer = new KafkaProducerTest();
+        //producer.testSend();
+        producer.testSendDemo();
+
+    }
+
 }

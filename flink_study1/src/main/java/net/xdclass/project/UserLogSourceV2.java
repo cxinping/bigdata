@@ -38,7 +38,9 @@ public class UserLogSourceV2 implements ParallelSourceFunction<UserLog> {
                     ctx.collect(userLog);
 
                     try {
-                        Thread.sleep(10 * 1000);
+                        // 每隔0.1秒发送一行数据, 1秒10条记录
+                        long sleep_time = Double.valueOf(0.1 * 1000).longValue() ;
+                        Thread.sleep(sleep_time);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

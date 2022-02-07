@@ -14,8 +14,14 @@ import java.util.Properties;
 
 public class KafkaConsumerTest {
     /**
-     *
+
+     /usr/local/kafka/bin/kafka-topics.sh --create --bootstrap-server  kafka1:9092  --replication-factor 1 --partitions 1 --topic sex
+
+     /usr/local/kafka/bin/kafka-console-consumer.sh --topic sex --from-beginning --bootstrap-server kafka1:9092
+
      * */
+
+
     public static final String TOPIC_NAME = "sex";
 
     public Properties getProperties(){
@@ -85,9 +91,48 @@ public class KafkaConsumerTest {
 
     }
 
+    public void testConsumerDemo(){
+        Properties properties = getProperties();
+
+        KafkaConsumer<String,String> kafkaConsumer = new KafkaConsumer<>(properties);
+
+        //订阅主题
+        kafkaConsumer.subscribe(Arrays.asList(KafkaProducerTest.TOPIC_NAME));
+
+        while (true){
+            //领取时间，阻塞超时时间
+            ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofMillis(100));
+
+            for(ConsumerRecord record : records){
+                System.err.printf("topic=%s, offset=%d,key=%s,value=%s %n",record.topic(),record.offset(),record.key(),record.value());
+            }
+
+            //同步阻塞提交offset
+            //kafkaConsumer.commitSync();
+
+            if(!records.isEmpty()){
+                //异步提交offset
+                kafkaConsumer.commitAsync(new OffsetCommitCallback() {
+                    @Override
+                    public void onComplete(Map<TopicPartition, OffsetAndMetadata> offsets, Exception exception) {
+
+                        if(exception == null){
+                            System.err.println("手工提交offset成功:"+offsets.toString());
+                        }else {
+                            System.err.println("手工提交offset失败:"+offsets.toString());
+                        }
+                    }
+                });
+            }
+        }
+
+    }
+
     public static void main(String[] args) {
         KafkaConsumerTest consumer = new KafkaConsumerTest();
-        consumer.simpleConsumerTest();
+        //consumer.simpleConsumerTest();
+        consumer.testConsumerDemo();
+
 
     }
 
