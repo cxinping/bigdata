@@ -51,7 +51,7 @@ public class Flink08KafkaSourceAppV01 {
         //设置从记录的消费者组内的offset开始消费
         consumer.setStartFromGroupOffsets();
 
-        DataStream<String> kafkaDS = env.addSource(consumer);
+        DataStream<String> kafkaDS = env.addSource(consumer).setParallelism(4);;
 
         kafkaDS.print("kafka:");
 
