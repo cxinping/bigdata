@@ -1,20 +1,10 @@
 package net.xdclass.app;
 
-import net.xdclass.model.VideoOrder;
-import net.xdclass.sink.VideoOrderCounterSink;
-import net.xdclass.source.VideoOrderSource;
 import org.apache.flink.api.common.RuntimeExecutionMode;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
-import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer;
-import org.apache.flink.streaming.connectors.redis.RedisSink;
-import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig;
 
 import java.util.Properties;
 
@@ -22,7 +12,7 @@ import java.util.Properties;
  *
  **/
 
-public class Flink08KafkaSourceApp {
+public class Flink08KafkaSourceApp02 {
     /**
      * source
      * transformation
@@ -64,16 +54,17 @@ public class Flink08KafkaSourceApp {
         kafkaDS.print("kafka:");
 
         //beginning
-       DataStream<String> mapDS = kafkaDS.map(new MapFunction<String, String>() {
-            @Override
-            public String map(String value) throws Exception {
-                return "小滴课堂：" + value;
-            }
-        });
-
-        FlinkKafkaProducer<String> producer = new FlinkKafkaProducer<>("flinktopic", new SimpleStringSchema(), props);
-
-        mapDS.addSink(producer);
+//
+//       DataStream<String> mapDS = kafkaDS.map(new MapFunction<String, String>() {
+//            @Override
+//            public String map(String value) throws Exception {
+//                return "小滴课堂："+value;
+//            }
+//        });
+//
+//        FlinkKafkaProducer<String> producer = new FlinkKafkaProducer<>("flinktopic", new SimpleStringSchema(), props);
+//
+//        mapDS.addSink(producer);
         // ending
 
         //DataStream需要调用execute,可以取个名称
