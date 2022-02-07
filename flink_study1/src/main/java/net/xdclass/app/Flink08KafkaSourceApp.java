@@ -67,12 +67,11 @@ public class Flink08KafkaSourceApp {
        DataStream<String> mapDS = kafkaDS.map(new MapFunction<String, String>() {
             @Override
             public String map(String value) throws Exception {
-                return "小滴课堂：" + value;
+                return "王硕是最棒的：" + value;
             }
         });
 
-        FlinkKafkaProducer<String> producer = new FlinkKafkaProducer<>("flinktopic", new SimpleStringSchema(), props);
-
+        FlinkKafkaProducer<String> producer = new FlinkKafkaProducer<>("xdclass-order", new SimpleStringSchema(), props);
         mapDS.addSink(producer);
         // ending
 
