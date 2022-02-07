@@ -14,14 +14,38 @@ public class UserLogSource implements SourceFunction<UserLog>{
     boolean running = true;
 
     @Override
-    public void run(SourceContext<UserLog> ctx) throws Exception {
+    public void run(SourceContext<UserLog> ctx) throws IOException {
+        String fileName = "data/user_log1.csv";
+        File file = new File(fileName);
+        // 读取文件内容到Stream流中，按行读取
+        Stream<String> lines = Files.lines(Paths.get(fileName));
 
         while (running) {
-            for (int i = 0; i < 10 ; i++) {
-                //ctx.collect(access);
-            }
+            // 按照顺序进行数据处理
+            lines.forEachOrdered(ele -> {
+                String[] line =ele.split(",");
+                String user_id = line[0];
 
-            Thread.sleep(5 * 1000);
+                if( !user_id.equals("user_id")) { //买家id在每行日志代码的第0个元素,去除第一行表头
+                    //System.out.println(ele);
+                    UserLog userLog = new UserLog();
+                    userLog.setUser_id(line[0]);
+                    userLog.setItem_id(line[1]);
+                    userLog.setCat_id(line[2]);
+                    userLog.setMonth(line[5]);
+                    userLog.setDay(line[6]);
+                    userLog.setGender(line[9]);
+
+                    ctx.collect(userLog);
+
+                    try {
+                        Thread.sleep(5 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+            });
         }
     }
 
@@ -30,7 +54,7 @@ public class UserLogSource implements SourceFunction<UserLog>{
         running = false;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         String fileName = "data/user_log1.csv";
         File file = new File(fileName);
 
@@ -44,6 +68,12 @@ public class UserLogSource implements SourceFunction<UserLog>{
 
             if( !user_id.equals("user_id")) { //买家id在每行日志代码的第0个元素,去除第一行表头
                 System.out.println(ele);
+
+                try {
+                    Thread.sleep(1 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
 
         });

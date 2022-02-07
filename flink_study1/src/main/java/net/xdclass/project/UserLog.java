@@ -33,6 +33,8 @@ public class UserLog {
     private String day;
     private String action;
     private String age_range;
+    private String gender;
+    private String province;
 
     @Override
     public String toString() {
@@ -46,7 +48,8 @@ public class UserLog {
                 ", day='" + day + '\'' +
                 ", action='" + action + '\'' +
                 ", age_range='" + age_range + '\'' +
+                ", gender='" + gender + '\'' +
+                ", province='" + province + '\'' +
                 '}';
     }
-
 }
