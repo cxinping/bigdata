@@ -700,11 +700,11 @@ class FullAddProcess(BaseProcess):
         :return:
         """
 
-        # self.exec_step06()
+        self.exec_step06()
 
-        # self.exec_step07()
+        self.exec_step07()
 
-        # self.exec_step08()
+        self.exec_step08()
 
         self.exec_step09()
 
@@ -731,7 +731,7 @@ class IncrementAddProcess(BaseProcess):
 
     def exec_step06(self):
         """
-        执行第五步
+        执行第6步
         6、发票地址hive数据更新到kudu分析表（初始化/增量脚本）
         :return:
         """
@@ -743,7 +743,7 @@ class IncrementAddProcess(BaseProcess):
 
     def exec_step07(self):
         """
-        执行第六步
+        执行第7步
         7、稽查点sql将数据写到kudu落地表（脚本）
         :return:
         """
@@ -782,7 +782,7 @@ class IncrementAddProcess(BaseProcess):
         执行步骤 6,7,8,9
         :return:
         """
-        #self.exec_linshi_daily_data()
+        self.exec_linshi_daily_data()
 
         self.exec_step06()
 
