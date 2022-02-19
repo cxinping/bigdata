@@ -1,0 +1,98 @@
+环境准备
+	JDK: 
+		下载地址：https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+		Mac ：dmg
+		Linux： tar.gz
+		Windows： exe
+
+	Maven
+		官网：maven.apache.org
+		下载地址：https://archive.apache.org/dist/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+		Linux/Mac/Windows：解压
+			tar -zxvf apache-maven-3.3.9-bin.tar.gz -C ~/app
+		conf/setting.xml
+		<localRepository>/Users/rocky/maven_repos</localRepository>
+	
+
+
+Flink开发批处理应用程序
+	需求：词频统计(word count)
+		一个文件，统计文件中每个单词出现的次数
+		分隔符是\t
+		统计结果我们直接打印在控制台（生产上肯定是Sink到目的地）
+	实现：
+		Flink + Java
+			前置条件： Maven 3.0.4 (or higher) and Java 8.x
+
+			第一种创建项目的方式：
+				mvn archetype:generate                               \
+				-DarchetypeGroupId=org.apache.flink              \
+				-DarchetypeArtifactId=flink-quickstart-java      \
+				-DarchetypeVersion=1.7.0 \
+				-DarchetypeCatalog=local
+
+				out of the box：OOTB 开箱即用
+
+			开发流程/开发八股文编程
+				1）set up the batch execution environment
+				2）read
+				3）transform operations  开发的核心所在：开发业务逻辑
+				4）execute program
+
+			功能拆解
+				1）读取数据  
+					hello	welcome
+				2）每一行的数据按照指定的分隔符拆分
+					hello
+					welcome
+				3）为每一个单词赋上次数为1
+					(hello,1)
+					(welcome,1)	
+				4) 合并操作  groupBy	
+
+
+		Flink + Scala
+			前置条件：Maven 3.0.4 (or higher) and Java 8.x 
+
+			mvn archetype:generate                               \
+			-DarchetypeGroupId=org.apache.flink              \
+			-DarchetypeArtifactId=flink-quickstart-scala     \
+			-DarchetypeVersion=1.7.0 \
+			-DarchetypeCatalog=local
+
+		Flink Java vs Scala
+			1) 算子  map  filter  
+			2）简洁性
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,30 @@
+大数据处理的流程：
+	MapReduce：input -> map(reduce) -> output
+	Storm:  input -> Spout/Bolt -> output
+	Spark: input -> transformation/action --> output
+	Flink:  input ->  transformation/sink --> output
+
+
+DataSet and DataStream
+	immutable
+	批处理：DataSet
+	流处理：DataStream
+
+
+Flink编程模型
+	1）获取执行环境
+	2）获取数据
+	3）transformation
+	4）sink
+	5）触发执行
+
+
+
+
+select a.*, b.* from a join b on a.id = b.id
+
+<a1,(a.*)>
+
+<b1,(b.*)>
+
+

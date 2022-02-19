@@ -1,0 +1,189 @@
+项目背景
+aliyun	CN	A	E	[17/Jul/2018:17:07:50 +0800]	2	223.104.18.110	-	112.
+29.213.35:80	0	v2.go2yd.com	GET	http://v1.go2yd.com/user_upload/1531633977627104fdec
+dc68fe7a2c4b96b2226fd3f4c.mp4_bd.mp4	HTTP/1.1	-	bytes 13869056-13885439/25136186	TCP_HIT/206	112.29.213.35	video/mp4	17168	16384	-:0	0	0	-	-	11451601	-	"JSP3/2.0.14"	"-"	"-"	"-"	http	-	2	v1.g
+o2yd.com	0.002	25136186	16384	-	-	-	-	-	-	-	1531818470104-114516
+01-112.29.213.66#2705261172	644514568
+
+aliyun	
+CN 	
+E
+[17/Jul/2018:17:07:50 +0800]
+223.104.18.110
+v2.go2yd.com
+17168
+
+接入的数据类型就是日志
+离线：Flume==>HDFS
+实时：Kafka==>流处理引擎==>ES==>Kibana
+
+
+
+项目功能
+1）统计一分钟内每个域名访问产生的流量
+	Flink接收Kafka的进行处理
+2）统计一分钟内每个用户产生的流量
+	域名和用户是有对应关系的
+	Flink接收Kafka的进行 + Flink读取域名和用户的配置数据  进行处理
+
+数据：Mock  *****
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Mock数据：务必要掌握的
+	数据敏感
+	多团队协作，你依赖了其他团队提供的服务或者接口
+
+	通过Mock的方式往Kafka的broker里面发送数据
+
+	Java/Scala Code：producer
+	kafka控制台消费者：consumer
+
+
+需求：最近一分钟每个域名对应的流量
+
+问题：
+	可以到QQ群或者问答区进行交流，
+	我在群里的，
+	问答区的问题我会用最快的速度答疑
+
+
+
+
+ES部署
+	1） CentOS7.x
+	2） 非root     hadoop
+
+ELK
+
+Kibana部署
+
+
+curl -XPUT 'http://hadoop000:9200/cdn'
+
+curl -H "Content-Type: application/json" -XPOST 'http://hadoop000:9200/cdn/traffic/_mapping?pretty' -d '{
+"traffic":{
+	"properties":{
+		"domain":{"type":"text"},
+		"traffics":{"type":"long"},
+		"time":{"type":"date","format": "yyyy-MM-dd HH:mm"}
+		}
+    }
+}
+'
+
+curl -XDELETE 'hadoop000:9200/cdn'
+
+curl -H "Content-Type: application/json" -XPOST 'http://hadoop000:9200/cdn/traffic/_mapping?pretty' -d '{
+"traffic":{
+	"properties":{
+		"domain":{"type":"keyword"},
+		"traffics":{"type":"long"},
+		"time":{"type":"date","format": "yyyy-MM-dd HH:mm"}
+		}
+    }
+}
+'
+
+
+
+作业：
+1）代码我们都是本地IDEA中运行的，将代码打包，运行在YARN上
+2）把代码中写死的信息(ip port)改成读配置的方式
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+需求：CDN业务
+userid对应多个域名
+
+userid: 8000000
+
+domains:
+	v1.go2yd.com
+	v2.go2yd.com
+	v3.go2yd.com
+	v4.go2yd.com
+	vmi.go2yd.com
+
+
+userid: 8000001
+	test.gifshow.com
+
+用户id和域名的映射关系
+	从日志里能拿到domain，还得从另外一个表(MySQL)里面去获取userid和domain的映射关系
+
+
+CREATE TABLE user_domain_config(
+id int unsigned auto_increment,
+user_id varchar(40) not null,
+domain varchar(40) not null,
+primary key (id)
+);
+
+
+insert into user_domain_config(user_id,domain) values('8000000','v1.go2yd.com');
+insert into user_domain_config(user_id,domain) values('8000000','v2.go2yd.com');
+insert into user_domain_config(user_id,domain) values('8000000','v3.go2yd.com');
+insert into user_domain_config(user_id,domain) values('8000000','v4.go2yd.com');
+insert into user_domain_config(user_id,domain) values('8000000','vmi.go2yd.com');
+
+
+在做实时数据清洗的时候，不仅需要处理raw日志，还需要关联MySQL表里的数据
+
+自定义一个Flink去读MySQL数据的数据源，然后把两个Stream关联起来
+
+
+
+Flink进行数据的清洗
+	读取Kafka的数据
+	读取MySQL的数据
+	connect
+
+	业务逻辑的处理分析：水印 WindowFunction
+	==> ES 注意数据类型  <= Kibana 图形化的统计结果展示
+
+Kibana：各个环节的监控  监控图形化
+
+1 30
+2 40
+3 300
+4 35
+
+我们已经实现的 +  CDN业务文档的描述  ==> 扩展
+
+
+
+
+
+
+
+
+
+

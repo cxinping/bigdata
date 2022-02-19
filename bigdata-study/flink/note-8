@@ -1,0 +1,35 @@
+
+ZooKeeper
+	https://archive.cloudera.com/cdh5/cdh/5/
+
+	ssh hadoop@192.168.199.233
+	1) 从~/software下解压到~/app目录下
+	2) 配置系统环境变量  ~/.bash_profile
+	3) 配置文件  $ZK_HOME/conf.zoo.cfg  dataDir不要放在默认的/tmp下
+	4) 启动ZK   $ZK_HOME/bin/zkServer.sh start
+	5) 检查是否启动成功   jps  QuorumPeerMain
+
+Kafka
+	wget http://mirrors.tuna.tsinghua.edu.cn/apache/kafka/1.1.1/kafka_2.11-1.1.1.tgz
+
+	ssh hadoop@192.168.199.233
+	1) 从~/software下解压到~/app目录下
+	2) 配置系统环境变量  ~/.bash_profile
+	3) 配置文件 $KAFKA_HOME/config/server.properties
+		log.dirs 不要放在默认的/tmp下
+	4) 启动Kafka$KAFKA_HOME/bin/kafka-server-start.sh -daemon /home/hadoop/app/kafka_2.11-1.1.1/config/server.properties 
+	5) 检查是否启动成功 jps Kafka
+	6) 创建topic
+./kafka-topics.sh --create --zookeeper hadoop000:2181 --replication-factor 1 --partitions 1 --topic pktest
+	7) 查看所有的topic
+./kafka-topics.sh --list --zookeeper hadoop000:2181
+	8) 启动生产者
+./kafka-console-producer.sh --broker-list hadoop000:9092 --topic pktest
+	9) 启动消费者
+./kafka-console-consumer.sh --bootstrap-server hadoop000:9092 --topic pktest	
+
+作业：请使用Java语言开发FlinkKafkaConsumer/FlinkKafkaProducer实例
+
+
+
+

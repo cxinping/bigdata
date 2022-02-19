@@ -1,0 +1,14 @@
+Flink版本升级
+	1）代码层面  pom.xml flink.version
+	2) 服务器运行环境的层面
+		standalone   每个服务器都得升级Flink版本
+		yarn         Flink仅仅是作为一个客户端进行作业的提交的
+					只需要在你的Flink作业的提交机器上升级Flink就OK
+	3）Flink的部署包也要升级
+		获取到最新的Flink的源码，然后根据你的Hadoop的版本重新编译就OK
+
+	4）流作业是在7*24运行的，中间的状态如何做好升级呢？
+		https://ci.apache.org/projects/flink/flink-docs-release-1.7/ops/upgrading.html	
+
+
+./bin/flink run -m yarn-cluster -yn 2 -c com.imooc.flink.course04.CounterApp /home/hadoop/lib/flink-train-1.0.jar 

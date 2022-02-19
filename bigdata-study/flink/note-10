@@ -1,0 +1,58 @@
+History Server
+	Hadoop MapReduce
+	Spark 
+	Flink
+
+start/stop-xxx.sh
+	看一下这些脚本的写法
+	shell对于bigdata有用吗？ lower
+
+配置：
+historyserver.web.address: 0.0.0.0
+historyserver.web.port: 8082
+historyserver.archive.fs.refresh-interval: 10000
+
+jobmanager.archive.fs.dir: hdfs://hadoop000:8020/completed-jobs-pk/
+historyserver.archive.fs.dir: hdfs://hadoop000:8020/completed-jobs-pk/
+
+启动：./historyserver.sh start
+
+
+思考：有了HistoryServer之后为什么还需要提供REST API？
+
+
+
+Ganglia
+
+
+
+
+
+Flink中常用的优化策略
+1）资源
+2）并行度
+	默认是1   适当的调整：好几种  ==> 项目实战
+3）数据倾斜
+	100task  98-99跑完了  1-2很慢   ==> 能跑完 、 跑不完
+	group by： 二次聚合
+		random_key  + random
+		key  - random
+	join on xxx=xxx
+		repartition-repartition strategy  大大
+		broadcast-forward strategy  大小
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,124 @@
+Flink的单机部署方式
+	开发/测试
+
+前置条件：
+	JDK8
+	Maven3
+
+
+ssh hadoop@192.168.199.233
+
+通过下载Flink源码进行编译，不是使用直接下载二进制包
+下载到:
+	1）服务器：~/source  wget https://github.com/apache/flink/archive/release-1.7.0.tar.gz
+	2) 本地：https://github.com/apache/flink/archive/release-1.7.0.tar.gz
+
+mvn clean install -DskipTests -Pvendor-repos -Dfast -Dhadoop.version=2.6.0-cdh5.15.1
+
+第一次编译是需要花费很长时间的，因为需要去中央仓库下载flink源码中所有的依赖包
+
+
+Standalone的最简单的方式
+
+./bin/flink run examples/streaming/SocketWindowWordCount.jar --port 9000
+
+./bin/flink # 路径  $FLINK_HOME
+
+
+
+Standalone-分布式
+1） Java 1.8.x or higher
+2） ssh  多个机器之间要互通     Hadoop详细讲解
+	ping hadoop000
+	ping hadoop001
+	ping hadoop002
+
+	JDK
+	Flink  同一个目录  集群里面的机器 部署的目录都是一样
+
+	每个机器需要添加ip和hostname的映射关系
+
+3) conf
+	flink-conf.yaml
+		jobmanager.rpc.address: 10.0.0.1  配置主节点的ip
+
+	jobmanager   主节点
+	taskmanager  从节点
+
+	slaves
+		每一行配置一个ip/host
+
+4）常用配置
+	jobmanager.rpc.address   master节点的地址
+	jobmanager.heap.mb  jobmanager节点可用的内存
+	taskmanager.heap.mb taskmanager节点可用的内存
+	taskmanager.numberOfTaskSlots 每个机器可用的cpu个数
+	parallelism.default   任务的并行度
+	taskmanager.tmp.dirs  taskmanager的临时数据存储目录
+
+
+
+
+扩展或者容错
+
+
+
+
+ON YARN是企业级用的最多的方式  *****
+
+
+-n taskmanager的数量
+-jm jobmanager的内存
+-tm taskmanager的内存
+
+
+./bin/flink run ./examples/batch/WordCount.jar \
+-input hdfs://hadoop000:8020/LICENSE-2.0.txt \
+-output hdfs://hadoop000:8020/wordcount-result.txt
+
+
+./bin/flink run -m yarn-cluster -yn 1 ./examples/batch/WordCount.jar
+
+
+
+作业：
+1） 快速开发一个Flink应用程序
+	Scala&Java
+	批处理&流处理
+
+批处理Scala和批处理Java的Flink作业提交到YARN上去执行，任意YARN模式
+
+2）可选 HA的配置
+https://ci.apache.org/projects/flink/flink-docs-release-1.7/ops/jobmanager_high_availability.html
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

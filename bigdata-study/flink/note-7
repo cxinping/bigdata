@@ -1,0 +1,34 @@
+对于Flink里面的三种时间
+	事件时间  10:30
+	摄取时间  11:00 
+	处理时间  11:30
+
+思考：
+对于流处理来说，你们觉得应该是以哪个时间作为基准时间来进行业务逻辑的处理呢？
+
+幂等性
+
+env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+思考：默认的TimeCharacteristic是什么？
+
+
+窗口分配器：定义如何将数据分配给窗口
+
+A WindowAssigner is responsible for assigning each incoming element to one or more windows
+每个传入的数据分配给一个或者多个窗口
+
+tumbling windows 滚动窗口
+	have a fixed size and do not overlap
+sliding windows  滑动窗口
+	overlapping
+session windows  会话窗口
+global windows   全局窗口
+
+[start timestamp , end timestamp)
+
+
+https://blog.csdn.net/lmalds/article/details/52704170
+
+
+
+
