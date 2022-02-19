@@ -14,11 +14,7 @@ import org.apache.flink.util.Collector;
  * wc统计的数据我们源自于socket
  */
 public class StreamingWCJava02App {
-
-
     public static void main(String[] args) throws Exception {
-
-
         // 获取参数
         int port = 0;
 
@@ -30,14 +26,11 @@ public class StreamingWCJava02App {
             port = 9999;
         }
 
-
         // step1 ：获取执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-
         // step2：读取数据
-        DataStreamSource<String> text = env.socketTextStream("localhost", port);
-
+        DataStreamSource<String> text = env.socketTextStream("192.168.11.12", port);
 
         // step3: transform
         text.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
@@ -51,7 +44,6 @@ public class StreamingWCJava02App {
                 }
             }
         }).keyBy(0).timeWindow(Time.seconds(5)).sum(1).print().setParallelism(1);
-
 
         env.execute("StreamingWCJavaApp");
     }
