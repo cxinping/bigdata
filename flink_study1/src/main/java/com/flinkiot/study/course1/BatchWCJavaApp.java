@@ -7,7 +7,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
 
 /**
- * 使用Java API来开发Flink的批处理应用程序.
+ * 使用Java API来开发Flink的 批处理应用程序.
+ *
  */
 public class BatchWCJavaApp {
     public static void main(String[] args) throws Exception {

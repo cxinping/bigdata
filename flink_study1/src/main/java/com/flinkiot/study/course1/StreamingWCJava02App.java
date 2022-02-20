@@ -9,7 +9,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 
 /**
- * 使用Java API来开发Flink的实时处理应用程序.
+ * 使用Java API来开发Flink的 实时处理应用程序.
  *
  * wc统计的数据我们源自于socket
  */
