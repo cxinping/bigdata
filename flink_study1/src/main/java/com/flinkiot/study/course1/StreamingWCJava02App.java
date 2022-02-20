@@ -5,6 +5,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 
@@ -21,6 +22,7 @@ public class StreamingWCJava02App {
         try {
             ParameterTool tool = ParameterTool.fromArgs(args);
             port = tool.getInt("port");
+            System.out.println("port => " + port);
         } catch (Exception e) {
             System.err.println("端口未设置，使用默认端口9999");
             port = 9999;
@@ -43,7 +45,10 @@ public class StreamingWCJava02App {
                     }
                 }
             }
-        }).keyBy(0).timeWindow(Time.seconds(5)).sum(1).print().setParallelism(1);
+        }).keyBy(0)
+               // .timeWindow(Time.seconds(5))
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
+                .sum(1).print().setParallelism(1);
 
         env.execute("StreamingWCJavaApp");
     }
