@@ -49,7 +49,8 @@ public class StreamingWCJavaApp {
                 }
             }
         }).keyBy(0)
-       // .timeWindow(Time.seconds(5))
+       // .timeWindow(Time.seconds(5)
+       // test
          .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
         .sum(1)
         .print()

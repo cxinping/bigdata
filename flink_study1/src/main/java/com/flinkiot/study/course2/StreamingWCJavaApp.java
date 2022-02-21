@@ -7,6 +7,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple25;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 
@@ -21,10 +22,8 @@ public class StreamingWCJavaApp {
         // step1 ：获取执行环境
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-
         // step2：读取数据
-        DataStreamSource<String> text = env.socketTextStream("localhost", 9999);
-
+        DataStreamSource<String> text = env.socketTextStream("192.168.11.12", 9999);
 
         // step3: transform
 
@@ -46,14 +45,17 @@ public class StreamingWCJavaApp {
               public String getKey(WC wc) throws Exception {
                   return wc.word;
               }
-          }).timeWindow(Time.seconds(5))
+          })
+                //.timeWindow(Time.seconds(5))
+                //test
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
+
                 .sum("count").print()
                 .setParallelism(1);
 
 
         env.execute("StreamingWCJavaApp");
     }
-
 
     public static class MyFlatMapFunction implements FlatMapFunction<String, WC> {
 
