@@ -58,7 +58,6 @@ public class StreamingWCJavaApp {
     }
 
     public static class MyFlatMapFunction implements FlatMapFunction<String, WC> {
-
         @Override
         public void flatMap(String value, Collector<WC> collector) throws Exception {
             String[] tokens = value.toLowerCase().split(",");
