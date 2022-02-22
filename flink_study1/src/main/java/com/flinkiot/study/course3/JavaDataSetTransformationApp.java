@@ -24,9 +24,9 @@ public class JavaDataSetTransformationApp {
 //        mapPartitionFunction(env);
 
 //        firstFunction(env);
-        flatMapFunction(env);
+        //flatMapFunction(env);
 
-//        distinctFunction(env);
+        distinctFunction(env);
 //        joinFunction(env);
 //        outerJoinFunction(env);
 
@@ -124,9 +124,7 @@ public class JavaDataSetTransformationApp {
                 return new Tuple3<Integer, String, String>(first.f0, first.f1, second.f1);
             }
         }).print();
-
     }
-
 
     public static void distinctFunction(ExecutionEnvironment env) throws Exception {
         List<String> info = new ArrayList<String>();
