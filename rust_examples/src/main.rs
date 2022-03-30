@@ -1,6 +1,6 @@
 fn main() {
-    let a = 12;
+    let a = 13;
 
-    println!("a is {}, a again is {}", a, a);
+    println!("a is {0} {0}", a );
 
 }
