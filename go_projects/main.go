@@ -4,13 +4,26 @@ import "fmt"
 
 func main() {
 	/* 创建切片 */
-	numbers := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	//numbers := []int{0, 1, 2, 3, 4, 5, 6, 7, 8}
+	//printSlice(numbers)
+
+	var numbers []int
 	printSlice(numbers)
 
-	/* 打印原始切片 */
-	fmt.Println("numbers ==", numbers)
+	/* 允许追加空切片 */
+	numbers = append(numbers, 0)
+	printSlice(numbers)
 
-	/* 打印子切片从索引1(包含) 到索引4(不包含)*/
-	fmt.Println("numbers[1:4] ==", numbers[1:4])
+	/* 向切片添加一个元素 */
+	numbers = append(numbers, 1)
+	printSlice(numbers)
 
+	/* 同时添加多个元素 */
+	numbers = append(numbers, 2, 3, 4)
+	printSlice(numbers)
+
+}
+
+func printSlice(x []int) {
+	fmt.Printf("len=%d cap=%d slice=%v\n", len(x), cap(x), x)
 }
