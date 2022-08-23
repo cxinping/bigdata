@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = '0_rjmg(%t^=^95%d=vldp-k*x+95kcdqdb6322fnz_t7(y!#sq'
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -70,22 +68,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'study_django.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
     'default':
-    {
-        'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
-        'NAME': 'codebaoku', # 数据库名称
-        'HOST': '192.168.11.11', # 数据库地址，本机 ip 地址 127.0.0.1
-        'PORT': 3306, # 端口
-        'USER': 'xinping',  # 数据库用户名
-        'PASSWORD': '123456', # 数据库密码
-    }
+        {
+            'ENGINE': 'django.db.backends.mysql',  # 数据库引擎
+            'NAME': 'codebaoku',  # 数据库名称
+            'HOST': '192.168.11.11',  # 数据库地址，本机 ip 地址 127.0.0.1
+            'PORT': 3306,  # 端口
+            'USER': 'xinping',  # 数据库用户名
+            'PASSWORD': '123456',  # 数据库密码
+        }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -105,7 +101,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
@@ -118,7 +113,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
