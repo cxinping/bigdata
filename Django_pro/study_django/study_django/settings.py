@@ -80,6 +80,12 @@ DATABASES = {
             'PORT': 3306,  # 端口
             'USER': 'xinping',  # 数据库用户名
             'PASSWORD': '123456',  # 数据库密码
+
+            # 单元测试数据库
+            'TEST': {
+                'NAME': 'test_monitor',  # 测试过程中会生成名字为test的数据库,测试结束后Django会自动删除该数据库
+            }
+
         }
 }
 
