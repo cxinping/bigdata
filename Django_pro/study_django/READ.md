@@ -15,3 +15,10 @@ python3 manage.py migrate app01   # 创建表结构
 python manage.py makemigrations 
 python manage.py migrate
 ```
+
+
+测试url
+```
+http://127.0.0.1:8000/testdb
+
+```
