@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app01',  # 添加此项
 ]
 
 MIDDLEWARE = [
@@ -74,9 +75,14 @@ WSGI_APPLICATION = 'study_django.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    'default':
+    {
+        'ENGINE': 'django.db.backends.mysql',    # 数据库引擎
+        'NAME': 'codebaoku', # 数据库名称
+        'HOST': '192.168.11.11', # 数据库地址，本机 ip 地址 127.0.0.1
+        'PORT': 3306, # 端口
+        'USER': 'xinping',  # 数据库用户名
+        'PASSWORD': '123456', # 数据库密码
     }
 }
 
