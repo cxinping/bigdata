@@ -27,4 +27,6 @@ http://127.0.0.1:8000/testdb
 ```
 celery -A mycelery.main worker -l info -P eventlet
 
+celery -A mycelery.main worker --loglevel=info -P eventlet
+
 ```
