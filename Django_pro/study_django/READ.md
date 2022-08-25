@@ -22,3 +22,9 @@ python manage.py migrate
 http://127.0.0.1:8000/testdb
 
 ```
+
+在django项目下启动Celery的worker
+```
+celery -A mycelery.main worker -l info -P eventlet
+
+```

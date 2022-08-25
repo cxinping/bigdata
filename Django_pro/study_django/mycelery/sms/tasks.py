@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from main import app
+from mycelery.main import app
 import time
 
 
@@ -20,12 +20,3 @@ def send_sms2(mobile):
     time.sleep(5)
 
     return "send_sms2 OK"
-
-# celery -A main worker --loglevel=info
-# celery worker -A study_django.main -l info -P eventlet
-
-# celery -A study_django.main worker --loglevel=info
-
-# 启动Celery的命令
-# 强烈建议切换目录到mycelery根目录下启动
-# celery -A mycelery.main worker --loglevel=info
