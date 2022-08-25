@@ -16,6 +16,15 @@ app.config_from_object("mycelery.config")
 # app.autodiscover_tasks(["任务1","任务2"])
 app.autodiscover_tasks(["mycelery.sms", ])
 
+# 结果序列化方案
+CELERY_RESULT_SERIALIZER = 'json'
+
+# 任务结果过期时间，秒
+CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
+
+# 时区配置
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
 
 # 启动Celery的命令
 # 强烈建议切换目录到mycelery根目录下启动

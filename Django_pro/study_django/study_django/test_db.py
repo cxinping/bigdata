@@ -8,5 +8,6 @@ def testdb(request):
     # person = Person(name='codebaoku', address='北京')
     # person.save()
 
-    send_sms.delay("110")
+    #send_sms.delay("110")
+    send_sms2.delay("13511011231")
     return HttpResponse("<p>数据添加成功！</p>")
