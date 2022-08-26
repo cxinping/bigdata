@@ -24,15 +24,66 @@ export PATH=$PATH:/usr/local/anaconda/bin
 
 ## 创建虚拟环境
 
+​	安装Python3.7的虚拟环境，别名是superset
+
 ```
 conda create --name superset python=3.7
+```
+得到如下信息
+```
+#
+# To activate this environment, use
+#
+#     $ conda activate superset
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+```
 
+​	进入虚拟环境
+
+```
 conda activate superset
 ```
 
- 
+如果抛出异常
+```
+CommandNotFoundError: Your shell has not been properly configured to use 'conda activate'.
+To initialize your shell, run
+
+    $ conda init <SHELL_NAME>
+
+Currently supported shells are:
+  - bash
+  - fish
+  - tcsh
+  - xonsh
+  - zsh
+  - powershell
+
+See 'conda init --help' for more information and options.
+
+IMPORTANT: You may need to close and restart your shell after running 'conda init'.
+```
+
+重新进入虚拟环境
+
+```
+source activate
+```
+
+重新退出虚拟环境
+
+```
+source deactivate
+```
 
 
+
+# 安装PyCharm
+
+​	从https://www.jetbrains.com/pycharm/ 下载PyCharm的Linux安装包 pycharm-community-2022.2.1.tar.gz
 
 
 
