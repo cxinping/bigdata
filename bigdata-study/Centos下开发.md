@@ -8,6 +8,16 @@
 bash Anaconda3-2022.05-Linux-x86_64.sh
 ```
 
+安装在   **/usr/local/anaconda** 目录下
+
+
+
+
+
+
+
+https://wenku.baidu.com/view/141d3d6ff4ec4afe04a1b0717fd5360cba1a8dac.html
+
 
 
 
