@@ -192,7 +192,7 @@ mkdir /packs
 ​	 或 　                        
 
 ```
-pip install  --download ./linux_packs -r requirements.txt
+pip install --download /data/workspace/report/deploy/linux_packs -r requirements.txt
 ```
 
 ​	存放requirements.txt列出的所有包
@@ -214,7 +214,7 @@ pip升级
 
 
 ```
- `pip freeze > requirements123.txt` 
+pip freeze > requirements.txt
 ```
 
 
