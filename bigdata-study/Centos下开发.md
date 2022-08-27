@@ -186,7 +186,10 @@ mkdir /packs
 ​      存放一个pandas包      
 
 ```
- pip install  --download  /packs  pandas
+pip install --download /packs pandas
+
+pip install --download /data/workspace/report/deploy/linux_packs Django
+
 ```
 
 ​	 或 　                        
@@ -195,7 +198,15 @@ mkdir /packs
 pip install --download /data/workspace/report/deploy/linux_packs -r requirements.txt
 ```
 
-​	存放requirements.txt列出的所有包
+
+
+```crystal
+pip install --download /tmp/offline_packages -r requirements.txt
+```
+
+
+
+存放requirements.txt列出的所有包
 
 
 
@@ -219,13 +230,87 @@ pip freeze > requirements.txt
 
 
 
+```
+python -m pip download /data/workspace/report/deploy/linux_packs -r requirements.txt
+```
 
+```
+python -m pip wheel --wheel-dir /data/workspace/report/deploy/linux_packs -r requirements.txt
+```
+
+
+
+## 离线下载安装包
+
+Linux离线下载whl安装包
+
+```
+python -m pip download --destination-directory /data/workspace/report/deploy/linux_packs -r requirements.txt
+```
+
+Windows离线下载whl安装包
+
+```
+py -m pip download --destination-directory /data/workspace/report/deploy/linux_packs -r requirements.txt
+```
+
+
+
+## Installing from local packages
+
+In some cases, you may want to install from local packages only, with no traffic to PyPI.
+
+First, download the archives that fulfill your requirements:
+
+ **Unix/macOS** 
+
+```
+python -m pip download --destination-directory DIR -r requirements.txt
+```
+
+ **Windows** 
+
+```
+py -m pip download --destination-directory DIR -r requirements.txt
+```
+
+ Note that `pip download` will look in your wheel cache first, before trying to download from PyPI. If you’ve never installed your requirements before, you won’t have a wheel cache for those items. In that case, if some of your requirements don’t come as wheels from PyPI, and you want wheels, then run this instead: 
+
+ **Unix/macOS** 
+
+```
+python -m pip wheel --wheel-dir DIR -r requirements.txt
+```
+
+**Windows** 
+
+```
+py -m pip wheel --wheel-dir DIR -r requirements.txt
+```
+
+ Then, to install from local only, you’ll be using [--find-links](https://pip.pypa.io/en/stable/cli/pip_install/#install-find-links) and [--no-index](https://pip.pypa.io/en/stable/cli/pip_install/#install-no-index) like so: 
+
+ **Unix/macOS** 
+
+```
+python -m pip install --no-index --find-links=DIR -r requirements.txt
+```
+
+ **Windows** 
+
+```
+py -m pip install --no-index --find-links=DIR -r requirements.txt
+```
 
 
 
 参考资料
 
 ```
+https://pip.pypa.io/en/stable/user_guide/#installing-from-local-packages
+
+
+
 http://t.zoukankan.com/wt11-p-6216508.html
 ```
 
