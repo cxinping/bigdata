@@ -120,13 +120,25 @@ sh pycharm.sh
 
 
 
-django开发
+# django开发
 
-安装django
+# 安装django
 
 ```
 pip install django==3.2
 ```
+
+
+
+## 创建模块
+
+```mel
+python manage.py startapp article
+
+python manage.py startapp export
+```
+
+
 
 
 
