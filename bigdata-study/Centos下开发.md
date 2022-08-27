@@ -213,25 +213,27 @@ pip升级
 
 ```
  pip install --upgrade pip  
-```
 
-
-
-```
 pip freeze > requirements.txt
-```
 
-```
 python -m pip download /data/workspace/report/deploy/linux_packs -r requirements.txt
-```
 
-```
 python -m pip wheel --wheel-dir /data/workspace/report/deploy/linux_packs -r requirements.txt
 ```
 
 
 
 ## 离线下载安装包
+
+
+
+```
+cd  /data/workspace/report/deploy
+
+pip freeze > requirements.txt  
+```
+
+
 
 Linux离线下载whl安装包
 
@@ -254,13 +256,10 @@ Linux安装下载whl安装包
 ```
 python -m pip install --no-index --find-links=DIR -r requirements.txt
 
-
 cd /data/workspace/report/deploy
 
 python -m pip install --no-index --find-links=/data/workspace/report/deploy/linux_packs -r requirements.txt
 ```
-
-
 
 
 
@@ -309,6 +308,8 @@ python -m pip install --no-index --find-links=DIR -r requirements.txt
 ```
 py -m pip install --no-index --find-links=DIR -r requirements.txt
 ```
+
+
 
 
 
