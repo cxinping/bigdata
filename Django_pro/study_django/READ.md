@@ -30,3 +30,6 @@ celery -A mycelery.main worker -l info -P eventlet
 celery -A mycelery.main worker --loglevel=info -P eventlet
 
 ```
+
+python3 manage.py makemigrations 
+python3 manage.py migrate
