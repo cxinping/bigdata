@@ -189,7 +189,6 @@ mkdir /packs
 pip install --download /packs pandas
 
 pip install --download /data/workspace/report/deploy/linux_packs Django
-
 ```
 
 ​	 或 　                        
@@ -198,17 +197,11 @@ pip install --download /data/workspace/report/deploy/linux_packs Django
 pip install --download /data/workspace/report/deploy/linux_packs -r requirements.txt
 ```
 
-
-
 ```crystal
 pip install --download /tmp/offline_packages -r requirements.txt
 ```
 
-
-
 存放requirements.txt列出的所有包
-
-
 
 如果出现异常 pip no such option: --download，需要对pip指定版本， 将pip版本设置为20.2.4 
 
@@ -227,8 +220,6 @@ pip升级
 ```
 pip freeze > requirements.txt
 ```
-
-
 
 ```
 python -m pip download /data/workspace/report/deploy/linux_packs -r requirements.txt
@@ -253,6 +244,23 @@ Windows离线下载whl安装包
 ```
 py -m pip download --destination-directory /data/workspace/report/deploy/linux_packs -r requirements.txt
 ```
+
+
+
+## 离线安装安装包
+
+Linux安装下载whl安装包
+
+```
+python -m pip install --no-index --find-links=DIR -r requirements.txt
+
+
+cd /data/workspace/report/deploy
+
+python -m pip install --no-index --find-links=/data/workspace/report/deploy/linux_packs -r requirements.txt
+```
+
+
 
 
 
