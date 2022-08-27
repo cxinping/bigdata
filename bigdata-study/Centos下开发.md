@@ -106,6 +106,49 @@ sh pycharm.sh
 
 
 
+打开xmanager ,  设置安全隧道
+
+![](https://images.cnblogs.com/cnblogs_com/wangshuo1/1613306/o_220827030525_%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20220827110427.png)
+
+
+
+​	然后打开 xshell, 进入到 /usr/local/pycharm ，输入命令
+
+```
+sh pycharm.sh
+```
+
+
+
+django开发
+
+安装django
+
+```
+pip install django==3.2
+```
+
+
+
+# 开发技巧
+
+## 清理yum数据源
+
+
+
+```
+yum clean
+yum makecache
+```
+
+
+
+##  源机器导出依赖包 
+
+```
+ `pip freeze > requirements123.txt` 
+```
+
 
 
 
