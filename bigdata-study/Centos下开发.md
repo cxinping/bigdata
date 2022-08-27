@@ -177,17 +177,25 @@ pip list #查看安装的包
 pip freeze > requirements.txt  
 ```
 
+​		创建存放安装包的目录：
 
+```
+mkdir /packs        
+```
 
-创建存放安装包的目录：
+​      存放一个pandas包      
 
-mkdir /packs                           
+```
+ pip install  --download  /packs  pandas
+```
 
- pip install  --download  /packs  pandas(存放一个pandas包)                              
+​	 或 　                        
 
-或 　                        
+```
+pip install  --download ./linux_packs -r requirements.txt
+```
 
-pip install  --download  /packs -r requirements.txt（存放requirements.txt列出的所有包）
+​	存放requirements.txt列出的所有包
 
 
 
@@ -195,6 +203,12 @@ pip install  --download  /packs -r requirements.txt（存放requirements.txt列�
 
 ```
  pip install pip==20.2.4
+```
+
+pip升级
+
+```
+ pip install --upgrade pip  
 ```
 
 
