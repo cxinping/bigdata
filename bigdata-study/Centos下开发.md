@@ -96,15 +96,19 @@ mv pycharm-community-2022.2.1 pycharm
 
 cd /pycharm/bin
 
+启动PyCharm
 sh pycharm.sh
 ```
 
 
 
+# 安装 xmanager 
 
 
 
 
 
 
-https://blog.csdn.net/qq_29414125/article/details/120322290
+
+
+
