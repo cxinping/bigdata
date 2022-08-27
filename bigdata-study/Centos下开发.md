@@ -142,6 +142,12 @@ python manage.py startapp export
 
 
 
+
+
+
+
+
+
 # 开发技巧
 
 ## 清理yum数据源
@@ -155,7 +161,43 @@ yum makecache
 
 
 
-##  源机器导出依赖包 
+##  Python导出离线安装包 
+
+
+
+​	 下载指定的包到指定文件夹。      
+
+```
+pip list #查看安装的包  
+```
+
+​    	将已经通过pip安装的包的名称记录到 requirements.txt文件中      
+
+```
+pip freeze > requirements.txt  
+```
+
+
+
+创建存放安装包的目录：
+
+mkdir /packs                           
+
+ pip install  --download  /packs  pandas(存放一个pandas包)                              
+
+或 　                        
+
+pip install  --download  /packs -r requirements.txt（存放requirements.txt列出的所有包）
+
+
+
+如果出现异常 pip no such option: --download，需要对pip指定版本， 将pip版本设置为20.2.4 
+
+```
+ pip install pip==20.2.4
+```
+
+
 
 ```
  `pip freeze > requirements123.txt` 
@@ -166,4 +208,10 @@ yum makecache
 
 
 
+
+参考资料
+
+```
+http://t.zoukankan.com/wt11-p-6216508.html
+```
 
