@@ -87,7 +87,24 @@ source deactivate
 
 
 
+```
+mv pycharm-community-2022.2.1.tar.gz /usr/local
+
+tar zxvf pycharm-community-2022.2.1.tar.gz 
+
+mv pycharm-community-2022.2.1 pycharm
+
+cd /pycharm/bin
+
+sh pycharm.sh
+```
 
 
 
 
+
+
+
+
+
+https://blog.csdn.net/qq_29414125/article/details/120322290
