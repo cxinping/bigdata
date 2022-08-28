@@ -309,9 +309,6 @@ pip install --no-index --find-links="D:/BI/report/deploy/win_packs" python-docx
 
 pip install --no-index --find-links="D:/BI/report/deploy/win_packs" docx2pdf
   
- 
- 
- 
 ```
 
 
