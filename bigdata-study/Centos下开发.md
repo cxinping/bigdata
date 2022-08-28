@@ -156,12 +156,6 @@ python manage.py startapp export
 
 
 
-
-
-
-
-
-
 # 开发技巧
 
 ## 清理yum数据源
