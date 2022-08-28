@@ -262,8 +262,20 @@ pip install --download D:/BI/report/deploy/win_packs -r requirements.txt
 ```
 pip  download  Pillow   -d .  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
 
-
+根据需要下载单个模块
 pip download Django -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+pip download PyMySQL -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+pip download openpyxl -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+pip download Pillow -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+pip download python-docx -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+pip download docx2pdf -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+
 ```
 
 
