@@ -228,7 +228,8 @@ python -m pip wheel --wheel-dir /data/workspace/report/deploy/linux_packs -r req
 
 
 ```
-cd  /data/workspace/report/deploy
+cd /data/workspace/report/deploy
+cd D:\BI\report\deploy
 
 pip freeze > requirements.txt  
 ```
@@ -239,13 +240,39 @@ Linux离线下载whl安装包
 
 ```
 python -m pip download --destination-directory /data/workspace/report/deploy/linux_packs -r requirements.txt
+
 ```
 
 Windows离线下载whl安装包
 
 ```
-py -m pip download --destination-directory /data/workspace/report/deploy/linux_packs -r requirements.txt
+D:\work_software\anaconda\envs\report\python.exe -m pip install --upgrade pip
+
+
+py -m pip download --destination-directory D:/BI/report/deploy/win_packs -r requirements.txt
+
+pip install --download D:/BI/report/deploy/win_packs -r requirements.txt
+
 ```
+
+
+
+安装单个模块
+
+```
+pip  download  Pillow   -d .  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+
+pip download Django -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+```
+
+
+
+
+
+
+
+
 
 
 
