@@ -28,6 +28,8 @@ export PATH=$PATH:/usr/local/anaconda/bin
 
 ```
 conda create --name superset python=3.7
+
+conda create --name report python=3.7
 ```
 得到如下信息
 ```
@@ -79,6 +81,18 @@ source activate
 source deactivate
 ```
 
+删除虚拟环境
+
+```
+conda remove -n your_env_name --all
+
+conda remove -n report --all
+```
+
+
+
+
+
 
 
 # 安装PyCharm
@@ -102,7 +116,7 @@ sh pycharm.sh
 
 
 
-# 安装 xmanager 
+# 安装 Xmanager 
 
 
 
@@ -274,8 +288,30 @@ pip download Pillow -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban
 pip download python-docx -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
 
 pip download docx2pdf -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+```
 
 
+
+安装单个模块
+
+```
+pip install --no-index --find-links="/tmp/tranferred_packages" <package> 
+ 
+pip install --no-index --find-links="D:/BI/report/deploy/win_packs" Django
+ 
+pip install --no-index --find-links="D:/BI/report/deploy/win_packs" PyMySQL
+ 
+pip install --no-index --find-links="D:/BI/report/deploy/win_packs" openpyxl
+
+pip install --no-index --find-links="D:/BI/report/deploy/win_packs" Pillow
+
+pip install --no-index --find-links="D:/BI/report/deploy/win_packs" python-docx
+
+pip install --no-index --find-links="D:/BI/report/deploy/win_packs" docx2pdf
+  
+ 
+ 
+ 
 ```
 
 
@@ -355,9 +391,9 @@ py -m pip install --no-index --find-links=DIR -r requirements.txt
 参考资料
 
 ```
+https://blog.csdn.net/qq_34218221/article/details/90243121
+
 https://pip.pypa.io/en/stable/user_guide/#installing-from-local-packages
-
-
 
 http://t.zoukankan.com/wt11-p-6216508.html
 ```
