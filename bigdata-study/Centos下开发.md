@@ -282,6 +282,8 @@ pip download Pillow -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban
 pip download python-docx -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
 
 pip download docx2pdf -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
+
+pip download pip -d D:/BI/report/deploy/win_packs  --trusted-host pypi.douban.com -i http://pypi.douban.com/simple
 ```
 
 

@@ -4,6 +4,6 @@ import "fmt"
 
 func main() {
 
-	fmt.Printf("bbbb")
+	fmt.Printf("aaa")
 
 }
