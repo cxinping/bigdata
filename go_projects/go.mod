@@ -1,3 +1,3 @@
-module ioaio.com/ccmouse/learngo
+module ioaio.com/learngo
 
-go 1.16
+go 1.01
