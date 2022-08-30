@@ -1,3 +1,3 @@
 module ioaio.com/learngo
 
-go 1.01
+go 1.23
