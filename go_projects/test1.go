@@ -16,7 +16,21 @@ func variableInitValue() {
 	fmt.Println(a, b, s)
 }
 
+func variableTypeDuction() {
+	var a, b, c, s = 3, 4, true, "def"
+	fmt.Println(a, b, c, s)
+}
+
+func variableShorter() {
+	a, b, c, s := 3, 4, true, "def"
+	b = 5
+	fmt.Println(a, b, c, s)
+}
+
 func main() {
 	//variableZeroValue()
-	variableInitValue()
+	//variableInitValue()
+	//variableTypeDuction()
+	variableShorter()
+
 }
