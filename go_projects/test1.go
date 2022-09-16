@@ -16,7 +16,6 @@ func variableZeroValue() {
 	var a int
 	var s string
 	fmt.Printf("%d %q\n", a, s)
-
 }
 
 func variableInitValue() {
