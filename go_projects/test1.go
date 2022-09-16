@@ -2,6 +2,16 @@ package main
 
 import "fmt"
 
+//var aa = 3
+//var ss = "kkk"
+//var bb = true
+
+var (
+	aa = 3
+	ss = "kkk"
+	bb = true
+)
+
 func variableZeroValue() {
 	var a int
 	var s string
@@ -32,5 +42,5 @@ func main() {
 	//variableInitValue()
 	//variableTypeDuction()
 	variableShorter()
-
+	fmt.Println(aa, ss, bb)
 }
