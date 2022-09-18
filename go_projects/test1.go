@@ -36,10 +36,10 @@ func variableShorter() {
 	fmt.Println(a, b, c, s)
 }
 
-func main() {
-	//variableZeroValue()
-	//variableInitValue()
-	//variableTypeDuction()
-	variableShorter()
-	fmt.Println(aa, ss, bb)
-}
+//func main() {
+//	//variableZeroValue()
+//	//variableInitValue()
+//	//variableTypeDuction()
+//	variableShorter()
+//	fmt.Println(aa, ss, bb)
+//}
