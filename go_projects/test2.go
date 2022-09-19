@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	const filename = "D:\\test5\\abc.txt"
+	const filename = "abc.txt"
 	contents, err := ioutil.ReadFile(filename)
 	if err != nil {
 		fmt.Println(err)
