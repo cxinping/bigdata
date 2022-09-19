@@ -1,13 +1,12 @@
 package main
 
-import (
-	"fmt"
-	"math"
+import "fmt"
+
+const (
+	filename = "abc.txt"
+	a, b     = 3, 4
 )
 
 func main() {
-	var a, b int = 3, 4
-	var c int
-	c = int(math.Sqrt(float64(a*a) + float64(b*b)))
-	fmt.Println(c)
+	fmt.Println(filename, a, b)
 }
