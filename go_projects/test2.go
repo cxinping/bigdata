@@ -1,12 +1,16 @@
 package main
 
-import "fmt"
-
-const (
-	filename = "abc.txt"
-	a, b     = 3, 4
+import (
+	"fmt"
+	"io/ioutil"
 )
 
 func main() {
-	fmt.Println(filename, a, b)
+	const filename = "D:\\test5\\abc.txt"
+	contents, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Printf("%s\n", contents)
+	}
 }
