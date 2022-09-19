@@ -1,14 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 func main() {
-	var temp string
-	temp = `
-	aaa
-	bbb
-	`
-
-	fmt.Println(temp)
-
+	var a, b int = 3, 4
+	var c int
+	c = int(math.Sqrt(float64(a*a) + float64(b*b)))
+	fmt.Println(c)
 }
