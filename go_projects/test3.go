@@ -2,23 +2,14 @@ package main
 
 import "fmt"
 
-func pass_va_val(a int) {
-	a++
-}
-
-func pass_va_ref(a *int) {
-	*a++
-}
-
-var a int = 20 /* 声明实际变量 */
 func main() {
-	//pass_va_val(a)
-	pass_va_ref(&a)
-	fmt.Printf("a=%d", a)
-	//var pa *int = &a
-	//
-	//fmt.Println(a, *pa)
-	//*pa = 5
-	//fmt.Println(a, *pa)
+	//cache := make(map[string]string)
+	//cache["name"] = "wangwu"
+	//fmt.Println(cache["name"])
+
+	var arr1 [5]int
+	arr2 := [3]int{1, 3, 5}
+	arr3 := [...]int{2, 4, 6, 8, 10}
+	fmt.Println(arr1, arr2, arr3)
 
 }
