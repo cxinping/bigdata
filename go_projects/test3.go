@@ -11,4 +11,8 @@ func main() {
 	fmt.Println(arr1, arr2, arr3)
 	fmt.Println(grid)
 
+	for i, v := range arr3 {
+		fmt.Println(i, v, arr3[i])
+	}
+
 }
