@@ -50,4 +50,5 @@ func main() {
 
 	aaa.Hello()
 	fmt.Println(aaa.Add(1, 2))
+	fmt.Println(aaa.Name)
 }
