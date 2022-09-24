@@ -17,6 +17,13 @@ func demo1() {
 	fmt.Printf("i的地址： %p %p \n", &i, &j)
 }
 
+func demo2() {
+	fmt.Println(1/2, 1.0/2.0)
+
+	var nums = [...]int{1, 2, 3}
+	fmt.Println(nums)
+}
+
 var (
 	userName  string = "xinping"
 	password  string = "123456"
@@ -37,5 +44,7 @@ func main() {
 
 	//demo1()
 
-	test_db()
+	//test_db()
+
+	demo2()
 }
