@@ -48,7 +48,8 @@ func main() {
 
 	//demo2()
 
-	aaa.Hello()
-	fmt.Println(aaa.Add(1, 2))
-	fmt.Println(aaa.Name)
+	//aaa.Hello()
+	//fmt.Println(aaa.Add(1, 2))
+	//fmt.Println(aaa.Name)
+	aaa.Arr1()
 }
