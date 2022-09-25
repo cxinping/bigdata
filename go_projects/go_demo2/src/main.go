@@ -67,5 +67,6 @@ func main() {
 
 	//aaa.Test_error_demo1()
 
-	aaa.Test_type()
+	//aaa.Test_type()
+	aaa.File_demo1()
 }
