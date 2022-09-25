@@ -24,3 +24,8 @@ func FunA() {
 	fmt.Println("这是funcA end")
 
 }
+
+func Test_type() {
+	var str string = "abc"
+	fmt.Printf("%T", str)
+}

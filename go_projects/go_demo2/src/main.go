@@ -65,5 +65,7 @@ func main() {
 	//aaa.Test_interface2()
 	//aaa.FunA()
 
-	aaa.Test_error_demo1()
+	//aaa.Test_error_demo1()
+
+	aaa.Test_type()
 }
