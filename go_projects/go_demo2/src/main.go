@@ -62,6 +62,8 @@ func main() {
 
 	//接口测试用例
 	//aaa.Test_interface1()
-	aaa.Test_interface2()
+	//aaa.Test_interface2()
+	//aaa.FunA()
 
+	aaa.Test_error_demo1()
 }
