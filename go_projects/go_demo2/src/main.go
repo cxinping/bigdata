@@ -53,5 +53,6 @@ func main() {
 	//fmt.Println(aaa.Name)
 	//aaa.Arr1()
 
-	aaa.Arr2()
+	//aaa.Arr2()
+	aaa.Slice1()
 }
