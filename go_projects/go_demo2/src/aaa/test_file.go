@@ -5,6 +5,7 @@ import (
 	"os"
 )
 
-func File_demo1() {
+func FileDemo1() {
 	fmt.Println(os.ModePerm)
+	fmt.Printf("%p", os.ModePerm)
 }
