@@ -1,6 +1,9 @@
 package aaa
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+)
 
 func Arr1() {
 	nums := []int{0, 1, 2}
@@ -29,7 +32,7 @@ func Slice1() {
 func Arr3() {
 	a := [4]float64{167.7, 59.8, 78}
 	b := []int{2, 3, 4}
-	fmt.Printf("变量a 地址: %p, 类型: %T, 数值: %v, 长度 %d \n", &a, a, a, len(a))
+	fmt.Printf("变量a 地址: %p, 类型: %T, 数值: %v, 长度 %d ，容量 %d \n", &a, a, a, len(a), cap(a))
 	fmt.Printf("变量b 地址: %p, 类型: %T, 数值: %v, 长度 %d \n", &b, b, b, len(b))
 
 	c := a
@@ -40,4 +43,19 @@ func Arr3() {
 	d[0] = 100
 	fmt.Println("b=", b, ",d=", d)
 
+}
+
+func Arr4() {
+	var sa []string
+	//sa := make([]string, 0, 20)
+	printSliceMg(sa)
+	for i := 0; i < 25; i++ {
+		sa = append(sa, strconv.Itoa(i))
+		printSliceMg(sa)
+	}
+
+}
+
+func printSliceMg(sa []string) {
+	fmt.Printf("addr:%p\t len:%v\t cap:%d\t value:%v \n", sa, len(sa), cap(sa), sa)
 }

@@ -54,5 +54,9 @@ func main() {
 	//aaa.Arr1()
 
 	//aaa.Arr2()
-	aaa.Slice1()
+	//aaa.Slice1()
+
+	//aaa.Arr3()
+	aaa.Arr4()
+
 }
