@@ -22,7 +22,6 @@ func Slice1() {
 
 	fmt.Printf("arr0 %T \n", arr0)
 	fmt.Printf("s01 %T \n", s01)
-
 	fmt.Println(cap(s01), len(s01), s01, ",s01[5]=", s01[5])
 
 }
