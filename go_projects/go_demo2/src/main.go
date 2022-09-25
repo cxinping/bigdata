@@ -57,6 +57,7 @@ func main() {
 	//aaa.Slice1()
 
 	//aaa.Arr3()
-	aaa.Arr4()
+	//aaa.Arr4()
+	aaa.Test_struct1()
 
 }
