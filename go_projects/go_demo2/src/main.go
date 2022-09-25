@@ -61,5 +61,7 @@ func main() {
 	//aaa.Test_struct1()
 
 	//接口测试用例
-	aaa.Test_interface1()
+	//aaa.Test_interface1()
+	aaa.Test_interface2()
+
 }

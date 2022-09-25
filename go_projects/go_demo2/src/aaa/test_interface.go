@@ -23,3 +23,11 @@ func Test_interface1() {
 	fmt.Printf("%T, %v, %p \n", phone, phone, &phone)
 	phone.call()
 }
+
+func Test_interface2() {
+	pi := 3.14159
+	// 按数值本身的格式输出
+	variant := fmt.Sprintf("%v %v %v", "月球基地", pi, true)
+	fmt.Println(variant)
+	fmt.Printf("%p", variant)
+}
