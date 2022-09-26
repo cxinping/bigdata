@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aaa"
 	"fmt"
 )
 
@@ -52,4 +53,6 @@ func main() {
 	///aaa.FileDemo1()
 
 	//aaa.TestConnDB()
+
+	aaa.MapToJson()
 }
