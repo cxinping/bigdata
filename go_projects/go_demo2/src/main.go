@@ -2,7 +2,6 @@ package main
 
 import (
 	"aaa"
-	"database/sql"
 	"fmt"
 )
 
@@ -24,27 +23,10 @@ func demo2() {
 	fmt.Println(nums)
 }
 
-var (
-	userName  string = "xinping"
-	password  string = "123456"
-	ipAddrees string = "192.168.11.11"
-	port      int    = 3306
-	dbName    string = "codebaoku"
-	charset   string = "utf8"
-)
-
-func test_db() {
-	db, err := sql.Open("mysql", "xinping:123456@/codebaoku?charset=utf8")
-	fmt.Println(db, err)
-
-}
-
 func main() {
 	//fmt.Println("hello world 222")
 
 	//demo1()
-
-	//test_db()
 
 	//demo2()
 
@@ -68,5 +50,7 @@ func main() {
 	//aaa.Test_error_demo1()
 
 	//aaa.Test_type()
-	aaa.FileDemo1()
+	///aaa.FileDemo1()
+
+	aaa.TestConnDB()
 }
