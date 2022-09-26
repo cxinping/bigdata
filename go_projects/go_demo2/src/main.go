@@ -1,7 +1,6 @@
 package main
 
 import (
-	"aaa"
 	"fmt"
 )
 
@@ -52,5 +51,5 @@ func main() {
 	//aaa.Test_type()
 	///aaa.FileDemo1()
 
-	aaa.TestConnDB()
+	//aaa.TestConnDB()
 }
