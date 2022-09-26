@@ -7,5 +7,5 @@ import (
 
 func FileDemo1() {
 	fmt.Println(os.ModePerm)
-	fmt.Printf("%p", os.ModePerm)
+	fmt.Printf("%P ,%T", os.ModePerm, os.ModePerm)
 }
