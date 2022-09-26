@@ -13,10 +13,15 @@ func Hello() {
 }
 
 func Test_str1() {
-	str := `
-		aaa
-		bbb
-	`
-	fmt.Println(str, len(str))
+	//str := `
+	//	aaa
+	//	bbb
+	//`
+	//fmt.Println(str, len(str))
+
+	// 字符
+	var a byte = 'a'
+	var b rune = '-'
+	fmt.Println(a, b)
 
 }
