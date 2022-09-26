@@ -54,5 +54,7 @@ func main() {
 
 	//aaa.TestConnDB()
 
-	aaa.MapToJson()
+	//aaa.MapToJson()
+
+	aaa.Test_str1()
 }

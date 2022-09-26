@@ -11,3 +11,12 @@ func Add(a int, b int) int {
 func Hello() {
 	fmt.Println("hello world")
 }
+
+func Test_str1() {
+	str := `
+		aaa
+		bbb
+	`
+	fmt.Println(str, len(str))
+
+}
