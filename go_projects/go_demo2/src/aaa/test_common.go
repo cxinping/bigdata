@@ -58,3 +58,11 @@ func Test_pointer1() {
 	fmt.Printf("ptr 的值为 %d %P \n", *ptr, *ptr)
 
 }
+
+var global_name = "wangwu"
+
+func Test_global1() {
+	fmt.Println(global_name)
+	global_name = "lisi"
+	fmt.Println(global_name)
+}

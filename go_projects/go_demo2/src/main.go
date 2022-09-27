@@ -57,5 +57,7 @@ func main() {
 	//aaa.MapToJson()
 
 	//aaa.Test_str1()
-	aaa.Test_pointer1()
+	//aaa.Test_pointer1()
+	aaa.Test_global1()
+
 }
