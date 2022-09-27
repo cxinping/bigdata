@@ -5,9 +5,23 @@ import (
 	"strconv"
 )
 
-func Arr1() {
-	nums := []int{0, 1, 2}
-	fmt.Println("nums=", nums, len(nums), cap(nums))
+func TestArr1() {
+	a := [...]int{1, 2, 3}
+	//fmt.Printf("%d %v \n", a, a)
+
+	b := a
+	b[0] = 10
+	fmt.Println(a, b)
+
+	c := [3]int{1, 1, 1}
+	changeArr(c)
+	fmt.Printf("%v %T", c, c)
+	//nums := []int{0, 1, 2}
+	//fmt.Println("nums=", nums, len(nums), cap(nums))
+}
+
+func changeArr(arr [3]int) {
+	arr[0] = 100
 }
 
 func Arr2() {
@@ -45,12 +59,14 @@ func Arr3() {
 
 }
 
-func Arr4() {
+func TestSlice1() {
+	//测试切片
 	var sa []string
 	//sa := make([]string, 0, 20)
 	printSliceMg(sa)
 	for i := 0; i < 25; i++ {
 		sa = append(sa, strconv.Itoa(i))
+		//sa = append(sa, "abc")
 		printSliceMg(sa)
 	}
 
@@ -58,4 +74,17 @@ func Arr4() {
 
 func printSliceMg(sa []string) {
 	fmt.Printf("addr:%p\t len:%v\t cap:%d\t value:%v \n", sa, len(sa), cap(sa), sa)
+}
+
+func TestMap1() {
+	var country = map[string]string{
+		"China": "bj",
+		"Japan": "tokyo",
+	}
+
+	country2 := country
+	fmt.Println(country, country2)
+	country2["China"] = "xian"
+	fmt.Println(country, country2)
+
 }

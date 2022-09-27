@@ -33,10 +33,13 @@ func main() {
 	//aaa.Hello()
 	//fmt.Println(aaa.Add(1, 2))
 	//fmt.Println(aaa.Name)
-	//aaa.Arr1()
 
+	//测试数组
+	//aaa.TestArr1()
 	//aaa.Arr2()
 	//aaa.Slice1()
+	//aaa.TestSlice1()
+	aaa.TestMap1()
 
 	//aaa.Arr3()
 	//aaa.Arr4()
@@ -77,7 +80,7 @@ func main() {
 	//aaa.TestFilter1()
 	//aaa.TestFunc4()
 	//aaa.TestPointer1()
-	aaa.TestPointer2()
+	//aaa.TestPointer2()
 
 	//aaa.TestWeb1()
 }
