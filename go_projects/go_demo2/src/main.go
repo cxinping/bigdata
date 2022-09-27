@@ -1,7 +1,6 @@
 package main
 
 import (
-	"aaa"
 	"fmt"
 )
 
@@ -63,7 +62,18 @@ func main() {
 	//aaa.Test_switch1()
 	//aaa.Test_for1()
 
-	_, a := aaa.Test_func1()
-	fmt.Println(a)
+	//_, a := aaa.Test_func1()
+	//fmt.Println(a)
+	//aaa.TestFunc2()
 
+	//rst := aaa.TestFunAdd(3, 4)
+	//fmt.Println(rst)
+	//fmt.Printf("rst的数据类型是 %T", rst)
+
+	//rst := aaa.TestFunc3("abcdef")
+	//fmt.Printf("%P", rst)
+
+	//aaa.TestFilter1()
+
+	//aaa.TestWeb1()
 }
