@@ -74,7 +74,9 @@ func main() {
 	//rst := aaa.TestFunc3("abcdef")
 	//fmt.Printf("%P", rst)
 
-	aaa.TestFilter1()
+	//aaa.TestFilter1()
+	//aaa.TestFunc4()
+	aaa.TestPointer1()
 
 	//aaa.TestWeb1()
 }

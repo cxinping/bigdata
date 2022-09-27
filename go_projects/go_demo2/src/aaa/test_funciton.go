@@ -75,3 +75,27 @@ func TestFilter1() {
 
 	fmt.Printf("%v", even)
 }
+
+func TestFunc4() {
+	sum, avg, count := GetScore(90, 82.5, 73, 64.8)
+	fmt.Println(sum, avg, count)
+}
+
+func GetScore(scores ...float64) (sum, avg float64, count int) {
+	for _, value := range scores {
+		sum += value
+		count++
+	}
+	avg = sum / float64(count)
+	return sum, avg, count
+}
+
+func TestPointer1() {
+	var a int = 20
+	var ip *int
+	ip = &a
+	fmt.Printf("a=%d \n", a)
+	fmt.Printf("ip=%v %t \n", ip, ip)
+	fmt.Println(a, &a, *&a)
+
+}
