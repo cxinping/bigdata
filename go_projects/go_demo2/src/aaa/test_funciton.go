@@ -99,3 +99,14 @@ func TestPointer1() {
 	fmt.Println(a, &a, *&a)
 
 }
+
+func TestPointer2() {
+	a := [3]int{1, 2, 3}
+	fmt.Printf("a=%v , %p , %T \n", a, a, a)
+	changeSliceValue(a)
+	fmt.Printf("a=%v , %p , %T \n", a, a, a)
+}
+
+func changeSliceValue(a [3]int) {
+	a[0] = 99
+}

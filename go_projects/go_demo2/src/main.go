@@ -76,7 +76,8 @@ func main() {
 
 	//aaa.TestFilter1()
 	//aaa.TestFunc4()
-	aaa.TestPointer1()
+	//aaa.TestPointer1()
+	aaa.TestPointer2()
 
 	//aaa.TestWeb1()
 }
