@@ -61,6 +61,7 @@ func main() {
 	///aaa.Test_global1()
 
 	//aaa.Test_switch1()
-	aaa.Test_for1()
+	//aaa.Test_for1()
+	aaa.Test_func1()
 
 }
