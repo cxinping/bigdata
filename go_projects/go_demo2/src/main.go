@@ -62,6 +62,8 @@ func main() {
 
 	//aaa.Test_switch1()
 	//aaa.Test_for1()
-	aaa.Test_func1()
+
+	_, a := aaa.Test_func1()
+	fmt.Println(a)
 
 }
