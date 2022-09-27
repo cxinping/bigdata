@@ -21,6 +21,10 @@ func sayhelloName(w http.ResponseWriter, r *http.Request) {
 }
 
 func TestWeb1() {
+	/*
+		http://localhost:9090/
+		http://localhost:9090
+	*/
 	http.HandleFunc("/", sayhelloName)       //设置访问的路由
 	err := http.ListenAndServe(":9090", nil) //设置监听的端口
 	if err != nil {

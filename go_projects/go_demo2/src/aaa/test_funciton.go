@@ -73,4 +73,5 @@ func TestFilter1() {
 	even := filter(slices, isEven)
 	fmt.Println("偶数元素 ", even)
 
+	fmt.Printf("%v", even)
 }

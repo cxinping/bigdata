@@ -1,6 +1,7 @@
 package main
 
 import (
+	"aaa"
 	"fmt"
 )
 
@@ -73,7 +74,7 @@ func main() {
 	//rst := aaa.TestFunc3("abcdef")
 	//fmt.Printf("%P", rst)
 
-	//aaa.TestFilter1()
+	aaa.TestFilter1()
 
 	//aaa.TestWeb1()
 }
