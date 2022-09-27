@@ -1,13 +1,35 @@
 package aaa
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"math"
+)
 
 func Test_error_demo1() {
-	// recover 例子
-	FunA()
+
+	TestError1()
 }
 
-func FunA() {
+func TestError1() {
+	//res  := math.Sqrt(-100)
+	//fmt.Println(res )
+
+	res, err := Sqrt(-100)
+	fmt.Println(res, err)
+}
+
+func Sqrt(f float64) (float64, error) {
+	if f < 0 {
+		return 0, errors.New("负数不可以开平方根")
+	} else {
+		return math.Sqrt(f), nil
+	}
+}
+
+func TestError2() {
+	// recover 例子
+
 	fmt.Println("这是funcA begin")
 	defer func() {
 		if msg := recover(); msg != nil {

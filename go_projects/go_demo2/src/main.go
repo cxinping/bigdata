@@ -39,10 +39,13 @@ func main() {
 	//aaa.Arr2()
 	//aaa.Slice1()
 	//aaa.TestSlice1()
-	aaa.TestMap1()
-
+	//aaa.TestMap1()
 	//aaa.Arr3()
 	//aaa.Arr4()
+
+	//异常处理
+	aaa.TestError1()
+
 	//aaa.Test_struct1()
 
 	//接口测试用例
