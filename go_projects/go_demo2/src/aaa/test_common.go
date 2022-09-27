@@ -66,3 +66,30 @@ func Test_global1() {
 	global_name = "lisi"
 	fmt.Println(global_name)
 }
+
+func Test_switch1() {
+	var x interface{}
+
+	switch i := x.(type) {
+	case nil:
+		fmt.Printf("x 的类型 : %T", i)
+	default:
+		fmt.Printf("未知型")
+	}
+}
+
+func Test_for1() {
+	i := 0
+	//for ; ; i++ {
+	//	if i > 5 {
+	//		break
+	//	}
+	//	fmt.Printf("i=%d \n", i)
+	//}
+
+	for i <= 5 {
+		fmt.Printf("i=%d \n", i)
+		i++
+	}
+
+}

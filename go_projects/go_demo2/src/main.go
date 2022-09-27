@@ -58,6 +58,9 @@ func main() {
 
 	//aaa.Test_str1()
 	//aaa.Test_pointer1()
-	aaa.Test_global1()
+	///aaa.Test_global1()
+
+	//aaa.Test_switch1()
+	aaa.Test_for1()
 
 }
