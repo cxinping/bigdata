@@ -47,3 +47,14 @@ func Test_str1() {
 	fmt.Println(a1, a2, a3, a4)
 
 }
+
+func Test_pointer1() {
+	var a int = 5
+	var ptr *int
+
+	ptr = &a
+	*ptr = 10
+	fmt.Printf("a 的值为 %d \n", a)
+	fmt.Printf("ptr 的值为 %d %P \n", *ptr, *ptr)
+
+}
