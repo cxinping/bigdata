@@ -44,7 +44,7 @@ func main() {
 	//aaa.Arr4()
 
 	//异常处理
-	aaa.TestError1()
+	//aaa.TestError1()
 
 	//aaa.Test_struct1()
 
@@ -69,8 +69,9 @@ func main() {
 	//aaa.Test_switch1()
 	//aaa.Test_for1()
 
-	//_, a := aaa.Test_func1()
-	//fmt.Println(a)
+	//面向对象编程
+	_, a := aaa.TestFunc1()
+	fmt.Println(a)
 	//aaa.TestFunc2()
 
 	//rst := aaa.TestFunAdd(3, 4)
