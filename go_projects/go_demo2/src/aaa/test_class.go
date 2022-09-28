@@ -41,3 +41,18 @@ func TestStruct1() {
 	fmt.Println(addr.province, addr.city)
 
 }
+
+type User struct {
+	string
+	byte
+	int8
+	float64
+}
+
+func TestStruct3() {
+	//结构体的匿名字段
+	user := User{"wang", 'm', 35, 177}
+	fmt.Printf("%v \n", user)
+	fmt.Println(user.string)
+
+}

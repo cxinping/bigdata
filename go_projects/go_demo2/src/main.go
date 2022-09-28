@@ -48,7 +48,8 @@ func main() {
 
 	// 面向对象
 	//aaa.TestStruct1()
-	aaa.TestStruct2()
+	//aaa.TestStruct2()
+	aaa.TestStruct3()
 
 	//接口测试用例
 	//aaa.Test_interface1()
