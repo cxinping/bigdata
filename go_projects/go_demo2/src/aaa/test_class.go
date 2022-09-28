@@ -55,4 +55,8 @@ func TestStruct3() {
 	fmt.Printf("%v \n", user)
 	fmt.Println(user.string)
 
+	var t1 = Teacher{name: "wang", age: 35, sex: 1}
+	t2 := Teacher{name: "wang", age: 31, sex: 2}
+	fmt.Printf("t1=> %v \n", t1)
+	fmt.Printf("t2=> %v \n", t2)
 }
