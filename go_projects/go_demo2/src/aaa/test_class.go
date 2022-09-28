@@ -17,6 +17,13 @@ func TestStruct2() {
 	t1.age = 30
 	t1.sex = 1
 	fmt.Println(t1)
+	fmt.Printf("t1: %p, %v \n", t1, t1)
+	var ptr *Teacher = &t1
+	(*ptr).name = "lisi"
+	fmt.Println(ptr, (*ptr).name, (*ptr).age)
+	var t3 = t1
+	t3.name = "zhangsan"
+	fmt.Println("t3=", t3)
 }
 
 func TestStruct1() {
