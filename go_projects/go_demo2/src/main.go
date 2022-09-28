@@ -49,7 +49,10 @@ func main() {
 	// 面向对象
 	//aaa.TestStruct1()
 	//aaa.TestStruct2()
-	aaa.TestStruct3()
+	//aaa.TestStruct3()
+
+	// Go语言的流程控制
+	aaa.TestSwitch1()
 
 	//接口测试用例
 	//aaa.Test_interface1()

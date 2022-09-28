@@ -51,12 +51,23 @@ type User struct {
 
 func TestStruct3() {
 	//结构体的匿名字段
-	user := User{"wang", 'm', 35, 177}
-	fmt.Printf("%v \n", user)
-	fmt.Println(user.string)
+	//user := User{"wang", 'm', 35, 177}
+	//fmt.Printf("%v \n", user)
+	//fmt.Println(user.string)
 
-	var t1 = Teacher{name: "wang", age: 35, sex: 1}
-	t2 := Teacher{name: "wang", age: 31, sex: 2}
-	fmt.Printf("t1=> %v \n", t1)
-	fmt.Printf("t2=> %v \n", t2)
+	//var t1 = Teacher{name: "wang", age: 35, sex: 1}
+	//t2 := Teacher{name: "wang", age: 31, sex: 2}
+	//fmt.Printf("t1=> %v \n", t1)
+	//fmt.Printf("t2=> %v \n", t2)
+
+	var t3 = new(Teacher)
+	//t3.name = "lisi"
+	//t3.age = 21
+	//t3.sex = 1
+	(*t3).name = "lisi"
+	(*t3).age = 20
+	(*t3).sex = 0
+	fmt.Printf("t3=> %v %T\n", t3, t3)
+	fmt.Println(t3.name)
+
 }
