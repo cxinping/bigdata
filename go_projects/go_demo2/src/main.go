@@ -70,9 +70,10 @@ func main() {
 	//aaa.Test_for1()
 
 	//面向对象编程
-	_, a := aaa.TestFunc1()
-	fmt.Println(a)
+	//_, a := aaa.TestFunc1()
+	//fmt.Println(a)
 	//aaa.TestFunc2()
+	aaa.TestFunc5()
 
 	//rst := aaa.TestFunAdd(3, 4)
 	//fmt.Println(rst)

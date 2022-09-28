@@ -17,6 +17,13 @@ func TestFunc2() {
 	}
 }
 
+func TestFunc5() {
+	var t = func() {
+		fmt.Println("hello world")
+	}
+	t()
+}
+
 func TestFunAdd(a, b int) int {
 	return a + b
 }
