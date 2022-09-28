@@ -46,7 +46,9 @@ func main() {
 	//异常处理
 	//aaa.TestError1()
 
-	//aaa.Test_struct1()
+	// 面向对象
+	//aaa.TestStruct1()
+	aaa.TestStruct2()
 
 	//接口测试用例
 	//aaa.Test_interface1()
@@ -73,7 +75,7 @@ func main() {
 	//_, a := aaa.TestFunc1()
 	//fmt.Println(a)
 	//aaa.TestFunc2()
-	aaa.TestFunc5()
+	//aaa.TestFunc5()
 
 	//rst := aaa.TestFunAdd(3, 4)
 	//fmt.Println(rst)
