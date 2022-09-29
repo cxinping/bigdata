@@ -59,6 +59,18 @@ func Test_pointer1() {
 
 }
 
+func Test_pointer2() {
+	a := [4]string{"a", "b", "c", "d"}
+	ptr := &a
+
+	fmt.Println(a, ptr)
+	ptr[0] = "aaa"
+	ptr[1] = "bbb"
+	fmt.Println((*ptr)[0], (*ptr)[1])
+	fmt.Println(a)
+
+}
+
 var global_name = "wangwu"
 
 func Test_global1() {
@@ -69,9 +81,11 @@ func Test_global1() {
 
 func Test_switch1() {
 	var x interface{}
-
+	x = "a"
 	switch i := x.(type) {
 	case nil:
+		fmt.Printf("x 的类型 : %T", i)
+	case string:
 		fmt.Printf("x 的类型 : %T", i)
 	default:
 		fmt.Printf("未知型")

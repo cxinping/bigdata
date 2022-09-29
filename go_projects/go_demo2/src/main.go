@@ -52,12 +52,15 @@ func main() {
 	//aaa.TestStruct3()
 
 	// Go语言的流程控制
-	aaa.TestSwitch1()
+	//aaa.TestSwitch1()
 
 	//接口测试用例
 	//aaa.Test_interface1()
 	//aaa.Test_interface2()
 	//aaa.FunA()
+
+	//指针
+	//aaa.Test_pointer2()
 
 	//aaa.Test_error_demo1()
 
@@ -72,7 +75,7 @@ func main() {
 	//aaa.Test_pointer1()
 	///aaa.Test_global1()
 
-	//aaa.Test_switch1()
+	aaa.Test_switch1()
 	//aaa.Test_for1()
 
 	//面向对象编程
