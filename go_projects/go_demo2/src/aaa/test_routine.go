@@ -10,7 +10,7 @@ func TestRountine1() {
 
 	//var input string
 	//fmt.Scanln(&input)
-	//time.Sleep(5 * time.Second)
+	time.Sleep(5 * time.Second)
 	fmt.Println("--- main over ---")
 }
 

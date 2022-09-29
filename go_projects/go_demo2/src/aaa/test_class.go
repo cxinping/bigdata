@@ -15,6 +15,24 @@ type Flower struct {
 	name, color string
 }
 
+type Rectangle struct {
+	width, height float64
+}
+
+func TestStruct5() {
+	r1 := Rectangle{5, 9}
+	fmt.Printf("r1的地址： %p \n", &r1)
+	var i, j = 5, 6
+	fmt.Printf("i的地址： %p %p \n", &i, &j)
+
+	//fmt.Println(1/2, 1.0/2.0)
+
+	var nums = [...]int{1, 2, 3}
+	fmt.Println(nums, len(nums))
+	fmt.Printf("%T %V", nums, nums)
+
+}
+
 func TestStruct2() {
 	//var t1 Teacher
 	//t1 := Teacher{}

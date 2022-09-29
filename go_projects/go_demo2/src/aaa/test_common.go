@@ -147,3 +147,7 @@ func chgMap2(m22 map[int]int) {
 	m22[1] = 100
 	m22[2] = 200
 }
+
+func TestHello1() {
+	fmt.Println("hello world")
+}

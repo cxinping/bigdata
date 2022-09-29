@@ -1,39 +1,8 @@
 package main
 
-import (
-	"aaa"
-	"fmt"
-)
+import "aaa"
 
-type Rectangle struct {
-	width, height float64
-}
-
-func demo1() {
-	r1 := Rectangle{5, 9}
-	fmt.Printf("r1的地址： %p \n", &r1)
-	var i, j = 5, 6
-	fmt.Printf("i的地址： %p %p \n", &i, &j)
-}
-
-func demo2() {
-	fmt.Println(1/2, 1.0/2.0)
-
-	var nums = [...]int{1, 2, 3}
-	fmt.Println(nums)
-}
-
-func main() {
-	//fmt.Println("hello world 222")
-
-	//demo1()
-
-	//demo2()
-
-	//aaa.Hello()
-	//fmt.Println(aaa.Add(1, 2))
-	//fmt.Println(aaa.Name)
-
+func test_array() {
 	//测试数组
 	//aaa.TestArr1()
 	//aaa.Arr2()
@@ -43,6 +12,23 @@ func main() {
 	//aaa.Arr3()
 	//aaa.Arr4()
 	//aaa.TestMap2()
+}
+
+func test_goroutine() {
+	//并发编程
+	aaa.TestRountine1()
+	//aaa.TestRountine2()
+}
+func main() {
+	//aaa.Hello()
+	//fmt.Println(aaa.Add(1, 2))
+	//fmt.Println(aaa.Name)
+
+	//f := aaa.TestHello1
+	//f()
+
+	// Go语言的流程控制
+	//aaa.TestSwitch1()
 
 	//异常处理
 	//aaa.TestError1()
@@ -52,9 +38,7 @@ func main() {
 	//aaa.TestStruct2()
 	//aaa.TestStruct3()
 	//aaa.TestStruct4()
-
-	// Go语言的流程控制
-	//aaa.TestSwitch1()
+	//aaa.TestStruct5()
 
 	//接口测试用例
 	//aaa.Test_interface1()
@@ -103,8 +87,5 @@ func main() {
 
 	//aaa.TestWeb1()
 
-	//并发编程
-	//aaa.TestRountine1()
-	aaa.TestRountine2()
-
+	test_goroutine()
 }
