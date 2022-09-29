@@ -107,3 +107,43 @@ func Test_for1() {
 	}
 
 }
+
+func TestRange() {
+	str := "aaaaaa"
+	for idx, x := range str {
+		fmt.Println(idx, x)
+	}
+}
+
+func TestChange1() {
+	nation := map[string]string{
+		"china": "bj",
+	}
+
+	fmt.Println(nation)
+	modify(nation)
+	fmt.Println(nation)
+}
+
+func modify(m map[string]string) {
+	m["name"] = "wangwu"
+}
+
+func TestMap2() {
+	m1 := make(map[int]int)
+	//chgMap1(m1)
+	chgMap2(m1)
+	fmt.Println(m1)
+}
+
+func chgMap1(m map[int]int) {
+	m[1] = 10
+	m[2] = 20
+}
+
+func chgMap2(m22 map[int]int) {
+	fmt.Println("--- chgMap2")
+	m22 = make(map[int]int)
+	m22[1] = 100
+	m22[2] = 200
+}

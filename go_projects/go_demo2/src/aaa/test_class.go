@@ -11,19 +11,44 @@ type Teacher struct {
 	sex  byte
 }
 
+type Flower struct {
+	name, color string
+}
+
 func TestStruct2() {
-	var t1 Teacher
+	//var t1 Teacher
+	//t1 := Teacher{}
+	t1 := new(Teacher)
 	t1.name = "wangwu"
 	t1.age = 30
 	t1.sex = 1
 	fmt.Println(t1)
-	fmt.Printf("t1: %p, %v \n", t1, t1)
-	var ptr *Teacher = &t1
-	(*ptr).name = "lisi"
-	fmt.Println(ptr, (*ptr).name, (*ptr).age)
-	var t3 = t1
-	t3.name = "zhangsan"
-	fmt.Println("t3=", t3)
+	fmt.Printf("修改前 t1: %T, %v \n", t1, t1)
+
+	changeStruct1(t1)
+	fmt.Printf("修改后 t1: %T, %v \n", t1, t1)
+
+	t2 := Teacher{}
+	t2.name = "李四"
+	t2.age = 30
+	t2.sex = 1
+	fmt.Printf("t2: %T, %v \n", t2, t2)
+
+	//var ptr *Teacher = &t1
+	//(*ptr).name = "lisi"
+	//fmt.Println(ptr, (*ptr).name, (*ptr).age)
+	//var t3 = t1
+	//t3.name = "zhangsan"
+	//fmt.Println("t3=", t3)
+
+	var a int = 10
+	var b = &a
+	fmt.Println(a, b, *b)
+}
+
+func changeStruct1(t *Teacher) {
+	(*t).age = 20
+
 }
 
 func TestStruct1() {
@@ -70,4 +95,18 @@ func TestStruct3() {
 	fmt.Printf("t3=> %v %T\n", t3, t3)
 	fmt.Println(t3.name)
 
+}
+
+func TestStruct4() {
+	f1 := getFlower2()
+	fmt.Println(f1, (*f1).name, f1.name)
+}
+
+func getFlower2() (f *Flower) {
+	temp := Flower{
+		name:  "芙蓉",
+		color: "红色",
+	}
+	f = &temp
+	return f
 }

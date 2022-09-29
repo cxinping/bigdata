@@ -42,6 +42,7 @@ func main() {
 	//aaa.TestMap1()
 	//aaa.Arr3()
 	//aaa.Arr4()
+	//aaa.TestMap2()
 
 	//异常处理
 	//aaa.TestError1()
@@ -50,6 +51,7 @@ func main() {
 	//aaa.TestStruct1()
 	//aaa.TestStruct2()
 	//aaa.TestStruct3()
+	//aaa.TestStruct4()
 
 	// Go语言的流程控制
 	//aaa.TestSwitch1()
@@ -75,8 +77,11 @@ func main() {
 	//aaa.Test_pointer1()
 	///aaa.Test_global1()
 
-	aaa.Test_switch1()
+	//循环
+	//aaa.Test_switch1()
 	//aaa.Test_for1()
+	//aaa.TestRange()
+	//aaa.TestChange1()
 
 	//面向对象编程
 	//_, a := aaa.TestFunc1()
@@ -97,4 +102,9 @@ func main() {
 	//aaa.TestPointer2()
 
 	//aaa.TestWeb1()
+
+	//并发编程
+	//aaa.TestRountine1()
+	aaa.TestRountine2()
+
 }

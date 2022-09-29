@@ -1,1 +1,47 @@
 package aaa
+
+import (
+	"fmt"
+	"time"
+)
+
+func TestRountine1() {
+	go running1()
+
+	//var input string
+	//fmt.Scanln(&input)
+	//time.Sleep(5 * time.Second)
+	fmt.Println("--- main over ---")
+}
+
+func TestRountine2() {
+	//num := runtime.GOMAXPROCS(6)
+	//fmt.Println("num=", num)
+
+	aaa := fmt.Sprintf("okaaaa")
+	fmt.Println(aaa)
+
+	var ch1 chan int
+	var ch2 = make(chan int)
+	fmt.Printf("ch1 %T %v\n", ch1, ch1)
+	fmt.Printf("ch2 %T %v\n", ch2, ch2)
+
+}
+
+func running1() {
+	var times int
+	for i := 0; i < 10; i++ {
+		times++
+		fmt.Println("running1 tick=> ", times)
+		time.Sleep(1 * time.Second)
+	}
+}
+
+func running2() {
+	var times int
+	for {
+		times++
+		fmt.Println("running2 tick=> ", times)
+		time.Sleep(1 * time.Second)
+	}
+}
