@@ -53,7 +53,7 @@ func TestRountine3() {
 		ch1 <- 200
 		close(ch1)
 
-		ch1 <- 10
+		ch1 <- 300
 	}()
 
 	data, ok := <-ch1
