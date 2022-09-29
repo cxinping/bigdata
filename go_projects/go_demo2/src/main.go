@@ -21,6 +21,12 @@ func test_goroutine() {
 	aaa.TestRountine3()
 }
 
+func test_reflec() {
+	//反射
+	aaa.TestReflection1()
+
+}
+
 func main() {
 	//aaa.Hello()
 	//fmt.Println(aaa.Add(1, 2))
@@ -89,5 +95,8 @@ func main() {
 
 	//aaa.TestWeb1()
 
-	test_goroutine()
+	//test_goroutine()
+
+	test_reflec()
+
 }
