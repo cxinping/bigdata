@@ -16,9 +16,11 @@ func test_array() {
 
 func test_goroutine() {
 	//并发编程
-	aaa.TestRountine1()
+	//aaa.TestRountine1()
 	//aaa.TestRountine2()
+	aaa.TestRountine3()
 }
+
 func main() {
 	//aaa.Hello()
 	//fmt.Println(aaa.Add(1, 2))

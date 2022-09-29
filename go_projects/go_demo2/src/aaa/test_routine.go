@@ -45,3 +45,26 @@ func running2() {
 		time.Sleep(1 * time.Second)
 	}
 }
+
+func TestRountine3() {
+	ch1 := make(chan int)
+	go func() {
+		ch1 <- 100
+		ch1 <- 200
+		close(ch1)
+
+		ch1 <- 10
+	}()
+
+	data, ok := <-ch1
+	fmt.Println("main 读取数据: ", data, ok)
+	data, ok = <-ch1
+	fmt.Println("main 读取数据: ", data, ok)
+	data, ok = <-ch1
+	fmt.Println("main 读取数据: ", data, ok)
+	data, ok = <-ch1
+	fmt.Println("main 读取数据: ", data, ok)
+	data, ok = <-ch1
+	fmt.Println("main 读取数据: ", data, ok)
+
+}
