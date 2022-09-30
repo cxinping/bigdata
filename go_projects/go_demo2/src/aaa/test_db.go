@@ -43,7 +43,7 @@ func TestConnDB() {
 }
 
 func execData(dbConn *DbConn) {
-	count, id, err := dbConn.ExecData("INSERT INTO user_info(username) VALUES('lisi') ")
+	count, id, err := dbConn.ExecData("INSERT INTO user_info(username, departname, created) VALUES('lisi', 'business group', '2022-09-30') ")
 	fmt.Println(count, id, err)
 }
 
@@ -60,10 +60,14 @@ func (dbConn *DbConn) ExecData(sqlString string) (count, id int64, err error) {
 		return
 	}
 
+	fmt.Printf("LastInsertId = %d \n", id)
+
 	if id, err = result.RowsAffected(); err != nil {
 		panic(err)
 		return
 	}
+
+	fmt.Printf("RowsAffected = %d \n", id)
 
 	return count, id, nil
 }
