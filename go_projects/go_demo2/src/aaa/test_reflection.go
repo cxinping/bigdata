@@ -11,6 +11,7 @@ type RefPeople struct {
 }
 
 func TestReflection1() {
+	// 反射例子
 	fmt.Println("--- over ---")
 
 	//a := 1.5
@@ -21,6 +22,9 @@ func TestReflection1() {
 	//fmt.Printf("RefPeople+> %T %V", people, &people)
 
 	v := reflect.ValueOf(people)
-	fmt.Println(v.NumField(), v.FieldByIndex([]int{0}), v.FieldByIndex([]int{1}))
+	fmt.Println(v.NumField(), v.FieldByIndex([]int{0}))
+	fmt.Println(v.CanSet())
+	//content := "name"
+	//fmt.Println("content=> ", v.FieldByName(content))
 
 }
