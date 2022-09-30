@@ -23,18 +23,47 @@ type UserTable struct {
 
 func TestConnDB() {
 	var err error
-	dbConn := DbConn{Dsn: "xinping:123456@/codebaoku?charset=utf8"}
+	//user:password@tcp(localhost:3306)/dbname?charset=utf8
+	dbConn := DbConn{Dsn: "xinping:123456@tcp(192.168.11.11:3306)/codebaoku?charset=utf8"}
+	dbConn.Db, err = sql.Open("mysql", dbConn.Dsn)
+	if err != nil {
+		panic(err)
+		return
+	}
 
-	fmt.Println(dbConn, err)
-	//if err != nil {
-	//	panic(err)
-	//	return
-	//}
+	//fmt.Printf("%T \n", dbConn.Db)
+	//fmt.Printf("%T", dbConn.Db)
 
-	//defer dbConn.Db.Close()
+	defer dbConn.Db.Close()
 
+	//1, 测试封装的 execData()方法
+	execData(&dbConn)
+
+	fmt.Println("--- TestConnDB db ---")
 }
 
 func execData(dbConn *DbConn) {
+	count, id, err := dbConn.ExecData("INSERT INTO user_info(username) VALUES('lisi') ")
+	fmt.Println(count, id, err)
+}
 
+//1, 封装增删修改数据的函数，该函数直接使用Db的Exec()方法实现数据操作
+func (dbConn *DbConn) ExecData(sqlString string) (count, id int64, err error) {
+	result, err := dbConn.Db.Exec(sqlString)
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	if id, err = result.LastInsertId(); err != nil {
+		panic(err)
+		return
+	}
+
+	if id, err = result.RowsAffected(); err != nil {
+		panic(err)
+		return
+	}
+
+	return count, id, nil
 }
