@@ -27,6 +27,14 @@ func test_reflec() {
 
 }
 
+func test_json() {
+	//json解析
+	//aaa.TestMapToJson1()
+	//	aaa.TestMapToJson2()
+	aaa.TestMapToJson3()
+
+}
+
 func main() {
 	//aaa.Hello()
 	//fmt.Println(aaa.Add(1, 2))
@@ -63,8 +71,6 @@ func main() {
 
 	//aaa.TestConnDB()
 
-	//aaa.MapToJson()
-
 	//aaa.Test_str1()
 	//aaa.Test_pointer1()
 	///aaa.Test_global1()
@@ -97,6 +103,7 @@ func main() {
 
 	//test_goroutine()
 
-	test_reflec()
+	//test_reflec()
 
+	test_json()
 }
