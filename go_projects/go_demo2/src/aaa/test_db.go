@@ -43,8 +43,14 @@ func TestConnDB() {
 	//preExecData(&dbConn)
 
 	//3, 查询单行数据
-	result := dbConn.QueryRowData("select * from user_info where uid=(select max(uid) from user_info )")
-	fmt.Println(result.Uid, result.Username)
+	//result := dbConn.QueryRowData("select * from user_info where uid=(select max(uid) from user_info )")
+	//fmt.Println(result.Uid, result.Username)
+
+	//4, 查询多行数据
+	result2 := dbConn.QueryData("SELECT * FROM user_info where uid")
+	for k, v := range result2 {
+		fmt.Println("uid: ", k, v)
+	}
 
 	fmt.Println("--- TestConnDB db ---")
 }
@@ -150,4 +156,27 @@ func (dbConn *DbConn) QueryRowData(sqlString string) (data UserTable) {
 		return
 	}
 	return *user
+}
+
+//4, 未使用预编译，直接查询多行数据
+func (dbConn *DbConn) QueryData(sqlString string) (resultSet map[int]UserTable) {
+	rows, err := dbConn.Db.Query(sqlString)
+	defer rows.Close()
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	resultSet = make(map[int]UserTable)
+	user := new(UserTable)
+	for rows.Next() {
+		err := rows.Scan(&user.Uid, &user.Username, &user.Department, &user.Created)
+		if err != nil {
+			panic(err)
+			continue
+		}
+		resultSet[user.Uid] = *user
+	}
+
+	return resultSet
 }
