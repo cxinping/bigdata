@@ -43,8 +43,24 @@ func TestConnDB() {
 }
 
 func execData(dbConn *DbConn) {
-	count, id, err := dbConn.ExecData("INSERT INTO user_info(username, departname, created) VALUES('lisi', 'business group', '2022-09-30') ")
+	//新增
+	//count, id, err := dbConn.ExecData("INSERT INTO user_info(username, departname, created) VALUES('lisi', 'business group', '2022-09-30') ")
+
+	//修改
+	//count, id, err := dbConn.ExecData("UPDATE user_info set created='2022-09-29' WHERE uid=7")
+
+	//删除
+	count, id, err := dbConn.ExecData("DELETE FROM user_info WHERE uid=11")
 	fmt.Println(count, id, err)
+
+	if err != nil {
+		fmt.Println("--- 打印异常信息 ---")
+		fmt.Println(err.Error())
+	} else {
+		fmt.Println("受影响的行数: ", count)
+		fmt.Println("新添加数据的id: ", id)
+	}
+
 }
 
 //1, 封装增删修改数据的函数，该函数直接使用Db的Exec()方法实现数据操作
@@ -60,14 +76,14 @@ func (dbConn *DbConn) ExecData(sqlString string) (count, id int64, err error) {
 		return
 	}
 
-	fmt.Printf("LastInsertId = %d \n", id)
+	//fmt.Printf("LastInsertId = %d \n", id)
 
-	if id, err = result.RowsAffected(); err != nil {
+	if count, err = result.RowsAffected(); err != nil {
 		panic(err)
 		return
 	}
 
-	fmt.Printf("RowsAffected = %d \n", id)
+	//fmt.Printf("RowsAffected = %d \n", count)
 
 	return count, id, nil
 }
