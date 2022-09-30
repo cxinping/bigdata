@@ -39,9 +39,24 @@ func test_common() {
 	//aaa.Test_str1()
 	//aaa.Test_pointer1()
 	///aaa.Test_global1()
-	aaa.TestSlice2()
+	//aaa.TestSlice2()
+	//aaa.TestSlice3()
 
 }
+
+func test_error() {
+	//异常处理
+	//aaa.TestError1()
+
+	//aaa.TestDefer1()
+	//aaa.TestError3()
+}
+
+func test_db() {
+	aaa.TestConnDB()
+
+}
+
 func main() {
 	//aaa.Hello()
 	//fmt.Println(aaa.Add(1, 2))
@@ -52,9 +67,6 @@ func main() {
 
 	// Go语言的流程控制
 	//aaa.TestSwitch1()
-
-	//异常处理
-	//aaa.TestError1()
 
 	// 面向对象
 	//aaa.TestStruct1()
@@ -75,8 +87,6 @@ func main() {
 
 	//aaa.Test_type()
 	///aaa.FileDemo1()
-
-	//aaa.TestConnDB()
 
 	//循环
 	//aaa.Test_switch1()
@@ -110,6 +120,10 @@ func main() {
 
 	//test_json()
 
-	test_common()
+	//test_common()
+
+	//test_error()
+
+	test_db()
 
 }

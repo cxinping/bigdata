@@ -153,13 +153,31 @@ func TestHello1() {
 }
 
 func TestSlice2() {
-	var a = []float64{1.1, 2, 3, 4}
+	var a = [4]float64{1.1, 2, 3, 4}
 	fmt.Println("变量 a=>", a)
-	c := a
+	c := a[:]
 	fmt.Println("变量 c=>", c)
 
 	c[0] = 10
 	fmt.Println("修改后 变量 a=>", a)
 	fmt.Println("修改后 变量 c=>", c)
 
+}
+
+func TestSlice3() {
+	a := []int{1, 2, 3, 4, 5}
+
+	fmt.Printf("a的内容 %v %T \n", a, a)
+	//changeSliceVal1(a)
+	changeSliceVal2(&a)
+	fmt.Printf("修改后a的内容 %v %T\n", a, a)
+}
+
+func changeSliceVal1(a []int) {
+	a[0] = 99
+
+}
+
+func changeSliceVal2(a *[]int) {
+	(*a)[0] = 99
 }

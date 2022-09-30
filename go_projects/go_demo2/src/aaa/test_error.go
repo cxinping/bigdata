@@ -17,6 +17,7 @@ func TestError1() {
 
 	res, err := Sqrt(-100)
 	fmt.Println(res, err)
+	fmt.Printf("%v %T", err, err)
 }
 
 func Sqrt(f float64) (float64, error) {
@@ -50,4 +51,29 @@ func TestError2() {
 func Test_type() {
 	var str string = "abc"
 	fmt.Printf("%T", str)
+}
+
+func TestDefer1() {
+	//延迟执行
+	defer funcA()
+	funcB()
+	fmt.Println("--- main over ---")
+}
+
+func funcA() {
+	fmt.Println("这是 funcA")
+}
+
+func funcB() {
+	fmt.Println("这是 funcB")
+}
+
+func funcC() {
+	fmt.Println("这是 funcC")
+}
+
+func TestError3() {
+	var a = [...]int{1, 2, 3}
+	fmt.Println(a[1])
+
 }
