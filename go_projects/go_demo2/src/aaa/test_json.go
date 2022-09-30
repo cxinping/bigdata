@@ -61,10 +61,14 @@ type JsonUser struct {
 }
 
 func TestMapToJson3() {
+	//结构体字段标签
 	user := JsonUser{Name: "wangwu", Age: 21, Sex: 1, Address: "北京海淀"}
 	arr, error := json.Marshal(user)
 	if error == nil {
 		fmt.Printf("%T , %v\n", string(arr), string(arr))
 	}
+
+	var nums = []int{1, 2, 3, 4}
+	fmt.Printf("%T %v\n", nums, nums)
 
 }

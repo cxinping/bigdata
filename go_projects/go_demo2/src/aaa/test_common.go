@@ -151,3 +151,15 @@ func chgMap2(m22 map[int]int) {
 func TestHello1() {
 	fmt.Println("hello world")
 }
+
+func TestSlice2() {
+	var a = []float64{1.1, 2, 3, 4}
+	fmt.Println("变量 a=>", a)
+	c := a
+	fmt.Println("变量 c=>", c)
+
+	c[0] = 10
+	fmt.Println("修改后 变量 a=>", a)
+	fmt.Println("修改后 变量 c=>", c)
+
+}

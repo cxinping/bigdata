@@ -35,6 +35,13 @@ func test_json() {
 
 }
 
+func test_common() {
+	//aaa.Test_str1()
+	//aaa.Test_pointer1()
+	///aaa.Test_global1()
+	aaa.TestSlice2()
+
+}
 func main() {
 	//aaa.Hello()
 	//fmt.Println(aaa.Add(1, 2))
@@ -71,10 +78,6 @@ func main() {
 
 	//aaa.TestConnDB()
 
-	//aaa.Test_str1()
-	//aaa.Test_pointer1()
-	///aaa.Test_global1()
-
 	//循环
 	//aaa.Test_switch1()
 	//aaa.Test_for1()
@@ -105,5 +108,8 @@ func main() {
 
 	//test_reflec()
 
-	test_json()
+	//test_json()
+
+	test_common()
+
 }
