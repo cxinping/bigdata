@@ -1,6 +1,10 @@
 package aaa
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 var Name string = "公有变量"
 
@@ -203,4 +207,16 @@ func TestSlice5() {
 func TestSlice6() {
 	var num [5]int = [5]int{1, 2, 3, 4, 5}
 	fmt.Println(num)
+}
+
+func TestRandom1() {
+	//r1, _ := rand.Int()
+	for i := 0; i < 30; i++ {
+		//rand_num := rand.Intn(5)
+		//rand_num := rand.Float64()
+		s1 := rand.NewSource(time.Now().UnixNano())
+		r1 := rand.New(s1)
+		rand_num := r1.Intn(5)
+		fmt.Println("rand_num=> ", rand_num)
+	}
 }

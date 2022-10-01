@@ -19,8 +19,9 @@ func test_goroutine() {
 	//并发编程
 	//aaa.TestRountine1()
 	//aaa.TestRountine2()
-	aaa.TestRountine3()
-
+	//aaa.TestRountine3()
+	//aaa.TestRountine4()
+	aaa.TestNewTimer1()
 }
 
 func test_reflec() {
@@ -43,6 +44,7 @@ func test_common() {
 	///aaa.Test_global1()
 	//aaa.TestSlice2()
 	//aaa.TestSlice3()
+	aaa.TestRandom1()
 
 }
 
@@ -116,13 +118,13 @@ func main() {
 
 	//aaa.TestWeb1()
 
-	test_goroutine()
+	//test_goroutine()
 
 	//test_reflec()
 
 	//test_json()
 
-	//test_common()
+	test_common()
 
 	//test_error()
 

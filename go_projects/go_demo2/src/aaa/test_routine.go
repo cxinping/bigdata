@@ -71,5 +71,21 @@ func TestRountine3() {
 }
 
 func TestRountine4() {
+	for idx, val := range "1234567890" {
+		fmt.Println(idx, val)
+	}
+}
+
+func TestNewTimer1() {
+	timer1 := time.NewTimer(1 * time.Second)
+	//fmt.Printf("%T\n", timer1)
+	//fmt.Println(time.Now())
+
+	data := <-timer1.C
+	//fmt.Println(data)
+
+	fmt.Printf("%T\n", timer1.C)
+	fmt.Printf("%T\n", data)
+	fmt.Println(data)
 
 }
