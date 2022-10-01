@@ -222,6 +222,6 @@ func TestRandom1() {
 
 	fmt.Println("-----------")
 	for idx, val := range "abcdef" {
-		fmt.Println(idx, val)
+		fmt.Println(idx, val, string(val))
 	}
 }
