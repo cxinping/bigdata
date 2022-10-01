@@ -18,13 +18,14 @@ func TestRountine2() {
 	//num := runtime.GOMAXPROCS(6)
 	//fmt.Println("num=", num)
 
-	aaa := fmt.Sprintf("aaabbb")
+	aaa := fmt.Sprintf("a%d", 10)
 	fmt.Println(aaa)
+	fmt.Printf("%q, %v, %T", aaa, aaa, aaa)
 
 	var ch1 chan int
 	var ch2 = make(chan int)
-	fmt.Printf("ch1 %T %v\n", ch1, ch1)
-	fmt.Printf("ch2 %T %v\n", ch2, ch2)
+	fmt.Printf("ch1 %T, %v\n", ch1, ch1)
+	fmt.Printf("ch2 %T, %v\n", ch2, ch2)
 
 }
 
@@ -57,14 +58,18 @@ func TestRountine3() {
 	}()
 
 	data, ok := <-ch1
-	fmt.Println("main 读取数据: ", data, ok)
+	fmt.Println("1 main 读取数据: ", data, ok)
 	data, ok = <-ch1
-	fmt.Println("main 读取数据: ", data, ok)
+	fmt.Println("2 main 读取数据: ", data, ok)
 	data, ok = <-ch1
-	fmt.Println("main 读取数据: ", data, ok)
+	fmt.Println("3 main 读取数据: ", data, ok)
 	data, ok = <-ch1
-	fmt.Println("main 读取数据: ", data, ok)
+	fmt.Println("4 main 读取数据: ", data, ok)
 	data, ok = <-ch1
-	fmt.Println("main 读取数据: ", data, ok)
+	fmt.Println("5 main 读取数据: ", data, ok)
+
+}
+
+func TestRountine4() {
 
 }

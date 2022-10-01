@@ -12,14 +12,15 @@ func test_array() {
 	//aaa.Arr3()
 	//aaa.Arr4()
 	//aaa.TestMap2()
-	aaa.TestSlice6()
+	//aaa.TestSlice6()
 }
 
 func test_goroutine() {
 	//并发编程
 	//aaa.TestRountine1()
-	aaa.TestRountine2()
-	//aaa.TestRountine3()
+	//aaa.TestRountine2()
+	aaa.TestRountine3()
+
 }
 
 func test_reflec() {
@@ -115,7 +116,7 @@ func main() {
 
 	//aaa.TestWeb1()
 
-	//test_goroutine()
+	test_goroutine()
 
 	//test_reflec()
 
@@ -127,5 +128,5 @@ func main() {
 
 	//test_db()
 
-	test_array()
+	//test_array()
 }
