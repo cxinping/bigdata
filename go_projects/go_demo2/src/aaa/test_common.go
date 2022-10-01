@@ -199,3 +199,8 @@ func TestSlice5() {
 	fmt.Println("slic2= ", slic2)
 
 }
+
+func TestSlice6() {
+	var num [5]int = [5]int{1, 2, 3, 4, 5}
+	fmt.Println(num)
+}
