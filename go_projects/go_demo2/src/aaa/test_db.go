@@ -47,12 +47,21 @@ func TestConnDB() {
 	//fmt.Println(result.Uid, result.Username)
 
 	//4, 查询多行数据
-	result2 := dbConn.QueryData("SELECT * FROM user_info where uid")
-	for k, v := range result2 {
-		fmt.Println("uid: ", k, v)
-	}
+	//result2 := dbConn.QueryData("SELECT * FROM user_info WHERE uid >= 30")
+	//for k, v := range result2 {
+	//	fmt.Println("uid: ", k, v)
+	//}
+
+	//5,查询多行数据
+	//result3 := dbConn.PreQueryData("SELECT * FROM user_info where uid >= ? ORDER BY uid ASC", 30)
+	//for k, v := range result3 {
+	//	fmt.Println("uid: ", k, v)
+	//}
+
+	dbConn.PreQueryData2("SELECT * FROM user_info where uid >= ? ORDER BY uid DESC", 30)
 
 	fmt.Println("--- TestConnDB db ---")
+
 }
 
 //一，测试封装的 ExecData()方法
@@ -179,4 +188,62 @@ func (dbConn *DbConn) QueryData(sqlString string) (resultSet map[int]UserTable) 
 	}
 
 	return resultSet
+}
+
+//5, 使用预编译语句，直接查询多行数据
+func (dbConn *DbConn) PreQueryData(sqlString string, args ...interface{}) (resultSet map[int]UserTable) {
+	stmt, err := dbConn.Db.Prepare(sqlString)
+	defer stmt.Close()
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	rows, err := stmt.Query(args...)
+	defer rows.Close()
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	resultSet = make(map[int]UserTable)
+	user := new(UserTable)
+	for rows.Next() {
+		err := rows.Scan(&user.Uid, &user.Username, &user.Department, &user.Created)
+		if err != nil {
+			panic(err)
+			continue
+		}
+		resultSet[user.Uid] = *user
+	}
+
+	return resultSet
+}
+
+//查询数据，无返回值，只打印输出，用于测试
+func (dbConn *DbConn) PreQueryData2(sqlString string, args ...interface{}) {
+	stmt, err := dbConn.Db.Prepare(sqlString)
+	defer stmt.Close()
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	rows, err := stmt.Query(args...)
+	defer rows.Close()
+	if err != nil {
+		panic(err)
+		return
+	}
+
+	user := new(UserTable)
+	for rows.Next() {
+		err := rows.Scan(&user.Uid, &user.Username, &user.Department, &user.Created)
+		if err != nil {
+			panic(err)
+			continue
+		}
+		fmt.Println(*user)
+	}
+
 }

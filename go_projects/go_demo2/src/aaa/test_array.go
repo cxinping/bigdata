@@ -33,16 +33,6 @@ func Arr2() {
 	fmt.Println(b)
 }
 
-func Slice1() {
-	arr0 := [...]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"}
-	s01 := arr0[2:8]
-
-	fmt.Printf("arr0 %T \n", arr0)
-	fmt.Printf("s01 %T \n", s01)
-	fmt.Println(cap(s01), len(s01), s01, ",s01[5]=", s01[5])
-
-}
-
 func Arr3() {
 	a := [4]float64{167.7, 59.8, 78}
 	b := []int{2, 3, 4}

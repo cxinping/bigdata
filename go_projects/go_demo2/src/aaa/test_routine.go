@@ -18,7 +18,7 @@ func TestRountine2() {
 	//num := runtime.GOMAXPROCS(6)
 	//fmt.Println("num=", num)
 
-	aaa := fmt.Sprintf("okaaaa")
+	aaa := fmt.Sprintf("aaabbb")
 	fmt.Println(aaa)
 
 	var ch1 chan int

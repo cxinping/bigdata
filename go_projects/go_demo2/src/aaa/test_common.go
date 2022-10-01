@@ -181,3 +181,21 @@ func changeSliceVal1(a []int) {
 func changeSliceVal2(a *[]int) {
 	(*a)[0] = 99
 }
+
+func TestSlice5() {
+	//arr0 := [...]string{"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"}
+	//s01 := arr0[2:8]
+	//
+	//fmt.Printf("arr0 %T \n", arr0)
+	//fmt.Printf("s01 %T \n", s01)
+	//fmt.Println(cap(s01), len(s01), s01, ",s01[5]=", s01[5])
+
+	slic1 := make([]int, 3, 3)
+	slic1[0] = 0
+	slic1[1] = 1
+	slic1[2] = 2
+	fmt.Println(slic1, len(slic1), cap(slic1))
+	slic2 := append(slic1, 4)
+	fmt.Println("slic2= ", slic2)
+
+}

@@ -6,7 +6,7 @@ func test_array() {
 	//测试数组
 	//aaa.TestArr1()
 	//aaa.Arr2()
-	//aaa.Slice1()
+	aaa.TestSlice5()
 	//aaa.TestSlice1()
 	//aaa.TestMap1()
 	//aaa.Arr3()
@@ -17,8 +17,8 @@ func test_array() {
 func test_goroutine() {
 	//并发编程
 	//aaa.TestRountine1()
-	//aaa.TestRountine2()
-	aaa.TestRountine3()
+	aaa.TestRountine2()
+	//aaa.TestRountine3()
 }
 
 func test_reflec() {
@@ -124,6 +124,7 @@ func main() {
 
 	//test_error()
 
-	test_db()
+	//test_db()
 
+	test_array()
 }
