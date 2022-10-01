@@ -219,4 +219,9 @@ func TestRandom1() {
 		rand_num := r1.Intn(5)
 		fmt.Println("rand_num=> ", rand_num)
 	}
+
+	fmt.Println("-----------")
+	for idx, val := range "abcdef" {
+		fmt.Println(idx, val)
+	}
 }
