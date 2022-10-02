@@ -2,10 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="47a91b3b-096c-4c25-91d8-17047008efa3" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../go_demo2/bin/test_go_build_main_go.exe" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../go_demo2/src/aaa/test_common.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go_demo2/src/aaa/test_common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../go_demo2/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go_demo2/src/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/helloworld/v1/error_reason.pb.go" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/api/helloworld/v1/error_reason.proto" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter.pb.go" beforeDir="false" />
@@ -27,11 +25,6 @@
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
-    <option name="urls">
-      <list>
-        <option value="file://$PROJECT_DIR$" />
-      </list>
-    </option>
   </component>
   <component name="ProjectId" id="2FXdf6gUdBPOqf8cpKxhMTf4hDa" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -45,13 +38,13 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="configurable..is.expanded" value="false" />
+    <property name="configurable..is.expanded" value="true" />
     <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
+    <property name="settings.editor.selected.configurable" value="go.sdk" />
   </component>
   <component name="RunManager">
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
@@ -72,6 +65,17 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
