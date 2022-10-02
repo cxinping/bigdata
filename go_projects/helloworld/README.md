@@ -1,5 +1,13 @@
 # Kratos Project Template
 
+## 运行Kratos Project
+```
+cd D:\quant2\bigdata\go_projects\helloworld\cmd\helloworld
+
+D:\work_software\go1_17\bin\go.exe  run  main.go wire_gen.go -conf ../../configs
+```
+
+
 ## Install Kratos
 ```
 go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
