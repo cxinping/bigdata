@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="47a91b3b-096c-4c25-91d8-17047008efa3" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+    <list default="true" id="2cf234bc-ff1a-4756-a2fe-56683d9a99ef" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../go_demo2/bin/test_go_build_main_go.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/helloworld/v1/error_reason.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/helloworld/v1/error_reason.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/helloworld/v1/greeter.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/helloworld/v1/greeter.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/helloworld/v1/greeter_grpc.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/helloworld/v1/greeter_http.pb.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/helloworld/main.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/helloworld/wire.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/cmd/helloworld/wire_gen.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/error_reason.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/error_reason.proto" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter.proto" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter_grpc.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter_http.pb.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/helloworld/main.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/helloworld/wire.go" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/helloworld/wire_gen.go" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../work_software/go" />
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../work_software/go1_17" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
   <component name="GoLibraries">
     <option name="indexEntireGoPath" value="false" />
   </component>
-  <component name="ProjectId" id="2FXdf6gUdBPOqf8cpKxhMTf4hDa" />
+  <component name="ProjectId" id="2FYu355fmO05dfVlWkIkmXSxaov" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -38,7 +39,7 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="configurable..is.expanded" value="true" />
+    <property name="configurable..is.expanded" value="false" />
     <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
@@ -65,17 +66,6 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
   </component>
   <component name="VgoProject">
     <integration-enabled>true</integration-enabled>
