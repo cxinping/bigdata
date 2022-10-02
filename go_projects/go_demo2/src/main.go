@@ -44,7 +44,8 @@ func test_common() {
 	///aaa.Test_global1()
 	//aaa.TestSlice2()
 	//aaa.TestSlice3()
-	aaa.TestRandom1()
+	//	aaa.TestRandom1()
+	aaa.TestPointer3()
 
 }
 
@@ -124,7 +125,7 @@ func main() {
 
 	//test_json()
 
-	//test_common()
+	test_common()
 
 	//test_error()
 

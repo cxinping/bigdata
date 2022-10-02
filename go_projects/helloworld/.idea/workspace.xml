@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="47a91b3b-096c-4c25-91d8-17047008efa3" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../go_demo2/bin/test_go_build_main_go.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../go_demo2/src/aaa/test_common.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go_demo2/src/aaa/test_common.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../go_demo2/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go_demo2/src/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/error_reason.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/error_reason.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter.proto" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter_grpc.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/helloworld/v1/greeter_http.pb.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/helloworld/main.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/helloworld/wire.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmd/helloworld/wire_gen.go" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../work_software/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+    <option name="urls">
+      <list>
+        <option value="file://$PROJECT_DIR$" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="2FXdf6gUdBPOqf8cpKxhMTf4hDa" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+    <option name="sortByType" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="configurable..is.expanded" value="false" />
+    <property name="configurable.GoLibrariesConfigurable.is.expanded" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.goide.configuration.GoLibrariesConfigurableProvider" />
+  </component>
+  <component name="RunManager">
+    <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="helloworld" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="FILE" />
+      <package value="helloworld" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/helloworld/main.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build main.go" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+</project>

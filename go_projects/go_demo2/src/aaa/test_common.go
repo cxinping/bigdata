@@ -225,3 +225,18 @@ func TestRandom1() {
 		fmt.Println(idx, val, string(val))
 	}
 }
+
+func TestPointer3() {
+	a := [4]string{"a", "b", "c", "d"}
+	fmt.Println(a)
+
+	var ptr [4]*string
+	fmt.Printf("%T, %v \n", ptr, ptr)
+	for i := 0; i < 4; i++ {
+		ptr[i] = &a[i]
+	}
+	fmt.Printf("%T, %v \n", ptr, ptr)
+	*ptr[0] = "wang"
+	fmt.Println(a)
+
+}
