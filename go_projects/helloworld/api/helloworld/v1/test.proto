@@ -17,3 +17,4 @@ service Hello{
     //定义服务中的方法
     rpc SayHello(HelloReq)returns (HelloRep){}
 }
+
