@@ -1,0 +1,19 @@
+syntax = "proto3";
+package hello;
+
+// 定义 go语言的包存放地址
+option go_package="hello/hello";
+
+// 定义扩展名
+service Hello {
+    rpc Run(Requests) returns(Responses) {}
+}
+
+message Requests {
+    string name = 1;
+}
+
+message Responses {
+    string message = 2;
+}
+
