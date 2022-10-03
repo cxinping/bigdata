@@ -1,6 +1,9 @@
 package main
 
-import "aaa"
+import (
+	"aaa"
+	"rpc"
+)
 
 func test_array() {
 	//测试数组
@@ -60,6 +63,12 @@ func test_error() {
 func test_db() {
 	aaa.TestConnDB()
 
+}
+
+func test_rpc() {
+	rpc.TestRpcServer()
+
+	rpc.TestRpcClient()
 }
 
 func main() {
@@ -125,7 +134,7 @@ func main() {
 
 	//test_json()
 
-	test_common()
+	//test_common()
 
 	//test_error()
 
@@ -133,4 +142,5 @@ func main() {
 
 	//test_array()
 
+	//test_rpc()
 }

@@ -2,12 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="2cf234bc-ff1a-4756-a2fe-56683d9a99ef" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../go_demo2/bin/go_build_server_go.exe" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../go_demo2/src/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../go_demo2/src/rpc/client.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../go_demo2/src/rpc/server.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../go_demo2/src/server.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../go_demo2/bin/test_go_build_main_go.exe" beforeDir="false" afterPath="$PROJECT_DIR$/../go_demo2/bin/test_go_build_main_go.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../go_demo2/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/../go_demo2/src/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
   </component>
   <component name="GOROOT" url="file://$PROJECT_DIR$/../../../../work_software/go1_17" />
   <component name="Git.Settings">
@@ -28,6 +42,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -36,10 +51,19 @@
     <property name="go.import.settings.migrated" value="true" />
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../go_demo2" />
     <property name="settings.editor.selected.configurable" value="File.Encoding" />
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Go Build.go build helloworld/cmd/helloworld">
+    <configuration name="go build helloworld/cmd/helloworld" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="helloworld" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <package value="helloworld/cmd/helloworld" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/cmd/helloworld/Test.go" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build main.go" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="helloworld" />
       <working_directory value="$PROJECT_DIR$" />
@@ -51,8 +75,13 @@
       <option name="run" value="false" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Go Build.go build main.go" />
+      <item itemvalue="Go Build.go build helloworld/cmd/helloworld" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Go Build.go build helloworld/cmd/helloworld" />
         <item itemvalue="Go Build.go build main.go" />
       </list>
     </recent_temporary>
