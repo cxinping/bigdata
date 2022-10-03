@@ -7,6 +7,10 @@ cd D:\quant2\bigdata\go_projects\helloworld\cmd\helloworld
 D:\work_software\go1_17\bin\go.exe  run  main.go wire_gen.go -conf ../../configs
 ```
 
+protoc
+```
+D:\work_software\protoc-21.7-win64\bin\protoc  --version
+```
 
 ## Install Kratos
 ```
