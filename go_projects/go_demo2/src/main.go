@@ -2,7 +2,6 @@ package main
 
 import (
 	"aaa"
-	"rpc"
 )
 
 func test_array() {
@@ -63,12 +62,6 @@ func test_error() {
 func test_db() {
 	aaa.TestConnDB()
 
-}
-
-func test_rpc() {
-	rpc.TestRpcServer()
-
-	rpc.TestRpcClient()
 }
 
 func main() {
