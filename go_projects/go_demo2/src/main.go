@@ -7,7 +7,7 @@ import (
 
 func test_array() {
 	//测试数组
-	//aaa.TestArr1()
+	aaa.TestArr1()
 	//aaa.Arr2()
 	//aaa.TestSlice5()
 	//aaa.TestSlice1()
@@ -134,7 +134,7 @@ func main() {
 
 	//test_db()
 
-	//test_array()
+	test_array()
 
-	fmt.Println("abcdef")
+	fmt.Println("123")
 }
