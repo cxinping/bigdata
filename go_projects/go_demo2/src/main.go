@@ -2,11 +2,7 @@ package main
 
 import (
 	"aaa"
-	"bbb"
 	"fmt"
-	"log"
-
-	proto "google.golang.org/protobuf/internal/protolegacy"
 )
 
 func test_array() {
@@ -20,20 +16,6 @@ func test_array() {
 	//aaa.Arr4()
 	//aaa.TestMap2()
 	//aaa.TestSlice6()
-}
-
-func test_rpc() {
-	test := &bbb.ProtocStudent{
-		Name:   "geektutu",
-		Male:   true,
-		Scores: []int32{98, 85, 88},
-	}
-	data, err := proto.Marshal(test)
-	if err != nil {
-		log.Fatal("marshaling error: ", err)
-	}
-	fmt.Println(data)
-
 }
 
 func test_goroutine() {
@@ -154,5 +136,5 @@ func main() {
 
 	//test_array()
 
-	test_rpc()
+	fmt.Println("abcdef")
 }
