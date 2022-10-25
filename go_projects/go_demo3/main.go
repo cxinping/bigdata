@@ -1,8 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"go_demo3/src/demo"
+)
 
 func main() {
-	fmt.Println("aaa")
-	//Test1()
+	fmt.Println("----------")
+	demo.Test1()
 }
