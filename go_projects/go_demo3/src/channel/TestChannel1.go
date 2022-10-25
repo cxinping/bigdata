@@ -3,5 +3,6 @@ package channel
 import "fmt"
 
 func Test1() {
-	fmt.Println("hello channel")
+	fmt.Println("hello channel 123")
+
 }
