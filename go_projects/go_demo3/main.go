@@ -1,12 +1,9 @@
 package main
 
-import (
-	"fmt"
-	"go_demo3/src/demo"
-)
+import "go_demo3/src/channel"
 
 func main() {
-	fmt.Println("hello world")
-	demo.Helloworld()
-
+	//fmt.Println("hello world")
+	//demo.Helloworld()
+	channel.Test1()
 }
