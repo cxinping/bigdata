@@ -2,6 +2,6 @@ package channel
 
 import "fmt"
 
-func TestHello(){
+func TestAbcHello() {
 	fmt.Println("hello world go")
 }
