@@ -1,9 +1,13 @@
 package main
 
-import "go_demo3/src/channel"
+import (
+	"fmt"
+	"runtime"
+)
 
 func main() {
-	//fmt.Println("hello world")
-	//demo.Helloworld()
-	channel.Test1()
+	//channel.Test1()
+	cpuNums := runtime.NumCPU()
+	fmt.Println("CPU核心数: ", cpuNums)
+
 }
