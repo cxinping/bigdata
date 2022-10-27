@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go_demo3/src/channel"
 	"runtime"
 )
 
@@ -19,7 +20,7 @@ func showCpuCores() {
 func say(s string) {
 	for i := 0; i < 5; i++ {
 		runtime.Gosched()
-		fmt.Println(s)
+		fmt.Println(i, s)
 	}
 }
 
@@ -27,7 +28,9 @@ func main() {
 	//channel.Test1()
 	//showCpuCores()
 
-	go say("world")
-	say("hello")
+	//go say("world")
+	//say("hello")
 
+	channel.Test1()
+	//time.Sleep(1 * time.Second)
 }
