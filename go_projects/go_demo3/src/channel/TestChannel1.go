@@ -1,4 +1,4 @@
-package channel
+package main
 
 import (
 	"fmt"
@@ -22,4 +22,8 @@ func Test1() {
 
 func Test2() {
 
+}
+
+func main() {
+	fmt.Println("aaaabbbb")
 }
