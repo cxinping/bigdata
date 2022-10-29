@@ -19,3 +19,7 @@ func Test1() {
 		}
 	}
 }
+
+func Test2() {
+
+}
