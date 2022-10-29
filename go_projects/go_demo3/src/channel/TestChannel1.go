@@ -25,5 +25,5 @@ func Test2() {
 }
 
 func main() {
-	fmt.Println("aaaabbbb")
+	fmt.Println("111222")
 }
