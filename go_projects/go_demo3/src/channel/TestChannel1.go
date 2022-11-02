@@ -26,12 +26,19 @@ func hello() {
 	fmt.Println("hello world goroutine")
 }
 
+func sendData(ch1 chan string) {
+	ch1 <- "a"
+	ch1 <- "b"
+}
+
 func main() {
 	//go hello()
 
 	ch1 := make(chan string)
-	<-ch1
-	//fmt.Println(ch1)
-	time.Sleep(2 * time.Second)
+	go sendData(ch1)
+	rst1 := <-ch1
+	rst2 := <-ch1
+	fmt.Println(rst1, rst2)
+	time.Sleep(1 * time.Second)
 	fmt.Println("--- main function over ---")
 }
