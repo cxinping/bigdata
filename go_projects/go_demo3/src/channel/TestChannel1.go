@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 )
 
 func Test1() {
@@ -21,10 +22,16 @@ func Test1() {
 
 }
 
-func Test2() {
-
+func hello() {
+	fmt.Println("hello world goroutine")
 }
 
 func main() {
-	fmt.Println("111222")
+	//go hello()
+
+	ch1 := make(chan string)
+	<-ch1
+	//fmt.Println(ch1)
+	time.Sleep(2 * time.Second)
+	fmt.Println("--- main function over ---")
 }
