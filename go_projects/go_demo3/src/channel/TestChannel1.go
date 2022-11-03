@@ -31,14 +31,22 @@ func sendData(ch1 chan string) {
 	ch1 <- "b"
 }
 
+func recvData(ch1 chan string) {
+
+	rst1, ok := <-ch1
+	//rst2, ok := <-ch1
+	fmt.Println("rst1=", rst1, ok)
+	//fmt.Println("rst2=", rst2, ok)
+}
+
 func main() {
 	//go hello()
 
 	ch1 := make(chan string)
+	go recvData(ch1)
+
 	go sendData(ch1)
-	rst1 := <-ch1
-	rst2 := <-ch1
-	fmt.Println(rst1, rst2)
+
 	time.Sleep(1 * time.Second)
 	fmt.Println("--- main function over ---")
 }
