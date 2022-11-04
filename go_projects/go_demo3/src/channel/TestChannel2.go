@@ -23,11 +23,12 @@ func TestCh1() {
 
 func TestCh2() {
 	ch1 := make(chan int)
+	fmt.Println("非缓冲通道: ", len(ch1), cap(ch1))
 	go func() {
 		ch1 <- 100
 		ch1 <- 200
 		close(ch1)
-		ch1 <- 300
+		//ch1 <- 300
 	}()
 
 	data, ok := <-ch1
