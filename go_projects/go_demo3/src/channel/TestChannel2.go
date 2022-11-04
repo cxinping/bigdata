@@ -45,4 +45,13 @@ func TestCh3() {
 	ch1 := make(chan int)
 	fmt.Println("非缓冲通道 ch1: ", len(ch1), cap(ch1))
 
+	go func() {
+		data := <-ch1
+		fmt.Println("收到数据: ", data)
+	}()
+
+	ch1 <- 10
+	ch1 <- 20
+
+	fmt.Println("--- main over ---")
 }

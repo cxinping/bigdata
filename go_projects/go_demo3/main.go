@@ -32,6 +32,8 @@ func main() {
 	//say("hello")
 
 	//time.Sleep(1 * time.Second)
-	fmt.Println("start channel ...")
+	//fmt.Println("start channel ...")
+
 	channel.TestCh3()
+
 }
