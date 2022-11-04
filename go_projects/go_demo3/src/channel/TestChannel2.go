@@ -57,7 +57,9 @@ func TestCh3() {
 	time.Sleep(time.Second)
 	fmt.Println("--- 111 main over ---")
 
-	ch2 := make(chan string)
+	ch2 := make(chan string, 6)
+	fmt.Println("非缓冲通道 ch2: ", len(ch2), cap(ch2))
+
 	go sendData2(ch2)
 	for data := range ch2 {
 		fmt.Println("\t读取数据: ", data)
@@ -66,7 +68,7 @@ func TestCh3() {
 }
 
 func sendData2(ch chan string) {
-	for i := 0; i <= 3; i++ {
+	for i := 0; i < 3; i++ {
 		data := fmt.Sprintf("data%d", i)
 		ch <- data
 		fmt.Println("往通道放入数据: ", data)
