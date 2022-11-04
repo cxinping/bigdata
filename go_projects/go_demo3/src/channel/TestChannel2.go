@@ -20,3 +20,20 @@ func TestCh1() {
 	<-ch2
 	fmt.Println("main over...")
 }
+
+func TestCh2() {
+	ch1 := make(chan int)
+	go func() {
+		ch1 <- 100
+		ch1 <- 200
+		close(ch1)
+		ch1 <- 300
+	}()
+
+	data, ok := <-ch1
+	fmt.Println(data, ok)
+	data, ok = <-ch1
+	fmt.Println(data, ok)
+	data, ok = <-ch1
+	fmt.Println(data, ok)
+}

@@ -33,5 +33,5 @@ func main() {
 
 	//time.Sleep(1 * time.Second)
 	fmt.Println("start channel ...")
-	channel.TestCh1()
+	channel.TestCh2()
 }
