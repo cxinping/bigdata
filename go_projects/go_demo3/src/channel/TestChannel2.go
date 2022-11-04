@@ -62,7 +62,7 @@ func TestCh3() {
 	for data := range ch2 {
 		fmt.Println("\t读取数据: ", data)
 	}
-
+	fmt.Println("--- 222 main over ---")
 }
 
 func sendData2(ch chan string) {
