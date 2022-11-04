@@ -13,6 +13,7 @@ func TestCh1() {
 		if ok {
 			fmt.Println("子 goroutine 取到数据: ", data)
 		}
+		ch2 <- true
 	}()
 
 	ch1 <- 10
