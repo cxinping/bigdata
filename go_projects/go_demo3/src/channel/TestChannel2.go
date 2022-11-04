@@ -38,3 +38,11 @@ func TestCh2() {
 	data, ok = <-ch1
 	fmt.Println(data, ok)
 }
+
+func TestCh3() {
+
+	//1, 非缓冲通道
+	ch1 := make(chan int)
+	fmt.Println("非缓冲通道 ch1: ", len(ch1), cap(ch1))
+
+}
