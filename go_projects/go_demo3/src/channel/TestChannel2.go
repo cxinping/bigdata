@@ -60,15 +60,16 @@ func TestCh3() {
 	ch2 := make(chan string)
 	go sendData2(ch2)
 	for data := range ch2 {
-		fmt.Println("读取数据: ", data)
+		fmt.Println("\t读取数据: ", data)
 	}
 
 }
 
 func sendData2(ch chan string) {
 	for i := 0; i <= 3; i++ {
-		ch <- fmt.Sprintf("data%d", i)
-		fmt.Println("往通道放入数据: ", i)
+		data := fmt.Sprintf("data%d", i)
+		ch <- data
+		fmt.Println("往通道放入数据: ", data)
 	}
 	defer close(ch)
 }
