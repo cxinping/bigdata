@@ -1,6 +1,9 @@
 package channel
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func TestCh1() {
 	//var ch1 chan int
@@ -51,7 +54,21 @@ func TestCh3() {
 	}()
 
 	ch1 <- 10
-	ch1 <- 20
+	time.Sleep(time.Second)
+	fmt.Println("--- 111 main over ---")
 
-	fmt.Println("--- main over ---")
+	ch2 := make(chan string)
+	go sendData2(ch2)
+	for data := range ch2 {
+		fmt.Println("读取数据: ", data)
+	}
+
+}
+
+func sendData2(ch chan string) {
+	for i := 0; i <= 3; i++ {
+		ch <- fmt.Sprintf("data%d", i)
+		fmt.Println("往通道放入数据: ", i)
+	}
+	defer close(ch)
 }
