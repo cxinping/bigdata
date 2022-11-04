@@ -3,8 +3,9 @@ package channel
 import "fmt"
 
 func TestCh1() {
-	var ch1 chan int
-	fmt.Printf("%T", ch1)
+	//var ch1 chan int
+	ch1 := make(chan int)
+	//fmt.Printf("%T", ch1)
 	ch2 := make(chan bool)
 
 	go func() {
