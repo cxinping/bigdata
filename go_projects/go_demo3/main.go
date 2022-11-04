@@ -31,6 +31,7 @@ func main() {
 	//go say("world")
 	//say("hello")
 
-	channel.Test1()
 	//time.Sleep(1 * time.Second)
+
+	channel.TestCh1()
 }
