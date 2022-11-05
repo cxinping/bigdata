@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	. "go_demo3/src/channel"
+	"go_demo3/src/channel"
 	"runtime"
 )
 
@@ -34,6 +34,7 @@ func main() {
 	//time.Sleep(1 * time.Second)
 	//fmt.Println("start channel ...")
 
-	TestCh3()
+	//TestCh3()
 
+	channel.TestNewTimer()
 }

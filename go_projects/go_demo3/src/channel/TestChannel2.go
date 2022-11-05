@@ -75,3 +75,9 @@ func sendData2(ch chan string) {
 	}
 	defer close(ch)
 }
+
+func TestNewTimer() {
+	//timer1 := time.NewTimer(5 * time.Second)
+	fmt.Println(time.Now())
+
+}
