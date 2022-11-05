@@ -77,7 +77,9 @@ func sendData2(ch chan string) {
 }
 
 func TestNewTimer() {
-	//timer1 := time.NewTimer(5 * time.Second)
+	timer1 := time.NewTimer(3 * time.Second)
 	fmt.Println(time.Now())
+	data := <-timer1.C
+	fmt.Println(data)
 
 }
