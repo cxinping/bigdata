@@ -76,6 +76,10 @@ func sendData2(ch chan string) {
 	defer close(ch)
 }
 
+func init() {
+	fmt.Println("--- init channel ---")
+}
+
 func TestNewTimer() {
 	timer1 := time.NewTimer(3 * time.Second)
 	fmt.Println(time.Now())

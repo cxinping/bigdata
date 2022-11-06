@@ -24,6 +24,10 @@ func say(s string) {
 	}
 }
 
+func init() {
+	fmt.Println("--- init ---")
+}
+
 func main() {
 	//channel.Test1()
 	//showCpuCores()
