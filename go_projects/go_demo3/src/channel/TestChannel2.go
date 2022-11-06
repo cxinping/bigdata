@@ -87,3 +87,17 @@ func TestNewTimer() {
 	fmt.Println(data)
 
 }
+
+type Student struct {
+	Aget int
+	Name string
+}
+
+func TestStru1() {
+	//var stu Student
+	var stu *Student
+	stu = new(Student)
+	stu.Aget = 21
+	fmt.Println(stu)
+	fmt.Printf("%T, %v", stu, stu)
+}

@@ -40,5 +40,7 @@ func main() {
 
 	//TestCh3()
 
-	channel.TestNewTimer()
+	//channel.TestNewTimer()
+
+	channel.TestStru1()
 }
