@@ -100,4 +100,7 @@ func TestStru1() {
 	stu.Aget = 21
 	fmt.Println(stu)
 	fmt.Printf("%T, %v", stu, stu)
+
+	var input int
+	fmt.Scanln(&input)
 }
